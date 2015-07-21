@@ -1,0 +1,52 @@
+<dom-module id="stryd-settings">
+  <style>
+    :host {
+      display: block;
+    }
+
+    form {
+      margin-top: 30px;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
+  <template>
+    <platform-connect></platform-connect>
+    <form action="/upload-target" class="dropzone" id="file-dropzone"></form>
+  </template>
+
+  <script>
+    (function () {
+      Polymer({
+        is: 'stryd-settings',
+        properties: {
+        },
+        ready: function() {
+        },
+        attached: function() {
+          /*global Dropzone*/
+          Dropzone.options.fileDropzone = {
+            paramName: 'file', // The name that will be used to transfer the file
+            url: '/b/v1/uploads?user=tptest&data_type=fit',
+            maxFilesize: 60, // MB
+            acceptedFiles: '.fit',
+            uploadMultiple: false,
+            addRemoveLinks: true,
+            dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
+            dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
+            accept: function (file, done) {
+              done();
+            },
+            success: function (file, message) {
+              console.log(message);
+            },
+            error: function (file, message) {
+              console.log(message);
+            }
+          };
+
+        }
+      });
+    })();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
+</dom-module>

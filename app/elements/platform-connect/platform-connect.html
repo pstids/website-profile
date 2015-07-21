@@ -1,0 +1,109 @@
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<dom-module id="platform-connect">
+  <style>
+    :host {
+      display: block;
+    }
+
+    .panel {
+      overflow: auto;
+    }
+
+    .authenticate {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      padding: 2%;
+    }
+
+    .authenticate .status {
+      /*@apply(--layout-flex-2);*/
+      font-size: 24px;
+    }
+
+    .authenticate .action {
+      /*@apply(--layout-flex-1);*/
+    }
+
+    paper-button {
+      margin: auto 50%;
+    }
+
+    paper-button.connect {
+      color: #fff;
+      background-color: var(--paper-green-500);
+      --paper-button-flat-focus-color: var(--paper-green-50);
+    }
+
+    paper-button.disconnect {
+      color: var(--paper-red-500);
+      --paper-button-flat-focus-color: var(--paper-red-50);
+    }
+
+    [data-toggle="on"] .disconnected {
+      display: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    [data-toggle="off"] .connected {
+      display: none;
+    }
+  </style>
+  <template>
+    <section class="panel paper-font-body1">
+      <div class="authenticate" data-platform="garmin" data-toggle="off">
+        <div class="status">
+          <div class="connected">Connected with Garmin</div>
+          <div class="disconnected">Not connected with Garmin</div>
+        </div>
+        <div class="action">
+          <a href="/b/oauth/garmin" class="btn btn-success disconnected">
+            <paper-button raised class="connect">Connect</paper-button>
+          </a>
+          <a href="/b/oauth/garmin/disconnect" class="btn btn-danger connected hidden">Disconnect</a>
+        </div>
+      </div>
+      <!--<div class="authenticate" data-platform="strava" data-toggle="off">-->
+        <!--<div class="status">-->
+          <!--<div class="connected">Connected with Strava</div>-->
+          <!--<div class="disconnected">Not connected with Strava</div>-->
+        <!--</div>-->
+        <!--<div class="action">-->
+          <!--<a href="/b/oauth/strava" class="btn btn-success disconnected">Connect</a>-->
+          <!--<a href="/b/oauth/strava/disconnect" class="btn btn-danger connected hidden">Disconnect</a>-->
+        <!--</div>-->
+      <!--</div>-->
+      <div class="authenticate" data-toggle="off">
+        <div class="status">
+          <div class="connected">Connected with Training Peaks</div>
+          <div class="disconnected">Not connected with Training Peaks</div>
+        </div>
+        <div class="action">
+          <a href="/b/oauth/trainingpeaks" class="disconnected">
+            <paper-button raised class="connect">Connect</paper-button>
+          </a>
+          <a href="/b/oauth/trainingpeaks/disconnect" class="connected hidden">
+            <paper-button class="disconnect">Disconnect</paper-button>
+          </a>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <script>
+    (function () {
+      Polymer({
+        is: 'platform-connect',
+        properties: {
+        },
+        ready: function() {
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
