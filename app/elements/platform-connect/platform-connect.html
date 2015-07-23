@@ -73,7 +73,7 @@
           <!--<a href="/b/platform/oauth/strava/disconnect" class="btn btn-danger connected hidden">Disconnect</a>-->
         <!--</div>-->
       <!--</div>-->
-      <div class="authenticate" data-platform="trainingpeaks" data-toggle="off">
+      <div class="authenticate" id="trainingpeaks" data-toggle="off">
         <div class="status">
           <div class="connected">Connected with Training Peaks</div>
           <div class="disconnected">Not connected with Training Peaks</div>
@@ -89,15 +89,44 @@
       </div>
     </section>
   </template>
-
-  <script src="../../scripts/setting.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
+  <script src="../../scripts/jwt.js"></script>
   <script>
+    /*global superagent */
+    /*global jwt */
+    /*jshint unused: false*/
     (function () {
       Polymer({
         is: 'platform-connect',
         properties: {
         },
         ready: function() {
+          this.update();
+        },
+        update: function () {
+          superagent
+            .get('/b/v1/users/' + jwt.data.id + '/platforms')
+            .send()
+            .set('Accept', 'application/json')
+            .set('Authorization', 'Bearer: ' + jwt.token)
+            .end((err, res) => {
+              if (res.ok) {
+                this.updateView(res.body);
+              } else {
+
+              }
+            });
+        },
+        updateView: function (platforms) {
+          var platform;
+          console.log(this.$);
+          for (var i = 0; i < platforms.length; i++) {
+            platform = platforms[i];
+
+            if (!platform.status && platform.platform in this.$) {
+              this.$[platform.platform].dataset.toggle = 'off';
+            } 
+          }
         }
       });
     })();
