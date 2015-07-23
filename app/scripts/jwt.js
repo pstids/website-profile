@@ -9,7 +9,7 @@ class JWT {
 	}
 
 	checkToken() {
-		if (this.token === null) {
+		if (this.token === undefined) {
 			location.pathname = '/signin';
 		} else {
 			this.parseData();
