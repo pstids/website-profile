@@ -5,3 +5,4 @@ bower_components
 .idea/
 copy
 app/example.html
+transfer.sh
