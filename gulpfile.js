@@ -21,6 +21,7 @@ var path = require('path');
 var fs = require('fs');
 var glob = require('glob');
 var historyApiFallback = require('connect-history-api-fallback');
+var babel = require('gulp-babel');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -53,6 +54,12 @@ gulp.task('styles', function () {
 
 gulp.task('elements', function () {
   return styleTask('elements', ['**/*.css']);
+});
+
+gulp.task('babel', function () {
+  return gulp.src(['app/scripts/jwt.js', 'app/scripts/setting.js'])
+    .pipe(babel())
+    .pipe(gulp.dest('dist/scripts'));
 });
 
 // Lint JavaScript
@@ -237,6 +244,7 @@ gulp.task('default', ['clean'], function (cb) {
   runSequence(
     ['copy', 'styles'],
     'elements',
+    'babel',
     ['jshint', 'images', 'fonts', 'html'],
     'vulcanize',
     cb);
