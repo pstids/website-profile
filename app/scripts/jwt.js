@@ -44,14 +44,14 @@ class JWT {
 					token: this.token
 				})
 				.set('Accept', 'application/json')
-				.end((err, res) => {
+				.end(function(err, res) {
 					if (res.ok) {
 						localStorage.setItem('token', res.body.token);
 						this.constructor();
 					} else {
 						this.logout();
 					}
-				});
+				}.bind(this));
 		} else {
 			this.logout();
 		}

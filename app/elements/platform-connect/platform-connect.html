@@ -121,11 +121,11 @@
             .send()
             .set('Accept', 'application/json')
             .set('Authorization', 'Bearer: ' + jwt.token)
-            .end((err, res) => {
+            .end(function(err, res) {
               if (res.ok) {
                 this.updateView(res.body);
               }
-            });
+            }.bind(this));
         },
         updateView: function (platforms) {
           var platform;
