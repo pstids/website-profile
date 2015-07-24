@@ -51,23 +51,23 @@
   </style>
   <template>
     <section class="panel paper-font-body1">
-      <div class="authenticate" data-platform="garmin" data-toggle="off">
+      <div class="authenticate" id="garmin" data-toggle="off">
         <div class="status">
           <div class="connected">Connected with Garmin</div>
           <div class="disconnected">Not connected with Garmin</div>
         </div>
         <div class="action">
-          <paper-button raised class="connect" connect="garmin" on-click="oauthConnect">Connect</paper-button>
+          <paper-button raised class="connect disconnected" connect="garmin" on-click="oauthConnect">Connect</paper-button>
           <a href="/b/platform/oauth/garmin/disconnect" class="btn btn-danger connected hidden">Disconnect</a>
         </div>
       </div>
-      <div class="authenticate" data-platform="strava" data-toggle="off">
+      <div class="authenticate" id="strava" data-toggle="off">
         <div class="status">
           <div class="connected">Connected with Strava</div>
           <div class="disconnected">Not connected with Strava</div>
         </div>
         <div class="action">
-          <paper-button raised class="connect" connect="strava" on-click="oauthConnect">Connect</paper-button>
+          <paper-button raised class="connect disconnected" connect="strava" on-click="oauthConnect">Connect</paper-button>
           <a href="/b/platform/oauth/strava/disconnect" class="btn btn-danger connected hidden">Disconnect</a>
         </div>
       </div>
@@ -77,7 +77,7 @@
           <div class="disconnected">Not connected with Training Peaks</div>
         </div>
         <div class="action">
-          <paper-button raised class="connect" connect="trainingpeaks" on-click="oauthConnect">Connect</paper-button>
+          <paper-button raised class="connect disconnected" connect="trainingpeaks" on-click="oauthConnect">Connect</paper-button>
           <a href="/b/platform/oauth/trainingpeaks/disconnect" class="connected hidden">
             <paper-button class="disconnect">Disconnect</paper-button>
           </a>
@@ -132,9 +132,8 @@
           console.log(this.$);
           for (var i = 0; i < platforms.length; i++) {
             platform = platforms[i];
-
-            if (!platform.status && platform.platform in this.$) {
-              this.$[platform.platform].dataset.toggle = 'off';
+            if (platform.status && platform.platform in this.$) {
+              this.$[platform.platform].dataset.toggle = 'on';
             } 
           }
         }
