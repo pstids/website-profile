@@ -8,13 +8,14 @@
       margin-top: 30px;
     }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
   <template>
     <platform-connect></platform-connect>
     <form action="/upload-target" class="dropzone" id="file-dropzone"></form>
   </template>
-
+  <script src="../../scripts/jwt.js"></script>
   <script>
+    /*global jwt*/
     (function () {
       Polymer({
         is: 'stryd-settings',
@@ -28,6 +29,9 @@
           Dropzone.options.fileDropzone = {
             paramName: 'file', // The name that will be used to transfer the file
             url: '/b/v1/uploads?data_type=fit',
+            headers: {
+              'Authorization': 'Bearer: ' + jwt.token
+            },
             maxFilesize: 60, // MB
             acceptedFiles: '.fit',
             uploadMultiple: false,
@@ -49,5 +53,5 @@
       });
     })();
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
 </dom-module>
