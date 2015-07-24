@@ -114,16 +114,18 @@
             });
         },
         update: function () {
-          superagent
-            .get('/b/v1/users/' + jwt.data.id + '/platforms')
-            .send()
-            .set('Accept', 'application/json')
-            .set('Authorization', 'Bearer: ' + jwt.token)
-            .end(function(err, res) {
-              if (res.ok) {
-                this.updateView(res.body);
-              }
-            }.bind(this));
+          if (jwt.data.id) {
+            superagent
+              .get('/b/v1/users/' + jwt.data.id + '/platforms')
+              .send()
+              .set('Accept', 'application/json')
+              .set('Authorization', 'Bearer: ' + jwt.token)
+              .end(function(err, res) {
+                if (res.ok) {
+                  this.updateView(res.body);
+                }
+              }.bind(this));
+            }
         },
         updateView: function (platforms) {
           var platform;
