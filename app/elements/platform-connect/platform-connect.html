@@ -79,9 +79,7 @@
           <div class="disconnected">Not connected with Training Peaks</div>
         </div>
         <div class="action">
-          <a href="/b/platform/oauth/trainingpeaks" class="disconnected">
-            <paper-button raised class="connect">Connect</paper-button>
-          </a>
+          <paper-button raised class="connect" connect="trainingpeaks" on-click="oauthConnect">Connect</paper-button>
           <a href="/b/platform/oauth/trainingpeaks/disconnect" class="connected hidden">
             <paper-button class="disconnect">Disconnect</paper-button>
           </a>
@@ -95,6 +93,7 @@
     /*global superagent */
     /*global jwt */
     /*jshint unused: false*/
+    /*jshint camelcase: false */
     (function () {
       Polymer({
         is: 'platform-connect',
@@ -102,6 +101,19 @@
         },
         ready: function() {
           this.update();
+        },
+        oauthConnect: function (e) {
+          var platform = e.target.dataHost.getAttribute('connect');
+          superagent
+            .get('/b/platform/oauth/' + platform)
+            .send()
+            .set('Accept', 'application/json')
+            .set('Authorization', 'Bearer: ' + jwt.token)
+            .end(function (err, res) {
+              if (res.ok) {
+                window.location = res.body.redirect_url;
+              }
+            });
         },
         update: function () {
           superagent
@@ -112,8 +124,6 @@
             .end((err, res) => {
               if (res.ok) {
                 this.updateView(res.body);
-              } else {
-
               }
             });
         },
