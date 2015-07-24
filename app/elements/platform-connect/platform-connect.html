@@ -51,18 +51,16 @@
   </style>
   <template>
     <section class="panel paper-font-body1">
-      <!--<div class="authenticate" data-platform="garmin" data-toggle="off">-->
-        <!--<div class="status">-->
-          <!--<div class="connected">Connected with Garmin</div>-->
-          <!--<div class="disconnected">Not connected with Garmin</div>-->
-        <!--</div>-->
-        <!--<div class="action">-->
-          <!--<a href="/b/platform/oauth/garmin" class="btn btn-success disconnected">-->
-            <!--<paper-button raised class="connect">Connect</paper-button>-->
-          <!--</a>-->
-          <!--<a href="/b/platform/oauth/garmin/disconnect" class="btn btn-danger connected hidden">Disconnect</a>-->
-        <!--</div>-->
-      <!--</div>-->
+      <div class="authenticate" data-platform="garmin" data-toggle="off">
+        <div class="status">
+          <div class="connected">Connected with Garmin</div>
+          <div class="disconnected">Not connected with Garmin</div>
+        </div>
+        <div class="action">
+          <paper-button raised class="connect" connect="garmin" on-click="oauthConnect">Connect</paper-button>
+          <a href="/b/platform/oauth/garmin/disconnect" class="btn btn-danger connected hidden">Disconnect</a>
+        </div>
+      </div>
       <!--<div class="authenticate" data-platform="strava" data-toggle="off">-->
         <!--<div class="status">-->
           <!--<div class="connected">Connected with Strava</div>-->
