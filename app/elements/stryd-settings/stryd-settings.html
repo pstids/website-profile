@@ -18,6 +18,7 @@
   <script>
     /*global Dropzone*/
     /*global jwt*/
+
       Polymer({
         is: 'stryd-settings',
         properties: {
@@ -50,15 +51,15 @@
                 console.log(message);
               },
               sending: function (file, xhr, formData) {
+                var uid = new Date().getUTCMilliseconds();
                 var fileMetaData = {
-                  SizeInBytes: file.size,
-                  UploadID: '123',
-                  MD5: '123',
-                  OauthToken: jwt.token,
-                  Privacy: 'public',
-                  ActivityIDS: [1]
+                  sizeInBytes: file.size,
+                  uploadId: String(uid),
+                  md5: '',
+                  oauthToken: jwt.token,
+                  privacy: 'public',
+                  activityIds: [1]
                 };
-                console.log(JSON.stringify(fileMetaData));
                 formData.append('uploadMetaData', JSON.stringify(fileMetaData));
               }
             });
