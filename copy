@@ -1,3 +1,0 @@
-DEST=/Users/cnbuff410/Work/appengine/stryd/profile/web
-rm -rf $DEST
-cp -r ./dist $DEST
