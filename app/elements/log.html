@@ -1,0 +1,172 @@
+<dom-module id="log-ele">
+  <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+  <style>
+    button {
+        padding: 15px;
+        border: 1px solid #FFFFFF;
+        border-radius: 3px;
+        margin-left: 15px;
+        cursor: pointer;
+        background-color: #262626;
+        text-transform: uppercase;
+        color: #FFFFFF;
+    }
+    .log ul {
+        display: flex;
+        flex-direction: row;
+        list-style: none;
+        margin: 0;
+        padding: 20px 0;
+    }
+    .log {
+        border-bottom: 1px solid #4C4C4C;
+    }
+    .log li {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        padding: 10px;
+    }
+    .log ul:hover {
+        background-image: url('../images/hover.png');
+        background-size: cover;
+        background-clip: padding-box;
+    }
+    .log .info {
+        flex: 1;
+        flex-direction: column;
+    }
+    .log .cell {
+        display: block;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .log .icon {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-right: 30px;
+    }
+
+    .insights {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        color: #FFFFFF;
+    }
+    .insight {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        margin: 10px 0;
+    }
+    .insight .info {
+        flex: 9;
+        flex-direction: row;
+    }
+    .insight .cell {
+        display: block;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .insight .icon {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-right: 30px;
+        color: #F5A214;
+        fill: #F5A214;
+    }
+    .insight .icon iron-icon {
+        height: 50px;
+        width: 50px;
+    }
+    .insight .info .title {
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    .insight .info .field {
+        font-size: 24px;
+    }
+  </style>
+  <template>
+    <div class="log">
+        <ul class="insights">
+            <li class="cell">
+                07/20/15
+            </li>
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="face"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Distance</div>
+                    <div class="field">
+                        <span>{{display.distance}}</span>
+                        Miles
+                    </div>
+                </div>
+            </li>
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="cloud"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Time</div>
+                    <div class="field">
+                        <span>{{display.time}}</span>
+                        Mins
+                    </div>
+                </div>
+            </li>
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="favorite"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Power</div>
+                    <div class="field">
+                        <span>{{display.power}}</span>
+                        W
+                    </div>
+                </div>
+            </li>
+            <li class="cell">
+                Fastest time!
+            </li>
+            <li class="cell">
+                <button>View Run</button>
+            </li>
+        </ul>
+    </div>
+  </template>
+  <script>
+    /*jshint camelcase: false */
+  	Polymer({
+        is: 'log-ele',
+        properties: {
+            display: Object
+        },
+        display: {
+            power: '',
+            time: '',
+            distance: ''
+        },
+        setData: function (data) {
+            console.log(data);
+            console.log(this);
+            this.notifyPath('display.power', data.average_power);
+            this.notifyPath('display.time', data.elapsed_time / 60);
+            this.notifyPath('display.distance', data.distance / 1609);
+        }
+    });
+  </script>
+</dom-module>

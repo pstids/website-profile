@@ -1,0 +1,52 @@
+<dom-module id="footer-ele">
+  <style>
+    footer {
+        display: flex;
+        flex-direction: row;
+        padding: 0 47px;
+        background-color: #262626;
+        border-top: 2px solid #F5A214;
+    }
+    h1 {
+        font-size: 28px;
+        text-transform: uppercase;
+        color: #FFFFFF;
+        padding: 0 10px 0 0;
+        margin: 0;
+    }
+    p {
+        color: #C1BBAD;
+        font-size: 14px;
+    }
+    .logo, .gc, .tc {
+        display: flex;
+        flex: 1;
+        padding: 15px;
+    }
+    .gc {
+        justify-content: center;
+    }
+    .tc {
+        justify-content: flex-end;
+    }
+  </style>
+  <template>
+    <footer>
+        <div class="logo">
+            <h1>Stryd</h1>
+            <p>All Rights Reserved 2015.</p>
+        </div>
+        <div class="gc">
+            <p>Handcrafted by Green Chameleon</p>
+        </div>
+        <div class="tc">
+            <p>Terms & Conditions</p>
+        </div>
+    </footer>
+  </template>
+  <script>
+    Polymer({
+        is: 'footer-ele',
+    });
+  </script>
+</dom-module>
