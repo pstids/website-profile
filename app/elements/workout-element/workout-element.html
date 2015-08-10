@@ -217,10 +217,16 @@
             for (i = 0; i < data.heart_rate_list.length; i=i+20) {
                 var entry = {};
                 entry.date = new Date(data.timestamp_list[i]*1000);
-                entry.heart_rate = data.heart_rate_list[i];
-                entry.speed = data.speed_list[i];
+                if ('heart_rate_list' in data) {
+                    entry.heart_rate = data.heart_rate_list[i];
+                }
+                if ('speed_list' in data) {
+                    entry.speed = data.speed_list[i];
+                }
                 entry.power = data.total_power_list[i];
-                entry.cadence = data.cadence_list[i];
+                if ('cadence_list' in data) {
+                   entry.cadence = data.cadence_list[i];
+                }
                 this.chartData.push(entry);
             }
             var miles = data.distance / 1600;
