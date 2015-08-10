@@ -8,6 +8,8 @@
     page.base('/profile');
 
     page('/', function () {
+      var logBook = document.querySelector('log-book');
+      logBook.refresh();
       app.route = 'home';
     });
 

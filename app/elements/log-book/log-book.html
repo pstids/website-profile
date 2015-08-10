@@ -87,7 +87,10 @@
     /*global superagent*/
   	Polymer({
         is: 'log-book',
-        ready: function() {
+        refresh: function() {
+            while (this.$.logContainer.firstChild) {
+                this.$.logContainer.removeChild(this.$.logContainer.firstChild);
+            }
             this.grabLogs();
         },
         grabLogs: function() {
