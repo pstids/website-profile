@@ -107,8 +107,13 @@
                     }
                 }.bind(this));
         },
+        setGraph: function (id) {
+            var workoutElement = document.querySelector('workout-element');
+            workoutElement.change(id);
+        },
         populateLogs: function (logs) {
             var log, logEle;
+            this.setGraph(logs[0].id);
             for (var i = 0; i < logs.length; i++) {
                 log = logs[i];
                 logEle = document.createElement('log-entry');

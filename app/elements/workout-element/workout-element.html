@@ -106,7 +106,10 @@
                     </div>
                     <div class="info">
                         <div class="title">Distance</div>
-                        <div class="field">7 Miles</div>
+                        <div class="field">
+                            <span>{{display.distance}}</span>
+                            Miles
+                        </div>
                     </div>
                 </li>
                 <li class="insight">
@@ -115,7 +118,10 @@
                     </div>
                     <div class="info">
                         <div class="title">Time</div>
-                        <div class="field">49 Mins</div>
+                        <div class="field">
+                            <span>{{display.time}}</span>
+                            Mins
+                        </div>
                     </div>
                 </li>
                 <li class="insight">
@@ -124,7 +130,10 @@
                     </div>
                     <div class="info">
                         <div class="title">Pace</div>
-                        <div class="field">7 Mi/HR</div>
+                        <div class="field">
+                            <span>{{display.pace}}</span>
+                            Mi/HR
+                        </div>
                     </div>
                 </li>
                 <li class="insight">
@@ -133,7 +142,10 @@
                     </div>
                     <div class="info">
                         <div class="title">Max Heart Rate</div>
-                        <div class="field">180 BPM</div>
+                        <div class="field">
+                            <span>{{display.max_hr}}</span>
+                            BPM
+                        </div>
                     </div>
                 </li>
                 <li class="insight">
@@ -142,7 +154,10 @@
                     </div>
                     <div class="info">
                         <div class="title">Avg Heart Rate</div>
-                        <div class="field">150 BPM</div>
+                        <div class="field">
+                            <span>{{display.avg_hr}}</span>
+                            BPM
+                        </div>
                     </div>
                 </li>
                 <li class="insight">
@@ -150,8 +165,11 @@
                         <iron-icon icon="star"></iron-icon>
                     </div>
                     <div class="info">
-                        <div class="title">Power</div>
-                        <div class="field">340 W</div>
+                        <div class="title">Avg Power</div>
+                        <div class="field">
+                            <span>{{display.avg_watt}}</span>
+                            W
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -170,9 +188,13 @@
         is: 'workout-element',
         ready: function () {
             AmCharts.handleLoad();
-            this.grabData(6192449487634432);
+            this.style.display = 'hidden';
+        },
+        show: function () { 
+            this.style.display = 'block';
         },
         change: function (id) {
+            this.show();
             this.grabData(id);
         },
         grabData: function (id) {
