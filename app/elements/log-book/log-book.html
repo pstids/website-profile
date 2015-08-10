@@ -1,6 +1,6 @@
 <dom-module id="log-book">
   <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-  <link rel="import" href="log.html">
+  <link rel="import" href="../log-entry/log-entry.html">
   <style>
     section {
       display: block;
@@ -107,7 +107,7 @@
             var log, logEle;
             for (var i = 0; i < logs.length; i++) {
                 log = logs[i];
-                logEle = document.createElement('log-ele');
+                logEle = document.createElement('log-entry');
                 logEle.setData(log);
                 this.$.logContainer.appendChild(logEle);
             }
