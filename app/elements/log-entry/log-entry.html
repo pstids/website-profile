@@ -1,5 +1,6 @@
-<dom-module id="log-ele">
+<dom-module id="log-entry">
   <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../../styles/app-theme.html">
   <style>
     button {
         padding: 15px;
@@ -7,7 +8,7 @@
         border-radius: 3px;
         margin-left: 15px;
         cursor: pointer;
-        background-color: #262626;
+        background-color: var(--dark-color);
         text-transform: uppercase;
         color: #FFFFFF;
     }
@@ -19,7 +20,7 @@
         padding: 20px 0;
     }
     .log {
-        border-bottom: 1px solid #4C4C4C;
+        border-bottom: 1px solid var(--dark-mix-color);
     }
     .log li {
         display: flex;
@@ -52,49 +53,50 @@
     }
 
     .insights {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        color: #FFFFFF;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      color: #FFFFFF;
     }
     .insight {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        margin: 10px 0;
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      margin: 10px 0;
+      color: #FFFFFF;
     }
     .insight .info {
-        flex: 9;
-        flex-direction: row;
+      flex: 9;
+      flex-direction: row;
     }
     .insight .cell {
-        display: block;
-        font-size: 24px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
+      display: block;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
     }
     .insight .icon {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        padding-right: 30px;
-        color: #F5A214;
-        fill: #F5A214;
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      padding-right: 30px;
+      color: var(--bright-color);
+      fill: var(--bright-color);
     }
     .insight .icon iron-icon {
-        height: 50px;
-        width: 50px;
+      height: 50px;
+      width: 50px;
     }
     .insight .info .title {
-        font-size: 12px;
-        text-transform: uppercase;
+      font-size: 12px;
+      text-transform: uppercase;
     }
     .insight .info .field {
-        font-size: 24px;
+      font-size: 24px;
     }
   </style>
   <template>
@@ -151,7 +153,7 @@
   <script>
     /*jshint camelcase: false */
   	Polymer({
-        is: 'log-ele',
+        is: 'log-entry',
         properties: {
             display: Object
         },

@@ -1,4 +1,5 @@
 <dom-module id="header-element">
+  <link rel="import" href="../../styles/app-theme.html">
   <style>
     :host {
       display: block;
@@ -18,8 +19,8 @@
 
         text-align: center;
         
-        border-bottom: 4px solid #F5A214;
-        background-color: #262626;
+        border-bottom: 4px solid var(--bright-color);
+        background-color: var(--dark-color);
         text-transform: uppercase;
         
     }
@@ -51,16 +52,16 @@
     }
     .logo {
         flex: 1;
-        background-color: #F5A214;
+        background-color: var(--bright-color);
         font-size: 32px;
         font-weight: 700;
-        color: #262626;
+        color: var(--dark-color);
         text-transform: uppercase;
         display: flex;
         justify-content: center;
     }
     .logo a {
-        color: #262626;
+        color: var(--dark-color);
         display: block;
         padding: 1em;
     }
@@ -115,8 +116,8 @@
         flex-direction: row;
         justify-content: flex-end;
         padding-right: 15px;
-        color: #F5A214;
-        fill: #F5A214;
+        color: var(--bright-color);
+        fill: var(--bright-color);
     }
     .insight .icon iron-icon {
         height: 50px;

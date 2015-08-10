@@ -1,6 +1,7 @@
 <dom-module id="log-book">
   <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="../log-entry/log-entry.html">
+  <link rel="import" href="../../styles/app-theme.html">
   <style>
     section {
       display: block;
@@ -10,7 +11,7 @@
     h1.header {
         text-transform: uppercase;
         font-size: 36px;
-        color: #F5A214;
+        color: var(--bright-color);
         margin: 0;
     }
     .text-center {
@@ -35,7 +36,7 @@
         border-radius: 3px;
         margin-left: 15px;
         cursor: pointer;
-        background-color: #262626;
+        background-color: var(--dark-color);
         text-transform: uppercase;
         color: #FFFFFF;
     }
@@ -43,7 +44,7 @@
         text-transform: uppercase;
         display: flex;
         flex-direction: row;
-        border-bottom: 1px solid #4C4C4C;
+        border-bottom: 1px solid var(--dark-mix-color);
         padding-bottom: 10px;
         color: #FFFFFF;
     }
@@ -99,7 +100,7 @@
                     if (res.ok) {
                         this.populateLogs(res.body);
                     } else {
-                        console.log('failure');
+                        console.log('failure on grabLogs', err, res);
                     }
                 }.bind(this));
         },

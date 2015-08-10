@@ -1,11 +1,12 @@
 <dom-module id="footer-element">
+  <link rel="import" href="../../styles/app-theme.html">
   <style>
     footer {
         display: flex;
         flex-direction: row;
         padding: 0 47px;
-        background-color: #262626;
-        border-top: 2px solid #F5A214;
+        background-color: var(--dark-color);
+        border-top: 2px solid var(--bright-color);
     }
     h1 {
         font-size: 28px;
@@ -15,7 +16,7 @@
         margin: 0;
     }
     p {
-        color: #C1BBAD;
+        color: var(--dark-mix-color);
         font-size: 14px;
     }
     .logo, .gc, .tc {
