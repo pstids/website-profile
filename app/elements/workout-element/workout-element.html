@@ -170,11 +170,14 @@
         is: 'workout-element',
         ready: function () {
             AmCharts.handleLoad();
-            this.grabData();
+            this.grabData(6192449487634432);
         },
-        grabData: function () {
+        change: function (id) {
+            this.grabData(id);
+        },
+        grabData: function (id) {
             superagent
-                .get('/b/api/v1/activities/6192449487634432')
+                .get('/b/api/v1/activities/' + id)
                 .send()
                 .set('Accept', 'application/json')
                 .set('Authorization', 'Bearer: ' + jwt.token)
@@ -194,8 +197,6 @@
                 entry.date = new Date(data.timestamp_list[i]*1000);
                 entry.heart_rate = data.heart_rate_list[i];
                 entry.speed = data.speed_list[i];
-                console.log('entry');
-                console.log(entry);
                 this.chartData.push(entry);
             }
             console.log(this.chartData);
@@ -300,7 +301,6 @@
                     }],
                     /*jshint unused: false */
                     categoryFunction: function (a, d, b) {
-                        console.log(a, d, b);
                         return a.getMinutes() + ':' + a.getSeconds();
                     }
                 },

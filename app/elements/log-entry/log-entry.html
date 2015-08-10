@@ -145,12 +145,15 @@
                 Fastest time!
             </li>
             <li class="cell">
-                <button>View Run</button>
+                <button on-click="viewWorkout">View Run</button>
             </li>
         </ul>
     </div>
   </template>
   <script>
+    var truncate = function(n) {
+        return String(n).substring(0, 6);
+    };
     /*jshint camelcase: false */
   	Polymer({
         is: 'log-entry',
@@ -163,11 +166,16 @@
             distance: ''
         },
         setData: function (data) {
+            this.data = data;
             console.log(data);
-            console.log(this);
-            this.notifyPath('display.power', data.average_power);
-            this.notifyPath('display.time', data.elapsed_time / 60);
-            this.notifyPath('display.distance', data.distance / 1609);
+            this.notifyPath('display.power', truncate(data.average_power));
+            this.notifyPath('display.time', truncate(data.elapsed_time / 60));
+            this.notifyPath('display.distance', truncate(data.distance / 1609));
+        },
+        viewWorkout: function () {
+            var workout = document.querySelector('workout-element');
+            workout.change(this.data.id);
+            console.log('called workout', this.data.id);
         }
     });
   </script>
