@@ -1,0 +1,204 @@
+<dom-module id="header-element">
+  <link rel="import" href="../../styles/app-theme.html">
+  <style>
+    :host {
+      display: block;
+    }
+    a {
+        text-decoration: none;
+        color: #FFFFFF;
+    }
+    a:hover {
+        color: inherit;
+    }
+    header {
+        display: block;
+        display: flex;
+        flex-flow: row;
+        flex-wrap: nowrap;
+
+        text-align: center;
+        
+        border-bottom: 4px solid var(--accent-background-color);
+        background-color: var(--primary-background-color);
+        text-transform: uppercase;
+        
+    }
+    ul.navigation {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        flex-flow: row;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+    ul.navigation li {
+        display: block;
+        padding: 1em;
+        flex: 1;
+        text-align: center;
+    }
+    ul.navigation li a {
+        font-size: 14px;
+        font-weight: 700;
+    }
+    ul.navigation li:hover {
+        color: #F5A214;
+    }
+    .logo {
+        flex: 1;
+        background-color: var(--accent-background-color);
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--accent-text-color);
+        text-transform: uppercase;
+        display: flex;
+        justify-content: center;
+    }
+    .logo a {
+        color: var(--accent-text-color);
+        display: block;
+        padding: 1em;
+    }
+    .navigation {
+        flex: 4;
+    }
+    .profile {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .profile a {
+        display: block;
+        padding: 1em;
+        height: 1em;
+        font-size: 14px;
+        font-weight: 700;
+    }
+    .insights {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        color: #FFFFFF;
+        align-items: center;
+    }
+    .insight {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        margin: 0 15px;
+        text-align: left;
+    }
+    .insight .info {
+        flex: 9;
+        flex-direction: row;
+    }
+    .insight .cell {
+        display: block;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .insight .icon {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-right: 15px;
+        color: var(--primary-icon-color);
+        fill: var(--primary-icon-color);
+    }
+    .insight .icon iron-icon {
+        height: 50px;
+        width: 50px;
+    }
+    .insight .info .title {
+        font-size: 8px;
+        text-transform: uppercase;
+    }
+    .insight .info .field {
+        font-size: 24px;
+    }
+    .insight .info .field span {
+        font-size: 12px;
+        font-weight: 700;
+    }
+  </style>
+  <template>
+    <header>
+        <div class="logo">
+            <a href="">Stryd</a>
+        </div>
+        <ul class="navigation">
+            <li>
+                <a data-route="home" href="/profile/">Dashboard</a>
+            </li>
+            <li>
+                <a href="#hash">Logbook</a>
+            </li>
+            <li>
+                <a href="#hash">Statistics</a>
+            </li>
+            <li>
+                <a data-route="settings" href="/profile/settings">Settings</a>
+            </li>
+        </ul>
+        <ul class="insights">
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="face"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">
+                        Total Distance
+                    </div>
+                    <div class="field">
+                        7
+                        <span>Miles</span>
+                    </div>
+                </div>
+            </li>
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="cloud"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Longest Run</div>
+                    <div class="field">
+                        49
+                        <span>Mins</span>
+                    </div>
+                </div>
+            </li>
+            <!-- <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="favorite"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Target Power</div>
+                    <div class="field">340 W</div>
+                </div>
+            </li> -->
+        </ul>
+        <div class="profile">
+            <a href="#hash">Gus</a>
+        </div>
+    </header>
+  </template>
+  <script>
+    Polymer({
+        is: 'header-element',
+    });
+  </script>
+</dom-module>

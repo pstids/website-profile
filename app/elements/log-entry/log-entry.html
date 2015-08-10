@@ -1,0 +1,182 @@
+<dom-module id="log-entry">
+  <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../../styles/app-theme.html">
+  <style>
+    button {
+        padding: 15px;
+        border: 1px solid #FFFFFF;
+        border-radius: 3px;
+        margin-left: 15px;
+        cursor: pointer;
+        background-color: var(--primary-background-color);
+        text-transform: uppercase;
+        color: #FFFFFF;
+    }
+    .log ul {
+        display: flex;
+        flex-direction: row;
+        list-style: none;
+        margin: 0;
+        padding: 20px 0;
+    }
+    .log {
+        border-bottom: 1px solid var(--primary-seperator-color);
+    }
+    .log li {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        padding: 10px;
+    }
+    .log ul:hover {
+        background-image: url('../images/hover.png');
+        background-size: cover;
+        background-clip: padding-box;
+    }
+    .log .info {
+        flex: 1;
+        flex-direction: column;
+    }
+    .log .cell {
+        display: block;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .log .icon {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-right: 30px;
+    }
+
+    .insights {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      color: #FFFFFF;
+    }
+    .insight {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      margin: 10px 0;
+      color: #FFFFFF;
+    }
+    .insight .info {
+      flex: 9;
+      flex-direction: row;
+    }
+    .insight .cell {
+      display: block;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .insight .icon {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      padding-right: 30px;
+      color: var(--primary-icon-color);
+      fill: var(--primary-icon-color);
+    }
+    .insight .icon iron-icon {
+      height: 50px;
+      width: 50px;
+    }
+    .insight .info .title {
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .insight .info .field {
+      font-size: 24px;
+    }
+  </style>
+  <template>
+    <div class="log">
+        <ul class="insights">
+            <li class="cell">
+                07/20/15
+            </li>
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="face"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Distance</div>
+                    <div class="field">
+                        <span>{{display.distance}}</span>
+                        Miles
+                    </div>
+                </div>
+            </li>
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="cloud"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Time</div>
+                    <div class="field">
+                        <span>{{display.time}}</span>
+                        Mins
+                    </div>
+                </div>
+            </li>
+            <li class="insight">
+                <div class="icon">
+                    <iron-icon icon="favorite"></iron-icon>
+                </div>
+                <div class="info">
+                    <div class="title">Power</div>
+                    <div class="field">
+                        <span>{{display.power}}</span>
+                        W
+                    </div>
+                </div>
+            </li>
+            <li class="cell">
+                Fastest time!
+            </li>
+            <li class="cell">
+                <button on-click="viewWorkout">View Run</button>
+            </li>
+        </ul>
+    </div>
+  </template>
+  <script>
+    /*jshint camelcase: false */
+  	Polymer({
+        is: 'log-entry',
+        properties: {
+            display: Object
+        },
+        display: {
+            power: '',
+            time: '',
+            distance: ''
+        },
+        truncate: function (n) {
+            return String(n).substring(0, 6);
+        },
+        setData: function (data) {
+            this.data = data;
+            console.log(data);
+            this.notifyPath('display.power', this.truncate(data.average_power));
+            this.notifyPath('display.time', this.truncate(data.elapsed_time / 60));
+            this.notifyPath('display.distance', this.truncate(data.distance / 1609));
+        },
+        viewWorkout: function () {
+            var workout = document.querySelector('workout-element');
+            workout.change(this.data.id);
+            console.log('called workout', this.data.id);
+        }
+    });
+  </script>
+</dom-module>

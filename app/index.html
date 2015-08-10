@@ -40,6 +40,7 @@
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild-->
+  <link rel="import" href="styles/app-theme.html">
 
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
@@ -52,116 +53,51 @@
 
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
+
   <template is="dom-bind" id="app">
+    <header-element></header-element>
+    <!-- Main Content -->
+    <div class="content">
+      <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-    <paper-drawer-panel id="paperDrawerPanel">
-      <!-- Drawer Scroll Header Panel -->
-      <paper-scroll-header-panel drawer fixed>
+        <section data-route="home">
+          <workout-element></workout-element>
+          <log-book></log-book>
+        </section>
 
-        <!-- Drawer Toolbar -->
-        <paper-toolbar id="drawerToolbar">
-          <span class="paper-font-title">Menu</span>
-        </paper-toolbar>
+        <section data-route="users">
+          <paper-material elevation="1">
+            <h2 class="paper-font-display2">Users</h2>
+            <p>This is the users section</p>
+            <a href="/users/Rob">Rob</a>
+          </paper-material>
+        </section>
 
-        <!-- Drawer Content -->
-        <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-          <a data-route="home" href="./">
-            <iron-icon icon="dashboard"></iron-icon>
-            <span>Home</span>
-          </a>
+        <section data-route="user-info">
+          <paper-material elevation="1">
+            <h2 class="paper-font-display2">
+            User:<span>{{params.name}}</span>
+            </h2>
+            <div>This is <span>{{params.name}}</span>'s section</div>
+          </paper-material>
+        </section>
 
-          <a data-route="settings" href="./settings">
-            <iron-icon icon="settings"></iron-icon>
-            <span>Settings</span>
-          </a>
+        <section data-route="settings">
+          <paper-material elevation="1">
+            <stryd-settings></stryd-settings>
+          </paper-material>
+        </section>
 
-          <!--<a data-route="contact" href="./contact">-->
-            <!--<iron-icon icon="mail"></iron-icon>-->
-            <!--<span>Contact</span>-->
-          <!--</a>-->
-        </paper-menu>
-      </paper-scroll-header-panel>
+        <section data-route="contact">
+          <paper-material elevation="1">
+            <h2 class="paper-font-display2">Contact</h2>
+            <p>This is the contact section</p>
+          </paper-material>
+        </section>
 
-      <!-- Main Area -->
-      <paper-scroll-header-panel main>
-
-        <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar">
-          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
-          <span class="flex"></span>
-          <!-- Application name -->
-          <div class="center horizontal layout">
-            <div class="app-name">Stryd - Running with power</div>
-          </div>
-          <span class="flex"></span>
-          <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
-          <paper-icon-button icon="search"></paper-icon-button>
-          <paper-icon-button icon="power-settings-new" on-click="logout"></paper-icon-button>
-        </paper-toolbar>
-
-        <!-- Main Content -->
-        <div class="content">
-          <iron-pages attr-for-selected="data-route" selected="{{route}}">
-
-            <section data-route="home">
-              <paper-material elevation="1">
-                <p class="paper-font-body2">Welcome to Stryd</p>
-              </paper-material>
-            </section>
-
-            <section data-route="users">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">Users</h2>
-                <p>This is the users section</p>
-                <a href="/users/Rob">Rob</a>
-              </paper-material>
-            </section>
-
-            <section data-route="user-info">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">
-                User:<span>{{params.name}}</span>
-                </h2>
-                <div>This is <span>{{params.name}}</span>'s section</div>
-              </paper-material>
-            </section>
-
-            <section data-route="settings">
-              <paper-material elevation="1">
-                <stryd-settings></stryd-settings>
-              </paper-material>
-            </section>
-
-            <section data-route="contact">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">Contact</h2>
-                <p>This is the contact section</p>
-              </paper-material>
-            </section>
-
-          </iron-pages>
-        </div>
-      </paper-scroll-header-panel>
-    </paper-drawer-panel>
-
-    <!-- Uncomment next block to enable Service Worker support (1/2) -->
-    <!--
-    <paper-toast id="caching-complete"
-                 duration="6000"
-                 text="Caching complete! This app will work offline.">
-    </paper-toast>
-
-    <platinum-sw-register auto-register
-                          clients-claim
-                          skip-waiting
-                          on-service-worker-installed="displayInstalledToast">
-      <platinum-sw-cache default-cache-strategy="networkFirst"
-                         precache-file="precache.json">
-      </platinum-sw-cache>
-    </platinum-sw-register>
-    -->
-
+      </iron-pages>
+      <footer-element></footer-element>
+    </div>
   </template>
 
   <script src="scripts/jwt.js"></script>

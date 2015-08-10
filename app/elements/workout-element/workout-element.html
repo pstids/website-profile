@@ -1,0 +1,374 @@
+<dom-module id="workout-element">
+  <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../../styles/app-theme.html">
+  <style>
+    section {
+        display: flex;
+        flex-direction: row;
+        background-color: var(--secondary-background-color);
+        height: 700px;
+        align-items: center;
+    }
+    h2.subheader {
+        text-transform: uppercase;
+        color: #FFFFFF;
+        font-size: 12px;
+        margin: 0;
+    }
+    h1.header {
+        text-transform: uppercase;
+        font-size: 36px;
+        color: var(--primary-header-color);
+        margin: 0;
+    }
+    .seperator {
+        display: block;
+        margin: 5px 0;
+        height: 1px;
+        border-top: 1px solid #5B5B5B;
+    }
+    .chart {
+        flex: 8;
+    }
+    .summary {
+        background-color: rgba(41, 41, 39, 0.9); 
+        flex: 4;
+        padding: 30px;
+        border-top-left-radius: 30px;
+        border-bottom-left-radius: 30px;
+        height: 500px;
+    }
+    .insights {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        color: #FFFFFF;
+    }
+    .insight {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        margin: 10px 0;
+    }
+    .insight .info {
+        flex: 9;
+        flex-direction: row;
+    }
+    .insight .cell {
+        display: block;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .insight .icon {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-right: 30px;
+        color: var(--primary-icon-color);
+        fill: var(--primary-icon-color);
+    }
+    .insight .icon iron-icon {
+        height: 50px;
+        width: 50px;
+    }
+    .insight .info .title {
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    .insight .info .field {
+        font-size: 24px;
+    }
+    #chartdiv {
+        /*background: #3f3f4f;*/
+        color: #ffffff;       
+        min-width: 100%;
+        height: 700px;
+    }                                   
+  </style>
+  <template>
+    <section>
+        <div class="chart">
+            <div id="chartdiv"></div>
+        </div>
+        <div class="summary">
+            <h2 class="subheader">Statistics</h2>
+            <h1 class="header">Latest Run</h1>
+            <div class="seperator"></div>
+            <ul class="insights">
+                <li class="insight">
+                    <div class="icon">
+                        <iron-icon icon="face"></iron-icon>
+                    </div>
+                    <div class="info">
+                        <div class="title">Distance</div>
+                        <div class="field">
+                            <span>{{display.distance}}</span>
+                            Miles
+                        </div>
+                    </div>
+                </li>
+                <li class="insight">
+                    <div class="icon">
+                        <iron-icon icon="cloud"></iron-icon>
+                    </div>
+                    <div class="info">
+                        <div class="title">Time</div>
+                        <div class="field">
+                            <span>{{display.time}}</span>
+                            Mins
+                        </div>
+                    </div>
+                </li>
+                <li class="insight">
+                    <div class="icon">
+                        <iron-icon icon="code"></iron-icon>
+                    </div>
+                    <div class="info">
+                        <div class="title">Pace</div>
+                        <div class="field">
+                            <span>{{display.pace}}</span>
+                            Mi/HR
+                        </div>
+                    </div>
+                </li>
+                <li class="insight">
+                    <div class="icon">
+                        <iron-icon icon="favorite-border"></iron-icon>
+                    </div>
+                    <div class="info">
+                        <div class="title">Max Heart Rate</div>
+                        <div class="field">
+                            <span>{{display.max_hr}}</span>
+                            BPM
+                        </div>
+                    </div>
+                </li>
+                <li class="insight">
+                    <div class="icon">
+                        <iron-icon icon="favorite-border"></iron-icon>
+                    </div>
+                    <div class="info">
+                        <div class="title">Avg Heart Rate</div>
+                        <div class="field">
+                            <span>{{display.avg_hr}}</span>
+                            BPM
+                        </div>
+                    </div>
+                </li>
+                <li class="insight">
+                    <div class="icon">
+                        <iron-icon icon="star"></iron-icon>
+                    </div>
+                    <div class="info">
+                        <div class="title">Avg Power</div>
+                        <div class="field">
+                            <span>{{display.avg_watts}}</span>
+                            W
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+  </template>
+  <script src="../../scripts/amcharts/amcharts.js"></script>
+  <script src="../../scripts/amcharts/serial.js"></script>
+  <script src="../../scripts/amcharts/themes/black.js"></script>
+  <script>
+    /*global AmCharts*/
+    /*global jwt*/
+    /*global superagent*/
+    /*jshint camelcase: false */
+  	Polymer({
+        is: 'workout-element',
+        ready: function () {
+            AmCharts.handleLoad();
+            this.style.display = 'hidden';
+        },
+        show: function () { 
+            this.style.display = 'block';
+        },
+        change: function (id) {
+            this.show();
+            this.grabData(id);
+        },
+        grabData: function (id) {
+            superagent
+                .get('/b/api/v1/activities/' + id)
+                .send()
+                .set('Accept', 'application/json')
+                .set('Authorization', 'Bearer: ' + jwt.token)
+                .end(function(err, res) {
+                    if (res.ok) {
+                        this.assembleData(res.body);
+                    } else {
+                        console.log('failure');
+                    }
+                }.bind(this));
+        },
+        assembleData: function (data) {
+            this.chartData = [];
+            var i;
+            for (i = 0; i < data.heart_rate_list.length; i=i+20) {
+                var entry = {};
+                entry.date = new Date(data.timestamp_list[i]*1000);
+                if ('heart_rate_list' in data) {
+                    entry.heart_rate = data.heart_rate_list[i];
+                }
+                if ('speed_list' in data) {
+                    entry.speed = data.speed_list[i];
+                }
+                entry.power = data.total_power_list[i];
+                if ('cadence_list' in data) {
+                   entry.cadence = data.cadence_list[i];
+                }
+                this.chartData.push(entry);
+            }
+            var miles = data.distance / 1600;
+            var minutes = data.elapsed_time / 60;
+            this.notifyPath('display.distance', miles);
+            this.notifyPath('display.time', minutes);
+            this.notifyPath('display.pace', miles / (minutes / 60));
+            this.notifyPath('display.max_hr', data.max_heart_rate);
+            this.notifyPath('display.avg_hr', data.average_heart_rate);
+            this.notifyPath('display.avg_watts', data.average_power);
+            this.fillChart();
+        },
+        fillChart: function () {
+            var chart = AmCharts.makeChart(this.$.chartdiv, {
+                'type': 'serial',
+                'theme': 'black',
+                'dataDateFormat': 'YY:MM:DD',
+                'autoMarginOffset': 20,
+                'valueAxes': [{
+                    'id': 'v1',
+                    'axisAlpha': 0,
+                    'position': 'left',
+                    'axisThickness': 2
+                }, {
+                    'id': 'v2',
+                    'axisAlpha': 0,
+                    'position': 'left',
+                    'axisThickness': 2
+                }, {
+                    'id': 'v3',
+                    'axisAlpha': 0,
+                    'position': 'left',
+                    'axisThickness': 2
+                }, {
+                    'id': 'v4',
+                    'axisAlpha': 0,
+                    'position': 'left',
+                    'axisThickness': 2
+                }],
+                'balloon': {
+                    'borderThickness': 1,
+                    'shadowAlpha': 0
+                },
+                'graphs': [{
+                    'id': 'v1',
+                    'bullet': 'round',
+                    'bulletBorderAlpha': 1,
+                    'bulletColor': '#FFFFFF',
+                    'bulletSize': 5,
+                    'hideBulletsCount': 50,
+                    'lineThickness': 2,
+                    'title': 'heart rate',
+                    'useLineColorForBulletBorder': true,
+                    'valueField': 'heart_rate',
+                    'type': 'smoothedLine',
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] BPM</div>'
+                }, {
+                    'id': 'v2',
+                    'bullet': 'round',
+                    'bulletBorderAlpha': 1,
+                    'bulletColor': '#FFFFFF',
+                    'bulletSize': 5,
+                    'hideBulletsCount': 50,
+                    'lineThickness': 2,
+                    'title': 'speed',
+                    'useLineColorForBulletBorder': true,
+                    'valueField': 'speed',
+                    'type': 'smoothedLine',
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] MPH</div>'
+                }, {
+                    'id': 'v3',
+                    'bullet': 'round',
+                    'bulletBorderAlpha': 1,
+                    'bulletColor': '#FFFFFF',
+                    'bulletSize': 5,
+                    'hideBulletsCount': 50,
+                    'lineThickness': 2,
+                    'title': 'cadence',
+                    'useLineColorForBulletBorder': true,
+                    'valueField': 'cadence',
+                    'type': 'smoothedLine',
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] SPM</div>'
+                }, {
+                    'id': 'v4',
+                    'bullet': 'round',
+                    'bulletBorderAlpha': 1,
+                    'bulletColor': '#FFFFFF',
+                    'bulletSize': 5,
+                    'hideBulletsCount': 50,
+                    'lineThickness': 2,
+                    'title': 'power',
+                    'useLineColorForBulletBorder': true,
+                    'valueField': 'power',
+                    'type': 'smoothedLine',
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] Watts</div>'
+                }],
+                'chartScrollbar': {
+                    'graph': 'g1',
+                    'oppositeAxis':false,
+                    'offset':30,
+                    'scrollbarHeight': 80,
+                    'backgroundAlpha': 0,
+                    'selectedBackgroundAlpha': 0.1,
+                    'selectedBackgroundColor': '#888888',
+                    'graphFillAlpha': 0,
+                    'graphLineAlpha': 0.5,
+                    'selectedGraphFillAlpha': 0,
+                    'selectedGraphLineAlpha': 1,
+                    'autoGridCount':true,
+                    'color':'#AAAAAA'
+                },
+                'chartCursor': {
+                    'pan': true,
+                    'valueLineEnabled': true,
+                    'valueLineBalloonEnabled': true,
+                    'cursorAlpha':0,
+                    'valueLineAlpha':0.2
+                },
+                'categoryField': 'date',
+                'categoryAxis': {
+                    'parseDates': false,
+                    'dashLength': 5,
+                    'minorGridEnabled': true,
+                    'dateFormats': [{
+                        'period': 'mm',
+                        'format': 'mm:ss'
+                    }],
+                    /*jshint unused: false */
+                    categoryFunction: function (a, d, b) {
+                        return a.getMinutes() + ':' + a.getSeconds();
+                    }
+                },
+                'export': {
+                    'enabled': true
+                },
+                'dataProvider': this.chartData
+            });
+            function zoomChart(){
+                chart.zoomToIndexes(chart.dataProvider.length - 20, chart.dataProvider.length - 1);
+            }
+            zoomChart();
+        }
+    });
+  </script>
+</dom-module>

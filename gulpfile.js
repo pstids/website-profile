@@ -67,6 +67,7 @@ gulp.task('jshint', function () {
   return gulp.src([
       'app/scripts/**/*.js',
       '!app/scripts/dropzone.js',
+      '!app/scripts/amcharts/**/*',
       'app/elements/**/*.js',
       'app/elements/**/*.html'
     ])
@@ -111,8 +112,11 @@ gulp.task('copy', function () {
   var swToolbox = gulp.src(['bower_components/sw-toolbox/*.js'])
     .pipe(gulp.dest('dist/sw-toolbox'));
 
-  var swToolbox = gulp.src(['app/scripts/dropzone.js'])
+  var dropzone = gulp.src(['app/scripts/dropzone.js'])
     .pipe(gulp.dest('dist/scripts'));
+
+  var amcharts = gulp.src(['app/scripts/amcharts/**/*'])
+    .pipe(gulp.dest('dist/scripts/amcharts'));
 
   var vulcanized = gulp.src(['app/elements/elements.html'])
     .pipe($.rename('elements.vulcanized.html'))
@@ -241,6 +245,11 @@ gulp.task('serve:dist', ['default'], function () {
     server: 'dist',
     middleware: [ historyApiFallback() ]
   });
+  gulp.watch(['app/**/*.html'], ['default', reload]);
+  gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
+  gulp.watch(['app/elements/**/*.css'], ['elements', reload]);
+  gulp.watch(['app/{scripts,elements}/**/*.js'], ['jshint']);
+  gulp.watch(['app/images/**/*'], reload);
 });
 
 // Build Production Files, the Default Task

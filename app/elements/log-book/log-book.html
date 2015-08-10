@@ -1,0 +1,128 @@
+<dom-module id="log-book">
+  <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../log-entry/log-entry.html">
+  <link rel="import" href="../../styles/app-theme.html">
+  <style>
+    section {
+      display: block;
+      background-color: #1B1B1B;
+      padding: 50px;
+    }
+    h1.header {
+        text-transform: uppercase;
+        font-size: 36px;
+        color: var(--primary-header-color);
+        margin: 0;
+    }
+    .text-center {
+        text-align: center;
+    }
+    .subnav {
+        display: flex;
+        flex-flow: row wrap;
+    }
+    .subnav .title {
+        flex: 1;
+    }
+    .subnav .filters {
+        flex: 1;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: flex-end;
+    }
+    button {
+        padding: 15px;
+        border: 1px solid #FFFFFF;
+        border-radius: 3px;
+        margin-left: 15px;
+        cursor: pointer;
+        background-color: var(--primary-background-color);
+        text-transform: uppercase;
+        color: #FFFFFF;
+    }
+    .logs .seperator {
+        text-transform: uppercase;
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid var(--primary-seperator-color);
+        padding-bottom: 10px;
+        color: #FFFFFF;
+    }
+    .logs .seperator .month {
+        flex: 2;
+    }
+    .logs .seperator .year {
+        flex: 4;
+    }
+  </style>
+  <template>
+    <section>
+        <div class="subnav">
+            <div class="title">
+                <h1 class="header">Run History</h1>
+            </div>
+            <div class="filters">
+                <button class="filter">
+                    Filter by Achievment
+                    <iron-icon icon="arrow-drop-down"></iron-icon>
+                </button>
+                <button class="filter">
+                    Filter by Date
+                    <iron-icon icon="arrow-drop-down"></iron-icon>
+                </button>
+            </div>
+        </div>
+        <div class="logs" id="logContainer">
+            <div class="seperator">
+                <div class="month">July</div>
+                <div class="year">2015</div>
+            </div>
+        </div>
+    </section>
+  </template>
+  <script src="../../scripts/jwt.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
+  <script>
+    /*global jwt*/
+    /*global superagent*/
+  	Polymer({
+        is: 'log-book',
+        refresh: function() {
+            while (this.$.logContainer.firstChild) {
+                this.$.logContainer.removeChild(this.$.logContainer.firstChild);
+            }
+            this.grabLogs();
+        },
+        grabLogs: function() {
+            superagent
+                .get('/b/api/v1/users/' + jwt.data.id + '/activities/summary?order=asc&sortby=Distance&limit=5')
+                .send()
+                .set('Accept', 'application/json')
+                .set('Authorization', 'Bearer: ' + jwt.token)
+                .end(function(err, res) {
+                    if (res.ok) {
+                        this.populateLogs(res.body);
+                    } else {
+                        console.log('failure on grabLogs', err, res);
+                    }
+                }.bind(this));
+        },
+        setGraph: function (id) {
+            var workoutElement = document.querySelector('workout-element');
+            workoutElement.change(id);
+        },
+        populateLogs: function (logs) {
+            var log, logEle;
+            for (var i = 0; i < logs.length; i++) {
+                if (i === 0) {
+                    this.setGraph(logs[i].id);
+                }
+                log = logs[i];
+                logEle = document.createElement('log-entry');
+                logEle.setData(log);
+                this.$.logContainer.appendChild(logEle);
+            }
+        }
+    });
+  </script>
+</dom-module>
