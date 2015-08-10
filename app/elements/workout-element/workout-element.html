@@ -167,7 +167,7 @@
                     <div class="info">
                         <div class="title">Avg Power</div>
                         <div class="field">
-                            <span>{{display.avg_watt}}</span>
+                            <span>{{display.avg_watts}}</span>
                             W
                         </div>
                     </div>
@@ -214,14 +214,23 @@
         assembleData: function (data) {
             this.chartData = [];
             var i;
-            for (i = 0; i < data.heart_rate_list.length; i=i+100) {
+            for (i = 0; i < data.heart_rate_list.length; i=i+20) {
                 var entry = {};
                 entry.date = new Date(data.timestamp_list[i]*1000);
                 entry.heart_rate = data.heart_rate_list[i];
                 entry.speed = data.speed_list[i];
+                entry.power = data.total_power_list[i];
+                entry.cadence = data.cadence_list[i];
                 this.chartData.push(entry);
             }
-            console.log(this.chartData);
+            var miles = data.distance / 1600;
+            var minutes = data.elapsed_time / 60;
+            this.notifyPath('display.distance', miles);
+            this.notifyPath('display.time', minutes);
+            this.notifyPath('display.pace', miles / (minutes / 60));
+            this.notifyPath('display.max_hr', data.max_heart_rate);
+            this.notifyPath('display.avg_hr', data.average_heart_rate);
+            this.notifyPath('display.avg_watts', data.average_power);
             this.fillChart();
         },
         fillChart: function () {
@@ -245,6 +254,11 @@
                     'axisAlpha': 0,
                     'position': 'left',
                     'axisThickness': 2
+                }, {
+                    'id': 'v4',
+                    'axisAlpha': 0,
+                    'position': 'left',
+                    'axisThickness': 2
                 }],
                 'balloon': {
                     'borderThickness': 1,
@@ -262,7 +276,7 @@
                     'useLineColorForBulletBorder': true,
                     'valueField': 'heart_rate',
                     'type': 'smoothedLine',
-                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]]</div>'
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] BPM</div>'
                 }, {
                     'id': 'v2',
                     'bullet': 'round',
@@ -275,7 +289,7 @@
                     'useLineColorForBulletBorder': true,
                     'valueField': 'speed',
                     'type': 'smoothedLine',
-                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]]</div>'
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] MPH</div>'
                 }, {
                     'id': 'v3',
                     'bullet': 'round',
@@ -284,11 +298,24 @@
                     'bulletSize': 5,
                     'hideBulletsCount': 50,
                     'lineThickness': 2,
-                    'title': 'speed',
+                    'title': 'cadence',
                     'useLineColorForBulletBorder': true,
-                    'valueField': 'speed',
+                    'valueField': 'cadence',
                     'type': 'smoothedLine',
-                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]]</div>'
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] SPM</div>'
+                }, {
+                    'id': 'v4',
+                    'bullet': 'round',
+                    'bulletBorderAlpha': 1,
+                    'bulletColor': '#FFFFFF',
+                    'bulletSize': 5,
+                    'hideBulletsCount': 50,
+                    'lineThickness': 2,
+                    'title': 'power',
+                    'useLineColorForBulletBorder': true,
+                    'valueField': 'power',
+                    'type': 'smoothedLine',
+                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] Watts</div>'
                 }],
                 'chartScrollbar': {
                     'graph': 'g1',
