@@ -1,4 +1,4 @@
-<dom-module id="workout-container">
+<dom-module id="workout-element">
   <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
   <style>
     section {
@@ -166,7 +166,7 @@
     /*global superagent*/
     /*jshint camelcase: false */
   	Polymer({
-        is: 'workout-container',
+        is: 'workout-element',
         ready: function () {
             AmCharts.handleLoad();
             this.grabData();
