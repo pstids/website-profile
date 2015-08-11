@@ -213,8 +213,9 @@
         },
         assembleData: function (data) {
             this.chartData = [];
+            this.startTime = new Date(data.timestamp_list[0] * 1000);
             var i;
-            for (i = 0; i < data.heart_rate_list.length; i=i+20) {
+            for (i = 0; i < data.heart_rate_list.length; i=i+1) {
                 var entry = {};
                 entry.date = new Date(data.timestamp_list[i]*1000);
                 if ('heart_rate_list' in data) {
