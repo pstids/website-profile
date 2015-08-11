@@ -239,32 +239,53 @@
             this.notifyPath('display.avg_watts', data.average_power);
             this.fillChart();
         },
+        fillZero: function (n) {
+            n = String(n);
+            if (n.length === 1) {
+                return '0' + n;
+            } else {
+                return n;
+            }
+        },
         fillChart: function () {
             var chart = AmCharts.makeChart(this.$.chartdiv, {
                 'type': 'serial',
                 'theme': 'black',
                 'dataDateFormat': 'YY:MM:DD',
                 'autoMarginOffset': 20,
+                'legend': {
+                    'useGraphSettings': true
+                },
                 'valueAxes': [{
                     'id': 'v1',
-                    'axisAlpha': 0,
+                    'axisAlpha': 1,
                     'position': 'left',
-                    'axisThickness': 2
+                    'axisThickness': 2,
+                    'gridAlpha': 0,
+                    'axisColor': '#de4c4f'
                 }, {
                     'id': 'v2',
-                    'axisAlpha': 0,
-                    'position': 'left',
-                    'axisThickness': 2
+                    'axisAlpha': 1,
+                    'position': 'right',
+                    'axisThickness': 2,
+                    'gridAlpha': 0,
+                    'axisColor': '#d8854f'
                 }, {
                     'id': 'v3',
-                    'axisAlpha': 0,
+                    'axisAlpha': 1,
                     'position': 'left',
-                    'axisThickness': 2
+                    'offset': 50,
+                    'axisThickness': 2,
+                    'gridAlpha': 0,
+                    'axisColor': '#eea638'
                 }, {
                     'id': 'v4',
-                    'axisAlpha': 0,
-                    'position': 'left',
-                    'axisThickness': 2
+                    'axisAlpha': 1,
+                    'position': 'right',
+                    'offset': 50,
+                    'axisThickness': 2,
+                    'gridAlpha': 0,
+                    'axisColor': '#a7a737'
                 }],
                 'balloon': {
                     'borderThickness': 1,
@@ -272,6 +293,7 @@
                 },
                 'graphs': [{
                     'id': 'v1',
+                    'valueAxis': 'v1',
                     'bullet': 'round',
                     'bulletBorderAlpha': 1,
                     'bulletColor': '#FFFFFF',
@@ -285,6 +307,7 @@
                     'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] BPM</div>'
                 }, {
                     'id': 'v2',
+                    'valueAxis': 'v2',
                     'bullet': 'round',
                     'bulletBorderAlpha': 1,
                     'bulletColor': '#FFFFFF',
@@ -298,6 +321,7 @@
                     'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] MPH</div>'
                 }, {
                     'id': 'v3',
+                    'valueAxis': 'v3',
                     'bullet': 'round',
                     'bulletBorderAlpha': 1,
                     'bulletColor': '#FFFFFF',
@@ -311,6 +335,7 @@
                     'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] SPM</div>'
                 }, {
                     'id': 'v4',
+                    'valueAxis': 'v4',
                     'bullet': 'round',
                     'bulletBorderAlpha': 1,
                     'bulletColor': '#FFFFFF',
@@ -342,8 +367,8 @@
                     'pan': true,
                     'valueLineEnabled': true,
                     'valueLineBalloonEnabled': true,
-                    'cursorAlpha':0,
-                    'valueLineAlpha':0.2
+                    'cursorAlpha': 0,
+                    'valueLineAlpha': 0.2
                 },
                 'categoryField': 'date',
                 'categoryAxis': {
@@ -356,8 +381,11 @@
                     }],
                     /*jshint unused: false */
                     categoryFunction: function (a, d, b) {
-                        return a.getMinutes() + ':' + a.getSeconds();
-                    }
+                        var timeDiff = a.getTime() - this.startTime.getTime();
+                        var time = new Date(timeDiff);
+                        return this.fillZero(time.getUTCHours()) + ':' + this.fillZero(time.getMinutes()) + '.' + this.fillZero(time.getSeconds());
+                        // return a.getMinutes() + ':' + a.getSeconds();
+                    }.bind(this)
                 },
                 'export': {
                     'enabled': true
@@ -367,7 +395,7 @@
             function zoomChart(){
                 chart.zoomToIndexes(chart.dataProvider.length - 20, chart.dataProvider.length - 1);
             }
-            zoomChart();
+            // zoomChart();
         }
     });
   </script>
