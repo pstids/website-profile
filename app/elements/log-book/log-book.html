@@ -95,7 +95,7 @@
         },
         grabLogs: function() {
             superagent
-                .get('/b/api/v1/users/' + jwt.data.id + '/activities/summary?order=asc&sortby=Distance&limit=5')
+                .get('/b/api/v1/users/' + jwt.data.id + '/activities/summary?order=desc&sortby=Timestamp&limit=20')
                 .send()
                 .set('Accept', 'application/json')
                 .set('Authorization', 'Bearer: ' + jwt.token)
