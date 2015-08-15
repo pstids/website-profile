@@ -1,34 +1,33 @@
 <dom-module id="log-book">
   <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../../bower_components/iron-icons/image-icons.html">
   <link rel="import" href="../log-entry/log-entry.html">
   <link rel="import" href="../../styles/app-theme.html">
+  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
     section {
       display: block;
-      background-color: #1B1B1B;
-      padding: 50px;
+      background-color: #262626;
     }
     h1.header {
-        text-transform: uppercase;
-        font-size: 36px;
-        color: var(--primary-header-color);
-        margin: 0;
+        @apply(--header);
     }
     .text-center {
         text-align: center;
     }
     .subnav {
-        display: flex;
+        @apply(--layout);
         flex-flow: row wrap;
+        padding: 60px 50px 10px 60px;
     }
     .subnav .title {
-        flex: 1;
+        @apply(--layout-flex);
     }
     .subnav .filters {
-        flex: 1;
-        display: flex;
+        @apply(--layout-flex);
+        @apply(--layout);
         flex-flow: row wrap;
-        justify-content: flex-end;
+        @apply(--layout-end-justified);
     }
     button {
         padding: 15px;
@@ -42,17 +41,17 @@
     }
     .logs .seperator {
         text-transform: uppercase;
-        display: flex;
-        flex-direction: row;
-        border-bottom: 1px solid var(--primary-seperator-color);
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        border-bottom: 1px solid #4E4E4E;
         padding-bottom: 10px;
         color: #FFFFFF;
     }
     .logs .seperator .month {
-        flex: 2;
+        @apply(--layout-flex-2);
     }
     .logs .seperator .year {
-        flex: 4;
+        @apply(--layout-flex-4);
     }
   </style>
   <template>

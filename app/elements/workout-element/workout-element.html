@@ -1,13 +1,13 @@
 <dom-module id="workout-element">
   <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="../../styles/app-theme.html">
+  <link rel="import" href="../bubble-stat/bubble-stat.html">
+  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
     section {
-        display: flex;
-        flex-direction: row;
-        background-color: var(--secondary-background-color);
-        height: 700px;
-        align-items: center;
+        @apply(--layout);
+        @apply(--layout-vertical);
+        background-color: var(--primary-background-color);
     }
     h2.subheader {
         text-transform: uppercase;
@@ -16,10 +16,7 @@
         margin: 0;
     }
     h1.header {
-        text-transform: uppercase;
-        font-size: 36px;
-        color: var(--primary-header-color);
-        margin: 0;
+        @apply(--header);
     }
     .seperator {
         display: block;
@@ -27,12 +24,16 @@
         height: 1px;
         border-top: 1px solid #5B5B5B;
     }
+    .toggles {
+        @apply(--layout-flex);
+    }
     .chart {
-        flex: 8;
+        display: block;
+        width: 100%;
+        @apply(--layout-flex);
     }
     .summary {
         background-color: rgba(41, 41, 39, 0.9); 
-        flex: 4;
         padding: 30px;
         border-top-left-radius: 30px;
         border-bottom-left-radius: 30px;
@@ -42,32 +43,32 @@
         list-style: none;
         margin: 0;
         padding: 0;
-        display: flex;
-        flex-direction: column;
+        @apply(--layout);
+        @apply(--layout-vertical);
         color: #FFFFFF;
     }
     .insight {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
+        @apply(--layout-flex);
+        @apply(--layout);
+        @apply(--layout-horizontal);
         margin: 10px 0;
     }
     .insight .info {
-        flex: 9;
-        flex-direction: row;
+        @apply(--layout-flex-9);
+        @apply(--layout-horizontal);
     }
     .insight .cell {
         display: block;
         font-size: 24px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
+        @apply(--layout);
+        @apply(--layout-start-justified);
+        @apply(--layout-vertical);
     }
     .insight .icon {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
+        @apply(--layout-flex);
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        @apply(--layout-self-end);
         padding-right: 30px;
         color: var(--primary-icon-color);
         fill: var(--primary-icon-color);

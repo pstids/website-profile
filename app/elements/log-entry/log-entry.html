@@ -1,6 +1,7 @@
 <dom-module id="log-entry">
   <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="../../styles/app-theme.html">
+    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
     button {
         padding: 15px;
@@ -12,43 +13,59 @@
         text-transform: uppercase;
         color: #FFFFFF;
     }
+    .log .date {
+        @apply(--layout-flex-3);
+    }
+    .log .view-run {
+        @apply(--layout-flex);
+    }
     .log ul {
-        display: flex;
-        flex-direction: row;
+        @apply(--layout);
+        @apply(--layout-horizontal);
         list-style: none;
         margin: 0;
-        padding: 20px 0;
+        padding: 10px 0;
     }
     .log {
-        border-bottom: 1px solid var(--primary-seperator-color);
+        border-bottom: 1px solid #4E4E4E;
     }
     .log li {
-        display: flex;
-        flex-direction: row;
-        flex: 1;
+        @apply(--layout);
+        @apply(--layout-horizontal);
         padding: 10px;
     }
     .log ul:hover {
-        background-image: url('../images/hover.png');
+        background-image: url('../../images/hover.png');
         background-size: cover;
         background-clip: padding-box;
     }
-    .log .info {
-        flex: 1;
-        flex-direction: column;
-    }
     .log .cell {
         display: block;
-        font-size: 24px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
+        font-size: 30px;
+        font-weight: 700;
+        @apply(--layout);
+        @apply(--layout-center-justified);
+        @apply(--layout-center);
+    }
+    .log .achievement {
+        text-transform: uppercase;
+        color: #6EE653;
+        font-size: 14px;
+        @apply(--layout-flex);
+    }
+    .log .value {
+        font-size: 30px;
+        font-weight: 700;
+    }
+    .log .unit {
+        font-size: 22px;
+        font-weight: 700;
     }
     .log .icon {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
+        @apply(--layout-flex);
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        @apply(--layout-self-end);
         padding-right: 30px;
     }
 
@@ -56,34 +73,36 @@
       list-style: none;
       margin: 0;
       padding: 0;
-      display: flex;
-      flex-direction: column;
+      @apply(--layout);
+      @apply(--layout-vertical);
       color: #FFFFFF;
     }
     .insight {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
+      @apply(--layout-flex-2);
+      @apply(--layout);
+      @apply(--layout-horizontal);
       margin: 10px 0;
       color: #FFFFFF;
     }
     .insight .info {
-      flex: 9;
-      flex-direction: row;
+      @apply(--layout-flex);
+      @apply(--layout-flex-9);
+      @apply(--layout-vertical);
     }
     .insight .cell {
       display: block;
       font-size: 24px;
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
+      @apply(--layout);
+      @apply(--layout-center);
+      @apply(--layout-start-justified);
+      @apply(--layout-vertical);
     }
     .insight .icon {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      padding-right: 30px;
+      @apply(--layout-flex-2);
+      @apply(--layout);
+      @apply(--layout-horizontal);
+      @apply(--layout-self-end);
+      padding-right: 20px;
       color: var(--primary-icon-color);
       fill: var(--primary-icon-color);
     }

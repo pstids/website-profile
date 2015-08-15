@@ -1,9 +1,10 @@
 <dom-module id="footer-element">
   <link rel="import" href="../../styles/app-theme.html">
+    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
     footer {
-        display: flex;
-        flex-direction: row;
+        @apply(--layout);
+        @apply(--layout-horizontal);
         padding: 0 47px;
         background-color: var(--primary-background-color);
         border-top: 2px solid var(--accent-background-color);
@@ -20,15 +21,15 @@
         font-size: 14px;
     }
     .logo, .gc, .tc {
-        display: flex;
-        flex: 1;
+        @apply(--layout);
+        @apply(--layout-flex);
         padding: 15px;
     }
     .gc {
-        justify-content: center;
+        @apply(--layout-center-justified);
     }
     .tc {
-        justify-content: flex-end;
+        @apply(--layout-end-justified);
     }
   </style>
   <template>

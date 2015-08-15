@@ -1,8 +1,10 @@
 <dom-module id="header-element">
+  <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="../../styles/app-theme.html">
+  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
     :host {
-      display: block;
+        display: block;
     }
     a {
         text-decoration: none;
@@ -12,10 +14,8 @@
         color: inherit;
     }
     header {
-        display: block;
-        display: flex;
-        flex-flow: row;
-        flex-wrap: nowrap;
+        @apply(--layout);
+        @apply(--layout-horizontal);
 
         text-align: center;
         
@@ -23,56 +23,53 @@
         background-color: var(--primary-background-color);
         text-transform: uppercase;
         
+        height: 100px;
     }
     ul.navigation {
         list-style: none;
         margin: 0;
         padding: 0;
-        display: -webkit-box;
-        display: -moz-box;
-        display: -ms-flexbox;
-        display: -webkit-flex;
-        display: flex;
-        flex-flow: row;
-        flex-wrap: nowrap;
-        align-items: center;
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
     }
     ul.navigation li {
         display: block;
         padding: 1em;
-        flex: 1;
+        @apply(--layout-flex);
         text-align: center;
     }
     ul.navigation li a {
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 500;
     }
     ul.navigation li:hover {
         color: #F5A214;
     }
     .logo {
-        flex: 1;
+        @apply(--layout-flex);
         background-color: var(--accent-background-color);
         font-size: 32px;
         font-weight: 700;
         color: var(--accent-text-color);
         text-transform: uppercase;
-        display: flex;
-        justify-content: center;
+        @apply(--layout);
+        @apply(--layout-center-justified);
+        @apply(--layout-center);
     }
     .logo a {
         color: var(--accent-text-color);
         display: block;
-        padding: 1em;
     }
     .navigation {
-        flex: 4;
+        @apply(--layout-flex-4);
     }
     .profile {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        @apply(--layout-flex);
+        @apply(--layout);
+        @apply(--layout-start-justified);
+        @apply(--layout-center-justified);
+        @apply(--layout-center);
         text-align: center;
     }
     .profile a {
@@ -80,41 +77,43 @@
         padding: 1em;
         height: 1em;
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 500;
+    }
+    .profile a:hover {
+        color: #F5A214;
     }
     .insights {
         list-style: none;
         margin: 0;
         padding: 0;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
+        @apply(--layout);
+        @apply(--layout-horizontal);
         color: #FFFFFF;
-        align-items: center;
+        @apply(--layout-center);
     }
     .insight {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
+        @apply(--layout-flex);
+        @apply(--layout);
+        @apply(--layout-horizontal);
         margin: 0 15px;
         text-align: left;
     }
     .insight .info {
-        flex: 9;
-        flex-direction: row;
+        @apply(--layout-flex-9);
+        @apply(--layout-vertical);
     }
     .insight .cell {
         display: block;
         font-size: 24px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
+        @apply(--layout);
+        @apply(--layout-start-justified);
+        @apply(--layout-vertical);
     }
     .insight .icon {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
+        @apply(--layout-flex);
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        @apply(--layout-self-end);
         padding-right: 15px;
         color: var(--primary-icon-color);
         fill: var(--primary-icon-color);
