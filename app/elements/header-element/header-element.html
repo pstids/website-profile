@@ -49,10 +49,9 @@
     .logo {
         @apply(--layout-flex);
         background-color: var(--accent-background-color);
-        font-size: 32px;
-        font-weight: 700;
+        font-family: "Stryd";
+        font-size: 40px;
         color: var(--accent-text-color);
-        text-transform: uppercase;
         @apply(--layout);
         @apply(--layout-center-justified);
         @apply(--layout-center);
@@ -133,11 +132,59 @@
         font-size: 12px;
         font-weight: 700;
     }
+    .profile {
+        @apply(--layout-flex);
+        @apply(--layout);
+        @apply(--layout-center);
+        @apply(--layout-horizontal);
+    }
+    .profile .text {
+        @apply(--layout-flex);
+        text-align: right;
+        margin-right: 20px;
+    }
+    .profile .text .hello {
+        color: var(--primary-header-color);
+        font-size: 12px;
+        line-height: 16px;
+        @apply(--layout-end-justified);
+    }
+    .profile .text .name {
+        font-size: 18px;
+        line-height: 24px;
+        color: #FFFFFF;
+        @apply(--layout-end-justified);
+    }
+    .profile .text .logout {
+        font-size: 10px;
+        line-height: 14px;
+        color: #FFFFFF;
+        @apply(--layout-end-justified);
+    }
+    .profile img {
+        @apply(-display-flex);
+        border-radius: 50%;
+        width: 75px;
+        height: 75px;
+    }
+    .profile a {
+        display: block;
+        padding: 1em;
+        height: 1em;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .profile a:hover {
+        color: #F5A214;
+    }
   </style>
   <template>
     <header>
         <div class="logo">
-            <a href="">Stryd</a>
+            <a href="/">
+                STRYD
+                <div>Running with Power</div>
+            </a>
         </div>
         <ul class="navigation">
             <li>
@@ -201,7 +248,7 @@
     Polymer({
         is: 'header-element',
         ready: function () {
-            this.notifyPath('username', jwt.data.username);
+            this.notifyPath('user.name', jwt.data.username);
         }
     });
   </script>
