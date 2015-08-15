@@ -75,12 +75,16 @@
 		.insight .info .field {
 			font-size: 24px;
 		}
+		#map {
+			width: 100%;
+			height: 700px;
+		}
 	</style>
 	<template>
+		<div class="chart">
+			<div id="map"></div>
+		</div>
 		<section>
-			<div class="chart">
-				<h1 style="color: white; font-size: 42px; text-align: center;">Future home of Map</h1>
-			</div>
 			<div class="summary">
 				<h2 class="subheader">Statistics</h2>
 				<h1 class="header">Latest Run</h1>
@@ -162,12 +166,20 @@
 			</div>
 		</section>
 	</template>
+	<!-- <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=954969125250-tmk5n8cl6gn3iebomr0trbqt1c61cfd6.apps.googleusercontent.com&callback=initMap"></script> -->
 	<script>
 	    /*global jwt*/
 	    /*global superagent*/
 	    /*jshint camelcase: false */
 		Polymer({
 			is: 'map-summary',
+			ready: function () {
+				// var map = new google.maps.Map(document.getElementById('map'), {
+				// 	center: {lat: -34.397, lng: 150.644},
+				// 	zoom: 8
+				// });
+			},
 			truncate: function (n) {
 				var parts = String(n).split('.');
 				var shortened = '';
