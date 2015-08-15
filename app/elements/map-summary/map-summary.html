@@ -3,11 +3,11 @@
 	<link rel="import" href="../../styles/app-theme.html">
 	<style>
 		section {
-			@apply(--layout);
 			@apply(--layout-horizontal);
 			background-color: var(--secondary-background-color);
 			height: 700px;
 			@apply(--layout-center);
+			@apply(--layout);
 		}
 		h2.subheader {
 			text-transform: uppercase;
@@ -25,47 +25,41 @@
 			border-top: 1px solid #5B5B5B;
 		}
 		.chart {
-			@apply(--layout-flex-9);
+			width: 100%;
+			height: 0px;
 		}
 		.summary {
 			background-color: rgba(41, 41, 39, 0.9); 
 			padding: 30px;
 			border-top-left-radius: 30px;
 			border-bottom-left-radius: 30px;
-			height: 500px;
+			@apply(--layout);
+			@apply(--layout-vertical);
+			@apply(--layout-end-justified);
 			@apply(--layout-flex-3);
 		}
-		.insights {
+		ul.insights {
 			list-style: none;
 			margin: 0;
 			padding: 0;
 			@apply(--layout);
 			@apply(--layout-vertical);
 			color: #FFFFFF;
+			height: 460px;
 		}
-		.insight {
+		li.insight {
 			@apply(--layout-flex);
-			@apply(--layout);
 			@apply(--layout-horizontal);
 			margin: 10px 0;
-			height: 50px;
 		}
 		.insight .info {
 			@apply(--layout-flex-9);
 			@apply(--layout-vertical);
 		}
-		.insight .cell {
-			display: block;
-			font-size: 24px;
-			@apply(--layout);
-			@apply(--layout-start-justified);
-			@apply(--layout-vertical);
-		}
 		.insight .icon {
 			@apply(--layout-flex);
 			@apply(--layout);
-			@apply(--layout-horizontal);
-			@apply(--layout-self-end);
+			@apply(--layout-end-justified);
 			padding-right: 30px;
 			color: var(--primary-icon-color);
 			fill: var(--primary-icon-color);

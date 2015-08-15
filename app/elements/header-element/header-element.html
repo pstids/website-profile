@@ -19,7 +19,7 @@
 
         text-align: center;
         
-        border-bottom: 4px solid var(--accent-background-color);
+        border-bottom: 3px solid var(--accent-background-color);
         background-color: var(--primary-background-color);
         text-transform: uppercase;
         
@@ -60,26 +60,12 @@
         color: var(--accent-text-color);
         display: block;
     }
+    .logo div {
+        font-size: 10px;
+        color: white;
+    }
     .navigation {
         @apply(--layout-flex-4);
-    }
-    .profile {
-        @apply(--layout-flex);
-        @apply(--layout);
-        @apply(--layout-start-justified);
-        @apply(--layout-center-justified);
-        @apply(--layout-center);
-        text-align: center;
-    }
-    .profile a {
-        display: block;
-        padding: 1em;
-        height: 1em;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    .profile a:hover {
-        color: #F5A214;
     }
     .insights {
         list-style: none;
@@ -112,7 +98,7 @@
         @apply(--layout-flex);
         @apply(--layout);
         @apply(--layout-horizontal);
-        @apply(--layout-self-end);
+        @apply(--layout-end-justified);
         padding-right: 15px;
         color: var(--primary-icon-color);
         fill: var(--primary-icon-color);
