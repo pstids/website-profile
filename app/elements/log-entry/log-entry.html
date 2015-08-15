@@ -111,17 +111,15 @@
       width: 50px;
     }
     .insight .info .title {
-      font-size: 12px;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-    }
-    .insight .info .field {
-      font-size: 24px;
     }
   </style>
   <template>
     <div class="log">
         <ul class="insights">
-            <li class="cell">
+            <li class="cell date">
                 <span>{{display.date}}</span>
             </li>
             <li class="insight">
@@ -131,37 +129,38 @@
                 <div class="info">
                     <div class="title">Distance</div>
                     <div class="field">
-                        <span>{{display.distance}}</span>
+                        <span class="value">{{display.distance}}</span>
+                        <span class="unit">{{display.unit}}</span>
                     </div>
                 </div>
             </li>
             <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="cloud"></iron-icon>
+                    <iron-icon icon="alarm"></iron-icon>
                 </div>
                 <div class="info">
                     <div class="title">Time</div>
                     <div class="field">
-                        <span>{{display.time}}</span>
+                        <span class="value">{{display.time}}</span>
                     </div>
                 </div>
             </li>
             <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="favorite"></iron-icon>
+                    <iron-icon icon="heart"></iron-icon>
                 </div>
                 <div class="info">
                     <div class="title">Power</div>
                     <div class="field">
-                        <span>{{display.power}}</span>
-                        W
+                        <span class="value">{{display.power}}</span>
+                        <span class="unit">W</span>
                     </div>
                 </div>
             </li>
-            <li class="cell">
-                Fastest time!
+            <li class="cell achievement">
+                Achievement!
             </li>
-            <li class="cell">
+            <li class="cell view-run">
                 <button on-click="viewWorkout">View Run</button>
             </li>
         </ul>
@@ -201,10 +200,8 @@
         },
         setData: function (data) {
             this.data = data;
-            console.log(data);
             var date = new Date(data.timestamp * 1000);
-            console.log('date', date);
-            var dateString = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
+            var dateString = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
             this.notifyPath('display.date', dateString);
             this.notifyPath('display.power', this.truncate(data.average_power));
 
@@ -214,19 +211,14 @@
             dispTime = this.fillZero(time.getUTCHours()) + ':' + this.fillZero(time.getMinutes()) + '.' + this.fillZero(time.getSeconds());
             this.notifyPath('display.time', dispTime);
 
-            /* Readable Distance */
-            var dispDistance;
-            if (data.distance > 1609.34) {
-                dispDistance = String(this.truncate(data.distance / 1609.34)) + ' Miles';
-            } else {
-                dispDistance = String(data.distance) + ' Meters';
-            }
-            this.notifyPath('display.distance', dispDistance);
+            this.notifyPath('display.distance', data.distance);
+            this.notifyPath('display.unit', 'KM');
         },
         viewWorkout: function () {
             var workout = document.querySelector('workout-element');
             workout.change(this.data.id);
-            console.log('called workout', this.data.id);
+            var bubbles = document.querySelector('.bubbles');
+            window.scrollTo(0, bubbles.offsetTop);
         }
     });
   </script>

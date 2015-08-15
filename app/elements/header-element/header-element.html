@@ -191,13 +191,18 @@
             </li> -->
         </ul>
         <div class="profile">
-            <a href="#hash">Gus</a>
+            <a href="#hash">{{username}}</a>
         </div>
     </header>
   </template>
+  <script src="../../scripts/jwt.js"></script>
   <script>
+    /*global jwt*/
     Polymer({
         is: 'header-element',
+        ready: function () {
+            this.notifyPath('username', jwt.data.username);
+        }
     });
   </script>
 </dom-module>

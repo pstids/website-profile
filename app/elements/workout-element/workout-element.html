@@ -88,98 +88,149 @@
         /*background: #3f3f4f;*/
         color: #ffffff;       
         min-width: 100%;
-        height: 700px;
-    }                                   
+        height: 450px;
+    }
+    button {
+        padding: 12px 17px;
+        border: 2px solid #FFFFFF;
+        border-radius: 6px;
+        margin: 0px 8px;
+        cursor: pointer;
+        background-color: var(--primary-background-color);
+        text-transform: uppercase;
+        color: #FFFFFF;
+        font-size: 16px;
+        font-weight: 500;
+        overflow: auto;
+    }
+    .toggle {
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        flex-wrap: no-wrap;
+        padding: 12px 17px;
+        border: 2px solid #FFFFFF;
+        border-radius: 6px;
+        margin: 0px 8px;
+        cursor: pointer;
+        background-color: var(--primary-background-color);
+        text-transform: uppercase;
+        color: #FFFFFF;
+        font-size: 16px;
+        font-weight: 500;
+        overflow: auto;
+        @apply(--layout-center);
+        z-index: 5;
+
+    }
+    .toggle .circle {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px #FFFFFF solid;
+        margin-left: 15px;
+        @apply(--layout-flex-auto);
+        z-index: 2;
+    }
+    .toggle .type {
+        @apply(--layout-flex-auto);
+        z-index: 2;
+    }
+    .options {
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        padding: 0 50px;
+    }
+    .options h1 {
+        @apply(--layout-flex-1);
+    }
+    .toggles {
+        @apply(--layout);
+        @apply(--layout-center);
+        @apply(--layout-horizontal);
+
+        @apply(--layout-flex-1);
+        @apply(--layout-end-justified);
+
+    }
+    .toggles .hr[data-toggle="on"] {
+        border-color: #683a78;
+    }
+    .toggles .hr[data-toggle="on"] .circle {
+        border-color: #683a78;
+        box-shadow: 0px 0px 5px #683a78;
+        background-color: #683a78;
+    }
+    .toggles .pc[data-toggle="on"] {
+        border-color: #f7a017;
+    }
+    .toggles .pc[data-toggle="on"] .circle {
+        border-color: #f7a017;
+        box-shadow: 0px 0px 5px #f7a017;
+        background-color: #f7a017;
+    }
+    .toggles .cd[data-toggle="on"] {
+        border-color: #5ea7a1;
+    }
+    .toggles .cd[data-toggle="on"] .circle {
+        border-color: #5ea7a1;
+        box-shadow: 0px 0px 5px #5ea7a1;
+        background-color: #5ea7a1;
+    }
+    .toggles .pw[data-toggle="on"] {
+        border-color: #074a8c;
+    }
+    .toggles .pw[data-toggle="on"] .circle {
+        border-color: #074a8c;
+        box-shadow: 0px 0px 5px #074a8c;
+        background-color: #074a8c;
+    }
+    .bubbles {
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        padding: 50px 0;
+    }
+    bubble-stat {
+        @apply(--layout-flex);
+    }
   </style>
   <template>
     <section>
+        <div class="bubbles">
+            <bubble-stat data-type="avg_power"></bubble-stat>
+            <bubble-stat data-type="avg_pace"></bubble-stat>
+            <bubble-stat data-type="avg_hr"></bubble-stat>
+            <bubble-stat data-type="max_hr"></bubble-stat>
+            <bubble-stat data-type="time"></bubble-stat>
+        </div>
+        <div class="options">
+            <h1 class="header">Overview & Statistics</h1>
+            <div class="toggles">
+                <div class="hr toggle" data-toggle="on" on-click="toggle" data-graph="hr">
+                    <div class="type">Heart Rate</div>
+                    <div class="circle"></div>
+                </div>
+                <div class="pw toggle" data-toggle="on" on-click="toggle" data-graph="pw">
+                    <div class="type">Power</div>
+                    <div class="circle"></div>
+                </div>
+                <div class="pc toggle" data-toggle="off" on-click="toggle" data-graph="pc">
+                    <div class="type">Pace</div>
+                    <div class="circle"></div>
+                </div>
+                <div class="cd toggle" data-toggle="off" on-click="toggle" data-graph="cd">
+                    <div class="type">Cadence</div>
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
         <div class="chart">
             <div id="chartdiv"></div>
-        </div>
-        <div class="summary">
-            <h2 class="subheader">Statistics</h2>
-            <h1 class="header">Latest Run</h1>
-            <div class="seperator"></div>
-            <ul class="insights">
-                <li class="insight">
-                    <div class="icon">
-                        <iron-icon icon="face"></iron-icon>
-                    </div>
-                    <div class="info">
-                        <div class="title">Distance</div>
-                        <div class="field">
-                            <span>{{display.distance}}</span>
-                            Miles
-                        </div>
-                    </div>
-                </li>
-                <li class="insight">
-                    <div class="icon">
-                        <iron-icon icon="cloud"></iron-icon>
-                    </div>
-                    <div class="info">
-                        <div class="title">Time</div>
-                        <div class="field">
-                            <span>{{display.time}}</span>
-                            Mins
-                        </div>
-                    </div>
-                </li>
-                <li class="insight">
-                    <div class="icon">
-                        <iron-icon icon="code"></iron-icon>
-                    </div>
-                    <div class="info">
-                        <div class="title">Pace</div>
-                        <div class="field">
-                            <span>{{display.pace}}</span>
-                            Mi/HR
-                        </div>
-                    </div>
-                </li>
-                <li class="insight">
-                    <div class="icon">
-                        <iron-icon icon="favorite-border"></iron-icon>
-                    </div>
-                    <div class="info">
-                        <div class="title">Max Heart Rate</div>
-                        <div class="field">
-                            <span>{{display.max_hr}}</span>
-                            BPM
-                        </div>
-                    </div>
-                </li>
-                <li class="insight">
-                    <div class="icon">
-                        <iron-icon icon="favorite-border"></iron-icon>
-                    </div>
-                    <div class="info">
-                        <div class="title">Avg Heart Rate</div>
-                        <div class="field">
-                            <span>{{display.avg_hr}}</span>
-                            BPM
-                        </div>
-                    </div>
-                </li>
-                <li class="insight">
-                    <div class="icon">
-                        <iron-icon icon="star"></iron-icon>
-                    </div>
-                    <div class="info">
-                        <div class="title">Avg Power</div>
-                        <div class="field">
-                            <span>{{display.avg_watts}}</span>
-                            W
-                        </div>
-                    </div>
-                </li>
-            </ul>
         </div>
     </section>
   </template>
   <script src="../../scripts/amcharts/amcharts.js"></script>
   <script src="../../scripts/amcharts/serial.js"></script>
-  <script src="../../scripts/amcharts/themes/black.js"></script>
+  <script src="../../scripts/amcharts/themes/stryd.js"></script>
   <script>
     /*global AmCharts*/
     /*global jwt*/
@@ -187,6 +238,17 @@
     /*jshint camelcase: false */
   	Polymer({
         is: 'workout-element',
+        truncate: function (n) {
+            var parts = String(n).split('.');
+            var shortened = '';
+            if (parts.length > 1) {
+                shortened =  parts[0] + '.' + parts[1].substring(0, 2);
+            } else {
+                shortened =  parts[0];
+            }
+            
+            return shortened;
+        },
         ready: function () {
             AmCharts.handleLoad();
             this.style.display = 'hidden';
@@ -212,33 +274,47 @@
                     }
                 }.bind(this));
         },
+        minutesPerMile: function (mps) {
+            if (mps === 0) {
+                return 0;
+            }
+            return (1/(mps * (60/1609.34))).toPrecision(4);
+        },
         assembleData: function (data) {
+            this.data = data;
             this.chartData = [];
             this.startTime = new Date(data.timestamp_list[0] * 1000);
-            var i;
-            for (i = 0; i < data.heart_rate_list.length; i=i+1) {
+            var avg_power_total = 0,
+                avg_power_count = 0,
+                i = 0;
+            for (i = 0; i < data.total_power_list.length; i=i+1) {
                 var entry = {};
                 entry.date = new Date(data.timestamp_list[i]*1000);
                 if ('heart_rate_list' in data) {
                     entry.heart_rate = data.heart_rate_list[i];
                 }
                 if ('speed_list' in data) {
-                    entry.speed = data.speed_list[i];
+                    entry.speed = this.minutesPerMile(data.speed_list[i]);
                 }
                 entry.power = data.total_power_list[i];
+                if (entry.power > 10) {
+                    avg_power_count += 1;
+                    avg_power_total += entry.power;
+                }
                 if ('cadence_list' in data) {
                    entry.cadence = data.cadence_list[i];
                 }
                 this.chartData.push(entry);
             }
+            var avg_power = avg_power_total / avg_power_count;
             var miles = data.distance / 1600;
-            var minutes = data.elapsed_time / 60;
-            this.notifyPath('display.distance', miles);
-            this.notifyPath('display.time', minutes);
-            this.notifyPath('display.pace', miles / (minutes / 60));
-            this.notifyPath('display.max_hr', data.max_heart_rate);
-            this.notifyPath('display.avg_hr', data.average_heart_rate);
-            this.notifyPath('display.avg_watts', data.average_power);
+            var minutes = data.moving_time / 60;
+            this.notifyPath('display.distance', this.truncate(miles));
+            this.notifyPath('display.time', this.truncate(minutes));
+            this.notifyPath('display.pace', this.truncate(minutes/miles));
+            this.notifyPath('display.max_hr', this.truncate(data.max_heart_rate));
+            this.notifyPath('display.avg_hr', this.truncate(data.average_heart_rate));
+            this.notifyPath('display.avg_watts', this.truncate(avg_power));
             this.fillChart();
         },
         fillZero: function (n) {
@@ -249,29 +325,84 @@
                 return n;
             }
         },
+        bindToggles: function () {
+            this.graphs = {
+                hr: this.chart.getGraphById('v1'),
+                pc: this.chart.getGraphById('v2'),
+                cd: this.chart.getGraphById('v3'),
+                pw: this.chart.getGraphById('v4')
+            };
+            this.querySelector('[data-graph="hr"]').dataset.toggle = 'on';
+            this.querySelector('[data-graph="pw"]').dataset.toggle = 'on';
+            this.querySelector('[data-graph="pc"]').dataset.toggle = 'off';
+            this.querySelector('[data-graph="cd"]').dataset.toggle = 'off';
+            this.chart.hideGraph(this.graphs.pc);
+            this.chart.hideGraph(this.graphs.cd);
+        },
+        toggle: function (e) {
+            var target = e.target;
+            while (!('graph' in target.dataset)) {
+                target = target.parentElement;
+            }
+            var graph = target.dataset.graph;
+            if (target.dataset.toggle === 'on') {
+                target.dataset.toggle = 'off';
+                this.chart.hideGraph(this.graphs[graph]);
+            } else {
+                target.dataset.toggle = 'on';
+                this.chart.showGraph(this.graphs[graph]);
+            }
+        },
+        calcAvgs: function (begin, end) {
+            var i;
+            var total = end - begin + 1;
+            var avg_power = 0,
+                avg_power_count = 0,
+                avg_pace = 0,
+                avg_hr = 0,
+                max_hr = 0,
+                time = 0;
+            time = total;
+            for (i = begin; i < end; i=i+1) {
+                if (this.data.total_power_list[i] > 10) {
+                    avg_power_count += 1;
+                    avg_power += this.data.total_power_list[i];
+                }
+                avg_pace += this.data.speed_list[i];
+                avg_hr += this.data.heart_rate_list[i];
+                if (this.data.heart_rate_list[i] > max_hr) {
+                    max_hr = this.data.heart_rate_list[i];
+                }
+            }
+            avg_power = this.truncate(avg_power/avg_power_count);
+            avg_pace = this.truncate(this.minutesPerMile(avg_pace/total));
+            avg_hr = this.truncate(avg_hr/total);
+            this.querySelector('[data-type="avg_power"]').setVal(avg_power);
+            this.querySelector('[data-type="avg_pace"]').setVal(avg_pace);
+            this.querySelector('[data-type="avg_hr"]').setVal(avg_hr);
+            this.querySelector('[data-type="max_hr"]').setVal(max_hr);
+            this.querySelector('[data-type="time"]').setVal(time);
+        },
         fillChart: function () {
-            var chart = AmCharts.makeChart(this.$.chartdiv, {
+            this.chart = AmCharts.makeChart(this.$.chartdiv, {
                 'type': 'serial',
-                'theme': 'black',
+                'theme': 'stryd',
                 'dataDateFormat': 'YY:MM:DD',
                 'autoMarginOffset': 20,
-                'legend': {
-                    'useGraphSettings': true
-                },
                 'valueAxes': [{
                     'id': 'v1',
                     'axisAlpha': 1,
                     'position': 'left',
                     'axisThickness': 2,
                     'gridAlpha': 0,
-                    'axisColor': '#de4c4f'
+                    'axisColor': '#683a78'
                 }, {
                     'id': 'v2',
                     'axisAlpha': 1,
                     'position': 'right',
                     'axisThickness': 2,
                     'gridAlpha': 0,
-                    'axisColor': '#d8854f'
+                    'axisColor': '#f7a017'
                 }, {
                     'id': 'v3',
                     'axisAlpha': 1,
@@ -279,7 +410,7 @@
                     'offset': 50,
                     'axisThickness': 2,
                     'gridAlpha': 0,
-                    'axisColor': '#eea638'
+                    'axisColor': '#5ea7a1'
                 }, {
                     'id': 'v4',
                     'axisAlpha': 1,
@@ -287,7 +418,7 @@
                     'offset': 50,
                     'axisThickness': 2,
                     'gridAlpha': 0,
-                    'axisColor': '#a7a737'
+                    'axisColor': '#074a8c'
                 }],
                 'balloon': {
                     'borderThickness': 1,
@@ -306,7 +437,7 @@
                     'useLineColorForBulletBorder': true,
                     'valueField': 'heart_rate',
                     'type': 'smoothedLine',
-                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] BPM</div>'
+                    'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] BPM</div>'
                 }, {
                     'id': 'v2',
                     'valueAxis': 'v2',
@@ -320,7 +451,7 @@
                     'useLineColorForBulletBorder': true,
                     'valueField': 'speed',
                     'type': 'smoothedLine',
-                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] MPH</div>'
+                    'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Min/Mile</div>'
                 }, {
                     'id': 'v3',
                     'valueAxis': 'v3',
@@ -334,7 +465,7 @@
                     'useLineColorForBulletBorder': true,
                     'valueField': 'cadence',
                     'type': 'smoothedLine',
-                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] SPM</div>'
+                    'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] SPM</div>'
                 }, {
                     'id': 'v4',
                     'valueAxis': 'v4',
@@ -348,25 +479,9 @@
                     'useLineColorForBulletBorder': true,
                     'valueField': 'power',
                     'type': 'smoothedLine',
-                    'balloonText': '<div style="margin:5px; font-size:19px;"><span style="font-size:13px;">[[category]]</span><br>[[value]] Watts</div>'
+                    'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Watts</div>'
                 }],
-                'chartScrollbar': {
-                    'graph': 'g1',
-                    'oppositeAxis':false,
-                    'offset':30,
-                    'scrollbarHeight': 80,
-                    'backgroundAlpha': 0,
-                    'selectedBackgroundAlpha': 0.1,
-                    'selectedBackgroundColor': '#888888',
-                    'graphFillAlpha': 0,
-                    'graphLineAlpha': 0.5,
-                    'selectedGraphFillAlpha': 0,
-                    'selectedGraphLineAlpha': 1,
-                    'autoGridCount':true,
-                    'color':'#AAAAAA'
-                },
                 'chartCursor': {
-                    'pan': true,
                     'valueLineEnabled': true,
                     'valueLineBalloonEnabled': true,
                     'cursorAlpha': 0,
@@ -386,7 +501,6 @@
                         var timeDiff = a.getTime() - this.startTime.getTime();
                         var time = new Date(timeDiff);
                         return this.fillZero(time.getUTCHours()) + ':' + this.fillZero(time.getMinutes()) + '.' + this.fillZero(time.getSeconds());
-                        // return a.getMinutes() + ':' + a.getSeconds();
                     }.bind(this)
                 },
                 'export': {
@@ -395,8 +509,13 @@
                 'dataProvider': this.chartData
             });
             function zoomChart(){
-                chart.zoomToIndexes(chart.dataProvider.length - 20, chart.dataProvider.length - 1);
+                this.chart.zoomToIndexes(this.chart.dataProvider.length - 20, this.chart.dataProvider.length - 1);
             }
+            this.bindToggles();
+            this.calcAvgs(0, this.chartData.length);
+            this.chart.addListener('zoomed', function (e) {
+                this.calcAvgs(e.startIndex, e.endIndex + 1);
+            }.bind(this));
             // zoomChart();
         }
     });

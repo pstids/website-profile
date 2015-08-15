@@ -79,7 +79,7 @@
         </div>
     </section>
   </template>
-  <script src="../../scripts/jwt.js"></script>
+  
   <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
   <script>
     /*global jwt*/
@@ -94,7 +94,7 @@
         },
         grabLogs: function() {
             superagent
-                .get('/b/api/v1/users/' + jwt.data.id + '/activities/summary?order=desc&sortby=Timestamp&limit=20')
+                .get('/b/api/v1/users/' + jwt.data.id + '/activities/summary?limit=20')
                 .send()
                 .set('Accept', 'application/json')
                 .set('Authorization', 'Bearer: ' + jwt.token)
@@ -108,7 +108,9 @@
         },
         setGraph: function (id) {
             var workoutElement = document.querySelector('workout-element');
+            var mapSummary = document.querySelector('map-summary');
             workoutElement.change(id);
+            mapSummary.change(id);
         },
         populateLogs: function (logs) {
             var log, logEle;
