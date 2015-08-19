@@ -115,16 +115,52 @@
       font-weight: 700;
       text-transform: uppercase;
     }
+    .dropdown {
+        position: relative;
+    }
+    .dropdown:hover {
+        border-bottom: none;
+    }
+    .dropdown:hover ul {
+        display: block;
+        visibility: visible;
+        opacity: 1;
+    }
+    .dropdown ul {
+        display: none;
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        padding: 0;
+        margin: 0 0 0 -2px;
+        top: 40px;
+        left: 0;
+        width: 100%;
+        border: 2px solid #FFFFFF;
+        border-top: none;
+        background-color: var(--primary-background-color);
+        -webkit-transiton: opacity 0.4s;
+        -moz-transition: opacity 0.4s;
+        -ms-transition: opacity 0.4s;
+        -o-transition: opacity 0.4s;
+        transition: opacity 0.4s;
+        z-index: 10;
+    }
+    .dropdown li {
+        display: block;
+        z-index: 11;
+        padding: 10px;
+    }
   </style>
   <template>
-    <div class="log">
+    <div class="log" on-click="viewWorkout">
         <ul class="insights">
             <li class="cell date">
                 <span>{{display.date}}</span>
             </li>
             <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="face"></iron-icon>
+                    <iron-icon icon="alarm"></iron-icon>
                 </div>
                 <div class="info">
                     <div class="title">Distance</div>
