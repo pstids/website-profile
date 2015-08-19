@@ -80,7 +80,10 @@ gulp.task('jshint', function () {
 
 // Optimize Images
 gulp.task('images', function () {
-  return gulp.src('app/images/**/*')
+  return gulp.src([
+      'app/images/**/*',
+      '!app/images/mountain_outline.svg'
+    ])
     .pipe($.cache($.imagemin({
       progressive: true,
       interlaced: true
@@ -115,6 +118,9 @@ gulp.task('copy', function () {
   var dropzone = gulp.src(['app/scripts/dropzone.js'])
     .pipe(gulp.dest('dist/scripts'));
 
+  var images = gulp.src(['app/images/mountain_outline.svg'])
+    .pipe(gulp.dest('dist/images'));
+    
   var amcharts = gulp.src(['app/scripts/amcharts/**/*'])
     .pipe(gulp.dest('dist/scripts/amcharts'));
 
