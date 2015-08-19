@@ -187,23 +187,49 @@
     .bubbles {
         @apply(--layout);
         @apply(--layout-horizontal);
-        padding: 50px 0;
+        padding: 40px;
+    }
+    .bubbles .filler {
+        @apply(--layout-flex);
     }
     bubble-stat {
-        @apply(--layout-flex);
+        @apply(--layout-flex-2);
     }
   </style>
   <template>
     <section>
+        <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
         <div class="bubbles">
-            <bubble-stat data-type="avg_power"></bubble-stat>
-            <bubble-stat data-type="avg_pace"></bubble-stat>
-            <bubble-stat data-type="avg_hr"></bubble-stat>
-            <bubble-stat data-type="max_hr"></bubble-stat>
-            <bubble-stat data-type="time"></bubble-stat>
+            <div class="filler"></div>
+            <bubble-stat
+                type="avg_power"
+                title="Average Power"
+                unit="Watts">
+            </bubble-stat>
+            <bubble-stat
+                type="avg_pace"
+                title="Average Pace"
+                unit="Min/Mile">
+            </bubble-stat>
+            <bubble-stat
+                type="avg_hr"
+                title="Average Heart Rate"
+                unit="BPM">
+            </bubble-stat>
+            <bubble-stat
+                type="max_hr"
+                title="Max Heart Rate"
+                unit="BPM">
+            </bubble-stat>
+            <bubble-stat
+                type="time"
+                title="Run Time"
+                unit="">
+            </bubble-stat>
+            <div class="filler"></div>
         </div>
         <div class="options">
-            <h1 class="header">Overview & Statistics</h1>
+            <h1 class="header">Chart</h1>
             <div class="toggles">
                 <div class="hr toggle" data-toggle="on" on-click="toggle" data-graph="hr">
                     <div class="type">Heart Rate</div>

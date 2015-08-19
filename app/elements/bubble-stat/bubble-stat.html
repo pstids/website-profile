@@ -78,38 +78,16 @@
 		</div>
 	</template>
 	<script>
-	  	Polymer({
-	        is: 'bubble-stat',
-	        ready: function () {
-	        	var title, unit;
-	        	switch (this.dataset.type) {
-	        		case 'avg_power':
-	        			title = 'Average Power';
-	        			unit = 'Watts';
-	        			break;
-	        		case 'avg_pace':
-	        			title = 'Average Pace';
-	        			unit = 'Min/Mile';
-	        			break;
-	        		case 'avg_hr':
-	        			title = 'Average Heart Rate';
-	        			unit = 'BPM';
-	        			break;
-	        		case 'max_hr':
-	        			title = 'Max Heart Rate';
-	        			unit = 'BPM';
-	        			break;
-	        		case 'time':
-	        			title = 'Time';
-	        			unit = '';
-	        			break;
-	        	}
-	        	this.notifyPath('title', title);
-	        	this.notifyPath('unit', unit);
-	        },
-	        setVal: function (val) {
-	        	this.notifyPath('value', val);
-	        }
-	    });
+		Polymer({
+			is: 'bubble-stat',
+			properties: {
+				value: String,
+				title: String,
+				type: String,
+				unit: String
+			},
+			ready: function () {
+			}
+		});
 	</script>
 </dom-module>
