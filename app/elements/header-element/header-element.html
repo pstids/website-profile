@@ -8,7 +8,6 @@
     }
     a {
         text-decoration: none;
-        color: #FFFFFF;
     }
     a:hover {
         color: inherit;
@@ -16,15 +15,14 @@
     header {
         @apply(--layout);
         @apply(--layout-horizontal);
-
-        text-align: center;
         
-        border-bottom: 3px solid var(--accent-background-color);
+        
         background-color: var(--primary-background-color);
         
-        height: 100px;
+        height: 110px;
     }
     ul.navigation {
+        @apply(--layout-flex-4);
         list-style: none;
         margin: 0;
         padding: 0;
@@ -32,91 +30,126 @@
         @apply(--layout-horizontal);
         @apply(--layout-center);
         text-transform: uppercase;
+        /*font-family: "Stryd";*/
     }
     ul.navigation li {
-        display: block;
-        padding: 1em;
         @apply(--layout-flex);
         text-align: center;
+        border-bottom: 2px solid var(--accent-background-color);
+        @apply(--layout);
+        @apply(--layout-self-stretch);
+        @apply(--layout-center-justified);
+        text-align: center;
+        color: #FFFFFF;
+    }
+    ul.navigation li.active {
+        background-size: 100% 65%;
+        background-image: url('../../images/mountain_outline.png');
+        background-position: center bottom;
+        background-repeat: no-repeat;
+        border-bottom: none !important;
+        color: var(--accent-background-color) !important;
     }
     ul.navigation li a {
+        line-height: 110px;
         font-size: 14px;
         font-weight: 500;
+        color: inherit;
     }
     ul.navigation li:hover {
-        color: #F5A214;
+        color: var(--accent-background-color);
     }
     .logo {
-        @apply(--layout-flex);
         background-color: var(--accent-background-color);
-        font-family: "Stryd";
-        font-size: 40px;
         color: var(--accent-text-color);
-        @apply(--layout);
-        @apply(--layout-center-justified);
-        @apply(--layout-center);
-    }
-    .logo a {
-        color: var(--accent-text-color);
-        display: block;
-    }
-    .logo div {
-        font-size: 10px;
-        color: white;
-    }
-    .navigation {
-        @apply(--layout-flex-4);
-    }
-    .insights {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        @apply(--layout);
-        @apply(--layout-horizontal);
-        color: #FFFFFF;
-        @apply(--layout-center);
-        text-transform: uppercase;
-    }
-    .insight {
-        @apply(--layout-flex);
-        @apply(--layout);
-        @apply(--layout-horizontal);
-        margin: 0 15px;
-        text-align: left;
-    }
-    .insight .info {
-        @apply(--layout-flex-9);
-        @apply(--layout-vertical);
-    }
-    .insight .cell {
-        display: block;
-        font-size: 24px;
         @apply(--layout);
         @apply(--layout-start-justified);
-        @apply(--layout-vertical);
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        border-bottom: 4px solid var(--accent-background-color);
+    }
+    .logo a {
+        @apply(--layout-flex-auto);
+        margin-left: 40px;
+    }
+    .logo h1 {
+        color: var(--accent-text-color);
+        font-family: "Stryd";
+        font-weight: 400;
+        display: block;
+        font-size: 40px;
+        margin: 0;
+        padding: 0;
+        letter-spacing: 2px;
+    }
+    .logo p {
+        font-size: 10px;
+        font-weight: 500;
+        color: white;
+        margin: 0;
+        padding: 0;
+    }
+    .logo .slant {
+        @apply(--layout-flex);
+        border-left: 75px solid transparent;
+        border-bottom: 110px solid var(--primary-background-color);
+    }
+    ul.insights {
+      @apply(--layout-flex-3);
+      list-style: none;
+      margin: 0;
+      padding: 0 25px;
+      @apply(--layout);
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      @apply(--layout-justified-center);
+      color: #FFFFFF;
+      border-bottom: 2px solid var(--accent-background-color);
+    }
+    .insight {
+      @apply(--layout-flex-2);
+      @apply(--layout);
+      @apply(--layout-horizontal);
+      margin: 10px 0;
+      color: #FFFFFF;
+    }
+    .insight .info {
+      @apply(--layout-flex);
+      @apply(--layout-flex-9);
+      @apply(--layout-vertical);
+    }
+    .insight .cell {
+      display: block;
+      font-size: 24px;
+      @apply(--layout);
+      @apply(--layout-center);
+      @apply(--layout-start-justified);
+      @apply(--layout-vertical);
     }
     .insight .icon {
-        @apply(--layout-flex);
-        @apply(--layout);
-        @apply(--layout-horizontal);
-        @apply(--layout-end-justified);
-        padding-right: 15px;
-        color: var(--primary-icon-color);
-        fill: var(--primary-icon-color);
+      @apply(--layout-flex-2);
+      @apply(--layout);
+      @apply(--layout-horizontal);
+      @apply(--layout-self-end);
+      padding-right: 10px;
+      color: var(--primary-icon-color);
+      fill: var(--primary-icon-color);
     }
     .insight .icon iron-icon {
-        height: 50px;
-        width: 50px;
+      height: 50px;
+      width: 50px;
     }
     .insight .info .title {
-        font-size: 8px;
-        text-transform: uppercase;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
     }
-    .insight .info .field {
-        font-size: 24px;
+    .insight .value {
+        font-size: 30px;
+        font-weight: 700;
     }
-    .insight .info .field span {
-        font-size: 12px;
+    .insight .unit {
+        font-size: 22px;
         font-weight: 700;
     }
     .profile {
@@ -124,7 +157,8 @@
         @apply(--layout);
         @apply(--layout-center);
         @apply(--layout-horizontal);
-        text-transform: uppercase;
+        border-bottom: 2px solid var(--accent-background-color);
+        padding-right: 30px;
     }
     .profile .text {
         @apply(--layout-flex);
@@ -135,13 +169,17 @@
         color: var(--primary-header-color);
         font-size: 12px;
         line-height: 16px;
+        font-weight: 700;
         @apply(--layout-end-justified);
+        text-transform: uppercase;
     }
     .profile .text .name {
         font-size: 18px;
         line-height: 24px;
         color: #FFFFFF;
+        font-weight: 700;
         @apply(--layout-end-justified);
+        text-transform: uppercase;
     }
     .profile .text .logout {
         font-size: 10px;
@@ -170,9 +208,11 @@
     <header>
         <div class="logo">
             <a href="/">
-                STRYD
-                <div>Running with Power</div>
+                <h1>STRYD</h1>
+                <p>Running With Power</p>
             </a>
+            <div class="slant"></div>
+        </div>
         </div>
         <ul class="navigation">
             <li>
@@ -191,15 +231,12 @@
         <ul class="insights">
             <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="face"></iron-icon>
+                    <iron-icon icon="favorite"></iron-icon>
                 </div>
                 <div class="info">
-                    <div class="title">
-                        Total Distance
-                    </div>
+                    <div class="title">Run Time</div>
                     <div class="field">
-                        7
-                        <span>Miles</span>
+                        <span class="value">{{week.time}}</span>
                     </div>
                 </div>
             </li>
@@ -208,22 +245,27 @@
                     <iron-icon icon="cloud"></iron-icon>
                 </div>
                 <div class="info">
-                    <div class="title">Longest Run</div>
+                    <div class="title">Distance</div>
                     <div class="field">
-                        49
-                        <span>Mins</span>
+                        <span class="value">{{week.distance}}</span>
+                        <span class="unit">M</span>
                     </div>
                 </div>
             </li>
-            <!-- <li class="insight">
+            <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="favorite"></iron-icon>
+                    <iron-icon icon="face"></iron-icon>
                 </div>
                 <div class="info">
-                    <div class="title">Target Power</div>
-                    <div class="field">340 W</div>
+                    <div class="title">
+                        Avg Power
+                    </div>
+                    <div class="field">
+                        <span class="value">{{week.power}}</span>
+                        <span class="unit">W</span>
+                    </div>
                 </div>
-            </li> -->
+            </li>
         </ul>
         <div class="profile">
             <div class="text">
@@ -237,7 +279,9 @@
   </template>
   <script src="../../scripts/jwt.js"></script>
   <script>
+    /*jshint camelcase: false*/
     /*global jwt*/
+    /*global superagent*/
     Polymer({
         is: 'header-element',
         ready: function () {
