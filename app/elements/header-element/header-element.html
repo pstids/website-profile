@@ -273,20 +273,32 @@
                 <div class="name">{{user.name}}</div>
                 <div class="logout">Logout?</div>
             </div>
-            <img src="/profile/images/leopard.png" class="image">
+            <img src="{{user.image}}" class="image">
         </div>
     </header>
   </template>
   <script src="../../scripts/jwt.js"></script>
+  <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
   <script>
     /*jshint camelcase: false*/
     /*global jwt*/
     /*global superagent*/
+    /*global CryptoJS*/
     Polymer({
         is: 'header-element',
         ready: function () {
+            this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
             this.notifyPath('user.name', jwt.data.username);
             this.grabStats();
+            this.setProfileIMG();
+        },
+        setProfileIMG: function () {
+            if (jwt.data.image != '' && true == false) {
+                this.notifyPath('user.image', decodeURIComponent(jwt.data.image.replace("+", " ")));
+            } else {
+                var gravHash = CryptoJS.MD5(jwt.data.email.toLowerCase());
+                this.notifyPath('user.image', 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL);
+            }
         },
         toggleActive: function (active) {
             var anchor = this.querySelector('[data-route="' + active + '"]');
