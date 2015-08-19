@@ -160,10 +160,10 @@
         box-shadow: 0px 0px 5px #683a78;
         background-color: #683a78;
     }
-    .toggles .pc[data-toggle="on"] {
+    .toggles .pw[data-toggle="on"] {
         border-color: #f7a017;
     }
-    .toggles .pc[data-toggle="on"] .circle {
+    .toggles .pw[data-toggle="on"] .circle {
         border-color: #f7a017;
         box-shadow: 0px 0px 5px #f7a017;
         background-color: #f7a017;
@@ -176,10 +176,10 @@
         box-shadow: 0px 0px 5px #5ea7a1;
         background-color: #5ea7a1;
     }
-    .toggles .pw[data-toggle="on"] {
+    .toggles .pc[data-toggle="on"] {
         border-color: #074a8c;
     }
-    .toggles .pw[data-toggle="on"] .circle {
+    .toggles .pc[data-toggle="on"] .circle {
         border-color: #074a8c;
         box-shadow: 0px 0px 5px #074a8c;
         background-color: #074a8c;
@@ -382,15 +382,18 @@
                     'axisAlpha': 1,
                     'position': 'left',
                     'axisThickness': 2,
-                    'gridAlpha': 0,
-                    'axisColor': '#683a78'
+                    'gridAlpha': 0.2,
+                    'axisColor': '#683a78',
+                    'dashLength': 1
                 }, {
                     'id': 'v2',
                     'axisAlpha': 1,
                     'position': 'right',
+                    'offset': 50,
                     'axisThickness': 2,
                     'gridAlpha': 0,
-                    'axisColor': '#f7a017'
+                    'axisColor': '#074a8c',
+                    'dashLength': 1
                 }, {
                     'id': 'v3',
                     'axisAlpha': 1,
@@ -398,15 +401,17 @@
                     'offset': 50,
                     'axisThickness': 2,
                     'gridAlpha': 0,
-                    'axisColor': '#5ea7a1'
+                    'axisColor': '#5ea7a1',
+                    'dashLength': 1
                 }, {
                     'id': 'v4',
                     'axisAlpha': 1,
                     'position': 'right',
-                    'offset': 50,
+                    'offset': 0,
                     'axisThickness': 2,
                     'gridAlpha': 0,
-                    'axisColor': '#074a8c'
+                    'axisColor': '#f7a017',
+                    'dashLength': 1
                 }],
                 'balloon': {
                     'borderThickness': 1,
@@ -435,9 +440,9 @@
                     'bulletSize': 5,
                     'hideBulletsCount': 50,
                     'lineThickness': 2,
-                    'title': 'speed',
+                    'title': 'pace',
                     'useLineColorForBulletBorder': true,
-                    'valueField': 'speed',
+                    'valueField': 'pace',
                     'type': 'smoothedLine',
                     'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Min/Mile</div>'
                 }, {
