@@ -7,7 +7,7 @@
         @apply(--layout-horizontal);
         padding: 0 47px;
         background-color: var(--primary-background-color);
-        border-top: 2px solid var(--accent-background-color);
+        /*border-top: 2px solid var(--accent-background-color);*/
     }
     h1 {
         font-size: 28px;
@@ -31,8 +31,14 @@
     .tc {
         @apply(--layout-end-justified);
     }
+    .seperator {
+        background-image: url('../../images/footer_seperator.png');
+        background-size: cover;
+        height: 150px;
+    }
   </style>
   <template>
+    <div class="seperator"></div>
     <footer>
         <div class="logo">
             <p>All Rights Reserved 2015.</p>
