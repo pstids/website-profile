@@ -69,3 +69,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 })(document);
+
+var truncate = function (n) {
+    var parts = String(n).split('.');
+    var shortened = '';
+    if (parts.length > 1) {
+        shortened =  parts[0] + '.' + parts[1].substring(0, 2);
+    } else {
+        shortened =  parts[0];
+    }
+    
+    return shortened;
+};
+var fillZero = function (n) {
+    n = String(n);
+    if (n.length === 1) {
+        return '0' + n;
+    } else {
+        return n;
+    }
+};
+var hmsTime = function (s) {
+  var time = new Date(s);
+  return fillZero(time.getUTCHours()) + ':' + fillZero(time.getMinutes()) + '.' + fillZero(time.getSeconds());
+};

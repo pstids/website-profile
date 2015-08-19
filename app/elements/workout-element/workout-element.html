@@ -238,17 +238,6 @@
     /*jshint camelcase: false */
   	Polymer({
         is: 'workout-element',
-        truncate: function (n) {
-            var parts = String(n).split('.');
-            var shortened = '';
-            if (parts.length > 1) {
-                shortened =  parts[0] + '.' + parts[1].substring(0, 2);
-            } else {
-                shortened =  parts[0];
-            }
-            
-            return shortened;
-        },
         ready: function () {
             AmCharts.handleLoad();
             this.style.display = 'hidden';
@@ -309,12 +298,12 @@
             var avg_power = avg_power_total / avg_power_count;
             var miles = data.distance / 1600;
             var minutes = data.moving_time / 60;
-            this.notifyPath('display.distance', this.truncate(miles));
-            this.notifyPath('display.time', this.truncate(minutes));
-            this.notifyPath('display.pace', this.truncate(minutes/miles));
-            this.notifyPath('display.max_hr', this.truncate(data.max_heart_rate));
-            this.notifyPath('display.avg_hr', this.truncate(data.average_heart_rate));
-            this.notifyPath('display.avg_watts', this.truncate(avg_power));
+            this.notifyPath('display.distance', truncate(miles));
+            this.notifyPath('display.time', truncate(minutes));
+            this.notifyPath('display.pace', truncate(minutes/miles));
+            this.notifyPath('display.max_hr', truncate(data.max_heart_rate));
+            this.notifyPath('display.avg_hr', truncate(data.average_heart_rate));
+            this.notifyPath('display.avg_watts', truncate(avg_power));
             this.fillChart();
         },
         fillZero: function (n) {
@@ -360,9 +349,8 @@
                 avg_power_count = 0,
                 avg_pace = 0,
                 avg_hr = 0,
-                max_hr = 0,
-                time = 0;
-            time = total;
+                max_hr = 0;
+            var timeStr = hmsTime(total * 1000);
             for (i = begin; i < end; i=i+1) {
                 if (this.data.total_power_list[i] > 10) {
                     avg_power_count += 1;
@@ -374,14 +362,14 @@
                     max_hr = this.data.heart_rate_list[i];
                 }
             }
-            avg_power = this.truncate(avg_power/avg_power_count);
-            avg_pace = this.truncate(this.minutesPerMile(avg_pace/total));
-            avg_hr = this.truncate(avg_hr/total);
-            this.querySelector('[data-type="avg_power"]').setVal(avg_power);
-            this.querySelector('[data-type="avg_pace"]').setVal(avg_pace);
-            this.querySelector('[data-type="avg_hr"]').setVal(avg_hr);
-            this.querySelector('[data-type="max_hr"]').setVal(max_hr);
-            this.querySelector('[data-type="time"]').setVal(time);
+            avg_power = truncate(avg_power/avg_power_count);
+            avg_pace = truncate(this.minutesPerMile(avg_pace/total));
+            avg_hr = truncate(avg_hr/total);
+            this.querySelector('[type="avg_power"]').setAttribute('value', avg_power);
+            this.querySelector('[type="avg_pace"]').setAttribute('value', avg_pace);
+            this.querySelector('[type="avg_hr"]').setAttribute('value', avg_hr);
+            this.querySelector('[type="max_hr"]').setAttribute('value', max_hr);
+            this.querySelector('[type="time"]').setAttribute('value', timeStr);
         },
         fillChart: function () {
             this.chart = AmCharts.makeChart(this.$.chartdiv, {
@@ -481,26 +469,26 @@
                     'type': 'smoothedLine',
                     'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Watts</div>'
                 }],
+                'chartScrollbar': {
+                    'autoGridCount': false,
+                    'graph': 'v1',
+                    'scrollbarHeight': 80,
+                    'oppositeAxis': false
+                },
                 'chartCursor': {
-                    'valueLineEnabled': true,
-                    'valueLineBalloonEnabled': true,
-                    'cursorAlpha': 0,
-                    'valueLineAlpha': 0.2
+
                 },
                 'categoryField': 'date',
                 'categoryAxis': {
                     'parseDates': false,
-                    'dashLength': 5,
+                    'dashLength': 1,
                     'minorGridEnabled': true,
-                    'dateFormats': [{
-                        'period': 'mm',
-                        'format': 'mm:ss'
-                    }],
+                    'axisAlpha': 0.2,
+                    'gridAlpha': 0,
                     /*jshint unused: false */
                     categoryFunction: function (a, d, b) {
                         var timeDiff = a.getTime() - this.startTime.getTime();
-                        var time = new Date(timeDiff);
-                        return this.fillZero(time.getUTCHours()) + ':' + this.fillZero(time.getMinutes()) + '.' + this.fillZero(time.getSeconds());
+                        return hmsTime(timeDiff);
                     }.bind(this)
                 },
                 'export': {

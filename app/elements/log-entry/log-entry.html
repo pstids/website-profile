@@ -179,36 +179,16 @@
             distance: '',
             date: ''
         },
-        truncate: function (n) {
-            var parts = String(n).split('.');
-            var shortened = '';
-            if (parts.length > 1) {
-                shortened =  parts[0] + '.' + parts[1].substring(0, 2);
-            } else {
-                shortened =  parts[0];
-            }
-            
-            return shortened;
-        },
-        fillZero: function (n) {
-            n = String(n);
-            if (n.length === 1) {
-                return '0' + n;
-            } else {
-                return n;
-            }
-        },
         setData: function (data) {
             this.data = data;
+            console.log(this.data);
             var date = new Date(data.timestamp * 1000);
             var dateString = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
             this.notifyPath('display.date', dateString);
-            this.notifyPath('display.power', this.truncate(data.average_power));
+            this.notifyPath('display.power', truncate(data.average_power));
 
             /* Readable Time */
-            var dispTime;
-            var time = new Date(data.moving_time * 1000);
-            dispTime = this.fillZero(time.getUTCHours()) + ':' + this.fillZero(time.getMinutes()) + '.' + this.fillZero(time.getSeconds());
+            var dispTime = hmsTime(data.moving_time * 1000)
             this.notifyPath('display.time', dispTime);
 
             this.notifyPath('display.distance', data.distance);
