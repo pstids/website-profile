@@ -148,13 +148,17 @@
         },
         grabLogs: function() {
             superagent
-                .get('/b/api/v1/users/' + jwt.data.id + '/activities/summary?limit=20')
+                .get('/b/api/v1/activities/summary?limit=20')
                 .send()
                 .set('Accept', 'application/json')
                 .set('Authorization', 'Bearer: ' + jwt.token)
                 .end(function(err, res) {
                     if (res.ok) {
-                        this.populateLogs(res.body);
+                        if (res.body !== null) {
+                            this.populateLogs(res.body);
+                        } else {
+                            console.log('no data received');
+                        }
                     } else {
                         console.log('failure on grabLogs', err, res);
                     }

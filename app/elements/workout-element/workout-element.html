@@ -94,14 +94,14 @@
         padding: 12px 17px;
         border: 2px solid #FFFFFF;
         border-radius: 6px;
-        margin: 0px 8px;
+        margin: 3px 8px;
         cursor: pointer;
         background-color: var(--primary-background-color);
         text-transform: uppercase;
         color: #FFFFFF;
         font-size: 16px;
         font-weight: 500;
-        overflow: auto;
+        overflow: none;
     }
     .toggle {
         @apply(--layout);
@@ -309,7 +309,7 @@
                     entry.heart_rate = data.heart_rate_list[i];
                 }
                 if ('speed_list' in data) {
-                    entry.speed = this.minutesPerMile(data.speed_list[i]);
+                    entry.pace = this.minutesPerMile(data.speed_list[i]);
                 }
                 entry.power = data.total_power_list[i];
                 if (entry.power > 10) {
