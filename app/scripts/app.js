@@ -95,5 +95,10 @@ var hmsTime = function (s) {
 };
 var hrTime = function (s) {
     var time = new Date(s);
-    return time.getUTCHours() + time.getMinutes() / 60;
+    hrsRun = (time.getUTCHours() + time.getMinutes() / 60 + time.getSeconds() / 3600);
+    return hrsRun.toFixed(1);
+};
+var kmDistance = function (m) {
+    var km = m/1000;
+    return km.toFixed(1);
 };
