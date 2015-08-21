@@ -180,6 +180,7 @@
             font-size: 10px;
             line-height: 14px;
             color: #FFFFFF;
+            cursor: pointer;
         }
         .profile img {
             border-radius: 50%;
@@ -256,7 +257,7 @@
                 <div class="text">
                     <div class="hello">Hello</div>
                     <div class="name">{{user.name}}</div>
-                    <div class="logout">Logout?</div>
+                    <div class="logout" on-click="logout">Logout?</div>
                 </div>
                 <img src="{{user.image}}" class="image">
             </div>
@@ -276,6 +277,9 @@
                 this.notifyPath('user.name', jwt.data.username);
                 this.grabStats();
                 this.setProfileIMG();
+            },
+            logout: function () {
+                jwt.logout();
             },
             setProfileIMG: function () {
                 if (jwt.data.image != '') {
