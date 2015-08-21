@@ -2,110 +2,111 @@
 <html lang="">
 
 <head>
-  <script>
-    var token = localStorage.getItem('token');
-    if (!token) {
-      location.pathname = '/signin';
-    }
-  </script>
-  <meta charset="utf-8">
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stryd - Training Center</title>
-  <!-- Place favicon.ico in the `app/` directory -->
-  <link rel="shortcut icon" href="images/favicon.png">
+    <script>
+        var token = localStorage.getItem('token');
+        if (!token) {
+            location.pathname = '/signin';
+        }
+    </script>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stryd - Training Center</title>
+    <!-- Place favicon.ico in the `app/` directory -->
+    <link rel="shortcut icon" href="images/favicon.png">
 
-  <!-- Chrome for Android theme color -->
-  <meta name="theme-color" content="#303F9F">
+    <!-- Chrome for Android theme color -->
+    <meta name="theme-color" content="#303F9F">
 
-  <!-- Web Application Manifest -->
-  <link rel="manifest" href="manifest.json">
+    <!-- Web Application Manifest -->
+    <link rel="manifest" href="manifest.json">
 
-  <!-- Tile color for Win8 -->
-  <meta name="msapplication-TileColor" content="#3372DF">
+    <!-- Tile color for Win8 -->
+    <meta name="msapplication-TileColor" content="#3372DF">
 
-  <!-- Add to homescreen for Chrome on Android -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Stryd">
-  <link rel="icon" sizes="192x192" href="images/favicon.png">
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Stryd">
+    <link rel="icon" sizes="192x192" href="images/favicon.png">
 
-  <!-- Add to homescreen for Safari on iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
-  <link rel="apple-touch-icon" href="images/favicon.png">
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+    <link rel="apple-touch-icon" href="images/favicon.png">
 
-  <!-- Tile icon for Win8 (144x144) -->
-  <meta name="msapplication-TileImage" content="images/favicon.png">
+    <!-- Tile icon for Win8 (144x144) -->
+    <meta name="msapplication-TileImage" content="images/favicon.png">
 
-  <!-- build:css styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
-  <!-- endbuild-->
-  <link rel="import" href="styles/app-theme.html">
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild-->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,300' rel='stylesheet' type='text/css'>
+    <link rel="import" href="styles/app-theme.html">
 
-  <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  <!-- endbuild -->
+    <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <!-- endbuild -->
 
-  <!-- will be replaced with elements/elements.vulcanized.html -->
-  <link rel="import" href="elements/elements.html">
-  <!-- endreplace-->
+    <!-- will be replaced with elements/elements.vulcanized.html -->
+    <link rel="import" href="elements/elements.html">
+    <!-- endreplace-->
 </head>
 
 <body unresolved class="fullbleed layout vertical">
-  <span id="browser-sync-binding"></span>
+<span id="browser-sync-binding"></span>
 
-  <template is="dom-bind" id="app">
+<template is="dom-bind" id="app">
     <header-element></header-element>
     <!-- Main Content -->
     <div class="content">
-      <iron-pages attr-for-selected="data-route" selected="{{route}}">
+        <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-        <section data-route="home">
-          <map-run></map-run>
-          <workout-element></workout-element>
-          <log-book></log-book>
-        </section>
+            <section data-route="home">
+                <map-run></map-run>
+                <workout-element></workout-element>
+                <log-book></log-book>
+            </section>
 
-        <section data-route="users">
-          <paper-material elevation="1">
-            <h2 class="paper-font-display2">Users</h2>
-            <p>This is the users section</p>
-            <a href="/users/Rob">Rob</a>
-          </paper-material>
-        </section>
+            <section data-route="users">
+                <paper-material elevation="1">
+                    <h2 class="paper-font-display2">Users</h2>
+                    <p>This is the users section</p>
+                    <a href="/users/Rob">Rob</a>
+                </paper-material>
+            </section>
 
-        <section data-route="user-info">
-          <paper-material elevation="1">
-            <h2 class="paper-font-display2">
-            User:<span>{{params.name}}</span>
-            </h2>
-            <div>This is <span>{{params.name}}</span>'s section</div>
-          </paper-material>
-        </section>
+            <section data-route="user-info">
+                <paper-material elevation="1">
+                    <h2 class="paper-font-display2">
+                        User:<span>{{params.name}}</span>
+                    </h2>
+                    <div>This is <span>{{params.name}}</span>'s section</div>
+                </paper-material>
+            </section>
 
-        <section data-route="settings">
-          <paper-material elevation="1">
-            <stryd-settings></stryd-settings>
-          </paper-material>
-        </section>
+            <section data-route="settings">
+                <paper-material elevation="1">
+                    <stryd-settings></stryd-settings>
+                </paper-material>
+            </section>
 
-        <section data-route="contact">
-          <paper-material elevation="1">
-            <h2 class="paper-font-display2">Contact</h2>
-            <p>This is the contact section</p>
-          </paper-material>
-        </section>
+            <section data-route="contact">
+                <paper-material elevation="1">
+                    <h2 class="paper-font-display2">Contact</h2>
+                    <p>This is the contact section</p>
+                </paper-material>
+            </section>
 
-      </iron-pages>
-      <footer-element></footer-element>
+        </iron-pages>
+        <footer-element></footer-element>
     </div>
     <google-analytics code="UA-56986987-2"></google-analytics>
-  </template>
-  <script src="scripts/jwt.js"></script>
-  <!-- build:js scripts/app.js -->
-  <script src="scripts/app.js"></script>
-  <!-- endbuild-->
+</template>
+<script src="scripts/jwt.js"></script>
+<!-- build:js scripts/app.js -->
+<script src="scripts/app.js"></script>
+<!-- endbuild-->
 </body>
 
 </html>

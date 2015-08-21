@@ -93,3 +93,7 @@ var hmsTime = function (s) {
   var time = new Date(s);
   return fillZero(time.getUTCHours()) + ':' + fillZero(time.getMinutes()) + '.' + fillZero(time.getSeconds());
 };
+var hrTime = function (s) {
+    var time = new Date(s);
+    return time.getUTCHours() + time.getMinutes() / 60;
+};
