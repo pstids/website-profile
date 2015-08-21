@@ -1,204 +1,321 @@
 <dom-module id="header-element">
-  <link rel="import" href="../../styles/app-theme.html">
-  <style>
-    :host {
-      display: block;
-    }
-    a {
-        text-decoration: none;
-        color: #FFFFFF;
-    }
-    a:hover {
-        color: inherit;
-    }
-    header {
-        display: block;
-        display: flex;
-        flex-flow: row;
-        flex-wrap: nowrap;
+    <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+    <link rel="import" href="../../styles/app-theme.html">
+    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+    <style>
+        :host {
+            display: block;
+            font-size: 10px;
+        }
+        a {
+            text-decoration: none;
+        }
+        a:hover {
+            color: inherit;
+        }
 
-        text-align: center;
-        
-        border-bottom: 4px solid var(--accent-background-color);
-        background-color: var(--primary-background-color);
-        text-transform: uppercase;
-        
-    }
-    ul.navigation {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: -webkit-box;
-        display: -moz-box;
-        display: -ms-flexbox;
-        display: -webkit-flex;
-        display: flex;
-        flex-flow: row;
-        flex-wrap: nowrap;
-        align-items: center;
-    }
-    ul.navigation li {
-        display: block;
-        padding: 1em;
-        flex: 1;
-        text-align: center;
-    }
-    ul.navigation li a {
-        font-size: 14px;
-        font-weight: 700;
-    }
-    ul.navigation li:hover {
-        color: #F5A214;
-    }
-    .logo {
-        flex: 1;
-        background-color: var(--accent-background-color);
-        font-size: 32px;
-        font-weight: 700;
-        color: var(--accent-text-color);
-        text-transform: uppercase;
-        display: flex;
-        justify-content: center;
-    }
-    .logo a {
-        color: var(--accent-text-color);
-        display: block;
-        padding: 1em;
-    }
-    .navigation {
-        flex: 4;
-    }
-    .profile {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-    .profile a {
-        display: block;
-        padding: 1em;
-        height: 1em;
-        font-size: 14px;
-        font-weight: 700;
-    }
-    .insights {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        color: #FFFFFF;
-        align-items: center;
-    }
-    .insight {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        margin: 0 15px;
-        text-align: left;
-    }
-    .insight .info {
-        flex: 9;
-        flex-direction: row;
-    }
-    .insight .cell {
-        display: block;
-        font-size: 24px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-    }
-    .insight .icon {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        padding-right: 15px;
-        color: var(--primary-icon-color);
-        fill: var(--primary-icon-color);
-    }
-    .insight .icon iron-icon {
-        height: 50px;
-        width: 50px;
-    }
-    .insight .info .title {
-        font-size: 8px;
-        text-transform: uppercase;
-    }
-    .insight .info .field {
-        font-size: 24px;
-    }
-    .insight .info .field span {
-        font-size: 12px;
-        font-weight: 700;
-    }
-  </style>
-  <template>
-    <header>
-        <div class="logo">
-            <a href="">Stryd</a>
-        </div>
-        <ul class="navigation">
-            <li>
-                <a data-route="home" href="/profile/">Dashboard</a>
-            </li>
-            <li>
-                <a href="#hash">Logbook</a>
-            </li>
-            <li>
-                <a href="#hash">Statistics</a>
-            </li>
-            <li>
-                <a data-route="settings" href="/profile/settings">Settings</a>
-            </li>
-        </ul>
-        <ul class="insights">
-            <li class="insight">
-                <div class="icon">
-                    <iron-icon icon="face"></iron-icon>
-                </div>
-                <div class="info">
-                    <div class="title">
-                        Total Distance
+        header {
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            background-color: var(--primary-background-color);
+            height: 110px;
+        }
+
+        .logo {
+            background-color: var(--accent-background-color);
+            color: var(--accent-text-color);
+            font-family: "Stryd", sans-serif;
+            @apply(--layout);
+            @apply(--layout-start-justified);
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            border-bottom: 2px solid var(--accent-background-color);
+        }
+        .logo a {
+            @apply(--layout-flex-auto);
+            margin-left: 4em;
+        }
+        .logo h1 {
+            color: var(--accent-text-color);
+            font-weight: 700;
+            display: block;
+            font-size: 40px;
+            margin: 0;
+            padding: 0;
+            letter-spacing: 2px;
+        }
+        .logo p {
+            font-size: 1.2em;
+            font-weight: 400;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .logo .slant {
+            @apply(--layout-flex);
+            border-left: 75px solid transparent;
+            border-bottom: calc(110px - 2px) solid var(--primary-background-color);
+        }
+
+        ul.navigation {
+            @apply(--layout-flex-5);
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            @apply(--layout-around-justified)
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            text-transform: uppercase;
+        }
+        ul.navigation li {
+            @apply(--layout-flex);
+            text-align: center;
+            border-bottom: 2px solid var(--accent-background-color);
+            color: #FFFFFF;
+        }
+        ul.navigation li.active {
+            color: var(--accent-background-color) !important;
+        }
+        ul.navigation li a {
+            line-height: 110px;
+            font-size: 1.6em;
+            font-weight: 500;
+            color: inherit;
+            display: inline-block;
+        }
+        ul.navigation li.active a {
+            background-size: 100% 60%;
+            background-image: url('../../images/mountain_outline.png');
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            background-color: var(--primary-background-color);
+            z-index: 2;
+            position: relative;
+        }
+        ul.navigation li:hover {
+            color: var(--accent-background-color);
+        }
+
+        div.space-taker {
+            @apply(--layout-flex);
+            border-bottom: 2px solid var(--accent-background-color);
+        }
+
+        ul.insights {
+            @apply(--layout-flex-5);
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            @apply(--layout-around-justified);
+            list-style: none;
+            margin: 0;
+            color: #FFFFFF;
+            border-bottom: 2px solid var(--accent-background-color);
+        }
+        .insight {
+            @apply(--layout-flex-2);
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            margin: 10px 0;
+            color: #FFFFFF;
+        }
+        .insight iron-icon {
+            @apply(--layout-flex-3);
+            width: 100%;
+            height: 100%;
+            margin-right: 1.5em;
+            color: var(--primary-icon-color);
+            fill: var(--primary-icon-color);
+        }
+        .insight .info {
+            @apply(--layout-flex-8);
+            @apply(--layout);
+            @apply(--layout-vertical);
+        }
+        .insight .info .title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .insight .value {
+            font-size: 30px;
+            font-weight: 700;
+            padding-right: 0.2em;
+        }
+        .insight .unit {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .profile {
+            @apply(--layout-flex-2);
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            border-bottom: 2px solid var(--accent-background-color);
+            padding-right: 3em;
+        }
+        .profile .text {
+            @apply(--layout-flex);
+            @apply(--layout-end-justified);
+            text-align: right;
+            margin-right: 2em;
+        }
+        .profile .text .hello {
+            color: var(--primary-header-color);
+            font-size: 12px;
+            line-height: 1.6em;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+        .profile .text .name {
+            font-size: 18px;
+            line-height: 2em;
+            color: #FFFFFF;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .profile .text .logout {
+            font-size: 10px;
+            line-height: 14px;
+            color: #FFFFFF;
+            cursor: pointer;
+        }
+        .profile img {
+            border-radius: 50%;
+            width: auto;
+            height: auto;
+        }
+        .profile a {
+            display: block;
+            padding: 1em;
+            height: 1em;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .profile a:hover {
+            color: #F5A214;
+        }
+    </style>
+    <template>
+        <header>
+            <div class="logo">
+                <a href="/">
+                    <h1>STRYD</h1>
+                    <p>Running With Power</p>
+                </a>
+                <div class="slant"></div>
+            </div>
+            <ul class="navigation">
+                <li>
+                    <a data-route="home" href="/profile/">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#hash">Logbook</a>
+                </li>
+                <li>
+                    <a data-route="settings" href="/profile/settings">Settings</a>
+                </li>
+            </ul>
+            <div class="space-taker"></div>
+            <ul class="insights">
+                <li class="insight">
+                    <iron-icon icon="image:timer"></iron-icon>
+                    <div class="info">
+                        <div class="title">Run Time</div>
+                        <div class="field">
+                            <span class="value">{{week.time}}</span>
+                            <span class="unit">HR</span>
+                        </div>
                     </div>
-                    <div class="field">
-                        7
-                        <span>Miles</span>
+                </li>
+                <li class="insight">
+                    <iron-icon icon="communication:swap-calls"></iron-icon>
+                    <div class="info">
+                        <div class="title">Distance</div>
+                        <div class="field">
+                            <span class="value">{{week.distance}}</span>
+                            <span class="unit">KM</span>
+                        </div>
                     </div>
-                </div>
-            </li>
-            <li class="insight">
-                <div class="icon">
-                    <iron-icon icon="cloud"></iron-icon>
-                </div>
-                <div class="info">
-                    <div class="title">Longest Run</div>
-                    <div class="field">
-                        49
-                        <span>Mins</span>
+                </li>
+                <li class="insight">
+                    <iron-icon icon="image:flash-on"></iron-icon>
+                    <div class="info">
+                        <div class="title">
+                            Avg Power
+                        </div>
+                        <div class="field">
+                            <span class="value">{{week.power}}</span>
+                            <span class="unit">W</span>
+                        </div>
                     </div>
+                </li>
+            </ul>
+            <div class="profile">
+                <div class="text">
+                    <div class="hello">Hello</div>
+                    <div class="name">{{user.name}}</div>
+                    <div class="logout" on-click="logout">Logout?</div>
                 </div>
-            </li>
-            <!-- <li class="insight">
-                <div class="icon">
-                    <iron-icon icon="favorite"></iron-icon>
-                </div>
-                <div class="info">
-                    <div class="title">Target Power</div>
-                    <div class="field">340 W</div>
-                </div>
-            </li> -->
-        </ul>
-        <div class="profile">
-            <a href="#hash">Gus</a>
-        </div>
-    </header>
-  </template>
-  <script>
-    Polymer({
-        is: 'header-element',
-    });
-  </script>
+                <img src="{{user.image}}" class="image">
+            </div>
+        </header>
+    </template>
+    <script src="../../scripts/jwt.js"></script>
+    <script src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
+    <script>
+        /*jshint camelcase: false*/
+        /*global jwt*/
+        /*global superagent*/
+        /*global CryptoJS*/
+        Polymer({
+            is: 'header-element',
+            ready: function () {
+                this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
+                this.notifyPath('user.name', jwt.data.username);
+                this.grabStats();
+                this.setProfileIMG();
+            },
+            logout: function () {
+                jwt.logout();
+            },
+            setProfileIMG: function () {
+                if (jwt.data.image != '') {
+                    this.notifyPath('user.image', decodeURIComponent(jwt.data.image.replace("+", " ")));
+                } else {
+                    var gravHash = CryptoJS.MD5(jwt.data.email.toLowerCase());
+                    this.notifyPath('user.image', 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL);
+                }
+            },
+            toggleActive: function (active) {
+                var anchor = this.querySelector('[data-route="' + active + '"]');
+                var current = this.querySelector('.active');
+                if (current) {
+                    current.classList.remove('active');
+                }
+                anchor.parentElement.classList.add('active');
+            },
+            grabStats: function () {
+                superagent
+                        .get('/b/api/v1/activities/weekly-stat')
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', 'Bearer: ' + jwt.token)
+                        .end(function(err, res) {
+                            if (res.ok) {
+                                var time = hrTime(res.body.total_time * 1000);
+                                this.notifyPath('week.time', time);
+                                var avg_pwr = truncate(res.body.average_power);
+                                this.notifyPath('week.power', avg_pwr);
+                                var total_distance = kmDistance(res.body.total_distance);
+                                this.notifyPath('week.distance', total_distance);
+                            } else {
+                                console.log('failed to get weekly stat');
+                            }
+                        }.bind(this));
+            }
+        });
+    </script>
 </dom-module>

@@ -1,12 +1,13 @@
 <dom-module id="footer-element">
   <link rel="import" href="../../styles/app-theme.html">
+    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
     footer {
-        display: flex;
-        flex-direction: row;
+        @apply(--layout);
+        @apply(--layout-horizontal);
         padding: 0 47px;
         background-color: var(--primary-background-color);
-        border-top: 2px solid var(--accent-background-color);
+        /*border-top: 2px solid var(--accent-background-color);*/
     }
     h1 {
         font-size: 28px;
@@ -20,25 +21,30 @@
         font-size: 14px;
     }
     .logo, .gc, .tc {
-        display: flex;
-        flex: 1;
+        @apply(--layout);
+        @apply(--layout-flex);
         padding: 15px;
     }
     .gc {
-        justify-content: center;
+        @apply(--layout-center-justified);
     }
     .tc {
-        justify-content: flex-end;
+        @apply(--layout-end-justified);
+    }
+    .seperator {
+        background-image: url('../../images/footer_seperator.png');
+        background-size: cover;
+        height: 150px;
     }
   </style>
   <template>
+    <div class="seperator"></div>
     <footer>
         <div class="logo">
-            <h1>Stryd</h1>
             <p>All Rights Reserved 2015.</p>
         </div>
         <div class="gc">
-            <p>Handcrafted by Green Chameleon</p>
+            <h1>Stryd</h1>
         </div>
         <div class="tc">
             <p>Terms & Conditions</p>

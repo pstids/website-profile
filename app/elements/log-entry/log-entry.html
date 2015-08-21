@@ -1,157 +1,208 @@
 <dom-module id="log-entry">
   <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="../../styles/app-theme.html">
+  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
-    button {
-        padding: 15px;
-        border: 1px solid #FFFFFF;
-        border-radius: 3px;
-        margin-left: 15px;
+    .button {
+        padding: 12px 17px;
+        border: 2px solid #FFFFFF;
+        border-radius: 6px;
+        margin: 3px 8px;
         cursor: pointer;
         background-color: var(--primary-background-color);
         text-transform: uppercase;
         color: #FFFFFF;
-    }
-    .log ul {
-        display: flex;
-        flex-direction: row;
-        list-style: none;
-        margin: 0;
-        padding: 20px 0;
+        font-size: 16px;
+        font-weight: 500;
+        overflow: none;
     }
     .log {
-        border-bottom: 1px solid var(--primary-seperator-color);
+        border-bottom: 1px solid #4E4E4E;
     }
-    .log li {
-        display: flex;
-        flex-direction: row;
-        flex: 1;
-        padding: 10px;
-    }
-    .log ul:hover {
-        background-image: url('../images/hover.png');
-        background-size: cover;
-        background-clip: padding-box;
-    }
-    .log .info {
-        flex: 1;
-        flex-direction: column;
+    .log .date {
+        @apply(--layout-flex-2);
     }
     .log .cell {
         display: block;
-        font-size: 24px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
+        font-size: 30px;
+        font-weight: 700;
+        @apply(--layout);
+        @apply(--layout-center-justified);
+        @apply(--layout-center);
     }
-    .log .icon {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        padding-right: 30px;
+    .log .achievement {
+        text-transform: uppercase;
+        color: #6EE653;
+        font-size: 14px;
+        @apply(--layout-flex);
     }
-
-    .insights {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      color: #FFFFFF;
+    .log .view-run {
+        @apply(--layout-flex-auto);
+        @apply(--layout-wrap);
+        @apply(--layout-end-justified);
     }
-    .insight {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      margin: 10px 0;
-      color: #FFFFFF;
+    ul.insights {
+        @apply(--layout);
+        @apply(--layout-flex-5);
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+        list-style: none;
+        margin: 0;
+        padding: 10px 0;
+        color: #FFFFFF;
+    }
+    ul.insights:hover {
+        background-image: url('../../images/hover.png');
+        background-size: cover;
+        background-clip: padding-box;
+    }
+    ul.insights li {
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        padding: 10px;
+        @apply(--layout-flex);
+        margin: 10px 0;
+        cursor: pointer;
     }
     .insight .info {
-      flex: 9;
-      flex-direction: row;
+      @apply(--layout-flex);
+      @apply(--layout-flex-9);
+      @apply(--layout-vertical);
+      @apply(--layout-center-justified);
     }
     .insight .cell {
       display: block;
       font-size: 24px;
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
+      @apply(--layout);
+      @apply(--layout-center);
+      @apply(--layout-start-justified);
+      @apply(--layout-vertical);
     }
     .insight .icon {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      padding-right: 30px;
+      @apply(--layout);
+      @apply(--layout-horizontal);
+      @apply(--layout-self-end);
+      @apply(--layout-center-justified);
+      padding-right: 20px;
       color: var(--primary-icon-color);
       fill: var(--primary-icon-color);
+    }
+    .insight .value {
+        font-size: 30px;
+        font-weight: 400;
+    }
+    .insight .unit {
+        font-size: 22px;
+        font-weight: 400;
     }
     .insight .icon iron-icon {
       height: 50px;
       width: 50px;
     }
     .insight .info .title {
-      font-size: 12px;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
     }
-    .insight .info .field {
-      font-size: 24px;
+    .dropdown {
+        position: relative;
+    }
+    .dropdown:hover {
+        border-bottom: none;
+    }
+    .dropdown:hover ul {
+        display: block;
+        visibility: visible;
+        opacity: 1;
+    }
+    .dropdown ul {
+        display: none;
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        padding: 0;
+        margin: 0 0 0 -2px;
+        top: 40px;
+        left: 0;
+        width: 100%;
+        border: 2px solid #FFFFFF;
+        border-top: none;
+        background-color: var(--primary-background-color);
+        -webkit-transiton: opacity 0.4s;
+        -moz-transition: opacity 0.4s;
+        -ms-transition: opacity 0.4s;
+        -o-transition: opacity 0.4s;
+        transition: opacity 0.4s;
+        z-index: 10;
+    }
+    .dropdown li {
+        display: block;
+        z-index: 11;
+        padding: 10px;
     }
   </style>
   <template>
-    <div class="log">
+    <div class="log" on-click="viewWorkout">
         <ul class="insights">
-            <li class="cell">
-                07/20/15
+            <li class="cell date">
+                <span>{{display.date}}</span>
             </li>
             <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="face"></iron-icon>
+                    <iron-icon icon="alarm"></iron-icon>
                 </div>
                 <div class="info">
                     <div class="title">Distance</div>
                     <div class="field">
-                        <span>{{display.distance}}</span>
-                        Miles
+                        <span class="value">{{display.distance}}</span>
+                        <span class="unit">{{display.unit}}</span>
                     </div>
                 </div>
             </li>
             <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="cloud"></iron-icon>
+                    <iron-icon icon="alarm"></iron-icon>
                 </div>
                 <div class="info">
                     <div class="title">Time</div>
                     <div class="field">
-                        <span>{{display.time}}</span>
-                        Mins
+                        <span class="value">{{display.time}}</span>
                     </div>
                 </div>
             </li>
             <li class="insight">
                 <div class="icon">
-                    <iron-icon icon="favorite"></iron-icon>
+                    <iron-icon icon="alarm"></iron-icon>
                 </div>
                 <div class="info">
                     <div class="title">Power</div>
                     <div class="field">
-                        <span>{{display.power}}</span>
-                        W
+                        <span class="value">{{display.power}}</span>
+                        <span class="unit">W</span>
                     </div>
                 </div>
             </li>
-            <li class="cell">
-                Fastest time!
+            <li class="cell achievement">
+                Achievement!
             </li>
-            <li class="cell">
-                <button on-click="viewWorkout">View Run</button>
+            <li class="cell view-run">
+                <button on-click="viewWorkout" class="button">View Run</button>
+                <div class="dropdown button">
+                    Options
+                    <iron-icon icon="arrow-drop-down"></iron-icon>
+                    <ul>
+                        <li on-click="deleteWorkout">Delete Activity</li>
+                        <!-- <li on-click="editWorkout">Edit Activity</li> -->
+                    </ul>
+                </div>
             </li>
         </ul>
     </div>
   </template>
   <script>
-    /*jshint camelcase: false */
+    /*jshint camelcase: false*/
+    /*global jwt*/
+    /*global superagent*/
   	Polymer({
         is: 'log-entry',
         properties: {
@@ -160,22 +211,43 @@
         display: {
             power: '',
             time: '',
-            distance: ''
-        },
-        truncate: function (n) {
-            return String(n).substring(0, 6);
+            distance: '',
+            date: ''
         },
         setData: function (data) {
             this.data = data;
-            console.log(data);
-            this.notifyPath('display.power', this.truncate(data.average_power));
-            this.notifyPath('display.time', this.truncate(data.elapsed_time / 60));
-            this.notifyPath('display.distance', this.truncate(data.distance / 1609));
+            console.log(this.data);
+            var date = new Date(data.timestamp * 1000);
+            var dateString = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+            this.notifyPath('display.date', dateString);
+            this.notifyPath('display.power', truncate(data.average_power));
+
+            /* Readable Time */
+            var dispTime = hmsTime(data.moving_time * 1000)
+            this.notifyPath('display.time', dispTime);
+
+            this.notifyPath('display.distance', data.distance);
+            this.notifyPath('display.unit', 'KM');
         },
         viewWorkout: function () {
             var workout = document.querySelector('workout-element');
             workout.change(this.data.id);
-            console.log('called workout', this.data.id);
+            var bubbles = document.querySelector('.bubbles');
+            window.scrollTo(0, bubbles.offsetTop);
+        },
+        deleteWorkout: function () {
+            superagent
+                .del('/b/api/v1/activities/' + this.data.id)
+                .send()
+                .set('Accept', 'application/json')
+                .set('Authorization', 'Bearer: ' + jwt.token)
+                .end(function(err, res) {
+                    if (res.ok) {
+                        this.parentNode.removeChild(this);
+                    } else {
+                        console.log('failed to delete element');
+                    }
+                }.bind(this));
         }
     });
   </script>

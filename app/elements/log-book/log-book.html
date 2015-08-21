@@ -1,75 +1,128 @@
 <dom-module id="log-book">
   <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../../bower_components/iron-icons/image-icons.html">
   <link rel="import" href="../log-entry/log-entry.html">
   <link rel="import" href="../../styles/app-theme.html">
+  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
   <style>
     section {
-      display: block;
-      background-color: #1B1B1B;
-      padding: 50px;
+        background-color: var(--dark-background-color);
     }
     h1.header {
-        text-transform: uppercase;
-        font-size: 36px;
-        color: var(--primary-header-color);
-        margin: 0;
+        @apply(--header);
     }
     .text-center {
         text-align: center;
     }
     .subnav {
-        display: flex;
+        @apply(--layout);
         flex-flow: row wrap;
+        padding: 60px 50px 10px 60px;
     }
     .subnav .title {
-        flex: 1;
+        @apply(--layout-flex);
     }
     .subnav .filters {
-        flex: 1;
-        display: flex;
+        @apply(--layout-flex);
+        @apply(--layout);
         flex-flow: row wrap;
-        justify-content: flex-end;
+        @apply(--layout-end-justified);
     }
-    button {
-        padding: 15px;
-        border: 1px solid #FFFFFF;
-        border-radius: 3px;
-        margin-left: 15px;
+    .button {
+        padding: 12px 17px;
+        border: 2px solid #FFFFFF;
+        border-radius: 6px;
+        margin: 3px 8px;
         cursor: pointer;
         background-color: var(--primary-background-color);
         text-transform: uppercase;
         color: #FFFFFF;
+        font-size: 16px;
+        font-weight: 500;
+        overflow: none;
     }
     .logs .seperator {
         text-transform: uppercase;
-        display: flex;
-        flex-direction: row;
-        border-bottom: 1px solid var(--primary-seperator-color);
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        border-bottom: 1px solid #4E4E4E;
         padding-bottom: 10px;
         color: #FFFFFF;
     }
     .logs .seperator .month {
-        flex: 2;
+        @apply(--layout-flex-2);
     }
     .logs .seperator .year {
-        flex: 4;
+        @apply(--layout-flex-4);
+    }
+    .seperator {
+        background-color: var(--primary-background-color);
+        background-image: url('../../images/body_seperator.png');
+        background-size: cover;
+        height: 84px;
+    }
+    .dropdown {
+        position: relative;
+    }
+    .dropdown:hover {
+        border-bottom: none;
+    }
+    .dropdown:hover ul {
+        display: block;
+        visibility: visible;
+        opacity: 1;
+    }
+    .dropdown ul {
+        display: none;
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        padding: 0;
+        margin: 0 0 0 -2px;
+        top: 40px;
+        left: 0;
+        width: 100%;
+        border: 2px solid #FFFFFF;
+        border-top: none;
+        background-color: var(--primary-background-color);
+        -webkit-transiton: opacity 0.4s;
+        -moz-transition: opacity 0.4s;
+        -ms-transition: opacity 0.4s;
+        -o-transition: opacity 0.4s;
+        transition: opacity 0.4s;
+        z-index: 10;
+    }
+    .dropdown li {
+        display: block;
+        z-index: 11;
+        padding: 10px;
     }
   </style>
   <template>
+    <div class="seperator"></div>
     <section>
         <div class="subnav">
             <div class="title">
                 <h1 class="header">Run History</h1>
             </div>
             <div class="filters">
-                <button class="filter">
+                <div class="filter dropdown button">
                     Filter by Achievment
                     <iron-icon icon="arrow-drop-down"></iron-icon>
-                </button>
-                <button class="filter">
+                    <ul>
+                        <li>Longest Run</li>
+                        <li>Furthest Run</li>
+                        <li>Highest Power</li>
+                    </ul>
+                </div>
+                <div class="filter dropdown button">
                     Filter by Date
                     <iron-icon icon="arrow-drop-down"></iron-icon>
-                </button>
+                    <ul>
+                        <li>Ascending</li>
+                        <li>Decending</li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="logs" id="logContainer">
@@ -80,7 +133,7 @@
         </div>
     </section>
   </template>
-  <script src="../../scripts/jwt.js"></script>
+  
   <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
   <script>
     /*global jwt*/
@@ -95,13 +148,17 @@
         },
         grabLogs: function() {
             superagent
-                .get('/b/api/v1/users/' + jwt.data.id + '/activities/summary?order=asc&sortby=Distance&limit=5')
+                .get('/b/api/v1/activities/summary?limit=20')
                 .send()
                 .set('Accept', 'application/json')
                 .set('Authorization', 'Bearer: ' + jwt.token)
                 .end(function(err, res) {
                     if (res.ok) {
-                        this.populateLogs(res.body);
+                        if (res.body !== null) {
+                            this.populateLogs(res.body);
+                        } else {
+                            console.log('no data received');
+                        }
                     } else {
                         console.log('failure on grabLogs', err, res);
                     }
@@ -109,7 +166,9 @@
         },
         setGraph: function (id) {
             var workoutElement = document.querySelector('workout-element');
+            // var mapSummary = document.querySelector('map-summary');
             workoutElement.change(id);
+            // mapSummary.change(id);
         },
         populateLogs: function (logs) {
             var log, logEle;
