@@ -278,7 +278,7 @@
     </header>
   </template>
   <script src="../../scripts/jwt.js"></script>
-  <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
+  <script src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
   <script>
     /*jshint camelcase: false*/
     /*global jwt*/
@@ -293,7 +293,7 @@
             this.setProfileIMG();
         },
         setProfileIMG: function () {
-            if (jwt.data.image != '' && true == false) {
+            if (jwt.data.image != '') {
                 this.notifyPath('user.image', decodeURIComponent(jwt.data.image.replace("+", " ")));
             } else {
                 var gravHash = CryptoJS.MD5(jwt.data.email.toLowerCase());

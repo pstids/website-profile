@@ -1,0 +1,196 @@
+<dom-module id="map-run">
+	<style>
+		#map {
+			width: 100%;
+			height: 500px;
+		}
+	</style>
+	<template>
+		<div id="map"></div>
+		<button on-click="toggle">Toggle Map Style</button>
+		<!-- <map-summary></map-summary> -->
+	</template>
+	<script>
+		function Interpolate(start, end, steps, count) {
+			var s = start,
+				e = end,
+				final = s + (((e - s) / steps) * count);
+			return Math.floor(final);
+		}
+
+		function Color(_r, _g, _b) {
+			var r, g, b;
+			var setColors = function(_r, _g, _b) {
+				r = _r;
+				g = _g;
+				b = _b;
+			};
+
+			setColors(_r, _g, _b);
+			this.getColors = function() {
+				var colors = {
+					r: r,
+					g: g,
+					b: b
+				};
+				return colors;
+			};
+		}
+
+		function componentToHex(c) {
+			var hex = c.toString(16);
+			return hex.length == 1 ? "0" + hex : hex;
+		}
+
+		function rgbToHex(r, g, b) {
+			return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+		}
+
+		var map, strydLightStyle, strydDarkStyle, strydMapId;
+		var mapReady = function () {
+			strydDarkStyle = new google.maps.StyledMapType(
+			[
+				{
+					"featureType": "All",
+					"elementType": "All"
+				}, {
+					"featureType": "All",
+					"elementType": "All",
+					"stylers": [
+						{ "lightness": -75 },
+						{ "hue": "#171B1F" },
+						{ "saturation": -96 },
+						{ "weight": 6.2 },
+						{ "visibility": "simplified" },
+						{ "gamma": 0.64 }
+					]
+				},
+				{
+					"elementType": "labels.text",
+					"stylers": [
+						{ "visibility": "off" }
+					]
+				}
+			], {
+				name: 'StrydDark'
+			});
+			strydLightStyle = new google.maps.StyledMapType(
+			[
+				{
+					"stylers":[
+						{"visibility": "simplified"},
+						{"gamma": 0.56},
+						{"hue": "#ffaa00"},
+						{"weight": 4.4},
+						{"opacity": 0.5},
+						{"lightness": 20}
+					] 
+				},
+				{
+					"elementType": "labels.text",
+					"stylers": [
+						{ "visibility": "off" }
+					]
+				}
+			], {
+				name: 'StrydLight'
+			});
+			strydDarkId = 'strydDarkStyle';
+			strydLightId = 'strydLightStyle';
+			map = new google.maps.Map(document.querySelector('#map'),
+			{
+				center: {
+					lat: 40.0274,
+					lng: -105.2519
+				},
+				zoom: 14,
+				panControl: false,
+				zoomControl: true,
+				scaleControl: false,
+				scrollwheel: false
+			});
+			map.mapTypes.set(strydDarkId, strydDarkStyle);
+			map.mapTypes.set(strydLightId, strydLightStyle);
+			map.setMapTypeId(strydDarkId);
+		};
+		Polymer({
+			is: 'map-run',
+			ready: function () {
+				this.center = {
+					lat: 0,
+					lng: 0
+				};
+				this.dark = true;
+			},
+			toggle: function () {
+				if (this.dark) {
+					map.setMapTypeId(strydLightId);
+				} else if (!this.dark) {
+					map.setMapTypeId(strydDarkId);
+				}
+				this.dark = !this.dark;
+			},
+			colorSetter: function () {
+
+			},
+			setData: function (data) {
+				var lowColor = '#5FB43D', highColor = '#F33C34';
+				var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
+				var i, item, path, step;
+				step = 1;
+				if (data.loc_list.length > 300) {
+					step = data.loc_list / 5;
+				}
+				for (i = 1; i < data.loc_list.length; i=i+step) {
+					item = data.loc_list[i];
+					var lowerColors = lowColorRGB.getColors(), higherColors = highColorRGB.getColors();
+					var hex = rgbToHex(
+						Interpolate(lowerColors.r, higherColors.r, data.loc_list.length, i),
+						Interpolate(lowerColors.g, higherColors.g, data.loc_list.length, i),
+						Interpolate(lowerColors.b, higherColors.b, data.loc_list.length, i)
+					);
+					
+					this.dataSet = [
+						{
+							lat: data.loc_list[i-1].Lat,
+							lng: data.loc_list[i-1].Lng,
+						},
+						{
+							lat: item.Lat,
+							lng: item.Lng,
+						}
+					];
+					path = new google.maps.Polyline({
+						path: this.dataSet,
+						geodesic: false,
+						strokeColor: hex,
+						strokeOpacity: 1,
+						strokeWeight: 6
+					});
+					path.setMap(map);
+					this.center.lat += item.Lat;
+					this.center.lng += item.Lng;
+				}
+				this.center.lat = data.loc_list[0].Lat;
+				this.center.lng = data.loc_list[0].Lng;
+				map.setCenter(this.center);
+
+				var startMarker = new google.maps.Marker({
+					position: {
+						lat: data.loc_list[0].Lat,
+						lng: data.loc_list[0].Lng
+					},
+					map: map
+				});
+				var stopMarker = new google.maps.Marker({
+					position: {
+						lat: data.loc_list[data.loc_list.length-1].Lat,
+						lng: data.loc_list[data.loc_list.length-1].Lng
+					},
+					map: map
+				});
+			}
+		});
+	</script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady"></script>
+</dom-module>

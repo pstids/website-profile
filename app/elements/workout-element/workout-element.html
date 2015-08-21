@@ -284,6 +284,8 @@
                 .end(function(err, res) {
                     if (res.ok) {
                         this.assembleData(res.body);
+                        var map = document.querySelector('map-run');
+                        map.setData(res.body);
                     } else {
                         console.log('failure');
                     }
