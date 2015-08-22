@@ -193,22 +193,19 @@
         background-color: #a06a81;
     }
     .bubbles {
-        @apply(--layout);
         @apply(--layout-horizontal);
+        @apply(--layout-around-justified);
         padding: 40px;
     }
-    .bubbles .filler {
-        @apply(--layout-flex);
-    }
     bubble-stat {
-        @apply(--layout-flex-2);
+        width: 12vw;
+        height: 12vw;
     }
   </style>
   <template>
     <section>
         <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
         <div class="bubbles">
-            <div class="filler"></div>
             <bubble-stat
                 type="avg_power"
                 title="Average Power"
@@ -234,7 +231,6 @@
                 title="Run Time"
                 unit="HH:MM:SS">
             </bubble-stat>
-            <div class="filler"></div>
         </div>
         <div class="options">
             <h1 class="header">Chart</h1>
