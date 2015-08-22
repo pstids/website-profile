@@ -370,43 +370,13 @@
                 this.chart.showGraph(this.graphs[graph]);
             }
         },
-        calcAvgs: function (begin, end) {
-            var i;
-            var total = end - begin + 1;
-            var avg_power = 0,
-                avg_power_count = 0,
-                avg_pace = 0,
-                avg_hr = 0,
-                max_hr = 0;
-            var timeStr = hmsTime(total * 1000);
-            for (i = begin; i < end; i=i+1) {
-                if (this.data.total_power_list[i] > 10) {
-                    avg_power_count += 1;
-                    avg_power += this.data.total_power_list[i];
-                }
-                avg_pace += this.data.speed_list[i];
-                avg_hr += this.data.heart_rate_list[i];
-                if (this.data.heart_rate_list[i] > max_hr) {
-                    max_hr = this.data.heart_rate_list[i];
-                }
-            }
-            avg_power = truncate(avg_power/avg_power_count);
-            avg_pace = truncate(this.minutesPerMile(avg_pace/total));
-            avg_hr = truncate(avg_hr/total);
-            this.querySelector('[type="avg_power"]').setAttribute('value', avg_power);
-            this.querySelector('[type="avg_pace"]').setAttribute('value', avg_pace);
-            this.querySelector('[type="avg_hr"]').setAttribute('value', avg_hr);
-            this.querySelector('[type="max_hr"]').setAttribute('value', max_hr);
-            this.querySelector('[type="time"]').setAttribute('value', timeStr);
-        },
         fillChart: function () {
             this.chart = AmCharts.makeChart(this.$.chartdiv, {
                 'type': 'serial',
                 'theme': 'stryd',
-                'dataDateFormat': 'YY:MM:DD',
                 'autoMarginOffset': 20,
                 'valueAxes': [{
-                    'id': 'v1',
+                    'id': 'heartRate',
                     'axisAlpha': 1,
                     'position': 'left',
                     'axisThickness': 2,
