@@ -1,155 +1,168 @@
 <dom-module id="log-book">
-  <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-  <link rel="import" href="../../bower_components/iron-icons/image-icons.html">
-  <link rel="import" href="../log-entry/log-entry.html">
-  <link rel="import" href="../../styles/app-theme.html">
-  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-  <style>
-    section {
-        background-color: var(--dark-background-color);
-    }
-    h1.header {
-        @apply(--header);
-    }
-    .text-center {
-        text-align: center;
-    }
-    .subnav {
-        @apply(--layout);
-        flex-flow: row wrap;
-        padding: 60px 50px 10px 60px;
-    }
-    .subnav .title {
-        @apply(--layout-flex);
-    }
-    .subnav .filters {
-        @apply(--layout-flex);
-        @apply(--layout);
-        flex-flow: row wrap;
-        @apply(--layout-end-justified);
-    }
-    .button {
-        padding: 12px 17px;
-        border: 2px solid #FFFFFF;
-        border-radius: 6px;
-        margin: 3px 8px;
-        cursor: pointer;
-        background-color: var(--primary-background-color);
-        text-transform: uppercase;
-        color: #FFFFFF;
-        font-size: 16px;
-        font-weight: 500;
-        overflow: none;
-    }
-    .logs .seperator {
-        text-transform: uppercase;
-        @apply(--layout);
-        @apply(--layout-horizontal);
-        border-bottom: 1px solid #4E4E4E;
-        padding-bottom: 10px;
-        color: #FFFFFF;
-    }
-    .logs .seperator .month {
-        @apply(--layout-flex-2);
-    }
-    .logs .seperator .year {
-        @apply(--layout-flex-4);
-    }
-    .seperator {
-        background-color: var(--primary-background-color);
-        background-image: url('../../images/body_seperator.png');
-        background-size: cover;
-        height: 84px;
-    }
-    .dropdown {
-        position: relative;
-    }
-    .dropdown:hover {
-        border-bottom: none;
-    }
-    .dropdown:hover ul {
-        display: block;
-        visibility: visible;
-        opacity: 1;
-    }
-    .dropdown ul {
-        display: none;
-        visibility: hidden;
-        opacity: 0;
-        position: absolute;
-        padding: 0;
-        margin: 0 0 0 -2px;
-        top: 40px;
-        left: 0;
-        width: 100%;
-        border: 2px solid #FFFFFF;
-        border-top: none;
-        background-color: var(--primary-background-color);
-        -webkit-transiton: opacity 0.4s;
-        -moz-transition: opacity 0.4s;
-        -ms-transition: opacity 0.4s;
-        -o-transition: opacity 0.4s;
-        transition: opacity 0.4s;
-        z-index: 10;
-    }
-    .dropdown li {
-        display: block;
-        z-index: 11;
-        padding: 10px;
-    }
-  </style>
-  <template>
-    <div class="seperator"></div>
-    <section>
-        <div class="subnav">
-            <div class="title">
-                <h1 class="header">Run History</h1>
-            </div>
-            <div class="filters">
-                <div class="filter dropdown button">
-                    Filter by Achievment
-                    <iron-icon icon="arrow-drop-down"></iron-icon>
-                    <ul>
-                        <li>Longest Run</li>
-                        <li>Furthest Run</li>
-                        <li>Highest Power</li>
-                    </ul>
-                </div>
-                <div class="filter dropdown button">
-                    Filter by Date
-                    <iron-icon icon="arrow-drop-down"></iron-icon>
-                    <ul>
-                        <li>Ascending</li>
-                        <li>Decending</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="logs" id="logContainer">
-            <div class="seperator">
-                <div class="month">July</div>
-                <div class="year">2015</div>
-            </div>
-        </div>
-    </section>
-  </template>
-  
-  <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
-  <script>
-  	Polymer({
-        is: 'log-book',
-        populateLogs: function (logs) {
-            while (this.$.logContainer.firstChild) {
-                this.$.logContainer.removeChild(this.$.logContainer.firstChild);
-            }
-            var log, logEle, i;
-            for (i = 0; i < logs.length; i++) {
-                log = logs[i];
-                logEle = document.createElement('log-entry');
-                logEle.setData(log);
-                this.$.logContainer.appendChild(logEle);
-            }
+    <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+    <link rel="import" href="../../bower_components/iron-icons/image-icons.html">
+    <link rel="import" href="../log-entry/log-entry.html">
+    <link rel="import" href="../../styles/app-theme.html">
+    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+    <style>
+        section {
+            background-color: var(--dark-background-color);
+            padding: 4vw;
         }
-    });
-  </script>
+        h1.header {
+            @apply(--header);
+        }
+        .subnav {
+            @apply(--layout-horizontal);
+            @apply(--layout-justified);
+            padding-bottom: 2vw;
+        }
+        .subnav .title {
+        }
+        .subnav .filters {
+            @apply(--layout-horizontal);
+            @apply(--layout-around-justified);
+        }
+        .button {
+            padding: 0.9vw 1.1vw;
+            border: 2px solid #FFFFFF;
+            border-radius: 6px;
+            margin: 0 0.7vw;
+            cursor: pointer;
+            background-color: var(--primary-background-color);
+            color: #FFFFFF;
+            font-size: 1vw;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .logs .seperator {
+            text-transform: uppercase;
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            border-bottom: 1px solid #4E4E4E;
+            padding-bottom: 10px;
+            color: #FFFFFF;
+        }
+        .logs .seperator .month {
+            @apply(--layout-flex-2);
+        }
+        .logs .seperator .year {
+            @apply(--layout-flex-4);
+        }
+        .dropdown {
+            position: relative;
+        }
+        .dropdown:hover {
+            border-bottom: none;
+        }
+        .dropdown:hover ul {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+        }
+        .dropdown ul {
+            display: none;
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            padding: 0;
+            margin: 0 0 0 -2px;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            border: 2px solid #FFFFFF;
+            border-top: none;
+            background-color: var(--primary-background-color);
+            -webkit-transiton: opacity 0.4s;
+            -moz-transition: opacity 0.4s;
+            -ms-transition: opacity 0.4s;
+            -o-transition: opacity 0.4s;
+            transition: opacity 0.4s;
+            z-index: 10;
+        }
+        .dropdown li {
+            display: block;
+            z-index: 11;
+            padding: 10px;
+        }
+    </style>
+    <template>
+        <!--<div class="seperator"></div>-->
+        <section>
+            <div class="subnav">
+                <div class="title">
+                    <h1 class="header">Run History</h1>
+                </div>
+                <div class="filters">
+                    <div class="filter dropdown button">
+                        Sort by
+                        <iron-icon icon="arrow-drop-down"></iron-icon>
+                        <ul>
+                            <li>Duration</li>
+                            <li>Distance</li>
+                            <li>Power</li>
+                        </ul>
+                    </div>
+                    <div class="filter dropdown button">
+                        Ascending
+                        <iron-icon icon="arrow-drop-down"></iron-icon>
+                        <ul>
+                            <li>Decending</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="logs" id="logContainer">
+            </div>
+        </section>
+    </template>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
+    <script>
+        /*global jwt*/
+        /*global superagent*/
+        Polymer({
+            is: 'log-book',
+            refresh: function() {
+                while (this.$.logContainer.firstChild) {
+                    this.$.logContainer.removeChild(this.$.logContainer.firstChild);
+                }
+                this.grabLogs();
+            },
+            grabLogs: function() {
+                superagent
+                        .get('/b/api/v1/activities/summary?limit=20')
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', 'Bearer: ' + jwt.token)
+                        .end(function(err, res) {
+                            if (res.ok) {
+                                if (res.body !== null) {
+                                    this.populateLogs(res.body);
+                                } else {
+                                    console.log('no data received');
+                                }
+                            } else {
+                                console.log('failure on grabLogs', err, res);
+                            }
+                        }.bind(this));
+            },
+            setGraph: function (id) {
+                var workoutElement = document.querySelector('workout-element');
+                workoutElement.change(id);
+            },
+            populateLogs: function (logs) {
+                var log, logEle;
+                for (var i = 0; i < logs.length; i++) {
+                    if (i === 0) {
+                        this.setGraph(logs[i].id);
+                    }
+                    log = logs[i];
+                    logEle = document.createElement('log-entry');
+                    logEle.setData(log);
+                    this.$.logContainer.appendChild(logEle);
+                }
+            }
+        });
+    </script>
 </dom-module>
