@@ -2,12 +2,11 @@
     <style>
         #map {
             width: 100%;
-            height: 500px;
+            height: 75vh;
         }
     </style>
     <template>
         <div id='map'></div>
-        <!-- <button on-click='toggle'>Toggle Map Style</button> -->
         <!-- <map-summary></map-summary> -->
     </template>
     <script>
@@ -23,12 +22,12 @@
                     'featureType': 'All',
                     'elementType': 'All',
                     'stylers': [
-                        { 'lightness': -75 },
-                        { 'hue': '#171B1F' },
-                        { 'saturation': -96 },
-                        { 'weight': 6.2 },
+                        { 'lightness': -50 },
+                        { 'hue': '#1f1f1f' },
+                        { 'saturation': -80 },
+                        { 'weight': 1.3 },
                         { 'visibility': 'simplified' },
-                        { 'gamma': 0.64 }
+                        { 'gamma': 0.63 }
                     ]
                 },
                 {
@@ -38,7 +37,7 @@
                     ]
                 }
             ], {
-                name: 'StrydDark'
+                name: 'Stryd Dark'
             });
             strydLightStyle = new google.maps.StyledMapType(
             [
@@ -59,7 +58,7 @@
                     ]
                 }
             ], {
-                name: 'StrydLight'
+                name: 'Stryd Light'
             });
             strydDarkId = 'strydDarkStyle';
             strydLightId = 'strydLightStyle';
@@ -73,7 +72,10 @@
                 panControl: false,
                 zoomControl: true,
                 scaleControl: false,
-                scrollwheel: false
+                scrollwheel: true,
+                mapTypeControlOptions: {
+                    mapTypeIds: [google.maps.MapTypeId.SATELLITE, strydDarkId]
+                }
             });
             map.mapTypes.set(strydDarkId, strydDarkStyle);
             map.mapTypes.set(strydLightId, strydLightStyle);
