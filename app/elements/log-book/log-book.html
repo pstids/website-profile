@@ -36,12 +36,11 @@
             text-transform: uppercase;
         }
         .logs .seperator {
-            text-transform: uppercase;
-            @apply(--layout);
             @apply(--layout-horizontal);
             border-bottom: 1px solid #4E4E4E;
             padding-bottom: 10px;
             color: #FFFFFF;
+            text-transform: uppercase;
         }
         .logs .seperator .month {
             @apply(--layout-flex-2);
@@ -85,6 +84,13 @@
             z-index: 11;
             padding: 10px;
         }
+        .full-log {
+            margin: 0 auto;
+            margin-top: 4vw;
+            text-align: center;
+            width: 13vw;
+            font-size: 1.2vw;
+        }
     </style>
     <template>
         <!--<div class="seperator"></div>-->
@@ -112,8 +118,8 @@
                     </div>
                 </div>
             </div>
-            <div class="logs" id="logContainer">
-            </div>
+            <div class="logs" id="logContainer"></div>
+            <div class="full-log button">View Full Logbook</div>
         </section>
     </template>
 
