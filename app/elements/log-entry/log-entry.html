@@ -182,27 +182,28 @@
                 /* Readable Time */
                 var dispTime = hmsTime(data.moving_time * 1000);
                 this.notifyPath('display.time', dispTime);
+
                 this.notifyPath('display.distance', kmDistance(data.distance));
+                this.notifyPath('display.unit', 'KM');
             },
             viewWorkout: function () {
-                var workout = document.querySelector('workout-element');
-                workout.change(this.data.id);
+                workoutFetching(this.data);
                 var bubbles = document.querySelector('.bubbles');
                 window.scrollTo(0, bubbles.offsetTop);
             },
             deleteWorkout: function () {
                 superagent
-                        .del('/b/api/v1/activities/' + this.data.id)
-                        .send()
-                        .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function(err, res) {
-                            if (res.ok) {
-                                this.parentNode.removeChild(this);
-                            } else {
-                                console.log('failed to delete element');
-                            }
-                        }.bind(this));
+                    .del('/b/api/v1/activities/' + this.data.id)
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.parentNode.removeChild(this);
+                        } else {
+                            console.log('failed to delete element');
+                        }
+                    }.bind(this));
             }
         });
     </script>
