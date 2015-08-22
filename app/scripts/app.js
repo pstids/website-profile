@@ -162,6 +162,9 @@ var workoutProcessing = function (workout) {
         if ('elevation_list' in workout) {
             entry.elevation = workout.elevation_list[i];
         }
+        if ('distance_list' in workout) {
+            entry.distance = workout.distance_list[i];
+        }
         chartData.push(entry);
         /* Assemble Map Data */
         if (i > 0) {
@@ -243,7 +246,7 @@ var truncate = function (n) {
     } else {
         shortened =  parts[0];
     }
-    
+
     return shortened;
 };
 
@@ -285,4 +288,12 @@ var hrTime = function (s) {
     var time = new Date(s);
     var hrsRun = (time.getUTCHours() + time.getMinutes() / 60 + time.getSeconds() / 3600);
     return hrsRun.toFixed(1);
+};
+var kmDistance = function (m) {
+    var km = m/1000;
+    return km.toFixed(1);
+};
+var toMile = function (m) {
+    var miles = m / 1600;
+    return miles.toFixed(1);
 };
