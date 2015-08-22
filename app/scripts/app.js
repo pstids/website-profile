@@ -279,12 +279,10 @@ var fillZero = function (n) {
 var hmsTime = function (s) {
     var time = new Date(s);
     return fillZero(time.getUTCHours()) + ':' + fillZero(time.getMinutes()) + '.' + fillZero(time.getSeconds());
-};var hrTime = function (s) {
-    var time = new Date(s);
-    hrsRun = (time.getUTCHours() + time.getMinutes() / 60 + time.getSeconds() / 3600);
-    return hrsRun.toFixed(1);
 };
-var kmDistance = function (m) {
-    var km = m/1000;
-    return km.toFixed(1);
+
+var hrTime = function (s) {
+    var time = new Date(s);
+    var hrsRun = (time.getUTCHours() + time.getMinutes() / 60 + time.getSeconds() / 3600);
+    return hrsRun.toFixed(1);
 };

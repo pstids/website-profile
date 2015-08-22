@@ -11,8 +11,6 @@
         <!-- <map-summary></map-summary> -->
     </template>
     <script>
-
-
         var map, strydLightStyle, strydDarkStyle, strydLightId, strydDarkId;
         /* exported mapReady */
         var mapReady = function () {
@@ -104,7 +102,6 @@
                 if (graphSegments.length > 200) {
                     step = parseInt(graphSegments.length / 200);
                 }
-                console.log('gsLength', graphSegments.length);
                 for (i = 1; i < graphSegments.length; i=i+step) {
                     graphSegment = graphSegments[i];
                     path = new google.maps.Polyline({
@@ -116,7 +113,6 @@
                     });
                     path.setMap(map);
                 }
-                console.log(graphSegments);
                 this.center.lat = graphSegments[0].location[0].lat;
                 this.center.lng = graphSegments[0].location[0].lng;
                 map.setCenter(this.center);
