@@ -171,12 +171,17 @@
             },
             setChartData: function (data) {
                 this.show();
+                if ('chart' in this) {
+                    this.bindToggles();
+                }
                 this.data = data;
                 this.chartData = this.data;
                 this.startTime = this.data[0].date;
                 this.fillChart();
             },
             bindToggles: function () {
+                this.enabled = 'heartRate';
+                this.enableds = ['heartRate', 'power'];
                 this.graphs = {
                     heartRate: this.chart.getGraphById('heartRate'),
                     pace: this.chart.getGraphById('pace'),
@@ -199,10 +204,25 @@
                     target = target.parentElement;
                 }
                 var graph = target.dataset.graph;
+                console.log(this.enableds, this.enabled);
                 if (target.dataset.toggle === 'on') {
+                    var idx = this.enableds.indexOf(graph);
+                    if (idx !== -1) {
+                        this.enableds.splice(idx, 1);
+                    }
+                    if (graph === this.enabled) {
+                        var id = this.enableds[0];
+                        this.enabled = id;
+                        this.graphs[id].gridAlpha = 0.2;
+                    }
                     target.dataset.toggle = 'off';
                     this.chart.hideGraph(this.graphs[graph]);
                 } else {
+                    this.enableds.push(graph);
+                    if (this.enabled === null) {
+                        this.enabled = graph;
+                        this.graphs[graph].gridAlpha = 0.2;
+                    }
                     target.dataset.toggle = 'on';
                     this.chart.showGraph(this.graphs[graph]);
                 }
@@ -278,7 +298,7 @@
                         'position': 'right',
                         'offset': 50,
                         'axisThickness': 2,
-                        'gridAlpha': 0,
+                        'gridAlpha': 0.2,
                         'axisColor': '#074a8c',
                         'dashLength': 1
                     }, {
@@ -287,7 +307,7 @@
                         'position': 'left',
                         'offset': 50,
                         'axisThickness': 2,
-                        'gridAlpha': 0,
+                        'gridAlpha': 0.2,
                         'axisColor': '#5ea7a1',
                         'dashLength': 1
                     }, {
@@ -296,7 +316,7 @@
                         'position': 'right',
                         'offset': 0,
                         'axisThickness': 2,
-                        'gridAlpha': 0,
+                        'gridAlpha': 0.2,
                         'axisColor': '#f7a017',
                         'dashLength': 1
                     }, {
@@ -305,7 +325,7 @@
                         'position': 'right',
                         'offset': 100,
                         'axisThickness': 2,
-                        'gridAlpha': 0,
+                        'gridAlpha': 0.2,
                         'axisColor': '#a06a81',
                         'dashLength': 1
                     }],
@@ -402,10 +422,11 @@
                     'categoryField': 'date',
                     'categoryAxis': {
                         'parseDates': false,
-                        'dashLength': 1,
                         'minorGridEnabled': true,
-                        'axisAlpha': 0.2,
+                        'axisAlpha': 0,
                         'gridAlpha': 0,
+                        'gridCount': 0,
+                        'gridThickness': 0,
                         /*jshint unused: false */
                         categoryFunction: function (a, d, b) {
                             var timeDiff = a.getTime() - this.startTime.getTime();

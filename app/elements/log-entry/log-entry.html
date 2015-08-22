@@ -120,7 +120,7 @@
                         <div class="title">Distance</div>
                         <div class="field">
                             <span class="value">{{display.distance}}</span>
-                            <span class="unit">KM</span>
+                            <span class="unit">{{display.unit}}</span>
                         </div>
                     </div>
                 </div>
@@ -173,7 +173,6 @@
             },
             setData: function (data) {
                 this.data = data;
-                console.log(this.data);
                 var date = new Date(data.timestamp * 1000);
                 var dateString = fillZero(date.getMonth() + 1) + '/' + fillZero(date.getDate()) + '/' + date.getFullYear();
                 this.notifyPath('display.date', dateString);
