@@ -1,230 +1,185 @@
 <dom-module id="map-summary">
-	<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-	<link rel="import" href="../../styles/app-theme.html">
-	<style>
-		section {
-			@apply(--layout-horizontal);
-			background-color: var(--secondary-background-color);
-			height: 700px;
-			@apply(--layout-center);
-			@apply(--layout);
-		}
-		h2.subheader {
-			text-transform: uppercase;
-			color: #FFFFFF;
-			font-size: 12px;
-			margin: 0;
-		}
-		h1.header {
-			@apply(--header);
-		}
-		.seperator {
-			display: block;
-			margin: 5px 0;
-			height: 1px;
-			border-top: 1px solid #5B5B5B;
-		}
-		.summary {
-			background-color: rgba(41, 41, 39, 0.9); 
-			padding: 30px;
-			border-top-left-radius: 30px;
-			border-bottom-left-radius: 30px;
-			@apply(--layout);
-			@apply(--layout-vertical);
-			@apply(--layout-end-justified);
-			@apply(--layout-flex-3);
-		}
-		ul.insights {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			@apply(--layout);
-			@apply(--layout-vertical);
-			color: #FFFFFF;
-			height: 460px;
-		}
-		li.insight {
-			@apply(--layout-flex);
-			@apply(--layout-horizontal);
-			margin: 10px 0;
-		}
-		.insight .info {
-			@apply(--layout-flex-9);
-			@apply(--layout-vertical);
-		}
-		.insight .icon {
-			@apply(--layout-flex);
-			@apply(--layout);
-			@apply(--layout-end-justified);
-			padding-right: 30px;
-			color: var(--primary-icon-color);
-			fill: var(--primary-icon-color);
-		}
-		.insight .icon iron-icon {
-			height: 50px;
-			width: 50px;
-		}
-		.insight .info .title {
-			font-size: 12px;
-			text-transform: uppercase;
-		}
-		.insight .info .field {
-			font-size: 24px;
-		}
-	</style>
-	<template>
-		<section>
-			<div class="summary">
-				<h2 class="subheader">Statistics</h2>
-				<h1 class="header">Latest Run</h1>
-				<div class="seperator"></div>
-				<ul class="insights">
-					<li class="insight">
-						<div class="icon">
-							<iron-icon icon="face"></iron-icon>
-						</div>
-						<div class="info">
-							<div class="title">Distance</div>
-							<div class="field">
-								<span>{{display.distance}}</span>
-								Miles
-							</div>
-						</div>
-					</li>
-					<li class="insight">
-						<div class="icon">
-							<iron-icon icon="cloud"></iron-icon>
-						</div>
-						<div class="info">
-							<div class="title">Time</div>
-							<div class="field">
-								<span>{{display.time}}</span>
-								Mins
-							</div>
-						</div>
-					</li>
-					<li class="insight">
-						<div class="icon">
-							<iron-icon icon="code"></iron-icon>
-						</div>
-						<div class="info">
-							<div class="title">Pace</div>
-							<div class="field">
-								<span>{{display.pace}}</span>
-								Min/Mile
-							</div>
-						</div>
-					</li>
-					<li class="insight">
-						<div class="icon">
-							<iron-icon icon="favorite-border"></iron-icon>
-						</div>
-						<div class="info">
-							<div class="title">Max Heart Rate</div>
-							<div class="field">
-								<span>{{display.max_hr}}</span>
-								BPM
-							</div>
-						</div>
-					</li>
-					<li class="insight">
-						<div class="icon">
-							<iron-icon icon="favorite-border"></iron-icon>
-						</div>
-						<div class="info">
-							<div class="title">Avg Heart Rate</div>
-							<div class="field">
-								<span>{{display.avg_hr}}</span>
-								BPM
-							</div>
-						</div>
-					</li>
-					<li class="insight">
-						<div class="icon">
-							<iron-icon icon="star"></iron-icon>
-						</div>
-						<div class="info">
-							<div class="title">Avg Power</div>
-							<div class="field">
-								<span>{{display.avg_watts}}</span>
-								W
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</section>
-	</template>
-	<script>
-	    /*global jwt*/
-	    /*global superagent*/
-	    /*jshint camelcase: false */
-		Polymer({
-			is: 'map-summary',
-			ready: function () {
-				
-			},
-			truncate: function (n) {
-				var parts = String(n).split('.');
-				var shortened = '';
-				if (parts.length > 1) {
-					shortened =  parts[0] + '.' + parts[1].substring(0, 2);
-				} else {
-					shortened =  parts[0];
-				}
-				
-				return shortened;
-			},
-			change: function (id) {
-				this.grabData(id);
-			},
-			grabData: function (id) {
-				superagent
-					.get('/b/api/v1/activities/' + id)
-					.send()
-					.set('Accept', 'application/json')
-					.set('Authorization', 'Bearer: ' + jwt.token)
-					.end(function(err, res) {
-						if (res.ok) {
-							this.assembleData(res.body);
-						} else {
-							console.log('failure');
-						}
-					}.bind(this));
-			},
-			minutesPerMile: function (mps) {
-				if (mps === 0) {
-					return 0;
-				}
-				return (1/(mps * (60/1609.34))).toPrecision(4);
-			},
-			assembleData: function (data) {
-				var i = 0, power = 0, avg_power_count = 0, avg_power_total = 0;
-				for (i = 0; i < data.heart_rate_list.length; i=i+1) {
-					power = data.total_power_list[i];
-					if (power > 10) {
-						avg_power_count += 1;
-						avg_power_total += power;
-					}
-				}
-				var avg_power = avg_power_total / avg_power_count;
-				var miles = data.distance / 1600;
-				var minutes = data.moving_time / 60;
-				this.notifyPath('display.distance', this.truncate(miles));
-				this.notifyPath('display.time', this.truncate(minutes));
-				this.notifyPath('display.pace', this.truncate(minutes/miles));
-				this.notifyPath('display.max_hr', this.truncate(data.max_heart_rate));
-				this.notifyPath('display.avg_hr', this.truncate(data.average_heart_rate));
-				this.notifyPath('display.avg_watts', this.truncate(avg_power));
-			},
-			fillZero: function (n) {
-				n = String(n);
-				if (n.length === 1) {
-					return '0' + n;
-				} else {
-					return n;
-				}
-			}
-		});
-	</script>
+    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../styles/app-theme.html">
+    <style>
+        section {
+            @apply(--layout-horizontal);
+            background-color: var(--secondary-background-color);
+            height: 700px;
+            @apply(--layout-center);
+            @apply(--layout);
+        }
+        h2.subheader {
+            text-transform: uppercase;
+            color: #FFFFFF;
+            font-size: 12px;
+            margin: 0;
+        }
+        h1.header {
+            @apply(--header);
+        }
+        .seperator {
+            display: block;
+            margin: 5px 0;
+            height: 1px;
+            border-top: 1px solid #5B5B5B;
+        }
+        .summary {
+            background-color: rgba(41, 41, 39, 0.9); 
+            padding: 30px;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+            @apply(--layout);
+            @apply(--layout-vertical);
+            @apply(--layout-end-justified);
+            @apply(--layout-flex-3);
+        }
+        ul.insights {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            @apply(--layout);
+            @apply(--layout-vertical);
+            color: #FFFFFF;
+            height: 460px;
+        }
+        li.insight {
+            @apply(--layout-flex);
+            @apply(--layout-horizontal);
+            margin: 10px 0;
+        }
+        .insight .info {
+            @apply(--layout-flex-9);
+            @apply(--layout-vertical);
+        }
+        .insight .icon {
+            @apply(--layout-flex);
+            @apply(--layout);
+            @apply(--layout-end-justified);
+            padding-right: 30px;
+            color: var(--primary-icon-color);
+            fill: var(--primary-icon-color);
+        }
+        .insight .icon iron-icon {
+            height: 50px;
+            width: 50px;
+        }
+        .insight .info .title {
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .insight .info .field {
+            font-size: 24px;
+        }
+    </style>
+    <template>
+        <section>
+            <div class="summary">
+                <h2 class="subheader">Statistics</h2>
+                <h1 class="header">Latest Run</h1>
+                <div class="seperator"></div>
+                <ul class="insights">
+                    <li class="insight">
+                        <div class="icon">
+                            <iron-icon icon="face"></iron-icon>
+                        </div>
+                        <div class="info">
+                            <div class="title">Distance</div>
+                            <div class="field">
+                                <span>{{display.distance}}</span>
+                                Miles
+                            </div>
+                        </div>
+                    </li>
+                    <li class="insight">
+                        <div class="icon">
+                            <iron-icon icon="cloud"></iron-icon>
+                        </div>
+                        <div class="info">
+                            <div class="title">Time</div>
+                            <div class="field">
+                                <span>{{display.time}}</span>
+                                Mins
+                            </div>
+                        </div>
+                    </li>
+                    <li class="insight">
+                        <div class="icon">
+                            <iron-icon icon="code"></iron-icon>
+                        </div>
+                        <div class="info">
+                            <div class="title">Pace</div>
+                            <div class="field">
+                                <span>{{display.pace}}</span>
+                                Min/Mile
+                            </div>
+                        </div>
+                    </li>
+                    <li class="insight">
+                        <div class="icon">
+                            <iron-icon icon="favorite-border"></iron-icon>
+                        </div>
+                        <div class="info">
+                            <div class="title">Max Heart Rate</div>
+                            <div class="field">
+                                <span>{{display.max_hr}}</span>
+                                BPM
+                            </div>
+                        </div>
+                    </li>
+                    <li class="insight">
+                        <div class="icon">
+                            <iron-icon icon="favorite-border"></iron-icon>
+                        </div>
+                        <div class="info">
+                            <div class="title">Avg Heart Rate</div>
+                            <div class="field">
+                                <span>{{display.avg_hr}}</span>
+                                BPM
+                            </div>
+                        </div>
+                    </li>
+                    <li class="insight">
+                        <div class="icon">
+                            <iron-icon icon="star"></iron-icon>
+                        </div>
+                        <div class="info">
+                            <div class="title">Avg Power</div>
+                            <div class="field">
+                                <span>{{display.avg_watts}}</span>
+                                W
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </template>
+    <script>
+        Polymer({
+            is: 'map-summary',
+            ready: function () {
+                
+            },
+            assembleData: function (data) {
+                var i = 0, power = 0, avg_power_count = 0, avg_power_total = 0;
+                for (i = 0; i < data.heart_rate_list.length; i=i+1) {
+                    power = data.total_power_list[i];
+                    if (power > 10) {
+                        avg_power_count += 1;
+                        avg_power_total += power;
+                    }
+                }
+                var avg_power = avg_power_total / avg_power_count;
+                var miles = data.distance / 1600;
+                var minutes = data.moving_time / 60;
+                this.notifyPath('display.distance', this.truncate(miles));
+                this.notifyPath('display.time', this.truncate(minutes));
+                this.notifyPath('display.pace', this.truncate(minutes/miles));
+                this.notifyPath('display.max_hr', this.truncate(data.max_heart_rate));
+                this.notifyPath('display.avg_hr', this.truncate(data.average_heart_rate));
+                this.notifyPath('display.avg_watts', this.truncate(avg_power));
+            }
+        });
+    </script>
 </dom-module>

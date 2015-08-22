@@ -136,46 +136,14 @@
   
   <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/0.15.7/superagent.min.js"></script>
   <script>
-    /*global jwt*/
-    /*global superagent*/
   	Polymer({
         is: 'log-book',
-        refresh: function() {
+        populateLogs: function (logs) {
             while (this.$.logContainer.firstChild) {
                 this.$.logContainer.removeChild(this.$.logContainer.firstChild);
             }
-            this.grabLogs();
-        },
-        grabLogs: function() {
-            superagent
-                .get('/b/api/v1/activities/summary?limit=20')
-                .send()
-                .set('Accept', 'application/json')
-                .set('Authorization', 'Bearer: ' + jwt.token)
-                .end(function(err, res) {
-                    if (res.ok) {
-                        if (res.body !== null) {
-                            this.populateLogs(res.body);
-                        } else {
-                            console.log('no data received');
-                        }
-                    } else {
-                        console.log('failure on grabLogs', err, res);
-                    }
-                }.bind(this));
-        },
-        setGraph: function (id) {
-            var workoutElement = document.querySelector('workout-element');
-            // var mapSummary = document.querySelector('map-summary');
-            workoutElement.change(id);
-            // mapSummary.change(id);
-        },
-        populateLogs: function (logs) {
-            var log, logEle;
-            for (var i = 0; i < logs.length; i++) {
-                if (i === 0) {
-                    this.setGraph(logs[i].id);
-                }
+            var log, logEle, i;
+            for (i = 0; i < logs.length; i++) {
                 log = logs[i];
                 logEle = document.createElement('log-entry');
                 logEle.setData(log);

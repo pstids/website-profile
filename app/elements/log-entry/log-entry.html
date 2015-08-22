@@ -216,22 +216,20 @@
         },
         setData: function (data) {
             this.data = data;
-            console.log(this.data);
             var date = new Date(data.timestamp * 1000);
             var dateString = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
             this.notifyPath('display.date', dateString);
-            this.notifyPath('display.power', truncate(data.average_power));
+            this.notifyPath('display.power', data.average_power.stat());
 
             /* Readable Time */
-            var dispTime = hmsTime(data.moving_time * 1000)
+            var dispTime = hmsTime(setDate(data.moving_time));
             this.notifyPath('display.time', dispTime);
 
-            this.notifyPath('display.distance', data.distance);
+            this.notifyPath('display.distance', kmDistance(data.distance));
             this.notifyPath('display.unit', 'KM');
         },
         viewWorkout: function () {
-            var workout = document.querySelector('workout-element');
-            workout.change(this.data.id);
+            workoutFetching(this.data.id);
             var bubbles = document.querySelector('.bubbles');
             window.scrollTo(0, bubbles.offsetTop);
         },

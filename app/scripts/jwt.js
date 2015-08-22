@@ -1,4 +1,4 @@
-/*global superagent */
+/*jshint -W079 */
 /*jshint unused: false*/
 
 class JWT {
