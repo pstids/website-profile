@@ -299,7 +299,7 @@
                             this.notifyPath('week.time', time);
                             var avg_pwr = truncate(res.body.average_power);
                             this.notifyPath('week.power', avg_pwr);
-                            var total_distance = kmDistance(res.body.total_distance);
+                            var total_distance = meterToKM(res.body.total_distance);
                             this.notifyPath('week.distance', total_distance);
                         } else {
                             console.log('failed to get weekly stat');

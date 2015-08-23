@@ -97,17 +97,6 @@ function rgbToHex(r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
-var setDate = function (ms) {
-    return new Date(ms * 1000);
-};
-
-var minutesPerMile = function (mps) {
-    if (mps === 0) {
-        return 0;
-    }
-    return parseFloat((1/(mps * (60/1609.34))).toFixed(2));
-};
-
 var mapSummary;
 var mapRun;
 var logBook;
@@ -160,7 +149,7 @@ var workoutProcessing = function (workout) {
             entry.cadence = workout.cadence_list[i];
         }
         if ('elevation_list' in workout) {
-            entry.elevation = workout.elevation_list[i];
+            entry.elevation = Math.round(workout.elevation_list[i]);
         }
         if ('distance_list' in workout) {
             entry.distance = workout.distance_list[i];
@@ -266,10 +255,7 @@ String.prototype.stat = function () {
     return shortened;
 };
 
-var kmDistance = function (m) {
-    return (m/1000).toFixed(1);
-};
-
+/* Helper functions */
 var fillZero = function (n) {
     n = String(n);
     if (n.length === 1) {
@@ -279,21 +265,32 @@ var fillZero = function (n) {
     }
 };
 
+// For pace
+var minutesPerMile = function (mps) {
+    if (mps === 0) {
+        return 0;
+    }
+    return parseFloat((1/(mps * (60/1609.34))).toFixed(1));
+};
+
+// For time
+var setDate = function (ms) {
+    return new Date(ms * 1000);
+};
 var hmsTime = function (s) {
     var time = new Date(s);
     return fillZero(time.getUTCHours()) + ':' + fillZero(time.getMinutes()) + '.' + fillZero(time.getSeconds());
 };
-
 var hrTime = function (s) {
     var time = new Date(s);
     var hrsRun = (time.getUTCHours() + time.getMinutes() / 60 + time.getSeconds() / 3600);
     return hrsRun.toFixed(1);
 };
-var kmDistance = function (m) {
-    var km = m/1000;
-    return km.toFixed(1);
+
+// For distance
+var meterToKM = function (m) {
+    return (m/1000).toFixed(1);
 };
-var toMile = function (m) {
-    var miles = m / 1600;
-    return miles.toFixed(1);
+var meterToMile = function (m) {
+    return (m/1600).toFixed(1);
 };

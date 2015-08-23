@@ -241,7 +241,7 @@
                 var stats = {
                     maxHeartRate: 0,
                     timeHMS: hmsTime(setDate(total)),
-                    distance: toMile(this.data[end-1].distance - this.data[begin].distance)
+                    distance: meterToMile(this.data[end-1].distance - this.data[begin].distance)
                 };
                 for (i = begin; i < end; i++) {
                     if ('power' in this.data[0]) {

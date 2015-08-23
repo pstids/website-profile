@@ -88,9 +88,9 @@ gulp.task('jshint', function () {
         'fillZero',
         'hmsTime',
         'google',
-        'kmDistance',
+        'meterToKM',
         'hrTime',
-        'toMile'
+        'meterToMile'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

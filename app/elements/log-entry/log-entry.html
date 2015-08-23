@@ -182,7 +182,7 @@
                 var dispTime = hmsTime(data.moving_time * 1000);
                 this.notifyPath('display.time', dispTime);
 
-                this.notifyPath('display.distance', kmDistance(data.distance));
+                this.notifyPath('display.distance', meterToKM(data.distance));
                 this.notifyPath('display.unit', 'KM');
             },
             viewWorkout: function () {
