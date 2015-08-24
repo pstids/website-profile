@@ -65,14 +65,20 @@
                     lat: 0,
                     lng: 0
                 };
+                this.mapObjs = [];
             },
             setData: function (graphSegments) {
                 var i, path, step, graphSegment;
+                for (i = 0; i < this.mapObjs.length; i++) {
+                    this.mapObjs[i].setMap(null);
+                }
+                var bounds = new google.maps.LatLngBounds();
                 step = 1;
                 if (graphSegments.length > 200) {
                     step = parseInt(graphSegments.length / 200);
                 }
-                for (i = 1; i < graphSegments.length; i=i+step) {
+                for (i = 0; i < graphSegments.length; i=i+step) {
+                    // Set segments on map
                     graphSegment = graphSegments[i];
                     path = new google.maps.Polyline({
                         path: graphSegment.location,
@@ -81,27 +87,51 @@
                         strokeOpacity: 1,
                         strokeWeight: 6
                     });
+                    this.mapObjs.push(path);
                     path.setMap(map);
+                    // Extend bounds for map
+                    var latLng = new google.maps.LatLng(
+                        graphSegment.location[0].lat,
+                        graphSegment.location[0].lng
+                    );
+                    bounds.extend(latLng);
                 }
                 this.center.lat = graphSegments[0].location[0].lat;
                 this.center.lng = graphSegments[0].location[0].lng;
-                map.setCenter(this.center);
+                map.fitBounds(bounds);
+                map.setCenter(bounds.getCenter());
                 // Start Marker
-                new google.maps.Marker({
+                var start = new google.maps.Marker({
                     position: {
                         lat: this.center.lat,
                         lng: this.center.lng
                     },
-                    map: map
+                    map: map,
+                    icon: {
+                        url: '/profile/images/green_circle.png',
+                        size: new google.maps.Size(25, 25),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(12, 12),
+                        scaledSize: new google.maps.Size(20, 20)
+                    }
                 });
+                this.mapObjs.push(start);
                 // End Marker
-                new google.maps.Marker({
+                var stop = new google.maps.Marker({
                     position: {
                         lat: graphSegments[graphSegments.length-1].location[0].lat,
                         lng: graphSegments[graphSegments.length-1].location[0].lng
                     },
-                    map: map
+                    map: map,
+                    icon: {
+                        url: '/profile/images/red_circle.png',
+                        size: new google.maps.Size(25, 25),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(12, 12),
+                        scaledSize: new google.maps.Size(20, 20)
+                    }
                 });
+                this.mapObjs.push(stop);
             }
         });
     </script>

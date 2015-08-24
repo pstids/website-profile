@@ -173,9 +173,11 @@
             },
             setData: function (data) {
                 this.data = data;
+
                 var date = new Date(data.timestamp * 1000);
                 var dateString = fillZero(date.getMonth() + 1) + '/' + fillZero(date.getDate()) + '/' + date.getFullYear();
                 this.notifyPath('display.date', dateString);
+
                 this.notifyPath('display.power', truncate(data.average_power));
 
                 /* Readable Time */
@@ -183,6 +185,7 @@
                 this.notifyPath('display.time', dispTime);
 
                 this.notifyPath('display.distance', meterToKM(data.distance));
+                
                 this.notifyPath('display.unit', 'KM');
             },
             viewWorkout: function () {

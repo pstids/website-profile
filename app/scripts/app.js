@@ -116,6 +116,8 @@ var workoutProcessing = function (workout) {
         pace: 0
     };
 
+    var maxPower = workout.max_power;
+
     var steps = 1;
     if (workout.total_power_list.length > 200) {
         steps = parseInt(workout.total_power_list.length / 200);
@@ -158,9 +160,9 @@ var workoutProcessing = function (workout) {
         /* Assemble Map Data */
         if (i > 0) {
             hex = rgbToHex(
-                Interpolate(lowColors.r, highColors.r, workout.loc_list.length, i),
-                Interpolate(lowColors.g, highColors.g, workout.loc_list.length, i),
-                Interpolate(lowColors.b, highColors.b, workout.loc_list.length, i)
+                Interpolate(lowColors.r, highColors.r, maxPower, entry.power),
+                Interpolate(lowColors.g, highColors.g, maxPower, entry.power),
+                Interpolate(lowColors.b, highColors.b, maxPower, entry.power)
             );
             graphSegment = {
                 hex: hex,
