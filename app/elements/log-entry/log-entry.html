@@ -165,28 +165,18 @@
             properties: {
                 display: Object
             },
-            display: {
-                power: '',
-                time: '',
-                distance: '',
-                date: ''
-            },
             setData: function (data) {
                 this.data = data;
 
                 var date = new Date(data.timestamp * 1000);
                 var dateString = fillZero(date.getMonth() + 1) + '/' + fillZero(date.getDate()) + '/' + date.getFullYear();
-                this.notifyPath('display.date', dateString);
-
-                this.notifyPath('display.power', truncate(data.average_power));
-
-                /* Readable Time */
-                var dispTime = hmsTime(data.moving_time * 1000);
-                this.notifyPath('display.time', dispTime);
-
-                this.notifyPath('display.distance', meterToKM(data.distance));
-                
-                this.notifyPath('display.unit', 'KM');
+                this.display = {
+                    date: dateString,
+                    time: hmsTime(data.moving_time * 1000),
+                    power: truncate(data.average_power),
+                    distance: meterToKM(data.distance),
+                    unit: 'KM'
+                };
             },
             viewWorkout: function () {
                 workoutFetching(this.data);

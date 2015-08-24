@@ -233,14 +233,14 @@
                 <div class="insights">
                     <div class="insights-header">
                         <div class="subtitle">WEEK</div>
-                        <div class="title">{{weekNum}}</div>
+                        <div class="title">{{weekly.week_num}}</div>
                     </div>
                     <div class="insight">
                         <iron-icon icon="image:timer"></iron-icon>
                         <div class="info">
                             <div class="title">Run Time</div>
                             <div class="field">
-                                <span class="value">{{weeklyTime}}</span>
+                                <span class="value">{{weekly.total_time}}</span>
                                 <span class="unit">HR</span>
                             </div>
                         </div>
@@ -250,7 +250,7 @@
                         <div class="info">
                             <div class="title">Distance</div>
                             <div class="field">
-                                <span class="value">{{weeklyDistance}}</span>
+                                <span class="value">{{weekly.total_distance}}</span>
                                 <span class="unit">KM</span>
                             </div>
                         </div>
@@ -262,7 +262,7 @@
                                 Avg Power
                             </div>
                             <div class="field">
-                                <span class="value">{{weeklyPower}}</span>
+                                <span class="value">{{weekly.average_power}}</span>
                                 <span class="unit">W</span>
                             </div>
                         </div>
@@ -272,10 +272,10 @@
             <div class="profile">
                 <div class="text">
                     <div class="hello">Hello</div>
-                    <div class="name">{{userName}}</div>
+                    <div class="name">{{username}}</div>
                     <div class="logout" on-click="logout">Logout?</div>
                 </div>
-                <img src="{{userImage}}" class="image">
+                <img src="{{profileImage}}" class="image">
             </div>
         </header>
     </template>
@@ -288,6 +288,9 @@
         /*global CryptoJS*/
         Polymer({
             is: 'header-element',
+            properties: {
+                weekly: Object
+            },
             ready: function () {
                 this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
                 this.userName = jwt.data.username;
@@ -299,10 +302,10 @@
             },
             setProfileIMG: function () {
                 if (jwt.data.image !== '') {
-                    this.userImage = decodeURIComponent(jwt.data.image.replace('+', ' '));
+                    this.profileImage = decodeURIComponent(jwt.data.image.replace('+', ' '));
                 } else {
                     var gravHash = CryptoJS.MD5(jwt.data.email.toLowerCase());
-                    this.userImage = 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
+                    this.profileImage = 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
                 }
             },
             toggleActive: function (active) {
@@ -321,10 +324,9 @@
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {
                         if (res.ok) {
-                            this.weekNum = res.body.week_num;
-                            this.weeklyTime = hrTime(res.body.total_time * 1000);
-                            this.weeklyPower = truncate(res.body.average_power);
-                            this.weeklyDistance = meterToKM(res.body.total_distance);
+                            var incomingWeekly = res.body;
+                            incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
+                            this.weekly = incomingWeekly;
                         } else {
                             console.log('failed to get weekly stat');
                         }
