@@ -136,7 +136,7 @@ var workoutProcessing = function (workout) {
             entry.heartRate = workout.heart_rate_list[i];
         }
         if ('speed_list' in workout) {
-            entry.pace = minutesPerMile(workout.speed_list[i]);
+            entry.pace = workout.speed_list[i];
         }
         if ('total_power_list' in workout) {
             entry.power = workout.total_power_list[i];
@@ -272,6 +272,13 @@ var minutesPerMile = function (mps) {
     }
     return parseFloat((1/(mps * (60/1609.34))).toFixed(1));
 };
+function speedToPaceForBalloon(graphDataItem, graph) {
+    var value = graphDataItem.values.value;
+    return minutesPerMile(value) + ' Min/Mile';
+}
+function speedToPaceForValueAxis(value, formattedValue, valueAxis) {
+    return minutesPerMile(value);
+}
 
 // For time
 var setDate = function (ms) {

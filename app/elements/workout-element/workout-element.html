@@ -252,7 +252,7 @@
                     }
                     if ('pace' in this.data[0]) {
                         avgs.paceCount += 1;
-                        avgs.pace += this.data[i].pace;
+                        avgs.pace += minutesPerMile(this.data[i].pace);
                     }
                     if ('heartRate' in this.data[0]) {
                         if (this.data[i].heartRate > 5) {
@@ -300,7 +300,8 @@
                         'axisThickness': 2,
                         'gridAlpha': 0.2,
                         'axisColor': '#074a8c',
-                        'dashLength': 1
+                        'dashLength': 1,
+                        'labelFunction': speedToPaceForValueAxis,
                     }, {
                         'id': 'cadence',
                         'axisAlpha': 1,
@@ -329,10 +330,6 @@
                         'axisColor': '#a06a81',
                         'dashLength': 1
                     }],
-                    'balloon': {
-                        'borderThickness': 1,
-                        'shadowAlpha': 0
-                    },
                     'graphs': [{
                         'id': 'heartRate',
                         'valueAxis': 'heartRate',
@@ -360,6 +357,7 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'pace',
                         'type': 'smoothedLine',
+                        'balloonFunction': speedToPaceForBalloon,
                         'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Min/Mile</div>'
                     }, {
                         'id': 'cadence',
@@ -388,7 +386,7 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'power',
                         'type': 'smoothedLine',
-                        'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Watts</div>'
+                        'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Watts</div>',
                     }, {
                         'id': 'elevation',
                         'valueAxis': 'elevation',
@@ -435,6 +433,17 @@
                     },
                     'export': {
                         'enabled': true
+                    },
+                    'balloon': {
+                        'adjustBorderColor': true,
+                        'color': '#1e1e1e',
+                        'cornerRadius': 5,
+                        'fillColor': '#FFFFFF',
+                        'borderThickness': 1,
+                        'shadowAlpha': 0,
+                        'fontSize': 20,
+                        'verticalPadding': 2,
+                        'horizontalPadding': 4,
                     },
                     'dataProvider': this.chartData
                 });

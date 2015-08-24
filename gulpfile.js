@@ -90,7 +90,9 @@ gulp.task('jshint', function () {
         'google',
         'meterToKM',
         'hrTime',
-        'meterToMile'
+        'meterToMile',
+        'speedToPaceForBalloon',
+        'speedToPaceForValueAxis'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
