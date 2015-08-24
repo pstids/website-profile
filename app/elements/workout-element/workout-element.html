@@ -343,7 +343,7 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'heartRate',
                         'type': 'smoothedLine',
-                        'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] BPM</div>'
+                        'balloonText': '[[value]] BPM'
                     }, {
                         'id': 'pace',
                         'valueAxis': 'pace',
@@ -358,7 +358,7 @@
                         'valueField': 'pace',
                         'type': 'smoothedLine',
                         'balloonFunction': speedToPaceForBalloon,
-                        'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Min/Mile</div>'
+                        'balloonText': '[[value]] Min/Mile'
                     }, {
                         'id': 'cadence',
                         'valueAxis': 'cadence',
@@ -372,7 +372,7 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'cadence',
                         'type': 'smoothedLine',
-                        'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] SPM</div>'
+                        'balloonText': '[[value]] SPM'
                     }, {
                         'id': 'power',
                         'valueAxis': 'power',
@@ -386,7 +386,7 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'power',
                         'type': 'smoothedLine',
-                        'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Watts</div>',
+                        'balloonText': '[[value]] Watts',
                     }, {
                         'id': 'elevation',
                         'valueAxis': 'elevation',
@@ -400,7 +400,7 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'elevation',
                         'type': 'smoothedLine',
-                        'balloonText': '<div style="margin:5px; font-size:19px;">[[value]] Meters</div>'
+                        'balloonText': '[[value]] Meters'
                     }],
                     'chartScrollbar': {
                         'graph': 'power',
@@ -438,12 +438,12 @@
                         'adjustBorderColor': true,
                         'color': '#1e1e1e',
                         'cornerRadius': 5,
+                        'borderThickness': 2,
                         'fillColor': '#FFFFFF',
-                        'borderThickness': 1,
                         'shadowAlpha': 0,
-                        'fontSize': 20,
-                        'verticalPadding': 2,
-                        'horizontalPadding': 4,
+                        'fontSize': 16,
+                        'verticalPadding': 4,
+                        'horizontalPadding': 8
                     },
                     'dataProvider': this.chartData
                 });
