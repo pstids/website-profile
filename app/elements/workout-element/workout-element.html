@@ -239,7 +239,7 @@
                 };
                 var stats = {
                     maxHeartRate: 0,
-                    timeHMS: hmsTime(setDate(total)),
+                    timeHMS: hmsTime(this.data[end-1].date - this.data[begin].date),
                     distance: meterToMile(this.data[end-1].distance - this.data[begin].distance)
                 };
                 for (i = begin; i < end; i++) {
