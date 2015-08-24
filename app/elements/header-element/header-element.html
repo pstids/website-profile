@@ -15,17 +15,15 @@
         }
 
         header {
-            @apply(--layout);
             @apply(--layout-horizontal);
             background-color: var(--primary-background-color);
-            height: 110px;
+            height: 100px;
         }
 
         .logo {
             background-color: var(--accent-background-color);
             color: var(--accent-text-color);
             font-family: "Stryd", sans-serif;
-            @apply(--layout);
             @apply(--layout-start-justified);
             @apply(--layout-horizontal);
             @apply(--layout-center);
@@ -39,13 +37,13 @@
             color: var(--accent-text-color);
             font-weight: 700;
             display: block;
-            font-size: 40px;
+            font-size: 2.67vw;
             margin: 0;
             padding: 0;
             letter-spacing: 2px;
         }
         .logo p {
-            font-size: 1.2em;
+            font-size: 0.8vw;
             font-weight: 400;
             color: white;
             margin: 0;
@@ -53,13 +51,12 @@
         }
         .logo .slant {
             @apply(--layout-flex);
-            border-left: 75px solid transparent;
-            border-bottom: calc(110px - 2px) solid var(--primary-background-color);
+            border-left: 5vw solid transparent;
+            border-bottom: calc(100px - 2px) solid var(--primary-background-color);
         }
 
         ul.navigation {
             @apply(--layout-flex-5);
-            @apply(--layout);
             @apply(--layout-horizontal);
             @apply(--layout-around-justified)
             list-style: none;
@@ -77,8 +74,8 @@
             color: var(--accent-background-color) !important;
         }
         ul.navigation li a {
-            line-height: 110px;
-            font-size: 1.6em;
+            line-height: 100px;
+            font-size: 1.1vw;
             font-weight: 500;
             color: inherit;
             display: inline-block;
@@ -103,7 +100,6 @@
 
         ul.insights {
             @apply(--layout-flex-5);
-            @apply(--layout);
             @apply(--layout-horizontal);
             @apply(--layout-center);
             @apply(--layout-around-justified);
@@ -114,84 +110,78 @@
         }
         .insight {
             @apply(--layout-flex-2);
-            @apply(--layout);
             @apply(--layout-horizontal);
             @apply(--layout-center);
-            margin: 10px 0;
             color: #FFFFFF;
         }
         .insight iron-icon {
             @apply(--layout-flex-3);
             width: 100%;
             height: 100%;
-            margin-right: 1.5em;
+            margin-right: 1vw;
             color: var(--primary-icon-color);
             fill: var(--primary-icon-color);
         }
         .insight .info {
             @apply(--layout-flex-8);
-            @apply(--layout);
             @apply(--layout-vertical);
         }
         .insight .info .title {
-            font-size: 10px;
+            font-size: 0.67vw;
             font-weight: 700;
             text-transform: uppercase;
         }
         .insight .value {
-            font-size: 30px;
+            font-size: 2vw;
             font-weight: 700;
             padding-right: 0.2em;
         }
         .insight .unit {
-            font-size: 22px;
+            font-size: 1.5vw;
             font-weight: 700;
         }
 
         .profile {
             @apply(--layout-flex-2);
-            @apply(--layout);
             @apply(--layout-horizontal);
             @apply(--layout-center);
             border-bottom: 2px solid var(--accent-background-color);
-            padding-right: 3em;
+            padding-right: 2vw;
         }
         .profile .text {
             @apply(--layout-flex);
             @apply(--layout-end-justified);
             text-align: right;
-            margin-right: 2em;
+            margin-right: 1.33vw;
         }
         .profile .text .hello {
             color: var(--primary-header-color);
-            font-size: 12px;
-            line-height: 1.6em;
+            font-size: 0.8vw;
             font-weight: 400;
             text-transform: uppercase;
         }
         .profile .text .name {
-            font-size: 18px;
-            line-height: 2em;
+            font-size: 1.2vw;
+            line-height: 5vh;
             color: #FFFFFF;
             font-weight: 700;
             text-transform: uppercase;
         }
         .profile .text .logout {
-            font-size: 10px;
-            line-height: 14px;
+            font-size: 0.67vw;
             color: #FFFFFF;
             cursor: pointer;
         }
         .profile img {
             border-radius: 50%;
-            width: auto;
+            width: 5.5vw;
             height: auto;
         }
         .profile a {
             display: block;
             padding: 1em;
             height: 1em;
-            font-size: 14px;
+            font-size: 1vw;
             font-weight: 500;
         }
         .profile a:hover {
@@ -309,7 +299,7 @@
                             this.notifyPath('week.time', time);
                             var avg_pwr = truncate(res.body.average_power);
                             this.notifyPath('week.power', avg_pwr);
-                            var total_distance = kmDistance(res.body.total_distance);
+                            var total_distance = meterToKM(res.body.total_distance);
                             this.notifyPath('week.distance', total_distance);
                         } else {
                             console.log('failed to get weekly stat');

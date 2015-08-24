@@ -88,8 +88,11 @@ gulp.task('jshint', function () {
         'fillZero',
         'hmsTime',
         'google',
-        'kmDistance',
-        'hrTime'
+        'meterToKM',
+        'hrTime',
+        'meterToMile',
+        'speedToPaceForBalloon',
+        'speedToPaceForValueAxis'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
