@@ -184,7 +184,6 @@
             color: #FFFFFF;
             font-weight: 700;
             text-transform: uppercase;
-            width: 7vw;
             white-space: nowrap;
             overflow: hidden;
         }
@@ -293,7 +292,7 @@
             },
             ready: function () {
                 this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
-                this.userName = jwt.data.username;
+                this.username = jwt.data.username;
                 this.grabStats();
                 this.setProfileIMG();
             },
@@ -326,6 +325,8 @@
                         if (res.ok) {
                             var incomingWeekly = res.body;
                             incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
+                            incomingWeekly.total_distance = meterToKM(res.body.total_distance);
+                            incomingWeekly.average_power = Math.round(res.body.average_power);
                             this.weekly = incomingWeekly;
                         } else {
                             console.log('failed to get weekly stat');
