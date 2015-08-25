@@ -109,7 +109,31 @@ window.addEventListener('WebComponentsReady', function() {
     workoutElement = document.querySelector('workout-element');
 });
 
+var calcThreshold = function (powers) {
+    powers = JSON.parse(JSON.stringify(powers));
+    var sortedPower = powers.sort(function (a, b) {
+        return a - b;
+    });
+
+    var count = sortedPower.length;
+    var segment = parseInt(count / 4, 10);
+    var lowIQR = sortedPower[segment],
+        median = sortedPower[segment * 2],
+        highIQR = sortedPower[segment * 3];
+    var IQR = parseInt((highIQR - lowIQR) * 1.5, 10);
+    var thresholdHigh = median + IQR,
+        thresholdLow = median - IQR;
+    var threshold = {
+        range: thresholdHigh - thresholdLow,
+        high: thresholdHigh,
+        low: thresholdLow
+    };
+    return threshold;
+};
+
 var workoutProcessing = function (workout) {
+    var threshold = calcThreshold(workout.total_power_list);
+
     var avgs = {
         power: 0,
         powerCount: 0,
@@ -159,10 +183,21 @@ var workoutProcessing = function (workout) {
         chartData.push(entry);
         /* Assemble Map Data */
         if (i > 0) {
+            var relativePower;
+            if (threshold.range === 0) {
+                threshold.range = 1;
+                relativePower = 1;
+            } else if (entry.power > threshold.high) {
+                relativePower = threshold.range;
+            } else if (entry.power < threshold.low) {
+                relativePower = 0;
+            } else {
+                relativePower = entry.power - threshold.low;
+            }
             hex = rgbToHex(
-                Interpolate(lowColors.r, highColors.r, maxPower, entry.power),
-                Interpolate(lowColors.g, highColors.g, maxPower, entry.power),
-                Interpolate(lowColors.b, highColors.b, maxPower, entry.power)
+                Interpolate(lowColors.r, highColors.r, threshold.range, relativePower),
+                Interpolate(lowColors.g, highColors.g, threshold.range, relativePower),
+                Interpolate(lowColors.b, highColors.b, threshold.range, relativePower)
             );
             graphSegment = {
                 hex: hex,
