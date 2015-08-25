@@ -247,7 +247,7 @@ var logsProcessing = function (logs) {
 
 var logsFetching = function () {
     superagent
-        .get('/b/api/v1/activities/summary?limit=20')
+        .get('/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc')
         .send()
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer: ' + jwt.token)
