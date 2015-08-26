@@ -88,8 +88,8 @@ var workoutProcessing = function (workout) {
     var maxPower = workout.max_power;
 
     var steps = 1;
-    if (workout.total_power_list.length > 200) {
-        steps = parseInt(workout.total_power_list.length / 200);
+    if (workout.total_power_list.length > 800) {
+        steps = parseInt(workout.total_power_list.length / 800);
     }
     var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
     var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
