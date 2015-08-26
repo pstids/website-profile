@@ -29,7 +29,6 @@ var truncate = function (n) {
     } else {
         shortened =  parts[0];
     }
-
     return shortened;
 };
 

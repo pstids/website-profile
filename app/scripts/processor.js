@@ -173,7 +173,7 @@ var workoutProcessing = function (workout) {
 
 var workoutFetching = function (workout) {
     superagent
-    .get('/b/api/v1/activities/' + workout.id)
+    .get('/b/api/v1/activities/' + workout)
     .send()
     .set('Accept', 'application/json')
     .set('Authorization', 'Bearer: ' + token)
@@ -189,7 +189,7 @@ var workoutFetching = function (workout) {
 var logsProcessing = function (logs) {
     data.logs = logs;
     if (logs.length > 0) {
-        workoutFetching(logs[0]);
+        workoutFetching(logs[0].id);
     } else {
         postMessage();
     }
