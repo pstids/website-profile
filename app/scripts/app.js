@@ -62,41 +62,6 @@
     };
 })(document);
 
-function Interpolate(start, end, steps, count) {
-    var s = start,
-        e = end,
-        final = s + (((e - s) / steps) * count);
-    return Math.floor(final);
-}
-
-function Color(_r, _g, _b) {
-    var r, g, b;
-    var setColors = function(_r, _g, _b) {
-        r = _r;
-        g = _g;
-        b = _b;
-    };
-
-    setColors(_r, _g, _b);
-    this.getColors = function() {
-        var colors = {
-            r: r,
-            g: g,
-            b: b
-        };
-        return colors;
-    };
-}
-
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
 var mapSummary;
 var mapRun;
 var logBook;
