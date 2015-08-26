@@ -10,8 +10,13 @@ importScripts('/profile/scripts/toolbox.js');
 var data = {}, token;
 
 onmessage = function (event) {
-    token = event.data;
-    logsFetching();
+    data = {};
+    token = event.data.token;
+    if (event.data.type === 'all') {
+        logsFetching();
+    } else if (event.data.type === 'workout') {
+        workoutFetching(event.data.id);
+    }
 };
 
 function Interpolate(start, end, steps, count) {

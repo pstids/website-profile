@@ -77,11 +77,28 @@ window.addEventListener('WebComponentsReady', function() {
 var processor = new Worker('/profile/scripts/processor.js');
 
 processor.onmessage = function (event) {
-    mapRun.setData(event.data.mapRunData);
-    workoutElement.setChartData(event.data.chartData);
-    logBook.populateLogs(event.data.logs);
+    if ('mapRunData' in event.data) {
+        mapRun.setData(event.data.mapRunData);
+    }
+    if ('chartData' in event.data) {
+        workoutElement.setChartData(event.data.chartData);
+    }
+    if ('logs' in event.data) {
+        logBook.populateLogs(event.data.logs);
+    }
 };
 
 var logsFetching = function () {
-    processor.postMessage(jwt.token);
+    processor.postMessage({
+        token: jwt.token,
+        type: 'all'
+    });
+};
+
+var workoutFetching = function (id) {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'workout',
+        id: id
+    });
 };
