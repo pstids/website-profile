@@ -113,8 +113,84 @@
             width: 12vw;
             height: 12vw;
         }
+        .outer-spinner {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: var(--primary-background-color);
+            z-index: 10;
+            display: flex;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            transition: opacity 2s;
+            opacity: 1;
+        }
+        .outer-spinner.fade {
+            opacity: 0;
+            z-index: 0;
+        }
+        .spinner {
+            margin: 100px auto;
+            width: 40px;
+            height: 40px;
+            position: relative;
+            text-align: center;
+
+            -webkit-animation: sk-rotate 2.0s infinite linear;
+            animation: sk-rotate 2.0s infinite linear;
+        }
+
+        .spinner .dot1, .spinner .dot2 {
+            width: 60%;
+            height: 60%;
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            background-color: var(--primary-icon-color);
+            border-radius: 100%;
+
+            -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+            animation: sk-bounce 2.0s infinite ease-in-out;
+        }
+
+        .spinner .dot2 {
+            top: auto;
+            bottom: 0;
+            -webkit-animation-delay: -1.0s;
+            animation-delay: -1.0s;
+        }
+
+        @-webkit-keyframes sk-rotate { 100% { -webkit-transform: rotate(360deg) }}
+        @keyframes sk-rotate { 100% { transform: rotate(360deg); -webkit-transform: rotate(360deg) }}
+
+        @-webkit-keyframes sk-bounce {
+            0%, 100% { -webkit-transform: scale(0.0) }
+            50% { -webkit-transform: scale(1.0) }
+        }
+
+        @keyframes sk-bounce {
+            0%, 100% { 
+                transform: scale(0.0);
+                -webkit-transform: scale(0.0);
+            } 50% { 
+                transform: scale(1.0);
+                -webkit-transform: scale(1.0);
+            }
+        }
     </style>
     <template>
+        <div class="outer-spinner" id="spinner">
+            <div class="spinner">
+                <div class="dot1"></div>
+                <div class="dot2"></div>
+            </div>
+        </div>
         <section>
             <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
             <div class="bubbles">
@@ -164,13 +240,8 @@
             is: 'workout-element',
             ready: function () {
                 AmCharts.handleLoad();
-                this.style.display = 'hidden';
-            },
-            show: function () {
-                this.style.display = 'block';
             },
             setChartData: function (data) {
-                this.show();
                 if ('chart' in this) {
                     this.bindToggles();
                 }
@@ -180,8 +251,6 @@
                 this.fillChart();
             },
             bindToggles: function () {
-                this.enabled = 'heartRate';
-                this.enableds = ['heartRate', 'power'];
                 this.graphs = {
                     heartRate: this.chart.getGraphById('heartRate'),
                     pace: this.chart.getGraphById('pace'),
@@ -205,23 +274,9 @@
                 }
                 var graph = target.dataset.graph;
                 if (target.dataset.toggle === 'on') {
-                    var idx = this.enableds.indexOf(graph);
-                    if (idx !== -1) {
-                        this.enableds.splice(idx, 1);
-                    }
-                    if (graph === this.enabled) {
-                        var id = this.enableds[0];
-                        this.enabled = id;
-                        this.graphs[id].gridAlpha = 0.2;
-                    }
                     target.dataset.toggle = 'off';
                     this.chart.hideGraph(this.graphs[graph]);
                 } else {
-                    this.enableds.push(graph);
-                    if (this.enabled === null) {
-                        this.enabled = graph;
-                        this.graphs[graph].gridAlpha = 0.2;
-                    }
                     target.dataset.toggle = 'on';
                     this.chart.showGraph(this.graphs[graph]);
                 }
@@ -445,19 +500,15 @@
                         'horizontalPadding': 8
                     },
                     'dataProvider': this.chartData
-                });
-                function zoomChart() {
-                    this.chart.zoomToIndexes(
-                            this.chart.dataProvider.length - 20,
-                            this.chart.dataProvider.length - 1
-                    );
-                }
-                this.bindToggles();
-                this.calcAvgs(0, this.chartData.length);
+                }, 100);
+                this.chart.addListener('init', function (e) {
+                    this.$.spinner.classList.add('fade');
+                    this.bindToggles();
+                    this.calcAvgs(0, this.chartData.length);
+                }.bind(this));
                 this.chart.addListener('zoomed', function (e) {
                     this.calcAvgs(e.startIndex, e.endIndex + 1);
                 }.bind(this));
-                // zoomChart();
             }
         });
     </script>
