@@ -92,9 +92,6 @@
                 }
                 var bounds = new google.maps.LatLngBounds();
                 step = 1;
-                if (graphSegments.length > 200) {
-                    step = parseInt(graphSegments.length / 200);
-                }
                 for (i = 0; i < graphSegments.length; i=i+step) {
                     // Set segments on map
                     graphSegment = graphSegments[i];
