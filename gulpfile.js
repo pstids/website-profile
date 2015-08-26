@@ -67,6 +67,7 @@ gulp.task('jshint', function () {
   return gulp.src([
       'app/scripts/**/*.js',
       '!app/scripts/dropzone.js',
+      '!app/scripts/superagent.js',
       '!app/scripts/amcharts/**/*',
       'app/elements/**/*.js',
       'app/elements/**/*.html'
@@ -136,7 +137,12 @@ gulp.task('copy', function () {
   var swToolbox = gulp.src(['bower_components/sw-toolbox/*.js'])
     .pipe(gulp.dest('dist/sw-toolbox'));
 
-  var dropzone = gulp.src(['app/scripts/dropzone.js'])
+  var scripts = gulp.src([
+    'app/scripts/dropzone.js',
+    'app/scripts/processor.js',
+    'app/scripts/superagent.js',
+    'app/scripts/toolbox.js'
+  ])
     .pipe(gulp.dest('dist/scripts'));
 
   var images = gulp.src(['app/images/mountain_outline.svg'])
