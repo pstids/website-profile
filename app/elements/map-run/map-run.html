@@ -9,9 +9,15 @@
         <div id='map'></div>
         <!-- <map-summary></map-summary> -->
     </template>
-    <script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady&sensor=false'></script>
+    <script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady'></script>
     <script>
-        var mapRun = Polymer({
+        var mapReadyTrigger = false;
+        var mapReadyEvent = new Event('MapReady');
+        window.mapReady = function () {
+            mapReadyTrigger = true;
+            window.dispatchEvent(mapReadyEvent);
+        };
+        Polymer({
             is: 'map-run',
             ready: function () {
                 this.center = {
@@ -20,7 +26,19 @@
                 };
                 this.mapObjs = [];
             },
-            mapReady: function () {
+            setData: function (data) {
+                this.data = data;
+                if (mapReadyTrigger) {
+                    this.setMap();
+                    this.setDataReady(data);
+                } else {
+                    window.addEventListener('MapReady', function() {
+                        this.setMap();
+                        this.setDataReady(this.data);
+                    }.bind(this));
+                }
+            },
+            setMap: function () {
                 this.strydDarkId = 'strydDarkStyle';
                 this.strydDarkStyle = new google.maps.StyledMapType([
                     {
@@ -67,7 +85,7 @@
                 this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
                 this.map.setMapTypeId(this.strydDarkId);
             },
-            setData: function (graphSegments) {
+            setDataReady: function (graphSegments) {
                 var i, path, step, graphSegment;
                 for (i = 0; i < this.mapObjs.length; i++) {
                     this.mapObjs[i].setMap(null);
@@ -134,9 +152,5 @@
                 this.mapObjs.push(stop);
             }
         });
-        /* exported mapReady */
-        window.mapReady = function () {
-            mapRun.mapReady();
-        };
     </script>
 </dom-module>
