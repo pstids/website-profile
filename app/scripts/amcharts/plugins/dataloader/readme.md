@@ -1,6 +1,6 @@
 # amCharts Data Loader
 
-Version: 1.0.6
+Version: 1.0.7
 
 
 ## Description
@@ -95,7 +95,7 @@ error | | Callback function to execute if file load fails
 format | json | Type of data: json, csv
 load | | Callback function to execute when file is successfully loaded (might be invoked multiple times)
 noStyles | false | If set to true no styles will be applied to "Data loading" curtain
-postProcess | | If set to function reference, that function will be called to "post-process" loaded data before passing it on to chart
+postProcess | | If set to function reference, that function will be called to "post-process" loaded data before passing it on to chart. The handler function will receive two parameters: loaded data, Data Loader options
 showErrors | true | Show loading errors in a chart curtain
 showCurtain | true| Show curtain over the chart area when loading data
 reload | 0 | Reload data every X seconds
@@ -269,6 +269,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 
 ## Changelog
+
+### 1.0.7
+* Fixed an issue with the Pie chart when it is being loaded in inactive tab
 
 ### 1.0.6
 * Added support for Gauge chart (loads "arrows" array)
