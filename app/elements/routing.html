@@ -1,40 +1,40 @@
 <script src="../bower_components/page/page.js"></script>
 <script>
-  window.addEventListener('WebComponentsReady', function() {
-    var header = document.querySelector('header-element');
-    // We use Page.js for routing. This is a Micro
-    // client-side router inspired by the Express router
-    // More info: https://visionmedia.github.io/page.js/
-    page.base('/profile');
+    window.addEventListener('WebComponentsReady', function() {
+        var header = document.querySelector('header-element');
+        // We use Page.js for routing. This is a Micro
+        // client-side router inspired by the Express router
+        // More info: https://visionmedia.github.io/page.js/
+        page.base('/profile');
 
-    page('/', function () {
-      logsFetching();
-      header.toggleActive('home');
-      app.route = 'home';
+        page('/', function () {
+            logsFetching();
+            header.toggleActive('home');
+            app.route = 'home';
+        });
+
+        page('/users', function () {
+            app.route = 'users';
+        });
+
+        page('/users/:name', function (data) {
+            app.route = 'user-info';
+            app.params = data.params;
+        });
+
+        page('/settings', function () {
+            app.route = 'settings';
+            header.toggleActive('settings');
+        });
+
+        page('/contact', function () {
+            app.route = 'contact';
+        });
+
+        // add #! before urls
+        page({
+            hashbang: false,
+        });
+
     });
-
-    page('/users', function () {
-      app.route = 'users';
-    });
-
-    page('/users/:name', function (data) {
-      app.route = 'user-info';
-      app.params = data.params;
-    });
-
-    page('/settings', function () {
-      app.route = 'settings';
-      header.toggleActive('settings');
-    });
-
-    page('/contact', function () {
-      app.route = 'contact';
-    });
-
-    // add #! before urls
-    page({
-      hashbang: false,
-    });
-
-  });
 </script>
