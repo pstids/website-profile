@@ -69,13 +69,22 @@
             font-weight: 700;
             text-transform: uppercase;
         }
+        #toast {
+            bottom: 1.5em;
+            left: 70vw;
+            width: 30vw;
+            height: 3em;
+            font-size: 1vw;
+            font-weight: 400;
+            color: var(--primary-header-color);
+        }
     </style>
     <template>
-        <div class="log" on-click="viewWorkout">
-            <div class="date">
+        <div class="log">
+            <div class="date" on-click="viewWorkout">
                 <span>{{display.date}}</span>
             </div>
-            <div class="stat">
+            <div class="stat" on-click="viewWorkout">
                 <div class="insight">
                     <iron-icon icon="communication:swap-calls"></iron-icon>
                     <div class="info">
@@ -109,18 +118,19 @@
             <div class="option">
                 <!--<iron-icon icon="editor:mode-edit"></iron-icon>-->
                 <div>
-                    <iron-icon icon="social:share"></iron-icon>
+                    <iron-icon icon="social:share" on-click="handleShare"></iron-icon>
                     <paper-tooltip>Share</paper-tooltip>
                 </div>
                 <div>
-                    <iron-icon icon="icons:file-download"></iron-icon>
+                    <iron-icon icon="icons:file-download" on-click="handleDownload"></iron-icon>
                     <paper-tooltip>Download FIT</paper-tooltip>
                 </div>
                 <div>
-                    <iron-icon icon="icons:delete"></iron-icon>
+                    <iron-icon icon="icons:delete" on-click="handleDelete"></iron-icon>
                     <paper-tooltip>Delete</paper-tooltip>
                 </div>
             </div>
+            <paper-toast id="toast" text="This feature will be released soon. Please stay tuned"></paper-toast>
         </div>
     </template>
     <script>
@@ -150,7 +160,13 @@
                 var bubbles = document.querySelector('.bubbles');
                 window.scrollTo(0, bubbles.offsetTop);
             },
-            deleteWorkout: function () {
+            handleShare: function () {
+                this.$.toast.show();
+            },
+            handleDownload: function () {
+                this.$.toast.show();
+            },
+            handleDelete: function () {
                 superagent
                         .del('/b/api/v1/activities/' + this.data.id)
                         .send()
