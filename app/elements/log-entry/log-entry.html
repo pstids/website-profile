@@ -20,6 +20,19 @@
         div.option {
             @apply(--layout-wrap);
             @apply(--layout-end-justified);
+            @apply(--layout-horizontal);
+            @apply(--layout-justified);
+        }
+        div.option div iron-icon {
+            width: 1.9vw;
+            height: auto;
+            color: var(--secondary-text-color);
+            fill: var(--secondary-text-color);
+            padding-right: 1vw;
+        }
+        div.option div:hover iron-icon {
+            color: white;
+            fill: white;
         }
         div.stat {
             @apply(--layout-flex);
@@ -56,54 +69,6 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .button {
-            padding: 0.9vw 1.1vw;
-            border: 2px solid #FFFFFF;
-            border-radius: 6px;
-            margin: 0 0.7vw;
-            cursor: pointer;
-            background-color: var(--primary-background-color);
-            color: #FFFFFF;
-            font-size: 1vw;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-        .dropdown {
-            position: relative;
-        }
-        .dropdown:hover {
-            border-bottom: none;
-        }
-        .dropdown:hover ul {
-            display: block;
-            visibility: visible;
-            opacity: 1;
-        }
-        .dropdown ul {
-            display: none;
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            padding: 0;
-            margin: 0 0 0 -2px;
-            top: 40px;
-            left: 0;
-            width: 100%;
-            border: 2px solid #FFFFFF;
-            border-top: none;
-            background-color: var(--primary-background-color);
-            -webkit-transiton: opacity 0.4s;
-            -moz-transition: opacity 0.4s;
-            -ms-transition: opacity 0.4s;
-            -o-transition: opacity 0.4s;
-            transition: opacity 0.4s;
-            z-index: 10;
-        }
-        .dropdown ul {
-            display: block;
-            z-index: 11;
-            padding: 1vw;
-        }
     </style>
     <template>
         <div class="log" on-click="viewWorkout">
@@ -112,7 +77,7 @@
             </div>
             <div class="stat">
                 <div class="insight">
-                        <iron-icon icon="communication:swap-calls"></iron-icon>
+                    <iron-icon icon="communication:swap-calls"></iron-icon>
                     <div class="info">
                         <div class="title">Distance</div>
                         <div class="field">
@@ -122,7 +87,7 @@
                     </div>
                 </div>
                 <div class="insight">
-                        <iron-icon icon="image:timer"></iron-icon>
+                    <iron-icon icon="image:timer"></iron-icon>
                     <div class="info">
                         <div class="title">Time</div>
                         <div class="field">
@@ -131,7 +96,7 @@
                     </div>
                 </div>
                 <div class="insight">
-                        <iron-icon icon="image:flash-on"></iron-icon>
+                    <iron-icon icon="image:flash-on"></iron-icon>
                     <div class="info">
                         <div class="title">Power</div>
                         <div class="field">
@@ -142,13 +107,19 @@
                 </div>
             </div>
             <div class="option">
-                <paper-dropdown-menu label="Option">
-                    <paper-tabs class="dropdown-content">
-                        <paper-tab>Duration</paper-tab>
-                        <paper-tab>Distance</paper-tab>
-                        <paper-tab>Power</paper-tab>
-                    </paper-tabs>
-                </paper-dropdown-menu>
+                <!--<iron-icon icon="editor:mode-edit"></iron-icon>-->
+                <div>
+                    <iron-icon icon="social:share"></iron-icon>
+                    <paper-tooltip>Share</paper-tooltip>
+                </div>
+                <div>
+                    <iron-icon icon="icons:file-download"></iron-icon>
+                    <paper-tooltip>Download FIT</paper-tooltip>
+                </div>
+                <div>
+                    <iron-icon icon="icons:delete"></iron-icon>
+                    <paper-tooltip>Delete</paper-tooltip>
+                </div>
             </div>
         </div>
     </template>
@@ -181,17 +152,17 @@
             },
             deleteWorkout: function () {
                 superagent
-                    .del('/b/api/v1/activities/' + this.data.id)
-                    .send()
-                    .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
-                        if (res.ok) {
-                            this.parentNode.removeChild(this);
-                        } else {
-                            console.log('failed to delete element');
-                        }
-                    }.bind(this));
+                        .del('/b/api/v1/activities/' + this.data.id)
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', 'Bearer: ' + jwt.token)
+                        .end(function(err, res) {
+                            if (res.ok) {
+                                this.parentNode.removeChild(this);
+                            } else {
+                                console.log('failed to delete element');
+                            }
+                        }.bind(this));
             }
         });
     </script>
