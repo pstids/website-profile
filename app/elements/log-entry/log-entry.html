@@ -1,7 +1,4 @@
 <dom-module id="log-entry">
-    <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-    <link rel="import" href="../../styles/app-theme.html">
-    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
     <style>
         div.log {
             @apply(--layout-horizontal);
@@ -145,14 +142,13 @@
                 </div>
             </div>
             <div class="option">
-                <div class="dropdown button">
-                    Options
-                    <iron-icon icon="arrow-drop-down"></iron-icon>
-                    <ul>
-                        <li on-click="deleteWorkout">Delete Activity</li>
-                        <!--<li on-click="editWorkout">Edit Activity</li>-->
-                    </ul>
-                </div>
+                <paper-dropdown-menu label="Option">
+                    <paper-tabs class="dropdown-content">
+                        <paper-tab>Duration</paper-tab>
+                        <paper-tab>Distance</paper-tab>
+                        <paper-tab>Power</paper-tab>
+                    </paper-tabs>
+                </paper-dropdown-menu>
             </div>
         </div>
     </template>
