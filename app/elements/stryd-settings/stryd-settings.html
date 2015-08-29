@@ -1,19 +1,248 @@
 <dom-module id="stryd-settings">
+  <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../../styles/app-theme.html">
+  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
   <style>
     :host {
-      display: block;
+      background-image: url('../../images/grassy_field.png');
+      background-size: cover;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      @apply(--layout-horizontal);
     }
-
+    h1.title {
+      @apply(--header);
+    }
+    h2.subtitle {
+      @apply(--subtitle);
+    }
+    .cover {
+      background-color: rgba(36, 36, 36, 0.5);
+      padding: 110px 0 0 0;
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      @apply(--layout-horizontal);
+    }
     form {
       margin-top: 30px;
+    }
+    .profile {
+      @apply(--layout-flex-11);
+      margin-left: 50px;
+    }
+    .settings-nav {
+      @apply(--layout-flex-3);
+      @apply(--layout-self-start);
+      background-color: rgba(36, 36, 36, 0.7);
+      border-top-right-radius: 50px;
+      border-bottom-right-radius: 50px;
+      border: 1px solid #2F2F2F;
+      border-left: none;
+    }
+    .settings-nav ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+    .settings-nav li {
+      list-style: none;
+      padding: 0;
+    }
+    .setting {
+      @apply(--layout-horizontal);
+      margin: 25px;
+      cursor: pointer;
+    }
+    .setting .icon-border {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
+      position: relative;
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
+    }
+    .setting.active .icon-border {
+      background: linear-gradient(to bottom, #77E15D 0%, #276019 100%);
+    }
+    .setting .icon {
+      width: 95%;
+      height: 95%;
+      border-radius: 50%;
+      background-color: var(--secondary-background-color);
+      position: relative;
+      @apply(--layout-vertical);
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
+      box-shadow: inset 0px 0px 6vw -3.33vw #000000;
+      color: #FFFFFF;
+      fill: #FFFFFF;
+    }
+    .setting.active .icon {
+      color: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
+      fill: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
+    }
+    .setting iron-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 40px;
+    }
+    .setting .text {
+      @apply(--layout-flex-2);
+      color: white;
+      @apply(--layout-vertical);
+      @apply(--layout-center-justified);
+      margin-left: 15px;
+      text-transform: uppercase;
+    }
+    .setting .text .type {
+      font-size: 18px;
+      line-height: 22px;
+    }
+    .setting .text .settings {
+      font-size: 10px;
+      line-height: 14px;
+    }
+    .flex-horizontal {
+      @apply(--layout-horizontal);
+    }
+    .prefs {
+      @apply(--layout-flex);
+      padding-right: 30px;
+    }
+    .platform-connect {
+      @apply(--layout-flex-3);
+    }
+    .row {
+      margin-bottom: 60px;
+    }
+    .uploader {
+      @apply(--layout-vertical);
+    }
+    .dropzone {
+      background-color: rgba(36, 36, 36, 0.7);
+      border-radius: 50px;
+      border: 1px solid #2F2F2F;
+      color: white;
+      height: 200px;
+      width: 100%;
+    }
+    .dropzone p {
+      line-height: 160px;
+      margin: 0;
+      text-align: center;
+    }
+    h1.select {
+      font-size: 10px;
+      color: var(--primary-header-color);
+      margin: 25px 0 10px 0;
+      padding: 0;
+      text-transform: uppercase;
+    }
+    select {
+      border-radius: 10px;
+      text-transform: uppercase;
+      font-size: 18px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0);
+      border: 1px solid white;
+      padding: 15px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
   </style>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
   <template>
-    <platform-connect></platform-connect>
-    <form class="dropzone" id="file"></form>
+    <div class="cover">
+      <div class="settings-nav">
+        <ul>
+          <li class="setting active">
+            <div class="icon-border">
+              <div class="icon">
+                <iron-icon icon="social:person"></iron-icon>
+              </div>
+            </div>
+            <div class="text">
+              <div class="type">Profile</div>
+              <div class="settings">Settings</div>
+            </div>
+          </li>
+          <li class="setting" on-click="notReady">
+            <div class="icon-border">
+              <div class="icon">
+                <iron-icon icon="communication:vpn-key"></iron-icon>
+              </div>
+            </div>
+            <div class="text">
+              <div class="type">Account</div>
+              <div class="settings">Settings</div>
+            </div>
+          </li>
+          <li class="setting" on-click="notReady">
+            <div class="icon-border">
+              <div class="icon">
+                <iron-icon icon="maps:directions-run"></iron-icon>
+              </div>
+            </div>
+            <div class="text">
+              <div class="type">Training</div>
+              <div class="settings">Settings</div>
+            </div>
+          </li>
+          <li class="setting" on-click="notReady">
+            <div class="icon-border">
+              <div class="icon">
+                <iron-icon icon="notification:mms"></iron-icon>
+              </div>
+            </div>
+            <div class="text">
+              <div class="type">Notification</div>
+              <div class="settings">Settings</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="profile">
+        <user-info class="row"></user-info>
+        <div class="flex-horizontal row">
+          <div class="prefs">
+            <h1 class="title">Display</h1>
+            <h2 class="subtitle">Preferences</h2>
+            <div>
+              <h1 class="select">Distance</h1>
+              <!-- <iron-icon icon="expand-more"></iron-icon> -->
+              <select name="distance">
+                <option value="mi">Miles</option>
+                <option value="km">Kilometers</option>
+              </select>
+              <h1 class="select">Weight</h1>
+              <select name="weight">
+                <option value="lb">Pounds</option>
+                <option value="kg">Kilograms</option>
+              </select>
+            </div>
+          </div>
+          <div class="platform-connect">
+            <platform-connect></platform-connect>
+          </div>
+        </div>
+        <div class="uploader row">
+          <h1 class="title">Upload</h1>
+          <form class="dropzone" id="file">
+            <p>Drop your FIT file here to upload (Or click to select from computer)</p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <paper-toast duration="1300" text="This feature is not ready." id="toast"></paper-toast>
   </template>
-  <script src="../../scripts/jwt.js"></script>
   <script src="../../scripts/dropzone.js"></script>
   <script>
     /*global Dropzone*/
@@ -39,7 +268,7 @@
               acceptedFiles: '.fit',
               uploadMultiple: false,
               addRemoveLinks: true,
-              dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
+              dictDefaultMessage: '',
               dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
               accept: function (file, done) {
                 done();
@@ -64,6 +293,9 @@
               }
             });
           }
+        },
+        notReady: function () {
+          this.$.toast.show();
         }
       });
   </script>

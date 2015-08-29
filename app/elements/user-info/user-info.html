@@ -1,13 +1,281 @@
 <dom-module id="user-info">
+	<link rel="import" href="../../styles/app-theme.html">
+	<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+	<style>
+		:host {
+			@apply(--layout-horizontal);
+		}
+		h1.title {
+			@apply(--header);
+		}
+		.edit {
+			@apply(--subtitle);
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-khtml-user-select: none;
+			-ms-user-select: none;
+		}
+		.image {
+			@apply(--layout-flex-4);
+			@apply(--layout-center-justified);
+			text-align: center;
+			padding: 0 15px;
+			color: white;
+		}
+		.image img {
+			width: 175px;
+			height: 175px;
+			border-radius: 50%;
+			border: 6px solid #484846;
+		}
+		.image h1 {
+			font-size: 26px;
+			color: white;
+			text-transform: uppercase;
+			line-height: 48px;
+			margin: 0;
+			padding: 0;
+		}
+		.image .logout {
+			font-size: 16px;
+			line-height: 24px;
+			margin: 0;
+			padding: 0;
+		}
+		.details {
+			@apply(--layout-flex-6);
+			@apply(--flex-layout-vertical);
+			padding: 0 15px;
+		}
+		.about-me {
+			@apply(--layout-flex-6);
+			padding: 0 15px;
+		}
+		.about-me p {
+			font-weight: 300;
+			font-size: 14px;
+			color: white;
+			line-height: 1.8;
+		}
+		.information {
+			@apply(--layout-horizontal);
+			padding: 15px 0;
+		}
+		.information .info {
+			text-transform: uppercase;
+		}
+		.information .info h1 {
+			font-size: 10px;
+			color: var(--primary-header-color);
+			margin: 0;
+			padding: 0;
+		}
+		.information .info p {
+			font-size: 26px;
+			font-weight: 700;
+			margin: 0;
+			padding: 0;
+			color: white;
+		}
+		.info.big {
+			@apply(--layout-flex-10);
+		}
+		.info.small {
+			@apply(--layout-flex-5);
+		}
+		[option="display"] .editable {
+			display: none;
+		}
+		[option="editable"] .display {
+			display: none;
+		}
+		input[type=text] {
+			background: transparent;
+			border: none;
+			border-bottom: 1px solid var(--primary-background-color);
+			width: 100px;
+			outline: none;
+			padding: 7px 0;
+			font-weight: 700;
+			color: white;
+		}
+		input[type=text]:focus {
+			border-bottom: 1px solid var(--primary-header-color);
+		}
+		*::-webkit-input-placeholder {
+			color: white;
+			font-weight: 300;
+		}
+		*:-moz-placeholder {
+			color: white;
+			font-weight: 300;
+		}
+		*::-moz-placeholder {
+			color: white;
+			font-weight: 300;
+		}
+		*:-ms-input-placeholder {
+			color: white;
+			font-weight: 300;
+		}
+	</style>
+	<template>
+		<div class="image">
+			<img src="{{user.profile}}">
+			<h1>{{user.name}}</h1>
+			<p class="logout" on-click="logout">Logout?</p>
+		</div>
+		<div class="details" option="display" id="details">
+			<h1 class="title">Details</h1>
+			<div class="edit" on-click="toggleEditDetails">
+				<iron-icon class="display" icon="editor:mode-edit"></iron-icon>
+				<span class="display">Edit</span>
+				<iron-icon class="editable" icon="image:tag-faces"></iron-icon>
+				<span class="editable">Update Details</span>
+			</div>
+			<div class="information">
+				<div class="info big">
+					<h1>Date of Birth</h1>
+					<p class="display">
+						<span>{{user.birth.month}}</span>/<span>{{user.birth.day}}</span>/<span>{{user.birth.year}}</span>
+					</p>
+					<input type="text" placeholder="Month" class="editable" name="month" value="{{user.birth.month::input}}">
+					<input type="text" placeholder="Day" class="editable" name="day" value="{{user.birth.day::input}}">
+					<input type="text" placeholder="Year" class="editable" name="year" value="{{user.birth.year::input}}">
+				</div>
+				<div class="info small">
+					<h1>Age</h1>
+					<p>21</p>
+				</div>
+			</div>
+			<div class="information">
+				<div class="info big">
+					<h1>Gender</h1>
+					<p class="display">{{user.gender}}</p>
+					<input type="text" placeholder="Gender" class="editable" name="gender" value="{{user.gender::input}}">
+				</div>
+				<div class="info small">
+					<h1>Height (<span>{{heightUnit()}}</span>)</h1>
+					<p class="display">{{user.height.value}}</p>
+					<input type="text" placeholder="Height" class="editable" name="height" value="{{user.height::input}}">
+				</div>
+			</div>
+			<div class="information">
+				<div class="info big">
+					<h1>Location</h1>
+					<p class="display">
+						<span>{{user.city}}</span>,
+						<span>{{user.state}}</span>
+					</p>
+					<input type="text" placeholder="City" class="editable" name="city" value="{{user.city::input}}">
+					<input type="text" placeholder="State" class="editable" name="state" value="{{user.state::input}}">
+				</div>
+				<div class="info small">
+					<h1>Weight (<span>{{weightUnit()}}</span>)</h1>
+					<p class="display">{{user.weight}}</p>
+					<input type="text" placeholder="Weight" class="editable" name="weight" value="{{user.weight::input}}">
+				</div>
+			</div>
+		</div>
+		<div class="about-me" option="display" id="about">
+			<h1 class="title">About Me</h1>
+			<div class="edit" on-click="toggleEditAbout">
+				<iron-icon class="display" icon="editor:mode-edit"></iron-icon>
+				<span class="display">Edit</span>
+				<iron-icon class="editable" icon="image:tag-faces"></iron-icon>
+				<span class="editable">Update Details</span>
+			</div>
+			<p class="display">{{user.about}}</p>
+			<input type="text" placeholder="About" class="editable" name="about" value="{{user.about::input}}">
+		</div>
+		<paper-toast duration="1300" text="" id="toast"></paper-toast>
+	</template>
+	<script src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
 	<script>
-
+		/*global CryptoJS*/
 		Polymer({
 			is: 'user-info',
-			user: {
-
+			properties: {
+				user: {
+					type: Object,
+					notify: true
+				}
 			},
-			ready: {
-
+			ready: function () {
+				this.user = {
+					birth: {
+						day: '30',
+						month: '12',
+						year: '93'
+					},
+					gender: user.data.gender,
+					height: user.data.height,
+					city: user.data.city,
+					state: user.data.city,
+					weight: user.data.weight,
+					name: user.data.user_name,
+					profile: this.setProfileIMG(),
+					about: user.data.about,
+					units: user.data.units
+				};
+				console.log(this.user);
+			},
+			logout: function () {
+				jwt.logout();
+			},
+			saveDetails: function () {
+				superagent
+					.put('/b/api/v1/users/' + user.id)
+					.send(this.user)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'Bearer: ' + jwt.token)
+					.end(function(err, res) {
+						if (res.ok) {
+							this.$.toast.text = 'Details updated!';
+						} else {
+							this.$.toast.text = 'Details not updated. Please try again.';
+						}
+						this.$.toast.show();
+					}.bind(this));
+			}
+			setProfileIMG: function () {
+				this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
+				if (user.data.profile !== '') {
+					return decodeURIComponent(user.data.profile.replace('+', ' '));
+				} else {
+					var gravHash = CryptoJS.MD5(user.data.email.toLowerCase());
+					return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
+				}
+			},
+			toggleEditDetails: function () {
+				var options = this.$.details.getAttribute('option');
+				if (options === 'display') {
+					this.$.details.setAttribute('option', 'editable');
+				} else {
+					this.$.details.setAttribute('option', 'display');
+				}
+			},
+			toggleEditAbout: function () {
+				var options = this.$.about.getAttribute('option');
+				if (options === 'display') {
+					this.$.about.setAttribute('option', 'editable');
+				} else {
+					this.$.about.setAttribute('option', 'display');
+				}
+			},
+			weightUnit: function () {
+				if (user.units === 'feets') {
+					return 'lbs';
+				} else {
+					return 'kg';
+				}
+			},
+			heightUnit: function () {
+				if (user.units === 'feets') {
+					return 'inches';
+				} else {
+					return 'centimeters';
+				}
 			}
 		});
 	</script>
