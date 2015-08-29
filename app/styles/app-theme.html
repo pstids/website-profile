@@ -36,9 +36,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         --dark-background-color: #1C1C1C;
 
-        --dark-primary-color: #303F9F;
-        --default-primary-color: #3F51B5;
+        --default-primary-color: #F5A214;
         --light-primary-color: #C5CAE9;
+        --light-secondary-color: #A6A6A6;
         --text-primary-color: #ffffff; /*text/icons*/
         --accent-color: #FF4081;
         --disabled-text-color: #bdbdbd;
@@ -52,7 +52,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
 
         /* paper-menu */
-        --paper-menu-background-color: #fff;
+        --paper-menu-background-color: var(--dark-background-color);
         --menu-link-color: #111111;
 
         --header: {
@@ -64,13 +64,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     /* General styles */
-
-    #drawerToolbar {
-        color: var(--secondary-text-color);
-        background-color: var(--drawer-menu-color);
-        border-bottom: var(--drawer-toolbar-border-color);
-    }
-
     paper-scroll-header-panel {
         height: 100%;
     }
@@ -132,7 +125,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     /* Small */
     @media (max-width: 600px) {
-
         paper-material {
             --menu-container-display: none;
             width: calc(97.33% - 32px);

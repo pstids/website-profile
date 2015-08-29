@@ -1,7 +1,4 @@
 <dom-module id="workout-element">
-    <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-    <link rel="import" href="../../styles/app-theme.html">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
     <style>
         section {
@@ -499,7 +496,8 @@
                         'verticalPadding': 4,
                         'horizontalPadding': 8
                     },
-                    'dataProvider': this.chartData
+                    'dataProvider': this.chartData,
+                    'pathToImages': 'https://www.stryd.com/profile/scripts/amcharts/images/'
                 }, 100);
                 this.chart.addListener('init', function (e) {
                     this.$.spinner.classList.add('fade');

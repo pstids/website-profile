@@ -25,7 +25,7 @@ var truncate = function (n) {
     var parts = String(n).split('.');
     var shortened = '';
     if (parts.length > 1) {
-        shortened =  parts[0] + '.' + parts[1].substring(0, 2);
+        shortened =  parts[0] + '.' + parts[1].substring(0, 1);
     } else {
         shortened =  parts[0];
     }

@@ -1,214 +1,212 @@
 <dom-module id="header-element">
-    <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-    <link rel="import" href="../../styles/app-theme.html">
-    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-    <style>
-        :host {
-            display: block;
-            font-size: 10px;
-        }
-        a {
-            text-decoration: none;
-        }
-        a:hover {
-            color: inherit;
-        }
-
-        header {
-            @apply(--layout-horizontal);
-            background-color: var(--primary-background-color);
-            height: 100px;
-        }
-
-        .logo {
-            background-color: var(--accent-background-color);
-            color: var(--accent-text-color);
-            font-family: "Stryd", sans-serif;
-            @apply(--layout-start-justified);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            border-bottom: 2px solid var(--accent-background-color);
-        }
-        .logo a {
-            @apply(--layout-flex-auto);
-            margin-left: 4em;
-        }
-        .logo h1 {
-            color: var(--accent-text-color);
-            font-weight: 700;
-            display: block;
-            font-size: 2.67vw;
-            margin: 0;
-            padding: 0;
-            letter-spacing: 2px;
-        }
-        .logo p {
-            font-size: 0.8vw;
-            font-weight: 400;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-        .logo .slant {
-            @apply(--layout-flex);
-            border-left: 5vw solid transparent;
-            border-bottom: calc(100px - 2px) solid var(--primary-background-color);
-        }
-
-        ul.navigation {
-            @apply(--layout-flex-5);
-            @apply(--layout-horizontal);
-            @apply(--layout-around-justified)
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            text-transform: uppercase;
-        }
-        ul.navigation li {
-            @apply(--layout-flex);
-            text-align: center;
-            border-bottom: 2px solid var(--accent-background-color);
-            color: #FFFFFF;
-        }
-        ul.navigation li.active {
-            color: var(--accent-background-color) !important;
-        }
-        ul.navigation li a {
-            line-height: 100px;
-            font-size: 1.1vw;
-            font-weight: 500;
-            color: inherit;
-            display: inline-block;
-        }
-        ul.navigation li.active a {
-            background-size: 100% 60%;
-            background-image: url('../../images/mountain_outline.png');
-            background-position: center bottom;
-            background-repeat: no-repeat;
-            background-color: var(--primary-background-color);
-            z-index: 2;
-            position: relative;
-        }
-        ul.navigation li:hover {
-            color: var(--accent-background-color);
-        }
-
-        div.space-taker {
-            @apply(--layout-flex);
-            border-bottom: 2px solid var(--accent-background-color);
-        }
-
-        div.insights {
-            @apply(--layout-flex-6);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            list-style: none;
-            margin: 0;
-            color: #FFFFFF;
-            border-bottom: 2px solid var(--accent-background-color);
-        }
-        div.insights-header {
-            @apply(--layout-flex);
-            @apply(--layout-vertical);
-            @apply(--layout-center);
-            @apply(--layout-center-justified);
-            padding: 0.3vw 0 0.3vw 0;
-            margin-right: 1vw;
-            color: #efefef;
-            letter-spacing: 2px;
-            border-top: 1px solid var(--accent-background-color);
-            border-bottom: 1px solid var(--accent-background-color);
-        }
-        div.insights-header .title {
-            font-size: 1.4vw;
-        }
-        div.insights-header .subtitle {
-            font-size: 0.6vw;
-            font-weight: 700;
-        }
-        .insight {
-            @apply(--layout-flex-3);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            color: #FFFFFF;
-        }
-        .insight iron-icon {
-            @apply(--layout-flex-3);
-            width: 100%;
-            height: 100%;
-            margin-right: 1vw;
-            color: var(--primary-icon-color);
-            fill: var(--primary-icon-color);
-        }
-        .insight .info {
-            @apply(--layout-flex-8);
-            @apply(--layout-vertical);
-        }
-        .insight .info .title {
-            font-size: 0.67vw;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .insight .value {
-            font-size: 2vw;
-            font-weight: 700;
-            padding-right: 0.2em;
-        }
-        .insight .unit {
-            font-size: 1.5vw;
-            font-weight: 700;
-        }
-
-        .profile {
-            @apply(--layout-flex-2);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            border-bottom: 2px solid var(--accent-background-color);
-            padding-right: 2vw;
-        }
-        .profile .text {
-            @apply(--layout-flex);
-            @apply(--layout-end-justified);
-            text-align: right;
-            margin-right: 1.33vw;
-        }
-        .profile .text .hello {
-            color: var(--primary-header-color);
-            font-size: 0.8vw;
-            font-weight: 400;
-            text-transform: uppercase;
-        }
-        .profile .text .name {
-            font-size: 1.2vw;
-            line-height: 5vh;
-            color: #FFFFFF;
-            font-weight: 700;
-            text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .profile .text .logout {
-            font-size: 0.67vw;
-            color: #FFFFFF;
-            cursor: pointer;
-        }
-        .profile img {
-            border-radius: 50%;
-            width: 5.5vw;
-            height: auto;
-        }
-        .profile a {
-            display: block;
-            padding: 1em;
-            height: 1em;
-            font-size: 1vw;
-            font-weight: 500;
-        }
-        .profile a:hover {
-            color: #F5A214;
-        }
-    </style>
     <template>
+        <style>
+            :host {
+                display: block;
+                font-size: 10px;
+                min-height: 100px;
+            }
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                color: inherit;
+            }
+
+            header {
+                @apply(--layout-horizontal);
+                background-color: var(--primary-background-color);
+                height: 100px;
+            }
+
+            .logo {
+                background-color: var(--accent-background-color);
+                color: var(--accent-text-color);
+                font-family: "Stryd", sans-serif;
+                @apply(--layout-start-justified);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                border-bottom: 2px solid var(--accent-background-color);
+            }
+            .logo a {
+                @apply(--layout-flex-auto);
+                margin-left: 4em;
+            }
+            .logo h1 {
+                color: var(--accent-text-color);
+                font-weight: 700;
+                display: block;
+                font-size: 2.67vw;
+                margin: 0;
+                padding: 0;
+                letter-spacing: 2px;
+            }
+            .logo p {
+                font-size: 0.8vw;
+                font-weight: 400;
+                color: white;
+                margin: 0;
+                padding: 0;
+            }
+            .logo .slant {
+                @apply(--layout-flex);
+                border-left: 5vw solid transparent;
+                border-bottom: calc(100px - 2px) solid var(--primary-background-color);
+            }
+
+            ul.navigation {
+                @apply(--layout-flex-5);
+                @apply(--layout-horizontal);
+                @apply(--layout-around-justified)
+            list-style: none;
+                margin: 0;
+                padding: 0;
+                text-transform: uppercase;
+            }
+            ul.navigation li {
+                @apply(--layout-flex);
+                text-align: center;
+                border-bottom: 2px solid var(--accent-background-color);
+                color: #FFFFFF;
+            }
+            ul.navigation li.active {
+                color: var(--accent-background-color) !important;
+            }
+            ul.navigation li a {
+                line-height: 100px;
+                font-size: 1.1vw;
+                font-weight: 500;
+                color: inherit;
+                display: inline-block;
+            }
+            ul.navigation li.active a {
+                background-size: 100% 60%;
+                background-image: url('../../images/mountain_outline.png');
+                background-position: center bottom;
+                background-repeat: no-repeat;
+                background-color: var(--primary-background-color);
+                z-index: 2;
+                position: relative;
+            }
+            ul.navigation li:hover {
+                color: var(--accent-background-color);
+            }
+
+            div.space-taker {
+                @apply(--layout-flex);
+                border-bottom: 2px solid var(--accent-background-color);
+            }
+
+            div.insights {
+                @apply(--layout-flex-6);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                list-style: none;
+                margin: 0;
+                color: #FFFFFF;
+                border-bottom: 2px solid var(--accent-background-color);
+            }
+            div.insights-header {
+                @apply(--layout-flex);
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+                @apply(--layout-center-justified);
+                padding: 0.3vw 0 0.3vw 0;
+                margin-right: 1vw;
+                color: #efefef;
+                letter-spacing: 2px;
+                border-top: 1px solid var(--accent-background-color);
+                border-bottom: 1px solid var(--accent-background-color);
+            }
+            div.insights-header .title {
+                font-size: 1.4vw;
+            }
+            div.insights-header .subtitle {
+                font-size: 0.6vw;
+                font-weight: 700;
+            }
+            .insight {
+                @apply(--layout-flex-3);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                color: #FFFFFF;
+            }
+            .insight iron-icon {
+                @apply(--layout-flex-3);
+                width: 100%;
+                height: 100%;
+                margin-right: 1vw;
+                color: var(--primary-icon-color);
+                fill: var(--primary-icon-color);
+            }
+            .insight .info {
+                @apply(--layout-flex-8);
+                @apply(--layout-vertical);
+            }
+            .insight .info .title {
+                font-size: 0.67vw;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+            .insight .value {
+                font-size: 2vw;
+                font-weight: 700;
+                padding-right: 0.2em;
+            }
+            .insight .unit {
+                font-size: 1.5vw;
+                font-weight: 700;
+            }
+
+            .profile {
+                @apply(--layout-flex-2);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                border-bottom: 2px solid var(--accent-background-color);
+                padding-right: 2vw;
+            }
+            .profile .text {
+                @apply(--layout-flex);
+                @apply(--layout-end-justified);
+                text-align: right;
+                margin-right: 1.33vw;
+            }
+            .profile .text .hello {
+                color: var(--primary-header-color);
+                font-size: 0.8vw;
+                font-weight: 400;
+                text-transform: uppercase;
+            }
+            .profile .text .name {
+                font-size: 1.2vw;
+                line-height: 5vh;
+                color: #FFFFFF;
+                font-weight: 700;
+                text-transform: uppercase;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            .profile .text .logout {
+                font-size: 0.67vw;
+                color: #FFFFFF;
+                cursor: pointer;
+            }
+            .profile img {
+                border-radius: 50%;
+                width: 5.5vw;
+                height: auto;
+            }
+            .profile a {
+                display: block;
+                padding: 1em;
+                height: 1em;
+                font-size: 1vw;
+                font-weight: 500;
+            }
+            .profile a:hover {
+                color: #F5A214;
+            }
+        </style>
         <header>
             <div class="logo">
                 <a href="/">
@@ -229,44 +227,44 @@
                 </li>
             </ul>
             <div class="space-taker"></div>
-                <div class="insights">
-                    <div class="insights-header">
-                        <div class="subtitle">WEEK</div>
-                        <div class="title">{{weekly.week_num}}</div>
-                    </div>
-                    <div class="insight">
-                        <iron-icon icon="image:timer"></iron-icon>
-                        <div class="info">
-                            <div class="title">Run Time</div>
-                            <div class="field">
-                                <span class="value">{{weekly.total_time}}</span>
-                                <span class="unit">HR</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="insight">
-                        <iron-icon icon="communication:swap-calls"></iron-icon>
-                        <div class="info">
-                            <div class="title">Distance</div>
-                            <div class="field">
-                                <span class="value">{{weekly.total_distance}}</span>
-                                <span class="unit">KM</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="insight">
-                        <iron-icon icon="image:flash-on"></iron-icon>
-                        <div class="info">
-                            <div class="title">
-                                Avg Power
-                            </div>
-                            <div class="field">
-                                <span class="value">{{weekly.average_power}}</span>
-                                <span class="unit">W</span>
-                            </div>
+            <div class="insights">
+                <div class="insights-header">
+                    <div class="subtitle">WEEK</div>
+                    <div class="title">{{weekly.week_num}}</div>
+                </div>
+                <div class="insight">
+                    <iron-icon icon="image:timer"></iron-icon>
+                    <div class="info">
+                        <div class="title">Run Time</div>
+                        <div class="field">
+                            <span class="value">{{weekly.total_time}}</span>
+                            <span class="unit">HR</span>
                         </div>
                     </div>
                 </div>
+                <div class="insight">
+                    <iron-icon icon="communication:swap-calls"></iron-icon>
+                    <div class="info">
+                        <div class="title">Distance</div>
+                        <div class="field">
+                            <span class="value">{{weekly.total_distance}}</span>
+                            <span class="unit">KM</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="insight">
+                    <iron-icon icon="image:flash-on"></iron-icon>
+                    <div class="info">
+                        <div class="title">
+                            Avg Power
+                        </div>
+                        <div class="field">
+                            <span class="value">{{weekly.average_power}}</span>
+                            <span class="unit">W</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
             <div class="profile">
                 <div class="text">
@@ -300,7 +298,7 @@
                 jwt.logout();
             },
             setProfileIMG: function () {
-                if (jwt.data.image !== '') {
+                if (jwt.data.image !== undefined) {
                     this.profileImage = decodeURIComponent(jwt.data.image.replace('+', ' '));
                 } else {
                     var gravHash = CryptoJS.MD5(jwt.data.email.toLowerCase());
@@ -317,21 +315,21 @@
             },
             grabStats: function () {
                 superagent
-                    .get('/b/api/v1/activities/weekly-stat')
-                    .send()
-                    .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
-                        if (res.ok) {
-                            var incomingWeekly = res.body;
-                            incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
-                            incomingWeekly.total_distance = meterToKM(res.body.total_distance);
-                            incomingWeekly.average_power = Math.round(res.body.average_power);
-                            this.weekly = incomingWeekly;
-                        } else {
-                            console.log('failed to get weekly stat');
-                        }
-                    }.bind(this));
+                        .get('/b/api/v1/activities/weekly-stat')
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', 'Bearer: ' + jwt.token)
+                        .end(function(err, res) {
+                            if (res.ok) {
+                                var incomingWeekly = res.body;
+                                incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
+                                incomingWeekly.total_distance = meterToKM(res.body.total_distance);
+                                incomingWeekly.average_power = Math.round(res.body.average_power);
+                                this.weekly = incomingWeekly;
+                            } else {
+                                console.log('failed to get weekly stat');
+                            }
+                        }.bind(this));
             }
         });
     </script>

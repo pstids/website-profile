@@ -1,9 +1,5 @@
 <dom-module id="log-book">
-    <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-    <link rel="import" href="../../bower_components/iron-icons/image-icons.html">
     <link rel="import" href="../log-entry/log-entry.html">
-    <link rel="import" href="../../styles/app-theme.html">
-    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
     <style>
         section {
             background-color: var(--dark-background-color);
@@ -23,18 +19,6 @@
             @apply(--layout-horizontal);
             @apply(--layout-around-justified);
         }
-        .button {
-            padding: 0.9vw 1.1vw;
-            border: 2px solid #FFFFFF;
-            border-radius: 6px;
-            margin: 0 0.7vw;
-            cursor: pointer;
-            background-color: var(--primary-background-color);
-            color: #FFFFFF;
-            font-size: 1vw;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
         .logs .seperator {
             @apply(--layout-horizontal);
             border-bottom: 1px solid #4E4E4E;
@@ -48,48 +32,43 @@
         .logs .seperator .year {
             @apply(--layout-flex-4);
         }
-        .dropdown {
-            position: relative;
+
+        .horizontal-section {
+            text-align: center;
+            @apply(--layout-flex-4);
         }
-        .dropdown:hover {
-            border-bottom: none;
+        .vertical-section {
+            text-align: center;
+            @apply(--layout-flex-2);
         }
-        .dropdown:hover ul {
+        paper-dropdown-menu {
+            text-align: left;
+        }
+        paper-menu {
             display: block;
-            visibility: visible;
-            opacity: 1;
         }
-        .dropdown ul {
-            display: none;
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            padding: 0;
-            margin: 0 0 0 -2px;
-            top: 40px;
-            left: 0;
-            width: 100%;
-            border: 2px solid #FFFFFF;
-            border-top: none;
-            background-color: var(--primary-background-color);
-            -webkit-transiton: opacity 0.4s;
-            -moz-transition: opacity 0.4s;
-            -ms-transition: opacity 0.4s;
-            -o-transition: opacity 0.4s;
-            transition: opacity 0.4s;
-            z-index: 10;
+        paper-tab {
+            width: 4vw;
+            color: white;
         }
-        .dropdown li {
-            display: block;
-            z-index: 11;
-            padding: 10px;
-        }
+
         .full-log {
             margin: 0 auto;
             margin-top: 4vw;
             text-align: center;
             width: 13vw;
             font-size: 1.2vw;
+        }
+        .button {
+            padding: 0.9vw 1.1vw;
+            border: 2px solid #FFFFFF;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: var(--primary-background-color);
+            color: #FFFFFF;
+            font-size: 1vw;
+            font-weight: 500;
+            text-transform: uppercase;
         }
     </style>
     <template>
@@ -100,21 +79,23 @@
                     <h1 class="header">Run History</h1>
                 </div>
                 <div class="filters">
-                    <div class="filter dropdown button">
-                        Sort by
-                        <iron-icon icon="arrow-drop-down"></iron-icon>
-                        <ul>
-                            <li>Duration</li>
-                            <li>Distance</li>
-                            <li>Power</li>
-                        </ul>
+                    <div class="horizontal-section">
+                        <paper-dropdown-menu label="Sort By" id="sortDropdown">
+                            <paper-tabs class="dropdown-content" selected="0">
+                                <paper-tab>Date</paper-tab>
+                                <paper-tab>Duration</paper-tab>
+                                <paper-tab>Distance</paper-tab>
+                                <paper-tab>Power</paper-tab>
+                            </paper-tabs>
+                        </paper-dropdown-menu>
                     </div>
-                    <div class="filter dropdown button">
-                        Ascending
-                        <iron-icon icon="arrow-drop-down"></iron-icon>
-                        <ul>
-                            <li>Decending</li>
-                        </ul>
+                    <div class="vertical-section">
+                        <paper-dropdown-menu label="Order" id="orderDropdown">
+                            <paper-menu class="dropdown-content" selected="0">
+                                <paper-item>Decending</paper-item>
+                                <paper-item>Ascending</paper-item>
+                            </paper-menu>
+                        </paper-dropdown-menu>
                     </div>
                 </div>
             </div>
@@ -127,6 +108,14 @@
     <script>
         Polymer({
             is: 'log-book',
+            listeners: {
+                'orderDropdown.mouseenter': '',
+                'orderDropdown.mouseleave': '',
+                'sortDropdown.mouseenter': '',
+                'sortDropdown.mouseleave': '',
+            },
+            attached: function() {
+            },
             populateLogs: function (logs) {
                 while (this.$.logContainer.firstChild) {
                     this.$.logContainer.removeChild(this.$.logContainer.firstChild);
