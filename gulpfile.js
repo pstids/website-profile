@@ -86,6 +86,7 @@ gulp.task('jshint', function () {
         'workoutFetching',
         'logsProcessing',
         'logsFetching',
+        'sampleFetching',
         'truncate',
         'fillZero',
         'hmsTime',

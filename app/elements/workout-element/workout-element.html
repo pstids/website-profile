@@ -1,6 +1,12 @@
 <dom-module id="workout-element">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
     <style>
+        .sample {
+            display: none;
+        }
+        :host.sample .sample {
+            display: block;
+        }
         section {
             @apply(--layout);
             @apply(--layout-vertical);
@@ -8,6 +14,9 @@
         }
         h1.header {
             @apply(--header);
+        }
+        h2.subtitle {
+            @apply(--subtitle);
         }
         .chart {
             display: block;
@@ -190,6 +199,7 @@
         </div>
         <section>
             <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
+            <h2 class="subtitle sample" style="padding: 0px 0px 0px 50px;">Sample Data</h2>
             <div class="bubbles">
                 <bubble-stat type="avg_power" title="Average Power" unit="Watts" icon="image:flash-on"></bubble-stat>
                 <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run"></bubble-stat>
@@ -198,7 +208,10 @@
                 <bubble-stat type="time" title="Run Time" unit="HH:MM.SS" icon="image:timer"></bubble-stat>
             </div>
             <div class="options">
-                <h1 class="header">Chart</h1>
+                <div>
+                    <h1 class="header">Chart</h1>
+                    <h2 class="subtitle sample">Sample Data</h2>
+                </div>
                 <div class="toggles">
                     <div class="heartRate toggle" data-toggle="on" on-click="toggle" data-graph="heartRate">
                         <div class="type">Heart Rate</div>

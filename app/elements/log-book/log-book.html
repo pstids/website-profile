@@ -1,12 +1,21 @@
 <dom-module id="log-book">
     <link rel="import" href="../log-entry/log-entry.html">
     <style>
+        .sample {
+            display: none;
+        }
+        :host.sample .sample {
+            display: block;
+        }
         section {
             background-color: var(--dark-background-color);
             padding: 4vw;
         }
         h1.header {
             @apply(--header);
+        }
+        h2.subtitle {
+            @apply(--subtitle);
         }
         .subnav {
             @apply(--layout-horizontal);
@@ -77,6 +86,7 @@
             <div class="subnav">
                 <div class="title">
                     <h1 class="header">Run History</h1>
+                    <h2 class="subtitle sample">Sample Data</h2>
                 </div>
                 <div class="filters">
                     <div class="horizontal-section">
@@ -114,16 +124,23 @@
             },
             attached: function() {
             },
+            sampleLog: function () {
+                sampleFetching();
+            },
             populateLogs: function (logs) {
                 while (this.$.logContainer.firstChild) {
                     this.$.logContainer.removeChild(this.$.logContainer.firstChild);
                 }
-                var log, logEle, i;
-                for (i = 0; i < logs.length; i++) {
-                    log = logs[i];
-                    logEle = document.createElement('log-entry');
-                    logEle.setData(log);
-                    this.$.logContainer.appendChild(logEle);
+                if (logs.length === 0) {
+                    this.sampleLog();
+                } else {
+                    var log, logEle, i;
+                    for (i = 0; i < logs.length; i++) {
+                        log = logs[i];
+                        logEle = document.createElement('log-entry');
+                        logEle.setData(log);
+                        this.$.logContainer.appendChild(logEle);
+                    }
                 }
             }
         });
