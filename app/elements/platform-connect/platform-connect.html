@@ -7,8 +7,8 @@
       display: block;
     }
 
-    .panel {
-      overflow: auto;
+    h1.title {
+      @apply(--header);
     }
 
     .authenticate {
@@ -26,17 +26,6 @@
       @apply(--layout-flex-1);
     }
 
-    paper-button.connect {
-      color: #fff;
-      background-color: var(--paper-green-500);
-      --paper-button-flat-focus-color: var(--paper-green-50);
-    }
-
-    paper-button.disconnect {
-      color: var(--paper-red-500);
-      --paper-button-flat-focus-color: var(--paper-red-50);
-    }
-
     [data-toggle="on"] .disconnected {
       display: none;
     }
@@ -48,42 +37,94 @@
     [data-toggle="off"] .connected {
       display: none;
     }
+
+    .table {
+      @apply(--layout-vertical);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .table a {
+      text-decoration: none;
+      color: white;
+    }
+    .table .td {
+      @apply(--layout-flex);
+    }
+    .thead {
+      color: var(--primary-header-color);
+      font-size: 10px;
+      @apply(--layout-horizontal);
+      padding: 20px 0;
+    }
+    .tbody {
+      color: white;
+      font-size: 12px;
+      @apply(--layout-horizontal);
+      border-top: 1px solid rgba(255, 255, 255, 0.5);
+      padding: 20px 0;
+    }
+    .table .connected {
+      color: #57EC48;
+    }
+    .table .disconnected {
+      color: #C34838;
+    }
+    .clickable {
+      cursor: pointer;
+    }
   </style>
   <template>
-    <section class="panel paper-font-body1">
-      <div class="authenticate" id="garmin" data-toggle="off">
-        <div class="status">
-          <div class="connected">Connected with Garmin</div>
-          <div class="disconnected">Not connected with Garmin</div>
-        </div>
-        <div class="action">
-          <paper-button raised class="connect disconnected" connect="garmin" on-click="oauthConnect">Connect</paper-button>
-          <a href="/b/platform/oauth/garmin/disconnect" class="btn btn-danger connected hidden">Disconnect</a>
-        </div>
+    <h1 class="title">Applications</h1>
+    <div class="table">
+      <div class="thead">
+        <div class="td">Application</div>
+        <div class="td">Link</div>
+        <div class="td">Status</div>
+        <div class="td"></div>
       </div>
-      <div class="authenticate" id="strava" data-toggle="off">
-        <div class="status">
-          <div class="connected">Connected with Strava</div>
-          <div class="disconnected">Not connected with Strava</div>
+      <div class="tbody" data-toggle="off" id="garmin">
+        <div class="td">Garmin</div>
+        <div class="td">
+          <a href="https://www.garmin.com">www.garmin.com</a>
         </div>
-        <div class="action">
-          <paper-button raised class="connect disconnected" connect="strava" on-click="oauthConnect">Connect</paper-button>
-          <a href="/b/platform/oauth/strava/disconnect" class="btn btn-danger connected hidden">Disconnect</a>
+        <div class="td connected">
+          Connected
         </div>
+        <div class="td disconnected">
+          Disconnected
+        </div>
+        <div class="td disonnected clickable" connect="garmin" on-click="oauthConnect">Connect?</div>
+        <div class="td connected clickable">Disconnect?</div>
       </div>
-      <div class="authenticate" id="trainingpeaks" data-toggle="off">
-        <div class="status">
-          <div class="connected">Connected with Training Peaks</div>
-          <div class="disconnected">Not connected with Training Peaks</div>
+      <div class="tbody" data-toggle="off" id="strava">
+        <div class="td">Strava</div>
+        <div class="td">
+          <a href="https://www.strava.com">www.strava.com</a>
         </div>
-        <div class="action">
-          <paper-button raised class="connect disconnected" connect="trainingpeaks" on-click="oauthConnect">Connect</paper-button>
-          <a href="/b/platform/oauth/trainingpeaks/disconnect" class="connected hidden">
-            <paper-button class="disconnect">Disconnect</paper-button>
-          </a>
+        <div class="td connected">
+          Connected
         </div>
+        <div class="td disconnected">
+          Disconnected
+        </div>
+        <div class="td disonnected clickable" connect="strava" on-click="oauthConnect">Connect?</div>
+        <div class="td connected clickable">Disconnect?</div>
       </div>
-    </section>
+      <div class="tbody" data-toggle="off" id="trainingpeaks">
+        <div class="td">Training Peaks</div>
+        <div class="td">
+          <a href="https://www.trainingpeaks.com">www.trainingpeaks.com</a>
+        </div>
+        <div class="connected td">
+          Connected
+        </div>
+        <div class="disconnected td">
+          Disconnected
+        </div>
+        <div class="disonnected td clickable" connect="trainingpeaks" on-click="oauthConnect">Connect?</div>
+        <div class="td connected clickable">Disconnect?</div>
+      </div>
+    </div>
   </template>
   <script>
     /*global superagent */
@@ -99,7 +140,7 @@
           this.update();
         },
         oauthConnect: function (e) {
-          var platform = e.target.dataHost.getAttribute('connect');
+          var platform = e.target.getAttribute('connect');
           superagent
             .get('/b/platform/oauth/' + platform)
             .send()
@@ -126,9 +167,8 @@
             }
         },
         updateView: function (platforms) {
-          var platform;
-          console.log(this.$);
-          for (var i = 0; i < platforms.length; i++) {
+          var platform, i;
+          for (i = 0; i < platforms.length; i++) {
             platform = platforms[i];
             if (platform.status && platform.platform in this.$) {
               this.$[platform.platform].dataset.toggle = 'on';
