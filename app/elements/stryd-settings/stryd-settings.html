@@ -1,4 +1,8 @@
 <dom-module id="stryd-settings">
+  <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="../../styles/app-theme.html">
+  <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
   <style>
     :host {
       display: block;
@@ -13,7 +17,6 @@
     <platform-connect></platform-connect>
     <form class="dropzone" id="file"></form>
   </template>
-  <script src="../../scripts/jwt.js"></script>
   <script src="../../scripts/dropzone.js"></script>
   <script>
     /*global Dropzone*/
