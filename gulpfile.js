@@ -78,6 +78,7 @@ gulp.task('jshint', function () {
       camelcase: false,
       predef: [
         'jwt',
+        'user',
         'superagent',
         'setDate',
         'minutesPerMile',

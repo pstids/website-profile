@@ -64,3 +64,42 @@ class JWT {
 }
 
 var jwt = new JWT();
+
+class User {
+	constructor() {
+		this.storage = localStorage.getItem('user');
+		this.data = {};
+		this.checkStorage();
+	}
+
+	checkStorage() {
+		if (!this.storage) {
+			this.fetchDetails();
+		} else {
+			this.parseData();
+		}
+	}
+
+	parseData() {
+		this.data = JSON.parse(this.storage);
+		console.log(this.data, 'from user');
+	}
+
+	fetchDetails() {
+		superagent
+			.get('/b/api/v1/users/' + jwt.data.id)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', 'Bearer: ' + jwt.token)
+			.end(function(err, res) {
+				if (res.ok) {
+					localStorage.setItem('user', JSON.stringify(res.body));
+					this.constructor();
+				} else {
+					console.log('Error: Setting user information');
+				}
+			}.bind(this));
+	}
+}
+
+var user = new User();
