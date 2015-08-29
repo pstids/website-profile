@@ -168,6 +168,7 @@
                 };
             },
             viewWorkout: function () {
+                document.querySelector('workout-element').setLoading();
                 workoutFetching(this.data.id);
                 var bubbles = document.querySelector('.bubbles');
                 window.scrollTo(0, bubbles.offsetTop);

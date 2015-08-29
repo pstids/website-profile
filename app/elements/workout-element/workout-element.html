@@ -260,6 +260,12 @@
                 this.startTime = this.data[0].date;
                 this.fillChart();
             },
+            removeLoading: function () {
+                this.$.spinner.classList.add('fade');
+            },
+            setLoading: function () {
+                this.$.spinner.classList.remove('fade');
+            },
             bindToggles: function () {
                 this.graphs = {
                     heartRate: this.chart.getGraphById('heartRate'),
@@ -513,7 +519,7 @@
                     'pathToImages': 'https://www.stryd.com/profile/scripts/amcharts/images/'
                 }, 100);
                 this.chart.addListener('init', function (e) {
-                    this.$.spinner.classList.add('fade');
+                    this.removeLoading();
                     this.bindToggles();
                     this.calcAvgs(0, this.chartData.length);
                 }.bind(this));
