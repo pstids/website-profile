@@ -78,6 +78,10 @@
             font-weight: 400;
             color: var(--primary-header-color);
         }
+        paper-dialog h1 {
+            font-size: 22px;
+            padding: 1.8vw;
+        }
     </style>
     <template>
         <div class="log">
@@ -126,10 +130,18 @@
                     <paper-tooltip>Download FIT</paper-tooltip>
                 </div>
                 <div>
-                    <iron-icon icon="icons:delete" on-click="handleDelete"></iron-icon>
+                    <iron-icon icon="icons:delete" on-click="handleDeleteDialog"></iron-icon>
                     <paper-tooltip>Delete</paper-tooltip>
                 </div>
             </div>
+
+            <paper-dialog id="deleteaction">
+                <h1>Are you sure you want to remove this run?</h1>
+                <div class="buttons">
+                    <paper-button dialog-dismiss>No</paper-button>
+                    <paper-button dialog-confirm autofocus on-click="handleDelete">Yes</paper-button>
+                </div>
+            </paper-dialog>
             <paper-toast id="toast" text="This feature will be released soon. Please stay tuned"></paper-toast>
         </div>
     </template>
@@ -166,6 +178,9 @@
             handleDownload: function () {
                 this.$.toast.show();
             },
+            handleDeleteDialog: function () {
+                this.$.deleteaction.open();
+            },
             handleDelete: function () {
                 superagent
                         .del('/b/api/v1/activities/' + this.data.id)
@@ -179,7 +194,7 @@
                                 console.log('failed to delete element');
                             }
                         }.bind(this));
-            }
+            },
         });
     </script>
 </dom-module>
