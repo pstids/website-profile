@@ -1,6 +1,12 @@
 <dom-module id="workout-element">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
     <style>
+        .sample {
+            display: none;
+        }
+        :host.sample .sample {
+            display: block;
+        }
         section {
             @apply(--layout);
             @apply(--layout-vertical);
@@ -8,6 +14,9 @@
         }
         h1.header {
             @apply(--header);
+        }
+        h2.subtitle {
+            @apply(--subtitle);
         }
         .chart {
             display: block;
@@ -190,15 +199,19 @@
         </div>
         <section>
             <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
+            <h2 class="subtitle sample" style="padding: 0px 0px 0px 50px;">Sample Data</h2>
             <div class="bubbles">
                 <bubble-stat type="avg_power" title="Average Power" unit="Watts" icon="image:flash-on"></bubble-stat>
                 <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run"></bubble-stat>
                 <bubble-stat type="avg_hr" title="Average Heart Rate" unit="BPM" icon="favorite"></bubble-stat>
                 <bubble-stat type="distance" title="Distance" unit="Miles" icon="communication:swap-calls"></bubble-stat>
-                <bubble-stat type="time" title="Run Time" unit="HH:MM.SS" icon="image:timer"></bubble-stat>
+                <bubble-stat type="time" title="Run Time" unit="HH:MM:SS" icon="image:timer"></bubble-stat>
             </div>
             <div class="options">
-                <h1 class="header">Chart</h1>
+                <div>
+                    <h1 class="header">Chart</h1>
+                    <h2 class="subtitle sample">Sample Data</h2>
+                </div>
                 <div class="toggles">
                     <div class="heartRate toggle" data-toggle="on" on-click="toggle" data-graph="heartRate">
                         <div class="type">Heart Rate</div>
@@ -246,6 +259,12 @@
                 this.chartData = this.data;
                 this.startTime = this.data[0].date;
                 this.fillChart();
+            },
+            removeLoading: function () {
+                this.$.spinner.classList.add('fade');
+            },
+            setLoading: function () {
+                this.$.spinner.classList.remove('fade');
             },
             bindToggles: function () {
                 this.graphs = {
@@ -500,7 +519,7 @@
                     'pathToImages': 'https://www.stryd.com/profile/scripts/amcharts/images/'
                 }, 100);
                 this.chart.addListener('init', function (e) {
-                    this.$.spinner.classList.add('fade');
+                    this.removeLoading();
                     this.bindToggles();
                     this.calcAvgs(0, this.chartData.length);
                 }.bind(this));

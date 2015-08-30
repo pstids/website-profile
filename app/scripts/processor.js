@@ -16,6 +16,8 @@ onmessage = function (event) {
         logsFetching();
     } else if (event.data.type === 'workout') {
         workoutFetching(event.data.id);
+    } else if (event.data.type === 'sample') {
+        workoutFetching('sample');
     }
 };
 
@@ -76,7 +78,7 @@ var calcThreshold = function (powers) {
     return threshold;
 };
 
-var workoutProcessing = function (workout) {
+var workoutProcessing = function (workout, id) {
     var threshold = calcThreshold(workout.total_power_list);
 
     var avgs = {
@@ -163,11 +165,14 @@ var workoutProcessing = function (workout) {
     avgs.power = avgs.power / avgs.powerCount;
     avgs.pace = (workout.distance / 1600) / (workout.moving_time / 60);
 
-    // workoutElement.setChartData(chartData);
-    // mapSummary.setWorkout(workout);
-    // mapRun.setData(mapRunData);
     data.mapRunData = mapRunData;
     data.chartData = chartData;
+    if (id === 'sample') {
+        data.logs = [workout];
+        data.type = 'sample';
+    } else {
+        data.type = 'data';
+    }
     postMessage(data);
 };
 
@@ -179,7 +184,7 @@ var workoutFetching = function (workout) {
     .set('Authorization', 'Bearer: ' + token)
     .end(function(err, res) {
         if (res.ok) {
-            workoutProcessing(res.body);
+            workoutProcessing(res.body, workout);
         } else {
             console.log('Error: Cannot fetch workout');
         }
@@ -207,7 +212,7 @@ var logsFetching = function () {
                 if (res.body !== null) {
                     logsProcessing(res.body);
                 } else {
-                    console.log('Error: no workout received');
+                    workoutFetching('sample');
                 }
             } else {
                 console.log('Error: failure on grabLogs', err, res);

@@ -168,6 +168,7 @@
                 };
             },
             viewWorkout: function () {
+                document.querySelector('workout-element').setLoading();
                 workoutFetching(this.data.id);
                 var bubbles = document.querySelector('.bubbles');
                 window.scrollTo(0, bubbles.offsetTop);
@@ -183,17 +184,17 @@
             },
             handleDelete: function () {
                 superagent
-                        .del('/b/api/v1/activities/' + this.data.id)
-                        .send()
-                        .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function(err, res) {
-                            if (res.ok) {
-                                this.parentNode.removeChild(this);
-                            } else {
-                                console.log('failed to delete element');
-                            }
-                        }.bind(this));
+                    .del('/b/api/v1/activities/' + this.data.id)
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.parentNode.removeChild(this);
+                        } else {
+                            console.log('failed to delete element');
+                        }
+                    }.bind(this));
             },
         });
     </script>

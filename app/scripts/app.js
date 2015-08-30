@@ -46,6 +46,17 @@ var workoutFetching = function (id) {
             if ('logs' in event.data) {
                 logBook.populateLogs(event.data.logs);
             }
+            if (event.data.type === 'sample') {
+                mapRun.classList.add('sample');
+                workoutElement.classList.add('sample');
+                logBook.classList.add('sample');
+                document.querySelector('#sample').show();
+            } else {
+                mapRun.classList.remove('sample');
+                workoutElement.classList.remove('sample');
+                logBook.classList.remove('sample');
+                document.querySelector('#sample').hide();
+            }
         };
 
         header = document.querySelector('header-element');
@@ -97,6 +108,12 @@ var workoutFetching = function (id) {
         if (drawerPanel.narrow) {
             drawerPanel.closeDrawer();
         }
+    };
+    var sampleFetching = function () {
+        processor.postMessage({
+            token: jwt.token,
+            type: 'sample'
+        });
     };
     var logsFetching = function () {
         processor.postMessage({
