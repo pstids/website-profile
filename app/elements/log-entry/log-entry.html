@@ -168,9 +168,16 @@
                 };
             },
             viewWorkout: function () {
+                var bubbles = document.querySelector('.bubbles');
+                var logBook = document.querySelector('log-book');
+                // Don't reload sample data, because it doesn't belong to current user
+                if (logBook.className.indexOf('sample') !== -1) {
+                    window.scrollTo(0, bubbles.offsetTop);
+                    return;
+                }
+
                 document.querySelector('workout-element').setLoading();
                 workoutFetching(this.data.id);
-                var bubbles = document.querySelector('.bubbles');
                 window.scrollTo(0, bubbles.offsetTop);
             },
             handleShare: function () {
