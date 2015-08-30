@@ -296,7 +296,7 @@
                 jwt.logout();
             },
             setProfileIMG: function () {
-                if (jwt.data.image !== undefined) {
+                if (jwt.data && jwt.data.image !== undefined && jwt.data.image.length !== 0) {
                     this.profileImage = decodeURIComponent(jwt.data.image.replace('+', ' '));
                 } else {
                     var gravHash = CryptoJS.MD5(jwt.data.email.toLowerCase());
