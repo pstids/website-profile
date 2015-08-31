@@ -23,23 +23,19 @@
                 @apply(--layout-center);
                 @apply(--layout-justified);
             }
-            .authenticate div a img {
-                height: 2.8vw;
-            }
             .authenticate div button {
                 margin: 2vw auto;
+                font-weight: 700;
+                text-transform: uppercase;
             }
 
-            [data-toggle="on"] .disconnected {
-                display: none;
+            .authenticate div button[data-toggle="on"] {
+                border-color: var(--warning-color);
+                color: var(--warning-color);
+            }
+            .authenticate div button[data-toggle="off"] {
             }
 
-            [data-toggle="off"] .connected {
-                display: none;
-            }
-            .clickable {
-                cursor: pointer;
-            }
         </style>
         <h1 class="title">Stryd Connect</h1>
         <div class="import">
@@ -47,9 +43,9 @@
             <div class="authenticate">
                 <div>
                     <a href="https://www.garmin.com">
-                        <img class="logo" src="/profile/images/logo_garmin.png"/>
+                        <img class="logo" src="/profile/images/logo_garmin.png" width="180px" height="42px"/>
                     </a>
-                    <button is="stryd-button" class="clickable" connect="garmin" on-click="oauthConnect">Connect?</button>
+                    <button is="stryd-button" data-toggle="off" id="garmin" on-click="oauthConnect">Connect</button>
                 </div>
             </div>
         </div>
@@ -57,22 +53,22 @@
             <h2 class="subtitle">Exports To</h2>
             <div class="authenticate">
                 <div>
-                    <a href="https://www.strava.com">
-                        <img class="logo" src="/profile/images/logo_strava.png"/>
+                    <a href="https://www.trainingpeaks.com">
+                        <img class="logo" src="/profile/images/logo_tp.png" width="180px" height="42px"/>
                     </a>
-                    <button is="stryd-button" class="clickable" connect="strava" on-click="oauthConnect">Connect?</button>
+                    <button is="stryd-button" data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</button>
                 </div>
                 <div>
-                    <a href="https://www.trainingpeaks.com">
-                        <img class="logo" src="/profile/images/logo_tp.png"/>
+                    <a href="https://www.strava.com">
+                        <img class="logo" src="/profile/images/logo_strava.png" width="180px" height="42px"/>
                     </a>
-                    <button is="stryd-button" class="clickable" connect="trainingpeaks" on-click="oauthConnect">Connect?</button>
+                    <button is="stryd-button" data-toggle="off" id="strava" on-click="oauthConnect">Connect</button>
                 </div>
                 <div>
                     <a href="https://www.2peak.com">
-                        <img class="logo" src="/profile/images/logo_2peak.png"/>
+                        <img class="logo" src="/profile/images/logo_2peak.png" width="180px" height="42px"/>
                     </a>
-                    <button is="stryd-button" class="clickable" connect="2peak" on-click="oauthConnect">Connect?</button>
+                    <button is="stryd-button" data-toggle="off" id="2peak" on-click="oauthConnect">Connect</button>
                 </div>
             </div>
         </div>
@@ -91,17 +87,34 @@
                     this.update();
                 },
                 oauthConnect: function (e) {
-                    var platform = e.target.getAttribute('connect');
-                    superagent
-                            .get('/b/platform/oauth/' + platform)
-                            .send()
-                            .set('Accept', 'application/json')
-                            .set('Authorization', 'Bearer: ' + jwt.token)
-                            .end(function (err, res) {
-                                if (res.ok) {
-                                    window.location = res.body.redirect_url;
-                                }
-                            });
+                    var platform = e.target.getAttribute('id');
+                    if (this.$[platform].dataset.toggle === 'on') {
+                        var ele = this.$[platform];
+                        superagent
+                                .del('/b/platform/oauth/' + platform)
+                                .send()
+                                .set('Accept', 'application/json')
+                                .set('Authorization', 'Bearer: ' + jwt.token)
+                                .end(function (err, res) {
+                                    console.log(res);
+                                    if (res.ok) {
+                                        ele.dataset.toggle = 'off';
+                                        ele.firstChild.textContent = 'Connect';
+                                    }
+                                });
+
+                    } else {
+                        superagent
+                                .get('/b/platform/oauth/' + platform)
+                                .send()
+                                .set('Accept', 'application/json')
+                                .set('Authorization', 'Bearer: ' + jwt.token)
+                                .end(function (err, res) {
+                                    if (res.ok) {
+                                        window.location = res.body.redirect_url;
+                                    }
+                                });
+                    }
                 },
                 update: function () {
                     if (jwt.data.id) {
@@ -123,6 +136,10 @@
                         platform = platforms[i];
                         if (platform.status && platform.platform in this.$) {
                             this.$[platform.platform].dataset.toggle = 'on';
+                            this.$[platform.platform].textContent = 'Disconnect';
+                        } else {
+                            this.$[platform.platform].dataset.toggle = 'off';
+                            this.$[platform.platform].textContent = 'Connect';
                         }
                     }
                 }
