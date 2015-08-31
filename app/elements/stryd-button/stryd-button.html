@@ -1,0 +1,33 @@
+<dom-module id="stryd-button">
+    <style>
+        :host {
+            display: block;
+            border-radius: 10px;
+            text-transform: uppercase;
+            font-size: 1vw;
+            color: white;
+            background-color: rgba(0, 0, 0, 0);
+            border: 1px solid white;
+            padding: 1vw;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+    <template>
+        <content></content>
+    </template>
+    <script>
+        Polymer({
+            is: 'stryd-button',
+            extends: 'button',
+            properties: {
+            },
+            ready: function() {
+                this.attached();
+            },
+            attached: function() {
+            },
+        });
+    </script>
+</dom-module>
