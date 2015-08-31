@@ -162,15 +162,22 @@
                 this.display = {
                     date: dateString,
                     time: hmsTime(data.moving_time * 1000),
-                    power: truncate(data.average_power),
+                    power: this.truncate(data.average_power),
                     distance: meterToKM(data.distance),
                     unit: 'KM'
                 };
             },
             viewWorkout: function () {
+                var bubbles = document.querySelector('.bubbles');
+                var logBook = document.querySelector('log-book');
+                // Don't reload sample data, because it doesn't belong to current user
+                if (logBook.className.indexOf('sample') !== -1) {
+                    window.scrollTo(0, bubbles.offsetTop);
+                    return;
+                }
+
                 document.querySelector('workout-element').setLoading();
                 workoutFetching(this.data.id);
-                var bubbles = document.querySelector('.bubbles');
                 window.scrollTo(0, bubbles.offsetTop);
             },
             handleShare: function () {
@@ -196,6 +203,16 @@
                         }
                     }.bind(this));
             },
+            truncate: function (n) {
+                var parts = String(n).split('.');
+                var shortened = '';
+                if (parts.length > 1) {
+                    shortened =  parts[0] + '.' + parts[1].substring(0, 1);
+                } else {
+                    shortened =  parts[0] + '.0';
+                }
+                return shortened;
+            }
         });
     </script>
 </dom-module>

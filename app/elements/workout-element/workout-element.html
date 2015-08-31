@@ -127,7 +127,6 @@
             position: absolute;
             background-color: var(--primary-background-color);
             z-index: 10;
-            display: flex;
             -ms-flex-align: center;
             -webkit-align-items: center;
             align-items: center;
@@ -140,6 +139,13 @@
         .outer-spinner.fade {
             opacity: 0;
             z-index: 0;
+        }
+        .outer-spinner.hide {
+            display: none;
+        }
+        .outer-spinner.show {
+            display: flex;
+            display: -webkit-flex;
         }
         .spinner {
             margin: 100px auto;
@@ -261,9 +267,13 @@
                 this.fillChart();
             },
             removeLoading: function () {
+                this.$.spinner.classList.remove('show');
+                this.$.spinner.classList.add('hide');
                 this.$.spinner.classList.add('fade');
             },
             setLoading: function () {
+                this.$.spinner.classList.add('show');
+                this.$.spinner.classList.remove('hide');
                 this.$.spinner.classList.remove('fade');
             },
             bindToggles: function () {

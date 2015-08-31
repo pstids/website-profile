@@ -19,19 +19,6 @@ String.prototype.stat = function () {
     return shortened;
 };
 
-// Deprecated
-// Return to two decimal places for any data type
-var truncate = function (n) {
-    var parts = String(n).split('.');
-    var shortened = '';
-    if (parts.length > 1) {
-        shortened =  parts[0] + '.' + parts[1].substring(0, 1);
-    } else {
-        shortened =  parts[0];
-    }
-    return shortened;
-};
-
 // Prepend 0 to single digit values
 var fillZero = function (n) {
     n = String(n);
