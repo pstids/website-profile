@@ -135,9 +135,12 @@
             border-radius: 50px;
             border: 1px solid #2F2F2F;
             color: white;
-            height: 25vh;
+            height: 30vh;
             width: 100%;
             margin-top: 2vw;
+        }
+        .uploader .dropzone .dz-message {
+            padding-top: 6vh;
         }
     </style>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
@@ -212,7 +215,11 @@
                 </div>
                 <div class="uploader">
                     <h1 class="title">Upload</h1>
-                    <form class="dropzone" id="file"> </form>
+                    <form class="dropzone" id="file">
+                        <div class="dz-message" data-dz-message>
+                            <span>Drop your FIT file here to upload (Or click to select from computer)</span>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
