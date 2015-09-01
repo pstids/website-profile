@@ -170,6 +170,10 @@
             -moz-appearance: none;
             appearance: none;
         }
+        .prefs button#save-pref {
+            min-width: 20vw;
+            margin: 2vw auto;
+        }
     </style>
     <template>
         <section>
@@ -262,7 +266,7 @@
                     <span class="editable icon-tag" on-click="saveDetails">Save</span>
                 </div>
                 <p class="display">{{userLocal.about_me}}</p>
-                <paper-textarea class="editable" label="Introduce yourself to the world" char-counter maxlength="200" max-rows="5" value="{{userLocal.about_me::change}}"><paper-textarea>
+                <paper-textarea class="editable" label="Introduce yourself to the world" char-counter maxlength="200" max-rows="5" value="{{userLocal.about_me::change}}"></paper-textarea>
             </div>
         </section>
         <div class="prefs">
@@ -277,6 +281,7 @@
                     <paper-radio-button name="meters">Kilometers and Kilograms</paper-radio-button>
                 </paper-radio-group>
             </div>
+            <button is="stryd-button" id="save-pref" on-click="savePreference">Save</button>
         </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
@@ -322,6 +327,26 @@
                         user.data.birth.day
                     )
                 };
+            },
+            savePreference: function() {
+                console.log('here1');
+                var prefs = {units: this.$.radio.selected};
+                var queryString = this.jsonToQueryString(prefs);
+                superagent
+                        .put('/b/api/v1/users/' + jwt.data.id + queryString)
+                        .send('{"empty":"empty"}')
+                        .set('Accept', 'application/json')
+                        .set('Authorization', 'Bearer: ' + jwt.token)
+                        .end(function(err, res) {
+                            if (res.ok) {
+                                this.$.toast.text = 'Your preference is updated!';
+                                user.updateData(res.body);
+                                this.attached();
+                            } else {
+                                this.$.toast.text = 'Your preference is not updated. Please try again.';
+                            }
+                            this.$.toast.show();
+                        }.bind(this));
             },
             editDetails: function () {
                 var height, weight;
