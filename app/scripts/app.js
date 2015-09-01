@@ -74,8 +74,9 @@ var workoutFetching = function (id) {
             app.route = 'home';
         });
 
-        page('/users', function () {
-            app.route = 'users';
+        page('/connect', function () {
+            app.route = 'connect';
+            header.toggleActive('connect');
         });
 
         page('/users/:name', function (data) {
@@ -86,10 +87,6 @@ var workoutFetching = function (id) {
         page('/settings', function () {
             app.route = 'settings';
             header.toggleActive('settings');
-        });
-
-        page('/contact', function () {
-            app.route = 'contact';
         });
 
         // add #! before urls

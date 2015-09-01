@@ -17,6 +17,12 @@ iron-pages {
   padding: 0 !important;
 }
 
+div.connect {
+  background-color: #262626;
+  color: white;
+  padding: 5vw 15vw;
+}
+
 .uploader {
   background-color: #262626;
   color: white;

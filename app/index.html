@@ -67,41 +67,23 @@
                 <workout-element></workout-element>
                 <log-book></log-book>
                 <div class="uploader">
-                        <h1 class="title">Upload</h1>
-                        <form class="dropzone" id="file">
-                                <div class="dz-message" data-dz-message>
-                                        <span>Drop your FIT file here to upload (Or click to select from computer)</span>
-                                </div>
-                        </form>
+                    <h1 class="title">Upload</h1>
+                    <form class="dropzone" id="file">
+                        <div class="dz-message" data-dz-message>
+                            <span>Drop your FIT file here to upload (Or click to select from computer)</span>
+                        </div>
+                    </form>
                 </div>
             </section>
 
-            <section data-route="users">
-                <paper-material elevation="1">
-                    <h2 class="paper-font-display2">Users</h2>
-                    <p>This is the users section</p>
-                    <a href="/users/Rob">Rob</a>
-                </paper-material>
-            </section>
-
-            <section data-route="user-info">
-                <paper-material elevation="1">
-                    <h2 class="paper-font-display2">
-                        User:<span>{{params.name}}</span>
-                    </h2>
-                    <div>This is <span>{{params.name}}</span>'s section</div>
-                </paper-material>
+            <section data-route="connect">
+                <div class="connect">
+                    <platform-connect></platform-connect>
+                </div>
             </section>
 
             <section data-route="settings">
                 <stryd-settings></stryd-settings>
-            </section>
-
-            <section data-route="contact">
-                <paper-material elevation="1">
-                    <h2 class="paper-font-display2">Contact</h2>
-                    <p>This is the contact section</p>
-                </paper-material>
             </section>
 
         </iron-pages>
