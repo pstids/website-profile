@@ -119,14 +119,17 @@
             width: 12vw;
             height: 12vw;
         }
+
         .outer-spinner {
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
+            height: 110%;
             position: absolute;
             background-color: var(--primary-background-color);
             z-index: 10;
+            display: flex;
+            display: -webkit-flex;
             -ms-flex-align: center;
             -webkit-align-items: center;
             align-items: center;
@@ -140,24 +143,16 @@
             opacity: 0;
             z-index: 0;
         }
-        .outer-spinner.hide {
-            display: none;
-        }
-        .outer-spinner.show {
-            display: flex;
-            display: -webkit-flex;
-        }
+
         .spinner {
             margin: 100px auto;
             width: 40px;
             height: 40px;
             position: relative;
             text-align: center;
-
             -webkit-animation: sk-rotate 2.0s infinite linear;
             animation: sk-rotate 2.0s infinite linear;
         }
-
         .spinner .dot1, .spinner .dot2 {
             width: 60%;
             height: 60%;

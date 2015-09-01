@@ -80,9 +80,13 @@ class User {
 		}
 	}
 
+	updateData(data) {
+		this.data = data;
+		localStorage.setItem('user', JSON.stringify(data));
+	}
+
 	parseData() {
 		this.data = JSON.parse(this.storage);
-		console.log(this.data, 'from user');
 	}
 
 	fetchDetails() {

@@ -1,7 +1,7 @@
 <dom-module id="stryd-settings">
     <style>
         :host {
-            background-image: url('../../images/grassy_field.jpg');
+            background-image: url('../../images/grassy_field_150.jpg');
             background-size: cover;
             padding: 0;
             margin: 0;
@@ -15,7 +15,7 @@
             @apply(--subtitle);
         }
         .cover {
-            background-color: rgba(36, 36, 36, 0.5);
+            background-color: rgba(36, 36, 36, 0.6);
             padding: 7vw 0 0 0;
             position: relative;
             top: 0;
@@ -108,25 +108,6 @@
         .profile > div {
             margin-bottom: 10vh;
         }
-        .profile .prefs > div {
-            @apply(--layout-horizontal);
-            margin-top: 2vw;
-        }
-        .profile .prefs .pref {
-        }
-        .profile select {
-            border-radius: 10px;
-            text-transform: uppercase;
-            font-size: 1vw;
-            color: white;
-            background-color: rgba(0, 0, 0, 0);
-            border: 1px solid white;
-            padding: 1vw;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
         .uploader {
             @apply(--layout-vertical);
         }
@@ -197,18 +178,6 @@
             <div class="profile">
                 <div>
                     <user-info></user-info>
-                </div>
-                <div class="prefs">
-                    <h1 class="title">Preferences</h1>
-                    <div>
-                        <div class="pref">
-                            <h2 class="subtitle">Display</h2>
-                            <select name="Display">
-                                <option value="lb">Miles and Pounds</option>
-                                <option value="kg">Kilometers and Kilograms</option>
-                            </select>
-                        </div>
-                    </div>
                 </div>
                 <div>
                     <platform-connect></platform-connect>
