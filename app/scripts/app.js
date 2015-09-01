@@ -1,7 +1,7 @@
 /*jshint -W079 */
 /*jshint unused:false*/
 /*jshint -W079 */
-var processor = new Worker('/profile/scripts/processor.js');
+var processor = new Worker('/powercenter/scripts/processor.js');
 
 var workoutFetching = function (id) {
     processor.postMessage({
@@ -63,7 +63,7 @@ var workoutFetching = function (id) {
         // We use Page.js for routing. This is a Micro
         // client-side router inspired by the Express router
         // More info: https://visionmedia.github.io/page.js/
-        page.base('/profile');
+        page.base('/powercenter');
 
         page('/', function () {
             logsFetching();

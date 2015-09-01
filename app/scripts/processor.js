@@ -4,8 +4,8 @@
 /*global importScripts:true*/
 /*global postMessage*/
 
-importScripts('/profile/scripts/superagent.js');
-importScripts('/profile/scripts/toolbox.js');
+importScripts('/powercenter/scripts/superagent.js');
+importScripts('/powercenter/scripts/toolbox.js');
 
 var data = {}, token;
 

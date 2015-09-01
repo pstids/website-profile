@@ -80,7 +80,7 @@
             }
             ul.navigation li.active a {
                 background-size: 100% 60%;
-                background-image: url('/profile/images/mountain_outline.png');
+                background-image: url('/powercenter/images/mountain_outline.png');
                 background-position: center bottom;
                 background-repeat: no-repeat;
                 background-color: var(--primary-background-color);
@@ -216,13 +216,13 @@
             </div>
             <ul class="navigation">
                 <li>
-                    <a data-route="home" href="/profile/">Dashboard</a>
+                    <a data-route="home" href="/powercenter/">Dashboard</a>
                 </li>
                 <li>
                     <a href="#hash">Logbook</a>
                 </li>
                 <li>
-                    <a data-route="settings" href="/profile/settings">Settings</a>
+                    <a data-route="settings" href="/powercenter/settings">Settings</a>
                 </li>
             </ul>
             <div class="space-taker"></div>
@@ -288,7 +288,7 @@
                 units: String
             },
             ready: function () {
-                this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
+                this.defaultURL = 'https://www.stryd.com/powercenter/images/leopard.png';
                 this.username = jwt.data.username;
                 this.grabStats();
                 this.setProfileIMG();
