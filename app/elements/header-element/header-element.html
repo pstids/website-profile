@@ -247,7 +247,7 @@
                         <div class="title">Distance</div>
                         <div class="field">
                             <span class="value">{{weekly.total_distance}}</span>
-                            <span class="unit">KM</span>
+                            <span class="unit">{{units}}</span>
                         </div>
                     </div>
                 </div>
@@ -284,7 +284,8 @@
         Polymer({
             is: 'header-element',
             properties: {
-                weekly: Object
+                weekly: Object,
+                units: String
             },
             ready: function () {
                 this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
@@ -313,21 +314,28 @@
             },
             grabStats: function () {
                 superagent
-                        .get('/b/api/v1/activities/weekly-stat')
-                        .send()
-                        .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function(err, res) {
-                            if (res.ok) {
-                                var incomingWeekly = res.body;
-                                incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
-                                incomingWeekly.total_distance = meterToKM(res.body.total_distance);
-                                incomingWeekly.average_power = Math.round(res.body.average_power);
-                                this.weekly = incomingWeekly;
+                    .get('/b/api/v1/activities/weekly-stat')
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            var incomingWeekly = res.body;
+                            incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
+                            if (user.data.units === 'feet') {
+                                incomingWeekly.total_distance = Math.round(meterToKM(res.body.total_distance) * 0.621371);
+                                this.units = 'Mi';
                             } else {
-                                console.log('failed to get weekly stat');
+                                incomingWeekly.total_distance = meterToKM(res.body.total_distance);
+                                this.units = 'KM';
                             }
-                        }.bind(this));
+                            
+                            incomingWeekly.average_power = Math.round(res.body.average_power);
+                            this.weekly = incomingWeekly;
+                        } else {
+                            console.log('failed to get weekly stat');
+                        }
+                    }.bind(this));
             }
         });
     </script>
