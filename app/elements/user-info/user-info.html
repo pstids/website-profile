@@ -166,12 +166,24 @@
                     <h1>Age</h1>
                     <p>21</p>
                 </div>
-            </div>
-            <div class="information">
-                <div class="info big">
-                    <h1>Gender</h1>
-                    <p class="display">{{userLocal.gender}}</p>
-                    <input type="text" placeholder="Gender" class="editable" name="gender" value="{{userLocal.gender::input}}">
+                <div class="information">
+                    <div class="info big">
+                        <h1>Gender</h1>
+                        <p class="display">{{userLocal.gender}}</p>
+                        <paper-radio-group 
+                            selected="{{userLocal.gender}}"
+                            attr-for-selected="name"
+                            class="editable">
+                            <paper-radio-button name="male">Male</paper-radio-button>
+                            <paper-radio-button name="female">Female</paper-radio-button>
+                            <paper-radio-button name="other">Other</paper-radio-button>
+                        </paper-radio-group>
+                    </div>
+                    <div class="info small">
+                        <h1>Height (<span>{{heightUnit(userLocal.units)}}</span>)</h1>
+                        <p class="display">{{heightValue(userLocal.height, userLocal.units)}}</p>
+                        <input type="text" placeholder="Height" class="editable" name="height" id="height">
+                    </div>
                 </div>
                 <div class="info small">
                     <h1>Height (<span>{{heightUnit()}}</span>)</h1>
@@ -195,14 +207,18 @@
                     <input type="text" placeholder="Weight" class="editable" name="weight" value="{{userLocal.weight::input}}">
                 </div>
             </div>
-        </div>
-        <div class="about-me" option="display" id="about">
-            <h1 class="title">About Me</h1>
-            <div class="edit" on-click="toggleEditAbout">
-                <iron-icon class="display" icon="editor:mode-edit"></iron-icon>
-                <span class="display icon-tag">Edit</span>
-                <iron-icon class="editable" icon="icons:save"></iron-icon>
-                <span class="editable icon-tag">Save</span>
+        </section>
+        <div class="prefs">
+            <h1 class="title">Preferences</h1>
+            <div class="pref">
+                <h2 class="subtitle">Display</h2>
+                <paper-radio-group
+                    selected="{{userLocal.units}}"
+                    attr-for-selected="name"
+                    id="radio">
+                    <paper-radio-button name="feet">Miles and Pounds</paper-radio-button>
+                    <paper-radio-button name="meters">Kilometers and Kilograms</paper-radio-button>
+                </paper-radio-group>
             </div>
             <p class="display">{{userLocal.about}}</p>
             <paper-textarea class="editable" label="Introduce yourself to the world" char-counter maxlength="200" max-rows="5"><paper-textarea>
@@ -282,19 +298,50 @@
                     this.$.about.setAttribute('option', 'display');
                 }
             },
-            weightUnit: function () {
-                if (user.units === 'feets') {
+            weightUnit: function (unit) {
+                if (unit === 'feet') {
                     return 'lbs';
                 } else {
                     return 'kg';
                 }
             },
-            heightUnit: function () {
-                if (user.units === 'feets') {
-                    return 'inches';
+            weightValue: function (value, unit) {
+                if (unit === 'feet') {
+                    var pounds = value / 2.20462;
+                    return parseInt(pounds);
+                } else {
+                    return parseInt(value);
+                }
+            },
+            heightUnit: function (unit) {
+                if (unit === 'feet') {
+                    return 'feet & inches';
                 } else {
                     return 'cm';
                 }
+            },
+            heightValue: function (value, unit) {
+                if (unit === 'feet') {
+                    var totalInches = value / 2.54;
+                    var feet = totalInches / 12;
+                    var fraction = feet - Math.floor(feet);
+                    var inches = (12 * fraction).toFixed(0);
+                    return parseInt(feet) + '\'' + parseInt(inches) + '"';
+                } else {
+                    return parseInt(value);
+                }
+            },
+            getAge: function (year, month, day) {
+                if (year === 0 && month === 0 && day === 0) {
+                    return 0;
+                }
+                var today = new Date();
+                var birth = new Date(
+                    year,
+                    month - 1,
+                    day
+                );
+                return today.getFullYear() - birth.getFullYear();
             }
         });
     </script>
