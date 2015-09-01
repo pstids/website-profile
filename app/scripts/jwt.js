@@ -85,6 +85,10 @@ class User {
 		localStorage.setItem('user', JSON.stringify(data));
 	}
 
+	clearData() {
+		localStorage.removeItem('user');
+	}
+
 	parseData() {
 		this.data = JSON.parse(this.storage);
 	}

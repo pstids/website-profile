@@ -93,7 +93,7 @@
         input[type=text] {
             background: transparent;
             border: none;
-            border-bottom: 1px solid var(--primary-background-color);
+            border-bottom: 1px solid white;
             outline: none;
             padding: 0.5vw 0;
             color: white;
@@ -105,6 +105,10 @@
         }
         .information #birthday-input input[type=text] {
             width: 25%;
+        }
+        .information #birthday-input .slash {
+            font-size: 1.67vw;
+            color: var(--primary-header-color);
         }
         select {
             border-radius: 10px;
@@ -182,24 +186,17 @@
                 <h1>{{userLocal.name}}</h1>
             </div>
            
-            <div class="details" option="display" id="details">
+            <div class="details" option="editable" id="details">
                 <form id="information" is="iron-form">
                 <h1 class="title">Details</h1>
-                <div class="edit" on-click="toggleEditDetails">
-                    <iron-icon class="display" icon="editor:mode-edit" on-click="editDetails"></iron-icon>
-                    <span class="display icon-tag" on-click="editDetails">Edit</span>
-                    <iron-icon class="editable" icon="icons:save" on-click="saveDetails"></iron-icon>
-                    <span class="editable icon-tag" on-click="saveDetails">Save</span>
-                </div>
                 <div class="information">
                     <div class="info big">
-                        <h1>Date of Birth</h1>
-                        <p class="display">
-                            <span>{{userLocal.birth_month}}</span>/<span>{{userLocal.birth_day}}</span>/<span>{{userLocal.birth_year}}</span>
-                        </p>
+                        <h1>Date of Birth (MM/DD/YY)</h1>
                         <div id="birthday-input">
                             <input type="text" placeholder="MM" class="editable" name="birth_month" value="{{userLocal.birth_month::input}}">
+                            <span class="slash">/</span>
                             <input type="text" placeholder="DD" class="editable" name="birth_day" value="{{userLocal.birth_day::input}}">
+                            <span class="slash">/</span>
                             <input type="text" placeholder="YY" class="editable" name="birth_year" value="{{userLocal.birth_year::input}}">
                         </div>
                     </div>
@@ -207,12 +204,10 @@
                         <h1>Age</h1>
                         <p>{{getAge(userLocal.birth_year, userLocal.birth_month, userLocal.birth_day)}}</p>
                     </div>
-
                 </div>
                 <div class="information">
                     <div class="info big">
                         <h1>Gender</h1>
-                        <p class="display">{{userLocal.gender}}</p>
                         <paper-radio-group 
                             selected="{{userLocal.gender}}"
                             attr-for-selected="name"
@@ -224,49 +219,57 @@
                     </div>
                     <div class="info small">
                         <h1>Height (<span>{{heightUnit(userLocal.units)}}</span>)</h1>
-                        <p class="display">{{heightValue(userLocal.height, userLocal.units)}}</p>
-                        <input type="text" placeholder="Height" class="editable" name="height" id="height">
+                        <input type="text"
+                            placeholder="Height"
+                            class="editable"
+                            name="height"
+                            id="height"
+                            label="Height"
+                            value="{{userLocal.height::input}}">
                     </div>
                 </div>
                 <div class="information">
                     <div class="info big">
                         <h1>Location</h1>
-                        <p class="display">
-                            <span>{{userLocal.city}}</span>
-                            <span>{{userLocal.state}}</span>
-                        </p>
                         <input
                             type="text"
                             placeholder="City"
                             class="editable"
                             name="city"
-                            value="{{userLocal.city::input}}">
+                            value="{{userLocal.city::input}}"
+                            label="City">
                         <input
                             type="text"
                             placeholder="State"
                             class="editable"
                             name="state"
-                            value="{{userLocal.state::input}}">
+                            value="{{userLocal.state::input}}"
+                            label="State">
                     </div>
                     <div class="info small">
                         <h1>Weight (<span>{{weightUnit(userLocal.units)}}</span>)</h1>
-                        <p class="display">{{weightValue(userLocal.weight, userLocal.units)}}</p>
-                        <input type="text" placeholder="Weight" class="editable" name="weight" id="weight">
+                        <input type="text"
+                            placeholder="Weight"
+                            class="editable"
+                            name="weight"
+                            id="weight"
+                            value="{{userLocal.weight::input}}"
+                            >
                     </div>
                 </div>
                 </form>
             </div>
             
-            <div class="about-me" option="display" id="about">
+            <div class="about-me" option="editable" id="about">
                 <h1 class="title">About Me</h1>
-                <div class="edit" on-click="toggleEditAbout">
-                    <iron-icon class="display" icon="editor:mode-edit"></iron-icon>
-                    <span class="display icon-tag">Edit</span>
-                    <iron-icon class="editable" icon="icons:save" on-click="saveDetails"></iron-icon>
-                    <span class="editable icon-tag" on-click="saveDetails">Save</span>
-                </div>
-                <p class="display">{{userLocal.about_me}}</p>
-                <paper-textarea class="editable" label="Introduce yourself to the world" char-counter maxlength="200" max-rows="5" value="{{userLocal.about_me::change}}"></paper-textarea>
+                <paper-textarea
+                    class="editable"
+                    label="Introduce yourself to the world"
+                    char-counter
+                    maxlength="200"
+                    max-rows="5"
+                    value="{{userLocal.about_me::change}}">
+                </paper-textarea>
             </div>
         </section>
         <div class="prefs">
@@ -281,7 +284,7 @@
                     <paper-radio-button name="meters">Kilometers and Kilograms</paper-radio-button>
                 </paper-radio-group>
             </div>
-            <button is="stryd-button" id="save-pref" on-click="savePreference">Save</button>
+            <button is="stryd-button" id="save-pref" on-click="saveDetails">Save</button>
         </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
@@ -328,47 +331,7 @@
                     )
                 };
             },
-            savePreference: function() {
-                console.log('here1');
-                var prefs = {units: this.$.radio.selected};
-                var queryString = this.jsonToQueryString(prefs);
-                superagent
-                        .put('/b/api/v1/users/' + jwt.data.id + queryString)
-                        .send('{"empty":"empty"}')
-                        .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function(err, res) {
-                            if (res.ok) {
-                                this.$.toast.text = 'Your preference is updated!';
-                                user.updateData(res.body);
-                                this.attached();
-                            } else {
-                                this.$.toast.text = 'Your preference is not updated. Please try again.';
-                            }
-                            this.$.toast.show();
-                        }.bind(this));
-            },
-            editDetails: function () {
-                var height, weight;
-                if (this.userLocal.units === 'feet') {
-                    height = this.CMToInch(this.userLocal.height);
-                    weight = this.KGToPound(this.userLocal.weight);
-                } else {
-                    height = this.userLocal.height;
-                    weight = this.userLocal.weight;
-                }
-                this.$.height.value = height;
-                this.$.weight.value = weight;
-            },
             saveDetails: function () {
-                if (this.userLocal.units === 'feet') {
-                    this.userLocal.height = this.InchToCM(this.$.height.value);
-                    this.userLocal.weight = this.PoundToKG(this.$.weight.value);
-                } else {
-                    this.userLocal.height = this.$.height.value;
-                    this.userLocal.weight = this.$.weight.value;
-                }
-
                 var queryString = this.jsonToQueryString(this.userLocal);
                 superagent
                     .put('/b/api/v1/users/' + jwt.data.id + queryString)
@@ -395,22 +358,6 @@
                     return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
                 }
             },
-            toggleEditDetails: function () {
-                var options = this.$.details.getAttribute('option');
-                if (options === 'display') {
-                    this.$.details.setAttribute('option', 'editable');
-                } else {
-                    this.$.details.setAttribute('option', 'display');
-                }
-            },
-            toggleEditAbout: function () {
-                var options = this.$.about.getAttribute('option');
-                if (options === 'display') {
-                    this.$.about.setAttribute('option', 'editable');
-                } else {
-                    this.$.about.setAttribute('option', 'display');
-                }
-            },
             weightUnit: function (unit) {
                 if (unit === 'feet') {
                     return 'lbs';
@@ -428,7 +375,7 @@
             },
             heightUnit: function (unit) {
                 if (unit === 'feet') {
-                    return 'feet';
+                    return 'inches';
                 } else {
                     return 'cm';
                 }
@@ -450,9 +397,9 @@
                 }
                 var today = new Date();
                 var birth = new Date(
-                    year,
-                    month - 1,
-                    day
+                    parseInt(year) + 1,
+                    parseInt(month) - 1,
+                    parseInt(day)
                 );
                 return today.getFullYear() - birth.getFullYear();
             },
