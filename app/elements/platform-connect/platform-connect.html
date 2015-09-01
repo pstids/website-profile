@@ -95,8 +95,8 @@
                 },
                 oauthConnect: function (e) {
                     var platform = e.target.getAttribute('id');
+                    var ele = this.$[platform];
                     if (this.$[platform].dataset.toggle === 'on') {
-                        var ele = this.$[platform];
                         superagent
                                 .del('/b/platform/oauth/' + platform)
                                 .send()
@@ -106,7 +106,7 @@
                                     console.log(res);
                                     if (res.ok) {
                                         ele.dataset.toggle = 'off';
-                                        ele.firstChild.textContent = 'Connect';
+                                        ele.textContent = 'Connect';
                                     }
                                 });
 
@@ -118,7 +118,8 @@
                                 .set('Authorization', 'Bearer: ' + jwt.token)
                                 .end(function (err, res) {
                                     if (res.ok) {
-                                        window.location = res.body.redirect_url;
+                                        ele.dataset.toggle = 'on';
+                                        ele.textContent = 'Disconnect';
                                     }
                                 });
                     }
