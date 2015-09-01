@@ -11,7 +11,7 @@
     </template>
     <script>
         var mapReadyTrigger = false;
-        var mapReadyEvent = new Event('MapReady');
+        var mapReadyEvent = new CustomEvent('MapReady');
         window.mapReady = function () {
             mapReadyTrigger = true;
             window.dispatchEvent(mapReadyEvent);

@@ -24,7 +24,7 @@ var workoutFetching = function (id) {
     };
 
     var mapSummary;
-    var mapRun;
+    var mapRunEle;
     var logBook;
     var workoutElement;
     var header;
@@ -33,12 +33,12 @@ var workoutFetching = function (id) {
     app.addEventListener('dom-change', function() {
         console.log('Our app is ready to rock!');
         mapSummary = document.querySelector('map-summary');
-        mapRun = document.querySelector('map-run');
+        mapRunEle = document.querySelector('map-run');
         logBook = document.querySelector('log-book');
         workoutElement = document.querySelector('workout-element');
         processor.onmessage = function (event) {
             if ('mapRunData' in event.data) {
-                mapRun.setData(event.data.mapRunData);
+                mapRunEle.setData(event.data.mapRunData);
             }
             if ('chartData' in event.data) {
                 workoutElement.setChartData(event.data.chartData);
@@ -47,12 +47,12 @@ var workoutFetching = function (id) {
                 logBook.populateLogs(event.data.logs);
             }
             if (event.data.type === 'sample') {
-                mapRun.classList.add('sample');
+                mapRunEle.classList.add('sample');
                 workoutElement.classList.add('sample');
                 logBook.classList.add('sample');
                 document.querySelector('#sample').show();
             } else {
-                mapRun.classList.remove('sample');
+                mapRunEle.classList.remove('sample');
                 workoutElement.classList.remove('sample');
                 logBook.classList.remove('sample');
                 document.querySelector('#sample').hide();

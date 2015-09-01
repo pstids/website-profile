@@ -130,21 +130,17 @@
         .uploader {
             @apply(--layout-vertical);
         }
-        .dropzone {
+        .uploader .dropzone {
             background-color: rgba(36, 36, 36, 0.7);
             border-radius: 50px;
             border: 1px solid #2F2F2F;
             color: white;
-            height: 200px;
+            height: 30vh;
             width: 100%;
+            margin-top: 2vw;
         }
-        .dropzone p {
-            line-height: 160px;
-            margin: 0;
-            text-align: center;
-        }
-        form {
-            margin-top: 30px;
+        .uploader .dropzone .dz-message {
+            padding-top: 6vh;
         }
     </style>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
@@ -220,7 +216,9 @@
                 <div class="uploader">
                     <h1 class="title">Upload</h1>
                     <form class="dropzone" id="file">
-                        <p>Drop your FIT file here to upload (Or click to select from computer)</p>
+                        <div class="dz-message" data-dz-message>
+                            <span>Drop your FIT file here to upload (Or click to select from computer)</span>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -252,7 +250,7 @@
                         acceptedFiles: '.fit',
                         uploadMultiple: false,
                         addRemoveLinks: true,
-                        dictDefaultMessage: '',
+                        dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
                         dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
                         accept: function (file, done) {
                             done();

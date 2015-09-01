@@ -116,6 +116,11 @@ gulp.task('images', function () {
     .pipe($.size({title: 'images'}));
 });
 
+// gulp-cache need clear in the case of image path being changed
+gulp.task('clear', function (done) {
+    return $.cache.clearAll(done);
+});
+
 // Copy All Files At The Root Level (app)
 gulp.task('copy', function () {
   var app = gulp.src([

@@ -1,182 +1,158 @@
 <dom-module id="platform-connect">
-  <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-  <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
-  <link rel="import" href="../../styles/app-theme.html">
-  <style>
-    :host {
-      display: block;
-    }
-
-    h1.title {
-      @apply(--header);
-    }
-
-    .authenticate {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-      padding: 2%;
-    }
-
-    .authenticate .status {
-      @apply(--layout-flex-1);
-      font-size: 2vw;
-    }
-
-    .authenticate .action {
-      @apply(--layout-flex-1);
-    }
-
-    [data-toggle="on"] .disconnected {
-      display: none;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    [data-toggle="off"] .connected {
-      display: none;
-    }
-
-    .table {
-      @apply(--layout-vertical);
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .table a {
-      text-decoration: none;
-      color: white;
-    }
-    .table .td {
-      @apply(--layout-flex);
-    }
-    .thead {
-      color: var(--primary-header-color);
-      font-size: 10px;
-      @apply(--layout-horizontal);
-      padding: 20px 0;
-    }
-    .tbody {
-      color: white;
-      font-size: 1vw;
-      @apply(--layout-horizontal);
-      border-top: 1px solid rgba(255, 255, 255, 0.5);
-      padding: 1vw 0;
-    }
-    .table .connected {
-      color: #57EC48;
-    }
-    .table .disconnected {
-      color: #C34838;
-    }
-    .clickable {
-      cursor: pointer;
-    }
-  </style>
-  <template>
-    <h1 class="title">Stryd Connect</h1>
-    <div class="table">
-      <div class="thead">
-        <div class="td">Application</div>
-        <div class="td">Link</div>
-        <div class="td">Status</div>
-        <div class="td"></div>
-      </div>
-      <div class="tbody" data-toggle="off" id="garmin">
-        <div class="td">Garmin</div>
-        <div class="td">
-          <a href="https://www.garmin.com">www.garmin.com</a>
-        </div>
-        <div class="td connected">
-          Connected
-        </div>
-        <div class="td disconnected">
-          Disconnected
-        </div>
-        <div class="td disonnected clickable" connect="garmin" on-click="oauthConnect">Connect?</div>
-        <div class="td connected clickable">Disconnect?</div>
-      </div>
-      <div class="tbody" data-toggle="off" id="strava">
-        <div class="td">Strava</div>
-        <div class="td">
-          <a href="https://www.strava.com">www.strava.com</a>
-        </div>
-        <div class="td connected">
-          Connected
-        </div>
-        <div class="td disconnected">
-          Disconnected
-        </div>
-        <div class="td disonnected clickable" connect="strava" on-click="oauthConnect">Connect?</div>
-        <div class="td connected clickable">Disconnect?</div>
-      </div>
-      <div class="tbody" data-toggle="off" id="trainingpeaks">
-        <div class="td">Training Peaks</div>
-        <div class="td">
-          <a href="https://www.trainingpeaks.com">www.trainingpeaks.com</a>
-        </div>
-        <div class="connected td">
-          Connected
-        </div>
-        <div class="disconnected td">
-          Disconnected
-        </div>
-        <div class="disonnected td clickable" connect="trainingpeaks" on-click="oauthConnect">Connect?</div>
-        <div class="td connected clickable">Disconnect?</div>
-      </div>
-    </div>
-  </template>
-  <script>
-    /*global superagent */
-    /*global jwt */
-    /*jshint unused: false*/
-    /*jshint camelcase: false */
-    (function () {
-      Polymer({
-        is: 'platform-connect',
-        properties: {
-        },
-        ready: function() {
-          this.update();
-        },
-        oauthConnect: function (e) {
-          var platform = e.target.getAttribute('connect');
-          superagent
-            .get('/b/platform/oauth/' + platform)
-            .send()
-            .set('Accept', 'application/json')
-            .set('Authorization', 'Bearer: ' + jwt.token)
-            .end(function (err, res) {
-              if (res.ok) {
-                window.location = res.body.redirect_url;
-              }
-            });
-        },
-        update: function () {
-          if (jwt.data.id) {
-            superagent
-              .get('/b/internal/platforms')
-              .send()
-              .set('Accept', 'application/json')
-              .set('Authorization', 'Bearer: ' + jwt.token)
-              .end(function(err, res) {
-                if (res.ok) {
-                  this.updateView(res.body);
-                }
-              }.bind(this));
+    <template>
+        <style>
+            :host {
+                display: block;
             }
-        },
-        updateView: function (platforms) {
-          var platform, i;
-          for (i = 0; i < platforms.length; i++) {
-            platform = platforms[i];
-            if (platform.status && platform.platform in this.$) {
-              this.$[platform.platform].dataset.toggle = 'on';
-            } 
-          }
-        }
-      });
-    })();
-  </script>
+
+            h1.title {
+                @apply(--header);
+            }
+            h2.subtitle {
+                @apply(--subtitle);
+            }
+
+            .import {
+                margin-top: 2vw;
+            }
+            .export {
+                margin-top: 2vw;
+            }
+            .authenticate {
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--layout-justified);
+            }
+            .authenticate div button {
+                margin: 2vw auto 0 auto;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            .authenticate div button[data-toggle="on"] {
+                border-color: var(--warning-color);
+                color: var(--warning-color);
+            }
+            .authenticate div button[data-toggle="off"] {
+            }
+
+        </style>
+        <h1 class="title">Stryd Connect</h1>
+        <div class="import">
+            <h2 class="subtitle">Imports From</h2>
+            <div class="authenticate">
+                <div>
+                    <a href="https://www.garmin.com">
+                        <img class="logo" src="/profile/images/logos/logo_garmin.png" width="150px" height="48px"/>
+                    </a>
+                    <button is="stryd-button" data-toggle="off" id="garmin" on-click="oauthConnect">Connect</button>
+                </div>
+                <div>
+                    <a href="https://www.suunto.com">
+                        <img class="logo" src="/profile/images/logos/logo_suunto.png" width="150px" height="48px"/>
+                    </a>
+                    <button is="stryd-button" data-toggle="off" id="suunto" on-click="oauthConnect">Coming Soon</button>
+                </div>
+                <div style="width: 150px;"></div>
+            </div>
+        </div>
+        <div class="export">
+            <h2 class="subtitle">Exports To</h2>
+            <div class="authenticate">
+                <div>
+                    <a href="https://www.trainingpeaks.com">
+                        <img class="logo" src="/profile/images/logos/logo_tp.png" width="150px" height="35px"/>
+                    </a>
+                    <button is="stryd-button" data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</button>
+                </div>
+                <div>
+                    <a href="https://www.strava.com">
+                        <img class="logo" src="/profile/images/logos/logo_strava.png" width="150px" height="35px"/>
+                    </a>
+                    <button is="stryd-button" data-toggle="off" id="strava" on-click="oauthConnect">Connect</button>
+                </div>
+                <div>
+                    <a href="https://www.2peak.com">
+                        <img class="logo" src="/profile/images/logos/logo_2peak.png" width="150px" height="35px"/>
+                    </a>
+                    <button is="stryd-button" data-toggle="off" id="2peak" on-click="">Coming Soon</button>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        /*global superagent */
+        /*global jwt */
+        /*jshint unused: false*/
+        /*jshint camelcase: false */
+        (function () {
+            Polymer({
+                is: 'platform-connect',
+                properties: {
+                },
+                ready: function() {
+                    this.update();
+                },
+                oauthConnect: function (e) {
+                    var platform = e.target.getAttribute('id');
+                    var ele = this.$[platform];
+                    if (this.$[platform].dataset.toggle === 'on') {
+                        superagent
+                                .del('/b/platform/oauth/' + platform)
+                                .send()
+                                .set('Accept', 'application/json')
+                                .set('Authorization', 'Bearer: ' + jwt.token)
+                                .end(function (err, res) {
+                                    console.log(res);
+                                    if (res.ok) {
+                                        ele.dataset.toggle = 'off';
+                                        ele.textContent = 'Connect';
+                                    }
+                                });
+
+                    } else {
+                        superagent
+                                .get('/b/platform/oauth/' + platform)
+                                .send()
+                                .set('Accept', 'application/json')
+                                .set('Authorization', 'Bearer: ' + jwt.token)
+                                .end(function (err, res) {
+                                    if (res.ok) {
+                                        ele.dataset.toggle = 'on';
+                                        ele.textContent = 'Disconnect';
+                                    }
+                                });
+                    }
+                },
+                update: function () {
+                    if (jwt.data.id) {
+                        superagent
+                                .get('/b/internal/platforms')
+                                .send()
+                                .set('Accept', 'application/json')
+                                .set('Authorization', 'Bearer: ' + jwt.token)
+                                .end(function(err, res) {
+                                    if (res.ok) {
+                                        this.updateView(res.body);
+                                    }
+                                }.bind(this));
+                    }
+                },
+                updateView: function (platforms) {
+                    var platform, i;
+                    for (i = 0; i < platforms.length; i++) {
+                        platform = platforms[i];
+                        if (platform.status && platform.platform in this.$) {
+                            this.$[platform.platform].dataset.toggle = 'on';
+                            this.$[platform.platform].textContent = 'Disconnect';
+                        } else {
+                            this.$[platform.platform].dataset.toggle = 'off';
+                            this.$[platform.platform].textContent = 'Connect';
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
 
 </dom-module>
