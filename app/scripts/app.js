@@ -1,6 +1,9 @@
 /*jshint -W079 */
 /*jshint unused:false*/
 /*jshint -W079 */
+/*global Dropzone*/
+/*global jwt*/
+
 var processor = new Worker('/powercenter/scripts/processor.js');
 
 var workoutFetching = function (id) {
@@ -92,6 +95,43 @@ var workoutFetching = function (id) {
         // add #! before urls
         page({
             hashbang: false,
+        });
+
+        var d = document.querySelector('#file');
+        this.Dropzone = new Dropzone(d, {
+            paramName: 'file', // The name that will be used to transfer the file
+            url: '/b/platform/data/stryd',
+            headers: {
+                'Authorization': 'Bearer: ' + jwt.token
+            },
+            maxFilesize: 60, // MB
+            acceptedFiles: '.fit',
+            uploadMultiple: false,
+            addRemoveLinks: true,
+            dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
+            dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
+            accept: function (file, done) {
+                done();
+            },
+            success: function (file, message) {
+                console.log(message);
+                logsFetching();
+            },
+            error: function (file, message) {
+                console.log(message);
+            },
+            sending: function (file, xhr, formData) {
+                var uid = new Date().getUTCMilliseconds();
+                var fileMetaData = {
+                    sizeInBytes: file.size,
+                    uploadId: String(uid),
+                    md5: '',
+                    oauthToken: jwt.token,
+                    privacy: 'public',
+                    activityIds: [1]
+                };
+                formData.append('uploadMetaData', JSON.stringify(fileMetaData));
+            }
         });
     });
 

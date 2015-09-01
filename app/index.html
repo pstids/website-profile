@@ -66,6 +66,14 @@
                 <map-run></map-run>
                 <workout-element></workout-element>
                 <log-book></log-book>
+                <div class="uploader">
+                        <h1 class="title">Upload</h1>
+                        <form class="dropzone" id="file">
+                                <div class="dz-message" data-dz-message>
+                                        <span>Drop your FIT file here to upload (Or click to select from computer)</span>
+                                </div>
+                        </form>
+                </div>
             </section>
 
             <section data-route="users">
@@ -103,6 +111,7 @@
     <google-analytics code="UA-56986987-2"></google-analytics>
 </template>
 <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/1.2.0/superagent.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
 <script src="scripts/jwt.js"></script>
 <!-- build:js scripts/app.js -->
 <script src="bower_components/page/page.js"></script>

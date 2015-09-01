@@ -108,21 +108,6 @@
         .profile > div {
             margin-bottom: 10vh;
         }
-        .uploader {
-            @apply(--layout-vertical);
-        }
-        .uploader .dropzone {
-            background-color: rgba(36, 36, 36, 0.7);
-            border-radius: 50px;
-            border: 1px solid #2F2F2F;
-            color: white;
-            height: 30vh;
-            width: 100%;
-            margin-top: 2vw;
-        }
-        .uploader .dropzone .dz-message {
-            padding-top: 6vh;
-        }
     </style>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
     <template>
@@ -182,23 +167,11 @@
                 <div>
                     <platform-connect></platform-connect>
                 </div>
-                <div class="uploader">
-                    <h1 class="title">Upload</h1>
-                    <form class="dropzone" id="file">
-                        <div class="dz-message" data-dz-message>
-                            <span>Drop your FIT file here to upload (Or click to select from computer)</span>
-                        </div>
-                    </form>
-                </div>
             </div>
         </div>
         <paper-toast duration="1300" text="This feature is not ready." id="toast"></paper-toast>
     </template>
-    <script src="../../scripts/dropzone.js"></script>
     <script>
-        /*global Dropzone*/
-        /*global jwt*/
-
         Polymer({
             is: 'stryd-settings',
             properties: {
@@ -207,43 +180,6 @@
                 this.attached();
             },
             attached: function() {
-                if (!this.Dropzone) {
-                    var d = this.querySelector('#file');
-                    this.Dropzone = new Dropzone(d, {
-                        paramName: 'file', // The name that will be used to transfer the file
-                        url: '/b/platform/data/stryd',
-                        headers: {
-                            'Authorization': 'Bearer: ' + jwt.token
-                        },
-                        maxFilesize: 60, // MB
-                        acceptedFiles: '.fit',
-                        uploadMultiple: false,
-                        addRemoveLinks: true,
-                        dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
-                        dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
-                        accept: function (file, done) {
-                            done();
-                        },
-                        success: function (file, message) {
-                            console.log(message);
-                        },
-                        error: function (file, message) {
-                            console.log(message);
-                        },
-                        sending: function (file, xhr, formData) {
-                            var uid = new Date().getUTCMilliseconds();
-                            var fileMetaData = {
-                                sizeInBytes: file.size,
-                                uploadId: String(uid),
-                                md5: '',
-                                oauthToken: jwt.token,
-                                privacy: 'public',
-                                activityIds: [1]
-                            };
-                            formData.append('uploadMetaData', JSON.stringify(fileMetaData));
-                        }
-                    });
-                }
             },
             notReady: function () {
                 this.$.toast.show();

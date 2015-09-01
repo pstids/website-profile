@@ -14,5 +14,37 @@ body {
 }
 
 iron-pages {
-	padding: 0 !important;
+  padding: 0 !important;
+}
+
+.uploader {
+  background-color: #262626;
+  color: white;
+  padding: 4vw;
+
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  -ms-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+.uploader h1 {
+  text-transform: uppercase;
+  font-size: 2.27vw;
+  color: #F5A214;
+  margin: 0;
+}
+.uploader .dropzone {
+  background-color: rgba(72, 72, 72, 0.7);
+  border-radius: 50px;
+  border: 1px solid #2F2F2F;
+  color: white;
+  height: 30vh;
+  width: 100%;
+  margin-top: 2vw;
+}
+.uploader .dropzone .dz-message {
+  padding-top: 6vh;
 }
