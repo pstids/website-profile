@@ -1,11 +1,14 @@
 <dom-module id="user-info">
     <style>
-        :host {
+        section {
             @apply(--layout-horizontal);
             @apply(--layout-justified);
         }
         h1.title {
             @apply(--header);
+        }
+        h2.subtitle {
+            @apply(--subtitle);
         }
         .edit {
             @apply(--layout-horizontal);
@@ -103,6 +106,18 @@
         .information #birthday-input input[type=text] {
             width: 25%;
         }
+        select {
+            border-radius: 10px;
+            text-transform: uppercase;
+            font-size: 1vw;
+            color: white;
+            background-color: rgba(0, 0, 0, 0);
+            border: 1px solid white;
+            padding: 1vw;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
         *::-webkit-input-placeholder {
             color: grey;
             font-weight: 300;
@@ -136,35 +151,59 @@
             line-height: 1.8;
             min-height: 100%;
         }
+        .prefs {
+            margin-top: 40px;
+        }
+        .pref {
+            @apply(--layout-vertical);
+            margin-top: 2vw;
+        }
+        .prefs select {
+            border-radius: 10px;
+            text-transform: uppercase;
+            font-size: 1vw;
+            color: white;
+            background-color: rgba(0, 0, 0, 0);
+            border: 1px solid white;
+            padding: 1vw;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
     </style>
     <template>
-        <div class="image">
-            <img src="{{userLocal.profile}}">
-            <h1>{{userLocal.name}}</h1>
-        </div>
-        <div class="details" option="display" id="details">
-            <h1 class="title">Details</h1>
-            <div class="edit" on-click="toggleEditDetails">
-                <iron-icon class="display" icon="editor:mode-edit"></iron-icon>
-                <span class="display icon-tag">Edit</span>
-                <iron-icon class="editable" icon="icons:save"></iron-icon>
-                <span class="editable icon-tag">Save</span>
+        <section>
+            <div class="image">
+                <img src="{{userLocal.profileImg}}">
+                <h1>{{userLocal.name}}</h1>
             </div>
-            <div class="information">
-                <div class="info big">
-                    <h1>Date of Birth</h1>
-                    <p class="display">
-                        <span>{{userLocal.birth.month}}</span>/<span>{{userLocal.birth.day}}</span>/<span>{{userLocal.birth.year}}</span>
-                    </p>
-                    <div id="birthday-input">
-                        <input type="text" placeholder="Month" class="editable" name="month" value="{{userLocal.birth.month::input}}">
-                        <input type="text" placeholder="Day" class="editable" name="day" value="{{userLocal.birth.day::input}}">
-                        <input type="text" placeholder="Year" class="editable" name="year" value="{{userLocal.birth.year::input}}">
-                    </div>
+           
+            <div class="details" option="display" id="details">
+                <form id="information" is="iron-form">
+                <h1 class="title">Details</h1>
+                <div class="edit" on-click="toggleEditDetails">
+                    <iron-icon class="display" icon="editor:mode-edit" on-click="editDetails"></iron-icon>
+                    <span class="display icon-tag" on-click="editDetails">Edit</span>
+                    <iron-icon class="editable" icon="icons:save" on-click="saveDetails"></iron-icon>
+                    <span class="editable icon-tag" on-click="saveDetails">Save</span>
                 </div>
-                <div class="info small">
-                    <h1>Age</h1>
-                    <p>21</p>
+                <div class="information">
+                    <div class="info big">
+                        <h1>Date of Birth</h1>
+                        <p class="display">
+                            <span>{{userLocal.birth_month}}</span>/<span>{{userLocal.birth_day}}</span>/<span>{{userLocal.birth_year}}</span>
+                        </p>
+                        <div id="birthday-input">
+                            <input type="text" placeholder="Month" class="editable" name="birth_month" value="{{userLocal.birth_month::input}}">
+                            <input type="text" placeholder="Day" class="editable" name="birth_day" value="{{userLocal.birth_day::input}}">
+                            <input type="text" placeholder="Year" class="editable" name="birth_year" value="{{userLocal.birth_year::input}}">
+                        </div>
+                    </div>
+                    <div class="info small">
+                        <h1>Age</h1>
+                        <p>{{getAge(userLocal.birth_year, userLocal.birth_month, userLocal.birth_day)}}</p>
+                    </div>
+
                 </div>
                 <div class="information">
                     <div class="info big">
@@ -185,27 +224,45 @@
                         <input type="text" placeholder="Height" class="editable" name="height" id="height">
                     </div>
                 </div>
-                <div class="info small">
-                    <h1>Height (<span>{{heightUnit()}}</span>)</h1>
-                    <p class="display">{{userLocal.height.value}}</p>
-                    <input type="text" placeholder="Height" class="editable" name="height" value="{{userLocal.height::input}}">
+                <div class="information">
+                    <div class="info big">
+                        <h1>Location</h1>
+                        <p class="display">
+                            <span>{{userLocal.city}}</span>
+                            <span>{{userLocal.state}}</span>
+                        </p>
+                        <input
+                            type="text"
+                            placeholder="City"
+                            class="editable"
+                            name="city"
+                            value="{{userLocal.city::input}}">
+                        <input
+                            type="text"
+                            placeholder="State"
+                            class="editable"
+                            name="state"
+                            value="{{userLocal.state::input}}">
+                    </div>
+                    <div class="info small">
+                        <h1>Weight (<span>{{weightUnit(userLocal.units)}}</span>)</h1>
+                        <p class="display">{{weightValue(userLocal.weight, userLocal.units)}}</p>
+                        <input type="text" placeholder="Weight" class="editable" name="weight" id="weight">
+                    </div>
                 </div>
+                </form>
             </div>
-            <div class="information">
-                <div class="info big">
-                    <h1>Location</h1>
-                    <p class="display">
-                        <span>{{userLocal.city}}</span>,
-                        <span>{{userLocal.state}}</span>
-                    </p>
-                    <input type="text" placeholder="City, State" class="editable" name="location"
-                           value="{{userLocal.city::input}}, {{userLocal.state::input}}">
+            
+            <div class="about-me" option="display" id="about">
+                <h1 class="title">About Me</h1>
+                <div class="edit" on-click="toggleEditAbout">
+                    <iron-icon class="display" icon="editor:mode-edit"></iron-icon>
+                    <span class="display icon-tag">Edit</span>
+                    <iron-icon class="editable" icon="icons:save" on-click="saveDetails"></iron-icon>
+                    <span class="editable icon-tag" on-click="saveDetails">Save</span>
                 </div>
-                <div class="info small">
-                    <h1>Weight (<span>{{weightUnit()}}</span>)</h1>
-                    <p class="display">{{userLocal.weight}}</p>
-                    <input type="text" placeholder="Weight" class="editable" name="weight" value="{{userLocal.weight::input}}">
-                </div>
+                <p class="display">{{userLocal.about_me}}</p>
+                <paper-textarea class="editable" label="Introduce yourself to the world" char-counter maxlength="200" max-rows="5" value="{{userLocal.about_me::change}}"><paper-textarea>
             </div>
         </section>
         <div class="prefs">
@@ -220,8 +277,6 @@
                     <paper-radio-button name="meters">Kilometers and Kilograms</paper-radio-button>
                 </paper-radio-group>
             </div>
-            <p class="display">{{userLocal.about}}</p>
-            <paper-textarea class="editable" label="Introduce yourself to the world" char-counter maxlength="200" max-rows="5"><paper-textarea>
         </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
@@ -236,42 +291,75 @@
                     notify: true
                 }
             },
+            jsonToQueryString: function (json) {
+                return '?' + 
+                    Object.keys(json).map(function(key) {
+                        return encodeURIComponent(key) + '=' +
+                            encodeURIComponent(json[key]);
+                    }).join('&');
+            },
             attached: function () {
-                var aboutStr = user.data.about;
+                var aboutStr = user.data.about_me;
                 if (!aboutStr) {
                     aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
                 }
                 this.userLocal = {
-                    birth: {
-                        day: '30',
-                        month: '12',
-                        year: '88'
-                    },
+                    birth_day: user.data.birth.day,
+                    birth_month: user.data.birth.month,
+                    birth_year: user.data.birth.year,
                     gender: user.data.gender,
                     height: user.data.height,
                     city: user.data.city,
-                    state: user.data.city,
+                    state: user.data.state,
                     weight: user.data.weight,
                     name: user.data.user_name,
-                    profile: this.setProfileIMG(),
-                    about: aboutStr,
-                    units: user.data.units
+                    profileImg: this.setProfileIMG(),
+                    about_me: aboutStr,
+                    units: user.data.units,
+                    age: this.getAge(
+                        user.data.birth.year,
+                        user.data.birth.month,
+                        user.data.birth.day
+                    )
                 };
             },
+            editDetails: function () {
+                var height, weight;
+                if (this.userLocal.units === 'feet') {
+                    height = Math.floor(this.userLocal.height / 2.54);
+                    weight = Math.floor(this.userLocal.weight / 2.20462);
+                } else {
+                    height = this.userLocal.height;
+                    weight = this.userLocal.weight;
+                }
+                this.$.height.value = height;
+                this.$.weight.value = weight;
+            },
             saveDetails: function () {
+                if (this.userLocal.units === 'feet') {
+                    this.userLocal.height = Math.round(this.$.height.value * 2.54);
+                    this.userLocal.weight = Math.round(this.$.weight.value * 2.20462);
+                } else {
+                    this.userLocal.height = this.$.height.value;
+                    this.userLocal.weight = this.$.weight.value;
+                }
+
+                var queryString = this.jsonToQueryString(this.userLocal);
                 superagent
-                        .put('/b/api/v1/users/' + user.id)
-                        .send(this.user)
-                        .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function(err, res) {
-                            if (res.ok) {
-                                this.$.toast.text = 'Details updated!';
-                            } else {
-                                this.$.toast.text = 'Details not updated. Please try again.';
-                            }
-                            this.$.toast.show();
-                        }.bind(this));
+                    .put('/b/api/v1/users/' + jwt.data.id + queryString)
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.$.toast.text = 'Details updated!';
+                            user.updateData(res.body);
+                            this.attached();
+                        } else {
+                            this.$.toast.text = 'Details not updated. Please try again.';
+                        }
+                        this.$.toast.show();
+                    }.bind(this));
             },
             setProfileIMG: function () {
                 this.defaultURL = 'https://www.stryd.com/profile/images/leopard.png';
