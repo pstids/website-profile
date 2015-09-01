@@ -194,9 +194,9 @@
                             <span>{{userLocal.birth_month}}</span>/<span>{{userLocal.birth_day}}</span>/<span>{{userLocal.birth_year}}</span>
                         </p>
                         <div id="birthday-input">
-                            <input type="text" placeholder="Month" class="editable" name="birth_month" value="{{userLocal.birth_month::input}}">
-                            <input type="text" placeholder="Day" class="editable" name="birth_day" value="{{userLocal.birth_day::input}}">
-                            <input type="text" placeholder="Year" class="editable" name="birth_year" value="{{userLocal.birth_year::input}}">
+                            <input type="text" placeholder="MM" class="editable" name="birth_month" value="{{userLocal.birth_month::input}}">
+                            <input type="text" placeholder="DD" class="editable" name="birth_day" value="{{userLocal.birth_day::input}}">
+                            <input type="text" placeholder="YY" class="editable" name="birth_year" value="{{userLocal.birth_year::input}}">
                         </div>
                     </div>
                     <div class="info small">
@@ -326,8 +326,8 @@
             editDetails: function () {
                 var height, weight;
                 if (this.userLocal.units === 'feet') {
-                    height = Math.floor(this.userLocal.height / 2.54);
-                    weight = Math.floor(this.userLocal.weight / 2.20462);
+                    height = this.CMToInch(this.userLocal.height);
+                    weight = this.KGToPound(this.userLocal.weight);
                 } else {
                     height = this.userLocal.height;
                     weight = this.userLocal.weight;
@@ -337,8 +337,8 @@
             },
             saveDetails: function () {
                 if (this.userLocal.units === 'feet') {
-                    this.userLocal.height = Math.round(this.$.height.value * 2.54);
-                    this.userLocal.weight = Math.round(this.$.weight.value * 2.20462);
+                    this.userLocal.height = this.InchToCM(this.$.height.value);
+                    this.userLocal.weight = this.PoundToKG(this.$.weight.value);
                 } else {
                     this.userLocal.height = this.$.height.value;
                     this.userLocal.weight = this.$.weight.value;
@@ -352,11 +352,11 @@
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {
                         if (res.ok) {
-                            this.$.toast.text = 'Details updated!';
+                            this.$.toast.text = 'Your information is updated!';
                             user.updateData(res.body);
                             this.attached();
                         } else {
-                            this.$.toast.text = 'Details not updated. Please try again.';
+                            this.$.toast.text = 'Your information is not updated. Please try again.';
                         }
                         this.$.toast.show();
                     }.bind(this));
@@ -395,7 +395,7 @@
             },
             weightValue: function (value, unit) {
                 if (unit === 'feet') {
-                    var pounds = value / 2.20462;
+                    var pounds = this.KGToPound(value);
                     return parseInt(pounds);
                 } else {
                     return parseInt(value);
@@ -403,14 +403,14 @@
             },
             heightUnit: function (unit) {
                 if (unit === 'feet') {
-                    return 'feet & inches';
+                    return 'feet';
                 } else {
                     return 'cm';
                 }
             },
             heightValue: function (value, unit) {
                 if (unit === 'feet') {
-                    var totalInches = value / 2.54;
+                    var totalInches = this.CMToInch(value);
                     var feet = totalInches / 12;
                     var fraction = feet - Math.floor(feet);
                     var inches = (12 * fraction).toFixed(0);
@@ -430,6 +430,18 @@
                     day
                 );
                 return today.getFullYear() - birth.getFullYear();
+            },
+            KGToPound: function (kg) {
+                return Math.round(kg * 2.20462);
+            },
+            PoundToKG: function (pound) {
+                return Math.round(pound / 2.20462);
+            },
+            CMToInch: function (cm) {
+                return Math.round(cm / 2.54);
+            },
+            InchToCM: function (inch) {
+                return Math.round(inch * 2.54);
             }
         });
     </script>
