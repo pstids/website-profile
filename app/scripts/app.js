@@ -136,9 +136,6 @@ var workoutFetching = function (id) {
         jwt.logout();
     };
 
-    window.addEventListener('WebComponentsReady', function() {
-    });
-
     // Close drawer after menu item is selected if drawerPanel is narrow
     app.onMenuSelect = function() {
         var drawerPanel = document.querySelector('#paperDrawerPanel');
@@ -146,6 +143,10 @@ var workoutFetching = function (id) {
             drawerPanel.closeDrawer();
         }
     };
+
+    window.addEventListener('WebComponentsReady', function() {
+    });
+
     var sampleFetching = function () {
         processor.postMessage({
             token: jwt.token,

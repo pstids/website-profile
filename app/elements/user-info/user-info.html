@@ -195,7 +195,6 @@
                                    class="editable"
                                    name="height"
                                    id="height"
-                                   label="Height"
                                    value="{{userLocal.height::input}}">
 
                             </paper-input>
@@ -217,14 +216,14 @@
                             <div id="location-input" class="justified-row">
                                 <paper-input
                                         type="text"
-                                        placeholder="City"
+                                        placeholder="e.g. Boulder"
                                         class="editable"
                                         name="city"
                                         value="{{userLocal.city::input}}"
                                         label="City"></paper-input>
                                 <paper-input
                                         type="text"
-                                        placeholder="State"
+                                        placeholder="e.g. Colorado"
                                         class="editable"
                                         name="state"
                                         value="{{userLocal.state::input}}"
@@ -283,6 +282,16 @@
                         }).join('&');
             },
             attached: function () {
+                if (Object.keys(user.data).length === 0) {
+                    console.log('start fetching, ');
+                    user.fetchDetails(function () {
+                        this.setUserLocal();
+                    }.bind(this));
+                    return;
+                }
+                this.setUserLocal();
+            },
+            setUserLocal: function () {
                 var aboutStr = user.data.about_me;
                 if (!aboutStr) {
                     aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
@@ -327,8 +336,8 @@
             },
             setProfileIMG: function () {
                 this.defaultURL = 'https://www.stryd.com/powercenter/images/leopard.png';
-                if (user.data.profile !== '') {
-                    return decodeURIComponent(user.data.profile.replace('+', ' '));
+                if (user.data.profile_medium !== '') {
+                    return decodeURIComponent(user.data.profile_medium.replace('+', ' '));
                 } else {
                     var gravHash = CryptoJS.MD5(user.data.email.toLowerCase());
                     return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
