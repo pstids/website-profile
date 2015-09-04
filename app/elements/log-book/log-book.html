@@ -91,19 +91,19 @@
                 <div class="filters">
                     <div class="horizontal-section">
                         <paper-dropdown-menu label="Sort By" id="sortDropdown">
-                            <paper-tabs class="dropdown-content" selected="0">
-                                <paper-tab>Date</paper-tab>
-                                <paper-tab>Duration</paper-tab>
-                                <paper-tab>Distance</paper-tab>
-                                <paper-tab>Power</paper-tab>
+                            <paper-tabs attr-for-selected="value" class="dropdown-content" selected="date">
+                                <paper-tab value="date">Date</paper-tab>
+                                <paper-tab value="duration">Duration</paper-tab>
+                                <paper-tab value="distance">Distance</paper-tab>
+                                <paper-tab value="power">Power</paper-tab>
                             </paper-tabs>
                         </paper-dropdown-menu>
                     </div>
                     <div class="vertical-section">
                         <paper-dropdown-menu label="Order" id="orderDropdown">
-                            <paper-menu class="dropdown-content" selected="0">
-                                <paper-item>Decending</paper-item>
-                                <paper-item>Ascending</paper-item>
+                            <paper-menu attr-for-selected="value" class="dropdown-content" selected="dec">
+                                <paper-item value="dec">Decending</paper-item>
+                                <paper-item value="asc">Ascending</paper-item>
                             </paper-menu>
                         </paper-dropdown-menu>
                     </div>

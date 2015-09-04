@@ -118,8 +118,7 @@
                                 .set('Authorization', 'Bearer: ' + jwt.token)
                                 .end(function (err, res) {
                                     if (res.ok) {
-                                        ele.dataset.toggle = 'on';
-                                        ele.textContent = 'Disconnect';
+                                        window.location = res.body.redirect_url;
                                     }
                                 });
                     }
