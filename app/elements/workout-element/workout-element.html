@@ -201,7 +201,9 @@
         <section>
             <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
             <h2 class="subtitle sample" style="padding: 0px 0px 0px 50px;">Sample Data</h2>
-            <div class="bubbles">
+            <div class="bubbles"
+                data-step="7"
+                data-intro="When you select a different portion of your run, your averages will update.">
                 <bubble-stat type="avg_power" title="Average Power" unit="Watts" icon="image:flash-on"></bubble-stat>
                 <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run"></bubble-stat>
                 <bubble-stat type="avg_hr" title="Average Heart Rate" unit="BPM" icon="favorite"></bubble-stat>
@@ -237,7 +239,10 @@
                 </div>
             </div>
             <div class="chart">
-                <div id="chartdiv"></div>
+                <div id="chartdiv"
+                    data-step="6"
+                    data-intro="See how your run came together. See how power, cadence, heart rate, and more influenced your run. You can focus on certain section by clicking &dragging over an area.">
+                </div>
             </div>
         </section>
     </template>

@@ -215,12 +215,35 @@
                 <div class="slant"></div>
             </div>
             <ul class="navigation">
-                <li> <a data-route="home" href="/powercenter/">Dashboard</a> </li>
-                <li> <a data-route="connect" href="/powercenter/connect">Connect</a> </li>
-                <li> <a data-route="settings" href="/powercenter/settings">Settings</a> </li>
+                <li>
+                    <a  data-route="home"
+                        href="/powercenter/"
+                        data-step="1"
+                        data-intro="View and analyze your recent runs.">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a  data-route="connect"
+                        href="/powercenter/connect"
+                        data-step="2"
+                        data-intro="Connect your other training platforms for easy synchronization.">
+                        Connect
+                    </a>
+                </li>
+                <li>
+                    <a  data-route="settings"
+                        href="/powercenter/settings"
+                        data-step="3"
+                        data-intro="Configure your profile.">
+                        Settings
+                    </a>
+                </li>
             </ul>
             <div class="space-taker"></div>
-            <div class="insights">
+            <div class="insights"
+                data-step="4"
+                data-intro="View your run statistics from this week.">
                 <div class="insights-header">
                     <div class="subtitle">WEEK</div>
                     <div class="title">{{weekly.week_num}}</div>
@@ -263,7 +286,10 @@
                 <div class="text">
                     <div class="hello">Hello</div>
                     <div class="name">{{username}}</div>
-                    <div class="logout" on-click="logout">Logout?</div>
+                    <div class="logout">
+                        <span on-click="intro">Help?</span>
+                        <span on-click="logout">Logout?</span>
+                    </div>
                 </div>
                 <img src="{{profileImage}}" class="image">
             </div>
@@ -275,6 +301,7 @@
         /*global jwt*/
         /*global superagent*/
         /*global CryptoJS*/
+        /*global introJs*/
         Polymer({
             is: 'header-element',
             properties: {
@@ -286,6 +313,10 @@
                 this.username = jwt.data.username;
                 this.grabStats();
                 this.setProfileIMG();
+            },
+            intro: function () {
+                console.log('called intro');
+                introJs().start();
             },
             logout: function () {
                 jwt.logout();
