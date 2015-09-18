@@ -6,3 +6,4 @@ bower_components
 copy
 app/example.html
 transfer.sh
+.DS_STORE
