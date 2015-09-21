@@ -23,7 +23,7 @@
                 @apply(--layout-center);
                 @apply(--layout-justified);
             }
-            .authenticate div button {
+            .authenticate div button, .authenticate div a {
                 margin: 2vw auto 0 auto;
                 font-weight: 700;
                 text-transform: uppercase;
@@ -35,7 +35,6 @@
             }
             .authenticate div button[data-toggle="off"] {
             }
-
         </style>
         <h1 class="title">Stryd Connect</h1>
         <div class="import">
@@ -47,11 +46,23 @@
                     </a>
                     <button is="stryd-button" data-toggle="off" id="garmin" on-click="oauthConnect">Connect</button>
                 </div>
-                <div>
+                <div data-suunto="container">
                     <a href="https://www.suunto.com">
                         <img class="logo" src="/powercenter/images/logos/logo_suunto.png" width="150px" height="48px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="suunto" on-click="">Coming Soon</button>
+                    <button is="stryd-button" data-suunto="connect">Connect</button>
+                    <div data-suunto="authStep" class="hidden">
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Email"
+                            name="email"
+                            data-suunto="email">
+                        </paper-input>
+                        <button is="stryd-button" data-suunto="auth">Connect to Movescount</button>
+                    </div>
+                    <a is="stryd-button" data-suunto="confirm" href="http://www.movescount.com/settings#connections" class="hidden" target="_blank">Visit Movescount to Confirm</a>
+                    <button is="stryd-button" data-suunto="disconnect" on-click="suuntoDisconnect" class="hidden">Fetch New Workouts</button>
                 </div>
                 <div style="width: 150px;"></div>
             </div>
@@ -79,6 +90,7 @@
                 </div>
             </div>
         </div>
+        <paper-toast duration="1300" text="Workouts fetched." data-suunto="alert"></paper-toast>
     </template>
     <script>
         /*global superagent */
@@ -92,61 +104,149 @@
                 },
                 ready: function() {
                     this.update();
+                    this.suuntoAuth();
+                    document.addEventListener(
+                        'visibilitychange',
+                        this.suuntoCheck.bind(this),
+                        false
+                    );
+                },
+                suuntoCheck: function (e) {
+                    if (document.visibilityState === 'visible' &&
+                        !this.suunto.confirm.classList.contains('hidden')) {
+                        superagent
+                            .post('/b/platform/auth/suunto/check')
+                            .send()
+                            .set('Accept', 'application/json')
+                            .set('Authorization', 'Bearer: ' + jwt.token)
+                            .end(function (err, res) {
+                                if (res.ok) {
+                                    if (res.body && res.body.status === 200) {
+                                        this.suunto.confirm.classList.add('hidden');
+                                        this.suunto.disconnect.classList.remove('hidden');
+                                    }
+                                }
+                            }.bind(this));
+                    }
+                },
+                suuntoAuth: function (e) {
+                    this.suunto = {
+                        connect: this.querySelector('[data-suunto=\'connect\']'),
+                        email: this.querySelector('[data-suunto=\'email\']'),
+                        auth: this.querySelector('[data-suunto=\'auth\']'),
+                        authStep: this.querySelector('[data-suunto=\'authStep\']'),
+                        confirm: this.querySelector('[data-suunto=\'confirm\']'),
+                        disconnect: this.querySelector('[data-suunto=\'disconnect\']'),
+                        alert: this.querySelector('[data-suunto=\'alert\']')
+                    };
+                    this.suunto.disconnect.addEventListener('click', function (e) {
+                        superagent
+                            .post('/b/api/v1/fetch/suunto')
+                            .send({})
+                            .set('Accept', 'application/json')
+                            .set('Authorization', 'Bearer: ' + jwt.token)
+                            .end(function (err, res) {
+                                if (res.ok) {
+                                    this.suunto.alert.text = res.body.message;
+                                    this.suunto.alert.show();
+                                }
+                            }.bind(this));
+                    }.bind(this));
+                    this.suunto.connect.addEventListener('click', function (e) {
+                        this.suunto.connect.classList.add('hidden');
+                        this.suunto.authStep.classList.remove('hidden');
+                    }.bind(this));
+                    this.suunto.auth.addEventListener('click', function (e) {
+                        superagent
+                            .post('/b/platform/auth/suunto')
+                            .send({
+                                email: this.suunto.email.value
+                            })
+                            .set('Accept', 'application/json')
+                            .set('Authorization', 'Bearer: ' + jwt.token)
+                            .end(function (err, res) {
+                                if (res.ok) {
+                                    this.suunto.authStep.classList.add('hidden');
+                                    this.suunto.confirm.classList.remove('hidden');
+                                }
+                            }.bind(this));
+                    }.bind(this));
                 },
                 oauthConnect: function (e) {
                     var platform = e.target.getAttribute('id');
                     var ele = this.$[platform];
                     if (this.$[platform].dataset.toggle === 'on') {
                         superagent
-                                .del('/b/platform/oauth/' + platform)
-                                .send()
-                                .set('Accept', 'application/json')
-                                .set('Authorization', 'Bearer: ' + jwt.token)
-                                .end(function (err, res) {
-                                    console.log(res);
-                                    if (res.ok) {
-                                        ele.dataset.toggle = 'off';
-                                        ele.textContent = 'Connect';
-                                    }
-                                });
+                            .del('/b/platform/oauth/' + platform)
+                            .send()
+                            .set('Accept', 'application/json')
+                            .set('Authorization', 'Bearer: ' + jwt.token)
+                            .end(function (err, res) {
+                                console.log(res);
+                                if (res.ok) {
+                                    ele.dataset.toggle = 'off';
+                                    ele.textContent = 'Connect';
+                                }
+                            });
 
                     } else {
                         superagent
-                                .get('/b/platform/oauth/' + platform)
-                                .send()
-                                .set('Accept', 'application/json')
-                                .set('Authorization', 'Bearer: ' + jwt.token)
-                                .end(function (err, res) {
-                                    if (res.ok) {
-                                        window.location = res.body.redirect_url;
-                                    }
-                                });
+                            .get('/b/platform/oauth/' + platform)
+                            .send()
+                            .set('Accept', 'application/json')
+                            .set('Authorization', 'Bearer: ' + jwt.token)
+                            .end(function (err, res) {
+                                if (res.ok) {
+                                    window.location = res.body.redirect_url;
+                                }
+                            });
                     }
                 },
                 update: function () {
                     if (jwt.data.id) {
                         superagent
-                                .get('/b/internal/platforms')
-                                .send()
-                                .set('Accept', 'application/json')
-                                .set('Authorization', 'Bearer: ' + jwt.token)
-                                .end(function(err, res) {
-                                    if (res.ok) {
-                                        this.updateView(res.body);
-                                    }
-                                }.bind(this));
+                            .get('/b/internal/platforms')
+                            .send()
+                            .set('Accept', 'application/json')
+                            .set('Authorization', 'Bearer: ' + jwt.token)
+                            .end(function(err, res) {
+                                if (res.ok) {
+                                    this.updateView(res.body);
+                                }
+                            }.bind(this));
                     }
                 },
                 updateView: function (platforms) {
+                    var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava'], verifyPlatforms = ['suunto'];
                     var platform, i;
                     for (i = 0; i < platforms.length; i++) {
                         platform = platforms[i];
-                        if (platform.status && platform.platform in this.$) {
-                            this.$[platform.platform].dataset.toggle = 'on';
-                            this.$[platform.platform].textContent = 'Disconnect';
-                        } else {
-                            this.$[platform.platform].dataset.toggle = 'off';
-                            this.$[platform.platform].textContent = 'Connect';
+                        if (oauthPlatforms.indexOf(platform.platform) !== -1) {
+                            this.oauthPlatformsController(platform);
+                        } else if (verifyPlatforms.indexOf(platform.platform) !== -1) {
+                            this.verifyPlatformsController(platform);
+                        }
+
+                    }
+                },
+                oauthPlatformsController: function (platform) {
+                    if (platform.connected && platform.platform in this.$) {
+                        this.$[platform.platform].dataset.toggle = 'on';
+                        this.$[platform.platform].textContent = 'Disconnect';
+                    } else {
+                        this.$[platform.platform].dataset.toggle = 'off';
+                        this.$[platform.platform].textContent = 'Connect';
+                    }
+                },
+                verifyPlatformsController: function (platform) {
+                    console.log('trigger');
+                    if (platform.platform === 'suunto') {
+                        if (platform.status === 1) {
+                            this.suunto.connect.classList.add('hidden');
+                            this.suunto.confirm.classList.remove('hidden');
+                        } else if (platform.status === 2) {
+                            this.suunto.connect.classList.add('hidden');
+                            this.suunto.disconnect.classList.remove('hidden');
                         }
                     }
                 }

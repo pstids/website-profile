@@ -22,25 +22,17 @@ var fs = require('fs');
 var glob = require('glob');
 var historyApiFallback = require('connect-history-api-fallback');
 var babel = require('gulp-babel');
-
-var AUTOPREFIXER_BROWSERS = [
-  'ie >= 10',
-  'ie_mob >= 10',
-  'ff >= 30',
-  'chrome >= 34',
-  'safari >= 7',
-  'opera >= 23',
-  'ios >= 7',
-  'android >= 4.4',
-  'bb >= 10'
-];
+var autoprefixer = require('gulp-autoprefixer');
 
 var styleTask = function (stylesPath, srcs) {
   return gulp.src(srcs.map(function(src) {
       return path.join('app', stylesPath, src);
     }))
     .pipe($.changed(stylesPath, {extension: '.css'}))
-    .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false
+    }))
     .pipe(gulp.dest('.tmp/' + stylesPath))
     .pipe($.if('*.css', $.cssmin()))
     .pipe(gulp.dest('dist/' + stylesPath))
@@ -95,7 +87,8 @@ gulp.task('jshint', function () {
         'hrTime',
         'meterToMile',
         'speedToPaceForBalloon',
-        'speedToPaceForValueAxis'
+        'speedToPaceForValueAxis',
+        'windowFocusEvent'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
