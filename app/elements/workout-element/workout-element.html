@@ -321,19 +321,26 @@
                 };
                 var stats = {
                     maxHeartRate: 0,
-                    timeHMS: hmsTime(this.data[end-1].date - this.data[begin].date),
+                    seconds: this.data[end-1].date - this.data[begin].date,
                     distance: meterToMile(this.data[end-1].distance - this.data[begin].distance)
                 };
+                stats.timeHMS = hmsTime(stats.seconds);
+                var step = 0;
+                var thisStep;
                 for (i = begin; i < end; i++) {
+                    if (i !== begin) {
+                        thisStep = (this.data[i].date - this.data[i-1].date) / 1000;
+                        if (step === 0) {
+                            step = thisStep;
+                        } else if (thisStep < step) {
+                            step = thisStep;
+                        }
+                    }
                     if ('power' in this.data[0]) {
                         if (this.data[i].power > 5) {
                             avgs.powerCount += 1;
                             avgs.power += this.data[i].power;
                         }
-                    }
-                    if ('pace' in this.data[0]) {
-                        avgs.paceCount += 1;
-                        avgs.pace += minutesPerMile(this.data[i].pace);
                     }
                     if ('heartRate' in this.data[0]) {
                         if (this.data[i].heartRate > 5) {
@@ -349,14 +356,21 @@
                     }
                 }
                 avgs.power = avgs.power / avgs.powerCount;
-                avgs.pace = avgs.pace / avgs.paceCount;
                 avgs.heartRate = avgs.heartRate / avgs.heartRateCount;
                 avgs.elevation = avgs.elevation / total;
+                var minutes = (step * total) / 60;
+                avgs.pace = (minutes / stats.distance).toFixed(2);
 
                 this.querySelector('[type="avg_power"]').setAttribute('value', avgs.power.stat());
-                this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace.stat());
+
+                if (avgs.pace === 'Infinity') {
+                    this.querySelector('[type="avg_pace"]').classList.add('hidden');
+                } else {
+                    this.querySelector('[type="avg_pace"]').classList.remove('hidden');
+                    this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
+                }
+                
                 this.querySelector('[type="avg_hr"]').setAttribute('value', avgs.heartRate.stat());
-                // this.querySelector('[type="max_hr"]').setAttribute('value', stats.maxHeartRate.stat());
                 this.querySelector('[type="time"]').setAttribute('value', stats.timeHMS);
                 this.querySelector('[type="distance"]').setAttribute('value', stats.distance);
             },
