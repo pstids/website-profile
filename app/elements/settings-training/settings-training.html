@@ -1,0 +1,119 @@
+<dom-module id="settings-training">
+    <style>
+        h1.title {
+            @apply(--header);
+        }
+        h2.subtitle {
+            @apply(--subtitle);
+        }
+        p {
+            color: white;
+        }
+        .crit {
+            @apply(--layout-vertical);
+        }
+        .crit .power {
+            font-size: 20px;
+        }
+        .crit .calcs {
+            @apply(--layout-horizontal);
+        }
+        .crit .calcs div {
+            @apply(--layout-flex);
+        }
+    </style>
+    <template>
+        <div class="crit">
+            <h1 class="title">Critical Power</h1>
+            <p>Critical power calculation. We will be providing additional information on this metric soon.</p>
+            <div class="calcs">
+                <div>
+                    <h2 class="subtitle">Three Minute Average Watts</h2>
+                    <paper-slider
+                        min="0"
+                        max="700"
+                        value="{{crit.three_minutes}}"
+                        editable="true"
+                        id="three_minutes">
+                    </paper-input>
+                </div>
+                <div>
+                    <h2 class="subtitle">Nine Minute Average Watts</h2>
+                    <paper-slider
+                        min="0"
+                        max="600"
+                        value="{{crit.nine_minutes}}"
+                        editable="true"
+                        id="nine_minutes">
+                    </paper-input>
+                </div>
+                <div>
+                    <h2 class="subtitle">Critical Power</h2>
+                    <p class="power"><span>{{calcCrit(crit.three_minutes, crit.nine_minutes)}}</span> Watts</p>
+                </div>
+            </div>
+        </div>
+        <button is="stryd-button" on-click="saveCritPower">Save</button>
+        <paper-toast duration="1300" text="" id="toast"></paper-toast>
+    </template>
+    <script>
+        Polymer({
+            is: 'settings-training',
+            properties: {
+                crit: {
+                    type: Object,
+                    notify: true
+                }
+            },
+            jsonToQueryString: function (json) {
+                return '?' +
+                    Object.keys(json).map(function(key) {
+                        return encodeURIComponent(key) + '=' +
+                                encodeURIComponent(json[key]);
+                    }).join('&');
+            },
+            ready: function () {
+                console.log('init');
+                if (!('critical_power' in user.data)) {
+                    console.log('refetch');
+                    user.fetchDetails(this.ready.bind(this));
+                } else  {
+                    this.crit = user.get('critical_power');
+                    this.$.three_minutes.addEventListener('value-change', function () {
+                        this.crit.three_minutes = this.$.three_minutes.value;
+                    }.bind(this));
+                    this.$.nine_minutes.addEventListener('value-change', function () {
+                        this.crit.nine_minutes = this.$.nine_minutes.value;
+                    }.bind(this));
+                }
+            },
+            calcCrit: function (three, nine) {
+                var crit_power, scaled_nine, scaled_three;
+                scaled_nine = (nine*9);
+                scaled_three = (three*3);
+                crit_power = ((scaled_nine - scaled_three)/(6));
+                return crit_power;
+            },
+            saveCritPower: function () {
+                var queryString = this.jsonToQueryString({
+                    crit_three_minutes: this.crit.three_minutes,
+                    crit_nine_minutes: this.crit.nine_minutes
+                });
+                superagent
+                    .put('/b/api/v1/users/' + jwt.data.id + queryString)
+                    .send('{"empty":"empty"}')
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.$.toast.text = 'Your critical power information is updated!';
+                            user.updateData(res.body);
+                        } else {
+                            this.$.toast.text = 'Your information is not updated. Please try again.';
+                        }
+                        this.$.toast.show();
+                    }.bind(this));
+            }
+        });
+    </script>
+</dom-module>
