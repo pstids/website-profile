@@ -49,6 +49,9 @@ var workoutFetching = function (id) {
             if ('logs' in event.data) {
                 logBook.populateLogs(event.data.logs);
             }
+            if ('addLog' in event.data) {
+                logBook.addLog(event.data.addLog);
+            }
             if (event.data.type === 'sample') {
                 mapRunEle.classList.add('sample');
                 workoutElement.classList.add('sample');
@@ -111,8 +114,7 @@ var workoutFetching = function (id) {
                 done();
             },
             success: function (file, message) {
-                console.log(message);
-                logsFetching();
+                addLog(message.activity_id);
             },
             error: function (file, message) {
                 console.log(message);
@@ -159,5 +161,11 @@ var workoutFetching = function (id) {
             type: 'all'
         });
     };
+    var addLog = function (id) {
+        processor.postMessage({
+            token: jwt.token,
+            type: 'addLog',
+            id: id
+        });
+    };
 })(document);
-

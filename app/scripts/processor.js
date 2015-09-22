@@ -18,6 +18,8 @@ onmessage = function (event) {
         workoutFetching(event.data.id);
     } else if (event.data.type === 'sample') {
         workoutFetching('sample');
+    } else if (event.data.type === 'addLog') {
+        addLog(event.data.id);
     }
 };
 
@@ -177,18 +179,21 @@ var workoutProcessing = function (workout, id) {
 };
 
 var workoutFetching = function (workout) {
+var addLog = function (id) {
     superagent
-    .get('/b/api/v1/activities/' + workout)
-    .send()
-    .set('Accept', 'application/json')
-    .set('Authorization', 'Bearer: ' + token)
-    .end(function(err, res) {
-        if (res.ok) {
-            workoutProcessing(res.body, workout);
-        } else {
-            console.log('Error: Cannot fetch workout');
-        }
-    });
+        .get('/b/api/v1/activities/' + id)
+        .send()
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer: ' + token)
+        .end(function(err, res) {
+            if (res.ok) {
+                workoutSave(res.body, id);
+                data.addLog = res.body;
+                postMessage(data);
+            } else {
+                console.log('Error: Cannot fetch workout');
+            }
+        });
 };
 
 var logsProcessing = function (logs) {

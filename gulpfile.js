@@ -77,6 +77,7 @@ gulp.task('jshint', function () {
         'minutesPerMile',
         'workoutProcessing',
         'workoutFetching',
+        'addLog',
         'logsProcessing',
         'logsFetching',
         'sampleFetching',
