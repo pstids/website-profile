@@ -14,6 +14,14 @@
             background-clip: padding-box;
             cursor: pointer;
         }
+        :host.active div.log {
+            background-image: url('../../images/hover.png');
+            background-size: cover;
+            background-clip: padding-box;
+        }
+        :host.active .delete {
+            display: none;
+        }
         div.date {
             color: white;
         }
@@ -136,7 +144,7 @@
                     <paper-tooltip>Download FIT</paper-tooltip>
                 </div>
                 <div>
-                    <iron-icon icon="icons:delete" on-click="handleDeleteDialog"></iron-icon>
+                    <iron-icon icon="icons:delete" on-click="handleDeleteDialog" class="delete"></iron-icon>
                     <paper-tooltip>Delete</paper-tooltip>
                 </div>
             </div>
@@ -176,6 +184,13 @@
             viewWorkout: function () {
                 var bubbles = document.querySelector('.bubbles');
                 var logBook = document.querySelector('log-book');
+                // Set this element as the only active element
+                var logEntryActive = document.querySelector('log-entry.active');
+                if (logEntryActive) {
+                    logEntryActive.classList.remove('active');
+                }
+                this.classList.add('active');
+
                 // Don't reload sample data, because it doesn't belong to current user
                 if (logBook.className.indexOf('sample') !== -1) {
                     window.scrollTo(0, bubbles.offsetTop);
