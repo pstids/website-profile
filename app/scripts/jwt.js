@@ -39,19 +39,19 @@ class JWT {
 	requestToken() {
 		if ('id' in this.data) {
 			superagent
-					.post('/b/token/renew')
-					.send({
-						token: this.token
-					})
-					.set('Accept', 'application/json')
-					.end(function(err, res) {
-						if (res.ok) {
-							localStorage.setItem('token', res.body.token);
-							this.constructor();
-						} else {
-							this.logout();
-						}
-					}.bind(this));
+				.post('/b/token/renew')
+				.send({
+					token: this.token
+				})
+				.set('Accept', 'application/json')
+				.end(function(err, res) {
+					if (res.ok) {
+						localStorage.setItem('token', res.body.token);
+						this.constructor();
+					} else {
+						this.logout();
+					}
+				}.bind(this));
 		} else {
 			this.logout();
 		}
@@ -71,6 +71,13 @@ class User {
 		// Put default data for newly created users
 		this.data = {};
 		this.checkStorage();
+	}
+
+	get(path) {
+		if (!(path in user.data)) {
+			user.data[path] = null;
+		}
+		return user.data[path];
 	}
 
 	checkStorage() {
@@ -97,21 +104,22 @@ class User {
 	fetchDetails(callback) {
         var that = this;
 		superagent
-				.get('/b/api/v1/users/' + jwt.data.id)
-				.send()
-				.set('Accept', 'application/json')
-				.set('Authorization', 'Bearer: ' + jwt.token)
-				.end(function(err, res) {
-					if (res.ok) {
-						localStorage.setItem('user', JSON.stringify(res.body));
-						that.constructor();
-                        if (callback) {
-                            callback();
-                        }
-					} else {
-						console.log('Error: Setting user information');
+			.get('/b/api/v1/users/' + jwt.data.id)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', 'Bearer: ' + jwt.token)
+			.end(function(err, res) {
+				if (res.ok) {
+					console.log(res.body);
+					localStorage.setItem('user', JSON.stringify(res.body));
+					that.constructor();
+					if (callback) {
+						callback();
 					}
-				});
+				} else {
+					console.log('Error: Setting user information');
+				}
+			});
 	}
 }
 

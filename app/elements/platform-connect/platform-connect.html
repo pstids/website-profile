@@ -50,7 +50,8 @@
                     <a href="https://www.suunto.com">
                         <img class="logo" src="/powercenter/images/logos/logo_suunto.png" width="150px" height="48px"/>
                     </a>
-                    <button is="stryd-button" data-suunto="connect">Connect</button>
+                    <button is="stryd-button" data-suunto="connect" class="hidden">Connect</button>
+                    <button is="stryd-button">Coming Soon</button>
                     <div data-suunto="authStep" class="hidden">
                         <paper-input
                             no-label-float
@@ -115,7 +116,7 @@
                     if (document.visibilityState === 'visible' &&
                         !this.suunto.confirm.classList.contains('hidden')) {
                         superagent
-                            .post('/b/platform/auth/suunto/check')
+                            .post('/b/internal/suunto/check')
                             .send()
                             .set('Accept', 'application/json')
                             .set('Authorization', 'Bearer: ' + jwt.token)

@@ -129,6 +129,11 @@
             sampleLog: function () {
                 sampleFetching();
             },
+            addLog: function (log) {
+                var logEle = document.createElement('log-entry');
+                logEle.setData(log);
+                this.$.logContainer.appendChild(logEle);
+            },
             populateLogs: function (logs) {
                 while (this.$.logContainer.firstChild) {
                     this.$.logContainer.removeChild(this.$.logContainer.firstChild);
@@ -136,14 +141,13 @@
                 if (logs.length === 0) {
                     this.sampleLog();
                 } else {
-                    var log, logEle, i;
+                    var log, i;
                     for (i = 0; i < logs.length; i++) {
                         log = logs[i];
-                        logEle = document.createElement('log-entry');
-                        logEle.setData(log);
-                        this.$.logContainer.appendChild(logEle);
+                        this.addLog(log);
                     }
                 }
+                this.$.logContainer.firstChild.viewWorkout();
             }
         });
     </script>

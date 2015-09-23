@@ -39,12 +39,14 @@
             text-align: center;
             color: white;
         }
-        .image img {
-            max-width: 60%;
-            width: 60%;
-            height: auto;
+        .image .border {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             border: 6px solid #484846;
+        }
+        .image img {
+            height: 100px;
         }
         .image h1 {
             font-size: 26px;
@@ -132,7 +134,9 @@
     <template>
         <section>
             <div class="image">
-                <img src="{{userLocal.profileImg}}">
+                <div class="border">
+                    <img src="{{userLocal.profileImg}}">
+                </div>
                 <h1>{{userLocal.name}}</h1>
                 <div class="about-me" option="editable" id="about">
                     <paper-textarea

@@ -3,6 +3,7 @@
 /*jshint -W079 */
 /*global Dropzone*/
 /*global jwt*/
+/*global Dexie*/
 
 var processor = new Worker('/powercenter/scripts/processor.js');
 
@@ -49,6 +50,9 @@ var workoutFetching = function (id) {
             if ('logs' in event.data) {
                 logBook.populateLogs(event.data.logs);
             }
+            if ('addLog' in event.data) {
+                logBook.addLog(event.data.addLog);
+            }
             if (event.data.type === 'sample') {
                 mapRunEle.classList.add('sample');
                 workoutElement.classList.add('sample');
@@ -69,9 +73,8 @@ var workoutFetching = function (id) {
         page.base('/powercenter');
 
         page('/', function () {
-            logsFetching();
-            header.toggleActive('home');
             app.route = 'home';
+            header.toggleActive('home');
         });
 
         page('/connect', function () {
@@ -101,8 +104,9 @@ var workoutFetching = function (id) {
             headers: {
                 'Authorization': 'Bearer: ' + jwt.token
             },
+            parallelUploads: 1,
             maxFilesize: 60, // MB
-            acceptedFiles: '.fit',
+            acceptedFiles: '.fit,.tcx',
             uploadMultiple: false,
             addRemoveLinks: true,
             dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
@@ -111,8 +115,7 @@ var workoutFetching = function (id) {
                 done();
             },
             success: function (file, message) {
-                console.log(message);
-                logsFetching();
+                addLog(message.activity_id);
             },
             error: function (file, message) {
                 console.log(message);
@@ -145,6 +148,13 @@ var workoutFetching = function (id) {
     };
 
     window.addEventListener('WebComponentsReady', function() {
+        logsFetching();
+
+        var db = new Dexie('Logs');
+        db.version(1).stores({
+            log: '++id, data'
+        });
+        db.open();
     });
 
     var sampleFetching = function () {
@@ -159,5 +169,11 @@ var workoutFetching = function (id) {
             type: 'all'
         });
     };
+    var addLog = function (id) {
+        processor.postMessage({
+            token: jwt.token,
+            type: 'addLog',
+            id: id
+        });
+    };
 })(document);
-

@@ -107,7 +107,7 @@
         <div class="cover">
             <div class="settings-nav">
                 <ul>
-                    <li class="setting active">
+                    <li class="setting active" on-click="router" data-view="profile">
                         <div class="icon-border">
                             <div class="icon">
                                 <iron-icon icon="social:person"></iron-icon>
@@ -115,6 +115,17 @@
                         </div>
                         <div class="text">
                             <div class="type">Profile</div>
+                            <div class="settings">Settings</div>
+                        </div>
+                    </li>
+                    <li class="setting" on-click="router" data-view="training">
+                        <div class="icon-border">
+                            <div class="icon">
+                                <iron-icon icon="maps:directions-run"></iron-icon>
+                            </div>
+                        </div>
+                        <div class="text">
+                            <div class="type">Training</div>
                             <div class="settings">Settings</div>
                         </div>
                     </li>
@@ -132,17 +143,6 @@
                     <li class="setting" on-click="notReady">
                         <div class="icon-border">
                             <div class="icon">
-                                <iron-icon icon="maps:directions-run"></iron-icon>
-                            </div>
-                        </div>
-                        <div class="text">
-                            <div class="type">Training</div>
-                            <div class="settings">Settings</div>
-                        </div>
-                    </li>
-                    <li class="setting" on-click="notReady">
-                        <div class="icon-border">
-                            <div class="icon">
                                 <iron-icon icon="notification:mms"></iron-icon>
                             </div>
                         </div>
@@ -154,9 +154,14 @@
                 </ul>
             </div>
             <div class="profile">
-                <div>
-                    <user-info></user-info>
-                </div>
+                <iron-pages attr-for-selected="data-route" selected="{{route}}">
+                    <section data-route="profile">
+                        <user-info></user-info>
+                    </section>
+                    <section data-route="training">
+                        <settings-training></settings-training>
+                    </section>
+                </iron-pages>
             </div>
         </div>
         <paper-toast duration="1300" text="This feature is not ready." id="toast"></paper-toast>
@@ -165,15 +170,34 @@
         Polymer({
             is: 'stryd-settings',
             properties: {
+
             },
-            ready: function() {
+            ready: function () {
                 this.attached();
+                this.route = 'profile';
             },
-            attached: function() {
+            attached: function () {
             },
             notReady: function () {
                 this.$.toast.show();
-            }
+            },
+            router: function (e) {
+                console.log(e);
+                var target = e.target;
+                while (!target.dataset.view) {
+                    target = target.parentElement;
+                }
+                this.toggle(target.dataset.view);
+                this.route = target.dataset.view;
+            },
+            toggle: function (active) {
+                var anchor = this.querySelector('[data-view=\'' + active + '\']');
+                var current = this.querySelector('.active');
+                if (current) {
+                    current.classList.remove('active');
+                }
+                anchor.classList.add('active');
+            },
         });
     </script>
 </dom-module>

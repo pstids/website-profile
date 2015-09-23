@@ -60,6 +60,7 @@ gulp.task('jshint', function () {
       'app/scripts/**/*.js',
       '!app/scripts/dropzone.js',
       '!app/scripts/superagent.js',
+      '!app/scripts/dexie.js',
       '!app/scripts/amcharts/**/*',
       'app/elements/**/*.js',
       'app/elements/**/*.html'
@@ -76,6 +77,7 @@ gulp.task('jshint', function () {
         'minutesPerMile',
         'workoutProcessing',
         'workoutFetching',
+        'addLog',
         'logsProcessing',
         'logsFetching',
         'sampleFetching',
@@ -141,7 +143,8 @@ gulp.task('copy', function () {
     'app/scripts/dropzone.js',
     'app/scripts/processor.js',
     'app/scripts/superagent.js',
-    'app/scripts/toolbox.js'
+    'app/scripts/toolbox.js',
+    'app/scripts/dexie.js'
   ])
     .pipe(gulp.dest('dist/scripts'));
 

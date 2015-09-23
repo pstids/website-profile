@@ -30,11 +30,17 @@ var fillZero = function (n) {
 };
 
 // Return pace in minutes per mile from meters per second
-var minutesPerMile = function (mps) {
+var minutesPerMile = function (mps, opt) {
     if (mps === 0) {
         return 0;
     }
-    return parseFloat((1/(mps * (60/1609.34))).toFixed(1));
+    var mpm = parseFloat(mps * (1609.34/60)).toFixed(2);
+    if (opt && opt === 'minutes') {
+        var minutes = Math.floor(mpm);
+        var secondPartial = ((mpm - minutes) * 60).toPrecision(2);
+        mpm = minutes + ':' + secondPartial;
+    }
+    return mpm;
 };
 
 // Return minutes per miles with unit
