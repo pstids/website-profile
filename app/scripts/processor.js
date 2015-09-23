@@ -3,13 +3,26 @@
 /*global onmessage:true*/
 /*global importScripts:true*/
 /*global postMessage*/
+/*global Dexie:true*/
+/*global self*/
 
 importScripts('/powercenter/scripts/superagent.js');
 importScripts('/powercenter/scripts/toolbox.js');
+importScripts('/powercenter/scripts/dexie.js');
 
-var data = {}, token;
+var data = {}, token, db;
+
+var initDB = function() {
+    db = new Dexie('Logs');
+    db.version(1).stores({
+        log: '++id, data'
+    });
+    db.open();
+};
 
 onmessage = function (event) {
+    initDB();
+
     data = {};
     token = event.data.token;
     if (event.data.type === 'all') {
@@ -178,7 +191,46 @@ var workoutProcessing = function (workout, id) {
     postMessage(data);
 };
 
+var workoutSave = function (workout, id) {
+    db.log.put({
+        id: id,
+        data: workout
+    });
+};
+
+var workoutFetchingAJAX = function (workout) {
+    console.log('Fetching new data');
+    superagent
+        .get('/b/api/v1/activities/' + workout)
+        .send()
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer: ' + token)
+        .end(function(err, res) {
+            if (res.ok) {
+                workoutProcessing(res.body, workout);
+                workoutSave(res.body, workout);
+            } else {
+                console.log('Error: cannot fetch workout');
+            }
+        });
+};
+
 var workoutFetching = function (workout) {
+    self.indexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
+    if (!self.indexedDB) {
+        workoutFetchingAJAX(workout);
+    } else {
+        db.log.get(workout, function (log) {
+            if (log === undefined) {
+                workoutFetchingAJAX(workout);
+            } else {
+                console.log('Retrieving old data');
+                workoutProcessing(log.data, log.id);
+            }
+        });
+    }
+};
+
 var addLog = function (id) {
     superagent
         .get('/b/api/v1/activities/' + id)
@@ -198,12 +250,7 @@ var addLog = function (id) {
 
 var logsProcessing = function (logs) {
     data.logs = logs;
-    if (logs.length > 0) {
-        workoutFetching(logs[0].id);
-    } else {
-        postMessage();
-    }
-    // logBook.populateLogs(logs);
+    postMessage(data);
 };
 
 var logsFetching = function () {
