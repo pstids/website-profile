@@ -116,7 +116,7 @@
                     if (document.visibilityState === 'visible' &&
                         !this.suunto.confirm.classList.contains('hidden')) {
                         superagent
-                            .post('/b/platform/auth/suunto/check')
+                            .post('/b/internal/suunto/check')
                             .send()
                             .set('Accept', 'application/json')
                             .set('Authorization', 'Bearer: ' + jwt.token)
