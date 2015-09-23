@@ -4,13 +4,13 @@ body {
   color: #333;
 
   /* Sticky footer */
-  display: flex;
+  /*display: flex;
   min-height: 100vh;
-  flex-direction: column;
+  flex-direction: column;*/
 }
 
 .content {
-  flex: 1;
+  /*flex: 1;*/
   background-color: #262626;
 }
 
