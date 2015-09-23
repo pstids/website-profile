@@ -73,9 +73,8 @@ var workoutFetching = function (id) {
         page.base('/powercenter');
 
         page('/', function () {
-            logsFetching();
-            header.toggleActive('home');
             app.route = 'home';
+            header.toggleActive('home');
         });
 
         page('/connect', function () {
