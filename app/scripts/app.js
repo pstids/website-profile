@@ -104,8 +104,9 @@ var workoutFetching = function (id) {
             headers: {
                 'Authorization': 'Bearer: ' + jwt.token
             },
+            parallelUploads: 1,
             maxFilesize: 60, // MB
-            acceptedFiles: '.fit',
+            acceptedFiles: '.fit,.tcx',
             uploadMultiple: false,
             addRemoveLinks: true,
             dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
