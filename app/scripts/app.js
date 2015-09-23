@@ -3,6 +3,7 @@
 /*jshint -W079 */
 /*global Dropzone*/
 /*global jwt*/
+/*global Dexie*/
 
 var processor = new Worker('/powercenter/scripts/processor.js');
 
@@ -147,6 +148,13 @@ var workoutFetching = function (id) {
     };
 
     window.addEventListener('WebComponentsReady', function() {
+        logsFetching();
+
+        var db = new Dexie('Logs');
+        db.version(1).stores({
+            log: '++id, data'
+        });
+        db.open();
     });
 
     var sampleFetching = function () {
