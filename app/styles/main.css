@@ -52,5 +52,5 @@ div.connect {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }

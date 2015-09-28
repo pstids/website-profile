@@ -19,9 +19,6 @@
             background-size: cover;
             background-clip: padding-box;
         }
-        :host.active .delete {
-            display: none;
-        }
         div.date {
             color: white;
         }
@@ -218,11 +215,23 @@
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {
                         if (res.ok) {
+                            this.loadNext();
                             this.parentNode.removeChild(this);
                         } else {
                             console.log('failed to delete element');
                         }
                     }.bind(this));
+            },
+            loadNext: function () {
+                if (this.classList.contains('active')) {
+                    if (this.nextSibling) {
+                        this.nextSibling.viewWorkout();
+                    } else if (this.previousSibling) {
+                        this.previousSibling.viewWorkout();
+                    } else {
+                        document.location.reload(true);
+                    }
+                }
             },
             truncate: function (n) {
                 var parts = String(n).split('.');

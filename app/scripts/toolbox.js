@@ -34,13 +34,27 @@ var minutesPerMile = function (mps, opt) {
     if (mps === 0) {
         return 0;
     }
-    var mpm = parseFloat(mps * (1609.34/60)).toFixed(2);
+    var mpm = parseFloat(26.8224 / mps).toFixed(2);
+    if (mpm > 40) {
+        mpm = 0;
+    }
     if (opt && opt === 'minutes') {
         var minutes = Math.floor(mpm);
         var secondPartial = ((mpm - minutes) * 60).toPrecision(2);
         mpm = minutes + ':' + secondPartial;
     }
     return mpm;
+};
+
+var formatPace = function (pace) {
+    if (pace === 'Infinity') {
+        return null;
+    }
+    var paceFloat = parseFloat(pace);
+    var floor = Math.floor(paceFloat);
+    var seconds = ((paceFloat - floor) * 60).toFixed(0);
+    var secondsFilled = fillZero(seconds);
+    return floor + ':' + secondsFilled;
 };
 
 // Return minutes per miles with unit
@@ -78,6 +92,9 @@ var meterToKM = function (m) {
 };
 
 // Converts meters to miles
-var meterToMile = function (m) {
+var meterToMile = function (m, precision) {
+    if (precision) {
+        return (m/1600).toFixed(precision);
+    }
     return (m/1600).toFixed(1);
 };
