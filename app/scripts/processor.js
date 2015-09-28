@@ -124,7 +124,7 @@ var workoutProcessing = function (workout, id) {
             entry.heartRate = workout.heart_rate_list[i];
         }
         if ('speed_list' in workout) {
-            entry.pace = workout.speed_list[i];
+            entry.pace = minutesPerMile(workout.speed_list[i]);
         }
         if ('total_power_list' in workout) {
             entry.power = workout.total_power_list[i];

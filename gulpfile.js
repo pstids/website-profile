@@ -90,7 +90,8 @@ gulp.task('jshint', function () {
         'meterToMile',
         'speedToPaceForBalloon',
         'speedToPaceForValueAxis',
-        'windowFocusEvent'
+        'windowFocusEvent',
+        'formatPace'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
