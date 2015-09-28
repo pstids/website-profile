@@ -98,6 +98,7 @@ var workoutFetching = function (id) {
         });
 
         var d = document.querySelector('#file');
+        var uploadToast = document.querySelector('#upload-toast');
         this.Dropzone = new Dropzone(d, {
             paramName: 'file', // The name that will be used to transfer the file
             url: '/b/platform/data/stryd',
@@ -115,10 +116,13 @@ var workoutFetching = function (id) {
                 done();
             },
             success: function (file, message) {
+                uploadToast.text = 'Workout uploaded!';
+                uploadToast.show();
                 addLog(message.activity_id);
             },
             error: function (file, message) {
-                console.log(message);
+                uploadToast.text = message.message;
+                uploadToast.show();
             },
             sending: function (file, xhr, formData) {
                 var uid = new Date().getUTCMilliseconds();
