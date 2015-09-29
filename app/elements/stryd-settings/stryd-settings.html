@@ -167,21 +167,19 @@
         <paper-toast duration="1300" text="This feature is not ready." id="toast"></paper-toast>
     </template>
     <script>
-        Polymer({
-            is: 'stryd-settings',
-            properties: {
-
-            },
-            ready: function () {
+        class StrydSetting {
+            beforeRegister() {
+                this.is = 'stryd-settings';
+                this.properties = {};
+            }
+            ready() {
                 this.attached();
                 this.route = 'profile';
-            },
-            attached: function () {
-            },
-            notReady: function () {
+            }
+            notReady() {
                 this.$.toast.show();
-            },
-            router: function (e) {
+            }
+            router (e) {
                 console.log(e);
                 var target = e.target;
                 while (!target.dataset.view) {
@@ -189,15 +187,16 @@
                 }
                 this.toggle(target.dataset.view);
                 this.route = target.dataset.view;
-            },
-            toggle: function (active) {
+            }
+            toggle(active) {
                 var anchor = this.querySelector('[data-view=\'' + active + '\']');
                 var current = this.querySelector('.active');
                 if (current) {
                     current.classList.remove('active');
                 }
                 anchor.classList.add('active');
-            },
-        });
+            }
+        }
+        Polymer(StrydSetting);
     </script>
 </dom-module>

@@ -21,7 +21,6 @@ var path = require('path');
 var fs = require('fs');
 var glob = require('glob');
 var historyApiFallback = require('connect-history-api-fallback');
-var babel = require('gulp-babel');
 var autoprefixer = require('gulp-autoprefixer');
 
 var styleTask = function (stylesPath, srcs) {
@@ -48,12 +47,6 @@ gulp.task('elements', function () {
   return styleTask('elements', ['**/*.css']);
 });
 
-gulp.task('babel', function () {
-  return gulp.src(['app/scripts/jwt.js', 'app/scripts/setting.js'])
-    .pipe(babel())
-    .pipe(gulp.dest('dist/scripts'));
-});
-
 // Lint JavaScript
 gulp.task('jshint', function () {
   return gulp.src([
@@ -65,7 +58,6 @@ gulp.task('jshint', function () {
       'app/elements/**/*.js',
       'app/elements/**/*.html'
     ])
-    .pipe(reload({stream: true, once: true}))
     .pipe($.jshint.extract()) // Extract JS from .html files
     .pipe($.jshint({
       camelcase: false,
@@ -115,6 +107,22 @@ gulp.task('images', function () {
 // gulp-cache need clear in the case of image path being changed
 gulp.task('clear', function (done) {
     return $.cache.clearAll(done);
+});
+
+gulp.task('js', function () {
+    return gulp.src([
+        'app/**/*.{js,html}',
+        '!app/scripts/dropzone.js',
+        '!app/scripts/superagent.js',
+        '!app/scripts/dexie.js',
+        '!app/scripts/amcharts/**/*',
+    ])
+    .pipe($.sourcemaps.init())
+    .pipe($.if('*.html', $.crisper())) // Extract JS from .html files
+    .pipe($.if('*.js', $.babel()))
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('.tmp/'))
+    .pipe(gulp.dest('dist/'));
 });
 
 // Copy All Files At The Root Level (app)
@@ -172,7 +180,7 @@ gulp.task('fonts', function () {
 
 // Scan Your HTML For Assets & Optimize Them
 gulp.task('html', function () {
-  var assets = $.useref.assets({searchPath: ['.tmp', 'app', 'dist']});
+  var assets = $.useref.assets({searchPath: ['.tmp', 'dist']});
 
   return gulp.src(['app/**/*.html', '!app/{elements,test}/**/*.html'])
     // Replace path for vulcanized assets
@@ -255,7 +263,7 @@ gulp.task('serve', ['styles', 'elements', 'images'], function () {
     }
   });
 
-  gulp.watch(['app/**/*.html'], reload);
+  gulp.watch(['app/**/*.html'], ['js', reload]);
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
   gulp.watch(['app/elements/**/*.css'], ['elements', reload]);
   gulp.watch(['app/{scripts,elements}/**/*.js'], ['jshint']);
@@ -294,8 +302,7 @@ gulp.task('default', ['clean'], function (cb) {
   runSequence(
     ['copy', 'styles'],
     'jshint',
-    'elements',
-    'babel',
+    ['elements', 'js'],
     ['images', 'fonts', 'html'],
     'vulcanize',
     cb);

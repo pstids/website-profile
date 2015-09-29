@@ -2,11 +2,16 @@ body {
   background: #262626;
   font-family: "Roboto", Helvetica, Arial;
   color: #333;
+  height: 100%;
 }
 
 header {
   font-size: 10px;
   min-height: 110px;
+}
+
+div.content {
+  height: 100vh;
 }
 
 .hidden {

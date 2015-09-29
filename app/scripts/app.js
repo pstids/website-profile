@@ -21,7 +21,7 @@ var workoutFetching = function (id) {
     // Grab a reference to our auto-binding template
     // and give it some initial binding values
     // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
-    var app = document.querySelector('#app');
+    let app = document.querySelector('#app');
 
     app.displayInstalledToast = function() {
         document.querySelector('#caching-complete').show();
@@ -40,7 +40,7 @@ var workoutFetching = function (id) {
         mapRunEle = document.querySelector('map-run');
         logBook = document.querySelector('log-book');
         workoutElement = document.querySelector('workout-element');
-        processor.onmessage = function (event) {
+        processor.onmessage = (event) => {
             if ('mapRunData' in event.data) {
                 mapRunEle.setData(event.data.mapRunData);
             }
@@ -72,22 +72,22 @@ var workoutFetching = function (id) {
         // More info: https://visionmedia.github.io/page.js/
         page.base('/powercenter');
 
-        page('/', function () {
+        page('/', () => {
             app.route = 'home';
             header.toggleActive('home');
         });
 
-        page('/connect', function () {
+        page('/connect', () =>{
             app.route = 'connect';
             header.toggleActive('connect');
         });
 
-        page('/users/:name', function (data) {
+        page('/users/:name', (data) => {
             app.route = 'user-info';
             app.params = data.params;
         });
 
-        page('/settings', function () {
+        page('/settings', () => {
             app.route = 'settings';
             header.toggleActive('settings');
         });
