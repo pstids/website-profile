@@ -1,11 +1,12 @@
 /*jshint -W079 */
 /*jshint unused:false*/
-/*jshint -W079 */
 /*global Dropzone*/
 /*global jwt*/
 /*global Dexie*/
 
 var processor = new Worker('/powercenter/scripts/processor.js');
+
+Dropzone.autoDiscover = false;
 
 var workoutFetching = function (id) {
     processor.postMessage({
@@ -97,8 +98,8 @@ var workoutFetching = function (id) {
             hashbang: false,
         });
 
-        var d = document.querySelector('#file');
         var uploadToast = document.querySelector('#upload-toast');
+        var d = document.querySelector('#file');
         this.Dropzone = new Dropzone(d, {
             paramName: 'file', // The name that will be used to transfer the file
             url: '/b/platform/data/stryd',

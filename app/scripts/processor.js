@@ -216,8 +216,8 @@ var workoutFetchingAJAX = function (workout) {
 };
 
 var workoutFetching = function (workout) {
-    self.indexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
-    if (!self.indexedDB) {
+    var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
+    if (!checkIndexedDB) {
         workoutFetchingAJAX(workout);
     } else {
         db.log.get(workout, function (log) {
