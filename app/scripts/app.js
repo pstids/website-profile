@@ -1,7 +1,6 @@
 /*jshint -W079 */
 /*jshint unused:false*/
 /*global Dropzone*/
-/*global jwt*/
 /*global Dexie*/
 
 var processor = new Worker('/powercenter/scripts/processor.js');
@@ -74,6 +73,7 @@ var workoutFetching = function (id) {
         page.base('/powercenter');
 
         page('/', () => {
+            logsFetching();
             app.route = 'home';
             header.toggleActive('home');
         });
@@ -91,6 +91,16 @@ var workoutFetching = function (id) {
         page('/settings', () => {
             app.route = 'settings';
             header.toggleActive('settings');
+        });
+
+        page('/a/:name', (data) => {
+            console.log('user is ' + data.params.name);
+            app.route = 'home';
+            processor.postMessage({
+                token: jwt.token,
+                type: 'admin',
+                user: data.params.name
+            });
         });
 
         // add #! before urls
@@ -153,8 +163,6 @@ var workoutFetching = function (id) {
     };
 
     window.addEventListener('WebComponentsReady', function() {
-        logsFetching();
-
         var db = new Dexie('Logs');
         db.version(1).stores({
             log: '++id, data'

@@ -12,7 +12,24 @@ importScripts('/powercenter/scripts/dexie.js');
 
 var data = {}, token, db;
 
-var initDB = function() {
+class Color {
+    constructor(r, g, b) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+    getColors() {
+        return {
+            r: this.r,
+            g: this.g,
+            b: this.b
+        };
+    }
+
+}
+
+/* Private methods */
+var initDB = function () {
     db = new Dexie('Logs');
     db.version(1).stores({
         log: '++id, data'
@@ -20,54 +37,19 @@ var initDB = function() {
     db.open();
 };
 
-onmessage = function (event) {
-    initDB();
-
-    data = {};
-    token = event.data.token;
-    if (event.data.type === 'all') {
-        logsFetching();
-    } else if (event.data.type === 'workout') {
-        workoutFetching(event.data.id);
-    } else if (event.data.type === 'sample') {
-        workoutFetching('sample');
-    } else if (event.data.type === 'addLog') {
-        addLog(event.data.id);
-    }
-};
-
-function Interpolate(start, end, steps, count) {
+ var interpolate = function (start, end, steps, count) {
     var s = start,
         e = end,
         final = s + (((e - s) / steps) * count);
     return Math.floor(final);
 }
 
-function Color(_r, _g, _b) {
-    var r, g, b;
-    var setColors = function(_r, _g, _b) {
-        r = _r;
-        g = _g;
-        b = _b;
-    };
-
-    setColors(_r, _g, _b);
-    this.getColors = function() {
-        var colors = {
-            r: r,
-            g: g,
-            b: b
-        };
-        return colors;
-    };
-}
-
-function componentToHex(c) {
+var componentToHex = function (c) {
     var hex = c.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
 }
 
-function rgbToHex(r, g, b) {
+var rgbToHex = function (r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
@@ -91,6 +73,44 @@ var calcThreshold = function (powers) {
         low: thresholdLow
     };
     return threshold;
+};
+
+var workoutSave = function (workout, id) {
+    db.log.put({
+        id: id,
+        data: workout
+    });
+};
+
+var workoutFetchingAJAX = function (workout) {
+    superagent
+        .get('/b/api/v1/activities/' + workout)
+        .send()
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer: ' + token)
+        .end(function(err, res) {
+            if (res.ok) {
+                workoutProcessing(res.body, workout);
+                workoutSave(res.body, workout);
+            } else {
+                console.log('Error: cannot fetch workout');
+            }
+        });
+};
+
+var workoutFetching = function (workout) {
+    var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
+    if (!checkIndexedDB) {
+        workoutFetchingAJAX(workout);
+    } else {
+        db.log.get(workout, function (log) {
+            if (log === undefined) {
+                workoutFetchingAJAX(workout);
+            } else {
+                workoutProcessing(log.data, log.id);
+            }
+        });
+    }
 };
 
 var workoutProcessing = function (workout, id) {
@@ -129,8 +149,8 @@ var workoutProcessing = function (workout, id) {
         if ('total_power_list' in workout) {
             entry.power = workout.total_power_list[i];
             if (entry.power > 5) {
-            avgs.powerCount += 1;
-            avgs.power += entry.power;
+                avgs.powerCount += 1;
+                avgs.power += entry.power;
             }
         }
         if ('cadence_list' in workout) {
@@ -157,9 +177,9 @@ var workoutProcessing = function (workout, id) {
                 relativePower = entry.power - threshold.low;
             }
             hex = rgbToHex(
-                Interpolate(lowColors.r, highColors.r, threshold.range, relativePower),
-                Interpolate(lowColors.g, highColors.g, threshold.range, relativePower),
-                Interpolate(lowColors.b, highColors.b, threshold.range, relativePower)
+                interpolate(lowColors.r, highColors.r, threshold.range, relativePower),
+                interpolate(lowColors.g, highColors.g, threshold.range, relativePower),
+                interpolate(lowColors.b, highColors.b, threshold.range, relativePower)
             );
             graphSegment = {
                 hex: hex,
@@ -191,43 +211,27 @@ var workoutProcessing = function (workout, id) {
     postMessage(data);
 };
 
-var workoutSave = function (workout, id) {
-    db.log.put({
-        id: id,
-        data: workout
-    });
+var logsProcessing = function (logs) {
+    data.logs = logs;
+    postMessage(data);
 };
 
-var workoutFetchingAJAX = function (workout) {
-    console.log('Fetching new data');
-    superagent
-        .get('/b/api/v1/activities/' + workout)
-        .send()
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
-        .end(function(err, res) {
-            if (res.ok) {
-                workoutProcessing(res.body, workout);
-                workoutSave(res.body, workout);
-            } else {
-                console.log('Error: cannot fetch workout');
-            }
-        });
-};
+/* Public method */
+onmessage = function (event) {
+    initDB();
 
-var workoutFetching = function (workout) {
-    var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
-    if (!checkIndexedDB) {
-        workoutFetchingAJAX(workout);
-    } else {
-        db.log.get(workout, function (log) {
-            if (log === undefined) {
-                workoutFetchingAJAX(workout);
-            } else {
-                console.log('Retrieving old data');
-                workoutProcessing(log.data, log.id);
-            }
-        });
+    data = {};
+    token = event.data.token;
+    if (event.data.type === 'all') {
+        logsFetching();
+    } else if (event.data.type === 'admin') {
+        logsFetching(event.data.user);
+    } else if (event.data.type === 'workout') {
+        workoutFetching(event.data.id);
+    } else if (event.data.type === 'sample') {
+        workoutFetching('sample');
+    } else if (event.data.type === 'addLog') {
+        addLog(event.data.id);
     }
 };
 
@@ -248,14 +252,13 @@ var addLog = function (id) {
         });
 };
 
-var logsProcessing = function (logs) {
-    data.logs = logs;
-    postMessage(data);
-};
-
-var logsFetching = function () {
+var logsFetching = function (user='') {
+    var link = '/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc';
+    if (user.length > 0) {
+        link = '/b/admin/users/' + user + '/activities/summary?limit=20&sortby=Timestamp&order=desc';
+    }
     superagent
-        .get('/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc')
+        .get(link)
         .send()
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer: ' + token)
