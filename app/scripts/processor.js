@@ -29,7 +29,7 @@ class Color {
 }
 
 /* Private methods */
-var initDB = function() {
+var initDB = function () {
     db = new Dexie('Logs');
     db.version(1).stores({
         log: '++id, data'
@@ -37,19 +37,19 @@ var initDB = function() {
     db.open();
 };
 
-function interpolate(start, end, steps, count) {
+ var interpolate = function (start, end, steps, count) {
     var s = start,
         e = end,
         final = s + (((e - s) / steps) * count);
     return Math.floor(final);
 }
 
-function componentToHex(c) {
+var componentToHex = function (c) {
     var hex = c.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
 }
 
-function rgbToHex(r, g, b) {
+var rgbToHex = function (r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
@@ -83,7 +83,6 @@ var workoutSave = function (workout, id) {
 };
 
 var workoutFetchingAJAX = function (workout) {
-    console.log('Fetching new data');
     superagent
         .get('/b/api/v1/activities/' + workout)
         .send()
@@ -108,7 +107,6 @@ var workoutFetching = function (workout) {
             if (log === undefined) {
                 workoutFetchingAJAX(workout);
             } else {
-                console.log('Retrieving old data');
                 workoutProcessing(log.data, log.id);
             }
         });
@@ -225,10 +223,8 @@ onmessage = function (event) {
     data = {};
     token = event.data.token;
     if (event.data.type === 'all') {
-        console.log('here1');
         logsFetching();
     } else if (event.data.type === 'admin') {
-        console.log('here2');
         logsFetching(event.data.user);
     } else if (event.data.type === 'workout') {
         workoutFetching(event.data.id);
@@ -261,7 +257,6 @@ var logsFetching = function (user='') {
     if (user.length > 0) {
         link = '/b/admin/users/' + user + '/activities/summary?limit=20&sortby=Timestamp&order=desc';
     }
-    console.log(link);
     superagent
         .get(link)
         .send()
@@ -270,7 +265,6 @@ var logsFetching = function (user='') {
         .end(function(err, res) {
             if (res.ok) {
                 if (res.body !== null) {
-                    console.log(res.body);
                     logsProcessing(res.body);
                 } else {
                     workoutFetching('sample');
