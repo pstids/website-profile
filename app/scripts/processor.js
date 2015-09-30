@@ -12,6 +12,23 @@ importScripts('/powercenter/scripts/dexie.js');
 
 var data = {}, token, db;
 
+class Color {
+    constructor(r, g, b) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+    getColors() {
+        return {
+            r: this.r,
+            g: this.g,
+            b: this.b
+        };
+    }
+
+}
+
+/* Private methods */
 var initDB = function() {
     db = new Dexie('Logs');
     db.version(1).stores({
@@ -20,46 +37,11 @@ var initDB = function() {
     db.open();
 };
 
-onmessage = function (event) {
-    initDB();
-
-    data = {};
-    token = event.data.token;
-    if (event.data.type === 'all') {
-        logsFetching();
-    } else if (event.data.type === 'workout') {
-        workoutFetching(event.data.id);
-    } else if (event.data.type === 'sample') {
-        workoutFetching('sample');
-    } else if (event.data.type === 'addLog') {
-        addLog(event.data.id);
-    }
-};
-
-function Interpolate(start, end, steps, count) {
+function interpolate(start, end, steps, count) {
     var s = start,
         e = end,
         final = s + (((e - s) / steps) * count);
     return Math.floor(final);
-}
-
-function Color(_r, _g, _b) {
-    var r, g, b;
-    var setColors = function(_r, _g, _b) {
-        r = _r;
-        g = _g;
-        b = _b;
-    };
-
-    setColors(_r, _g, _b);
-    this.getColors = function() {
-        var colors = {
-            r: r,
-            g: g,
-            b: b
-        };
-        return colors;
-    };
 }
 
 function componentToHex(c) {
@@ -91,104 +73,6 @@ var calcThreshold = function (powers) {
         low: thresholdLow
     };
     return threshold;
-};
-
-var workoutProcessing = function (workout, id) {
-    var threshold = calcThreshold(workout.total_power_list);
-
-    var avgs = {
-        power: 0,
-        powerCount: 0,
-        pace: 0
-    };
-
-    var maxPower = workout.max_power;
-
-    var steps = 1;
-    if (workout.total_power_list.length > 800) {
-        steps = parseInt(workout.total_power_list.length / 800);
-    }
-    var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
-    var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
-    var chartData = [], mapRunData = [];
-    var hex, i;
-    var graphSegment = {}, entry = {};
-    for (i = 0; i < workout.total_power_list.length; i = i + steps) {
-        graphSegment = {};
-        entry = {};
-        /* Assemble Chart Data */
-        if ('timestamp_list' in workout) {
-            entry.date = setDate(workout.timestamp_list[i]);
-        }
-        if ('heart_rate_list' in workout) {
-            entry.heartRate = workout.heart_rate_list[i];
-        }
-        if ('speed_list' in workout) {
-            entry.pace = minutesPerMile(workout.speed_list[i]);
-        }
-        if ('total_power_list' in workout) {
-            entry.power = workout.total_power_list[i];
-            if (entry.power > 5) {
-            avgs.powerCount += 1;
-            avgs.power += entry.power;
-            }
-        }
-        if ('cadence_list' in workout) {
-            entry.cadence = workout.cadence_list[i];
-        }
-        if ('elevation_list' in workout) {
-            entry.elevation = Math.round(workout.elevation_list[i]);
-        }
-        if ('distance_list' in workout) {
-            entry.distance = workout.distance_list[i];
-        }
-        chartData.push(entry);
-        /* Assemble Map Data */
-        if (i > 0) {
-            var relativePower;
-            if (threshold.range === 0) {
-                threshold.range = 1;
-                relativePower = 1;
-            } else if (entry.power > threshold.high) {
-                relativePower = threshold.range;
-            } else if (entry.power < threshold.low) {
-                relativePower = 0;
-            } else {
-                relativePower = entry.power - threshold.low;
-            }
-            hex = rgbToHex(
-                Interpolate(lowColors.r, highColors.r, threshold.range, relativePower),
-                Interpolate(lowColors.g, highColors.g, threshold.range, relativePower),
-                Interpolate(lowColors.b, highColors.b, threshold.range, relativePower)
-            );
-            graphSegment = {
-                hex: hex,
-                location: [
-                    {
-                        lat: workout.loc_list[i-steps].Lat,
-                        lng: workout.loc_list[i-steps].Lng,
-                    },
-                    {
-                        lat: workout.loc_list[i].Lat,
-                        lng: workout.loc_list[i].Lng,
-                    }
-                ]
-            };
-            mapRunData.push(graphSegment);
-        }
-    }
-    avgs.power = avgs.power / avgs.powerCount;
-    avgs.pace = (workout.distance / 1600) / (workout.moving_time / 60);
-
-    data.mapRunData = mapRunData;
-    data.chartData = chartData;
-    if (id === 'sample') {
-        data.logs = [workout];
-        data.type = 'sample';
-    } else {
-        data.type = 'data';
-    }
-    postMessage(data);
 };
 
 var workoutSave = function (workout, id) {
@@ -231,6 +115,130 @@ var workoutFetching = function (workout) {
     }
 };
 
+var workoutProcessing = function (workout, id) {
+    var threshold = calcThreshold(workout.total_power_list);
+
+    var avgs = {
+        power: 0,
+        powerCount: 0,
+        pace: 0
+    };
+
+    var maxPower = workout.max_power;
+
+    var steps = 1;
+    if (workout.total_power_list.length > 800) {
+        steps = parseInt(workout.total_power_list.length / 800);
+    }
+    var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
+    var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
+    var chartData = [], mapRunData = [];
+    var hex, i;
+    var graphSegment = {}, entry = {};
+    for (i = 0; i < workout.total_power_list.length; i = i + steps) {
+        graphSegment = {};
+        entry = {};
+        /* Assemble Chart Data */
+        if ('timestamp_list' in workout) {
+            entry.date = setDate(workout.timestamp_list[i]);
+        }
+        if ('heart_rate_list' in workout) {
+            entry.heartRate = workout.heart_rate_list[i];
+        }
+        if ('speed_list' in workout) {
+            entry.pace = minutesPerMile(workout.speed_list[i]);
+        }
+        if ('total_power_list' in workout) {
+            entry.power = workout.total_power_list[i];
+            if (entry.power > 5) {
+                avgs.powerCount += 1;
+                avgs.power += entry.power;
+            }
+        }
+        if ('cadence_list' in workout) {
+            entry.cadence = workout.cadence_list[i];
+        }
+        if ('elevation_list' in workout) {
+            entry.elevation = Math.round(workout.elevation_list[i]);
+        }
+        if ('distance_list' in workout) {
+            entry.distance = workout.distance_list[i];
+        }
+        chartData.push(entry);
+        /* Assemble Map Data */
+        if (i > 0) {
+            var relativePower;
+            if (threshold.range === 0) {
+                threshold.range = 1;
+                relativePower = 1;
+            } else if (entry.power > threshold.high) {
+                relativePower = threshold.range;
+            } else if (entry.power < threshold.low) {
+                relativePower = 0;
+            } else {
+                relativePower = entry.power - threshold.low;
+            }
+            hex = rgbToHex(
+                interpolate(lowColors.r, highColors.r, threshold.range, relativePower),
+                interpolate(lowColors.g, highColors.g, threshold.range, relativePower),
+                interpolate(lowColors.b, highColors.b, threshold.range, relativePower)
+            );
+            graphSegment = {
+                hex: hex,
+                location: [
+                    {
+                        lat: workout.loc_list[i-steps].Lat,
+                        lng: workout.loc_list[i-steps].Lng,
+                    },
+                    {
+                        lat: workout.loc_list[i].Lat,
+                        lng: workout.loc_list[i].Lng,
+                    }
+                ]
+            };
+            mapRunData.push(graphSegment);
+        }
+    }
+    avgs.power = avgs.power / avgs.powerCount;
+    avgs.pace = (workout.distance / 1600) / (workout.moving_time / 60);
+
+    data.mapRunData = mapRunData;
+    data.chartData = chartData;
+    if (id === 'sample') {
+        data.logs = [workout];
+        data.type = 'sample';
+    } else {
+        data.type = 'data';
+    }
+    postMessage(data);
+};
+
+var logsProcessing = function (logs) {
+    data.logs = logs;
+    postMessage(data);
+};
+
+/* Public method */
+onmessage = function (event) {
+    initDB();
+
+    data = {};
+    token = event.data.token;
+    if (event.data.type === 'all') {
+        console.log('here1');
+        logsFetching();
+    } else if (event.data.type === 'admin') {
+        console.log('here2');
+        logsFetching(event.data.user);
+    } else if (event.data.type === 'workout') {
+        workoutFetching(event.data.id);
+    } else if (event.data.type === 'sample') {
+        workoutFetching('sample');
+    } else if (event.data.type === 'addLog') {
+        addLog(event.data.id);
+    }
+};
+
 var addLog = function (id) {
     superagent
         .get('/b/api/v1/activities/' + id)
@@ -248,20 +256,21 @@ var addLog = function (id) {
         });
 };
 
-var logsProcessing = function (logs) {
-    data.logs = logs;
-    postMessage(data);
-};
-
-var logsFetching = function () {
+var logsFetching = function (user='') {
+    var link = '/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc';
+    if (user.length > 0) {
+        link = '/b/admin/users/' + user + '/activities/summary?limit=20&sortby=Timestamp&order=desc';
+    }
+    console.log(link);
     superagent
-        .get('/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc')
+        .get(link)
         .send()
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer: ' + token)
         .end(function(err, res) {
             if (res.ok) {
                 if (res.body !== null) {
+                    console.log(res.body);
                     logsProcessing(res.body);
                 } else {
                     workoutFetching('sample');

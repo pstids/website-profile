@@ -38,20 +38,18 @@
     <!-- Tile icon for Win8 (144x144) -->
     <meta name="msapplication-TileImage" content="images/favicon.png">
 
-    <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/introjs.css">
+    <!-- build:css /powercenter/styles/main.css -->
+    <link rel="stylesheet" href="/powercenter/styles/main.css">
+    <link rel="stylesheet" href="/powercenter/styles/introjs.css">
     <!-- endbuild-->
     <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,300" rel="stylesheet" type="text/css">
-    <link rel="import" href="styles/app-theme.html">
+    <link rel="import" href="/powercenter/styles/app-theme.html">
 
-    <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <!-- endbuild -->
+    <script src="/powercenter/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
     <!-- will be replaced with elements/elements.vulcanized.html -->
-    <link rel="import" href="elements/elements.html">
+    <link rel="import" href="/powercenter/elements/elements.html">
     <!-- endreplace-->
 </head>
 
@@ -90,6 +88,11 @@
                 <stryd-settings></stryd-settings>
             </section>
 
+            <!--<section data-route="admin/:name">-->
+                <!--<map-run></map-run>-->
+                <!--<workout-element></workout-element>-->
+                <!--<log-book></log-book>-->
+            <!--</section>-->
         </iron-pages>
         
         <footer-element></footer-element>
@@ -100,13 +103,13 @@
     <google-analytics code="UA-56986987-2"></google-analytics>
 </template>
 <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/1.2.0/superagent.min.js"></script>
-<script src="scripts/dexie.js"></script>
+<script src="/powercenter/scripts/dexie.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/intro.js/1.1.1/intro.min.js"></script>
-<script src="scripts/jwt.js"></script>
-<script src="bower_components/page/page.js"></script>
-<script src="scripts/toolbox.js"></script>
-<script src="scripts/app.js"></script>
+<script src="/powercenter/scripts/jwt.js"></script>
+<script src="/powercenter/bower_components/page/page.js"></script>
+<script src="/powercenter/scripts/toolbox.js"></script>
+<script src="/powercenter/scripts/app.js"></script>
 </body>
 
 </html>
