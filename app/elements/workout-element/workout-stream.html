@@ -1,4 +1,4 @@
-<dom-module id="workout-element">
+<dom-module id="workout-stream">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
     <style>
         .sample {
@@ -206,10 +206,10 @@
                 data-step="7"
                 data-intro="When you select a different portion of your run, your averages will update.">
                 <bubble-stat type="avg_power" title="Average Power" unit="Watts" icon="image:flash-on"></bubble-stat>
-                <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run"></bubble-stat>
+                <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run" class="hidden"></bubble-stat>
                 <bubble-stat type="avg_hr" title="Average Heart Rate" unit="BPM" icon="favorite"></bubble-stat>
-                <bubble-stat type="distance" title="Distance" unit="Miles" icon="communication:swap-calls"></bubble-stat>
-                <bubble-stat type="time" title="Run Time" unit="HH:MM:SS" icon="image:timer"></bubble-stat>
+                <bubble-stat type="distance" title="Distance" unit="Miles" icon="communication:swap-calls" class="hidden"></bubble-stat>
+                <bubble-stat type="time" title="Run Time" unit="HH:MM:SS" icon="image:timer" class="hidden"></bubble-stat>
             </div>
             <div class="options">
                 <div>
@@ -225,7 +225,7 @@
                         <div class="type">Power</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="pace toggle" data-toggle="off" on-click="toggle" data-graph="pace">
+                    <div class="pace toggle hidden" data-toggle="off" on-click="toggle" data-graph="pace">
                         <div class="type">Pace</div>
                         <div class="circle"></div>
                     </div>
@@ -233,7 +233,7 @@
                         <div class="type">Cadence</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="elevation toggle" data-toggle="off" on-click="toggle" data-graph="elevation">
+                    <div class="elevation toggle hidden" data-toggle="off" on-click="toggle" data-graph="elevation">
                         <div class="type">Elevation</div>
                         <div class="circle"></div>
                     </div>
@@ -254,7 +254,7 @@
         /*global AmCharts*/
         /*jshint camelcase: false */
         Polymer({
-            is: 'workout-element',
+            is: 'workout-stream',
             ready: function () {
                 AmCharts.handleLoad();
             },
@@ -371,12 +371,12 @@
 
                 this.querySelector('[type="avg_power"]').setAttribute('value', avgs.power.stat());
 
-                if (avgs.pace === null) {
-                    this.querySelector('[type="avg_pace"]').classList.add('hidden');
-                } else {
-                    this.querySelector('[type="avg_pace"]').classList.remove('hidden');
-                    this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
-                }
+                // if (avgs.pace === null) {
+                //     this.querySelector('[type="avg_pace"]').classList.add('hidden');
+                // } else {
+                //     this.querySelector('[type="avg_pace"]').classList.remove('hidden');
+                //     this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
+                // }
                 if (isNaN(avgs.heartRate)) {
                     this.querySelector('[type="avg_hr"]').classList.add('hidden');
                 } else {
