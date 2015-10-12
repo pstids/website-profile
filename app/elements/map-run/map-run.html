@@ -150,6 +150,17 @@
                     }
                 });
                 this.mapObjs.push(stop);
+            },
+            exportCoordinates: function () {
+                var graphSegments = this.data;
+                var step = 1;
+                var obj = [];
+                for (var i = 0; i < graphSegments.length; i=i+step) {
+                    obj.push(graphSegments[i].location[0]);
+                }
+                var data = new Blob([JSON.stringify(obj)], {type: 'application/json'});
+                var textFile = window.URL.createObjectURL(data);
+                return textFile;
             }
         });
     </script>
