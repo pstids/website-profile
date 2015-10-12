@@ -1,4 +1,4 @@
-<dom-module id="map-summary">
+<dom-module id="map-average">
     <style>
         section {
             @apply(--layout-horizontal);
@@ -71,38 +71,15 @@
         <section>
             <div class="summary">
                 <h2 class="subheader">Statistics</h2>
-                <h1 class="header">Latest Run</h1>
-                <div class="seperator"></div>
+                <h1 class="header">Averages</h1>
+                <div class="seperator"></div>a
                 <ul class="insights">
-                    <li class="insight">
-                        <div class="icon">
-                            <iron-icon icon="communication:swap-calls"></iron-icon>
-                        </div>
-                        <div class="info">
-                            <div class="title">Distance</div>
-                            <div class="field">
-                                <span>{{display.distance}}</span>
-                                KM
-                            </div>
-                        </div>
-                    </li>
                     <li class="insight">
                         <div class="icon">
                             <iron-icon icon="image:timer"></iron-icon>
                         </div>
                         <div class="info">
-                            <div class="title">Time</div>
-                            <div class="field">
-                                <span>{{display.time}}</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="insight">
-                        <div class="icon">
-                            <iron-icon icon="maps:directions-run"></iron-icon>
-                        </div>
-                        <div class="info">
-                            <div class="title">Cadence</div>
+                            <div class="title">Average Cadence</div>
                             <div class="field">
                                 <span>{{display.cadence}}</span>
                                 SPM
@@ -114,7 +91,7 @@
                             <iron-icon icon="favorite"></iron-icon>
                         </div>
                         <div class="info">
-                            <div class="title">Heart Rate</div>
+                            <div class="title">Average Heart Rate</div>
                             <div class="field">
                                 <span>{{display.heart_rate}}</span>
                                 BPM
@@ -126,7 +103,7 @@
                             <iron-icon icon="image:flash-on"></iron-icon>
                         </div>
                         <div class="info">
-                            <div class="title">Power</div>
+                            <div class="title">Average Power</div>
                             <div class="field">
                                 <span>{{display.watts}}</span>
                                 W
@@ -139,25 +116,14 @@
     </template>
     <script>
         Polymer({
-            is: 'map-summary',
+            is: 'map-average',
             ready: function () {
                 
             },
             addPoint: function (data) {
-                if (data === null || data === {}) {
-                    data = {
-                        distance: 0,
-                        time: 0,
-                        cadence: 0,
-                        heartrate: 0,
-                        total_p: 0
-                    };
-                }
-                this.notifyPath('display.distance', data.distance.toFixed(2));
-                this.notifyPath('display.time', data.time);
-                this.notifyPath('display.cadence', data.cadence);
-                this.notifyPath('display.heart_rate', data.heartrate);
-                this.notifyPath('display.watts', data.total_p);
+                this.notifyPath('display.cadence', data.cadence.toFixed(2));
+                this.notifyPath('display.heart_rate', data.heart_rate.toFixed(2));
+                this.notifyPath('display.watts', data.power.toFixed(2));
             }
         });
     </script>
