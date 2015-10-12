@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stryd PowerStream -- Kona</title>
+    <!-- Place favicon.ico in the `app/` directory -->
+    <link rel="shortcut icon" href="images/favicon.png">
+
+    <!-- Chrome for Android theme color -->
+    <meta name="theme-color" content="#303F9F">
+
+    <!-- Web Application Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Tile color for Win8 -->
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Stryd">
+    <link rel="icon" sizes="192x192" href="images/favicon.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Stryd PowerStream">
+    <link rel="apple-touch-icon" href="images/favicon.png">
+
+    <!-- Tile icon for Win8 (144x144) -->
+    <meta name="msapplication-TileImage" content="images/favicon.png">
+
+    <!-- build:css styles/powerstream.css -->
+    <link rel="stylesheet" href="styles/powerstream.css">
+    <link rel="stylesheet" href="styles/introjs.css">
+    <!-- endbuild-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,300" rel="stylesheet" type="text/css">
+
+    <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <!-- endbuild -->
+
+    <!-- will be replaced with elements/powerstream.vulcanized.html -->
+    <link rel="import" href="elements/powerstream.html">
+    <!-- endreplace-->
+
+    <meta property="fb:app_id" content="581175202024696" />
+</head>
+
+<body unresolved class="fullbleed layout vertical">
+<span id="browser-sync-binding"></span>
+
+<template is="dom-bind" id="app">
+    <!-- Main Content -->
+    <div class="content">
+        <div class="row map-parent">
+            <map-stream></map-stream>
+            <div class="parent">
+                <a class="twitter-timeline" href="https://twitter.com/hashtag/stryd"
+                   data-widget-id="648655533105287168"
+                   data-tweet-limit="3"
+                   data-border-color="#ececec">
+                #stryd Tweets</a>
+            </div>
+        </div>
+        <div class="row charts" id="chart">
+            <div class="chart">
+                <h1>Sarah's Data</h1>
+                <p>Updates every 60 seconds</p>
+                <workout-stream id="sarah-chart"></workout-stream>
+            </div>
+            <div class="chart">
+                <h1>Steven's Data</h1>
+                <p>Updates every 60 seconds</p>
+                <workout-stream id="steven-chart"></workout-stream>
+            </div>
+        </div>
+        <div class="row fb">
+            <div class="fb-comments" data-href="http://www.stryd.com/powercenter/kona" data-numposts="25" data-width="500"></div>
+        </div>
+        <div class="row partners">
+            <h1>Partners</h1>
+            <div class="logos">
+                <a href="http://www.redbull.com/us/en">
+                    <img src="https://pbs.twimg.com/profile_images/626481857161375748/OeXi9avz.png" alt="">
+                </a>
+                <a href="https://everymanjack.com/">
+                    <img src="https://pbs.twimg.com/profile_images/465968441816403968/4YaxlF06.png" alt="">
+                </a>
+                <a href="http://www.cervelo.com/en/">
+                    <img src="https://pbs.twimg.com/profile_images/440903866435907584/8ZkhahDr_400x400.png" alt="">
+                </a>
+                <a href="http://home.trainingpeaks.com/">
+                    <img src="https://pbs.twimg.com/profile_images/431194505266483201/R4i_Z0QT_400x400.png" alt="">
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5&appId=581175202024696";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    <google-analytics code="UA-68634064-1"></google-analytics>
+    <script>
+        if (window.location.protocol != "http:") {
+            window.location.href = "http:" + window.location.href.substring(window.location.protocol.length);
+        }
+    </script>
+</template>
+<script src="//cdnjs.cloudflare.com/ajax/libs/superagent/1.2.0/superagent.min.js"></script>
+<!-- build:js scripts/powerstream.js -->
+<script src="scripts/toolbox.js"></script>
+<script src="scripts/powerstream.js"></script>
+<!-- endbuild-->
+</body>
+
+</html>
