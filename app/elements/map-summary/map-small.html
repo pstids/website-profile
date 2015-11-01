@@ -125,6 +125,26 @@
                 BPM
             </div>
         </div>
+        <div class="flex-row">
+            <div class="entry">
+                Oscillation
+            </div>
+            <div class="entry">
+                Ground time
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="entry">
+                <iron-icon icon="communication:call-missed"></iron-icon>
+                <span>{{d.vertical_osc}}</span>
+                CM
+            </div>
+            <div class="entry">
+                <iron-icon icon="av:av-timer"></iron-icon>
+                <span>{{d.ground_time}}</span>
+                MS
+            </div>
+        </div>
     </template>
     <script>
         Polymer({
@@ -139,25 +159,29 @@
                         time: 0,
                         cadence: 0,
                         heartrate: 0,
-                        total_p: 0
+                        total_p: 0,
+                        vertical_osc: 0,
+                        ground_time: 0
                     };
                 }
                 if (data.distance === undefined) {
                     data.distance = 0;
                 } else {
-                    var push;
-                    if (data.id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
-                        push = 2.6;
-                    } else {
-                        push = 6;
-                    }
-                    data.distance = data.distance * 0.621371 + push + 6;
+                    // var push;
+                    // if (data.id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
+                    //     push = 2.6;
+                    // } else {
+                    //     push = 6;
+                    // }
+                    data.distance = data.distance * 0.621371;
                 }
                 this.notifyPath('d.distance', data.distance.toFixed(2));
                 this.notifyPath('d.time', data.time);
                 this.notifyPath('d.cadence', data.cadence);
                 this.notifyPath('d.heart_rate', data.heartrate);
                 this.notifyPath('d.watts', data.total_p);
+                this.notifyPath('d.vertical_osc', data.vertical_osc);
+                this.notifyPath('d.ground_time', data.ground_time);
             }
         });
     </script>

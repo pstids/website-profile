@@ -143,7 +143,7 @@ var workoutProcessing = function (workout, id) {
         if ('heart_rate_list' in workout) {
             entry.heartRate = workout.heart_rate_list[i];
         }
-        if ('speed_list' in workout) {
+        if ('speed_list' in workout && workout.speed_list !== null) {
             entry.pace = minutesPerMile(workout.speed_list[i]);
         }
         if ('total_power_list' in workout) {
@@ -156,15 +156,15 @@ var workoutProcessing = function (workout, id) {
         if ('cadence_list' in workout) {
             entry.cadence = workout.cadence_list[i];
         }
-        if ('elevation_list' in workout) {
+        if ('elevation_list' in workout && workout.elevation_list !== null) {
             entry.elevation = Math.round(workout.elevation_list[i]);
         }
-        if ('distance_list' in workout) {
+        if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
         }
         chartData.push(entry);
         /* Assemble Map Data */
-        if (i > 0) {
+        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;

@@ -35,7 +35,7 @@ var calcHaversine = function (start, now) {
 
 var users = {
     sarah: {
-        img: 'https://storage.googleapis.com/stryd_static_assets/piampiano-circle.png',
+        img: 'https://storage.googleapis.com/stryd_static_assets/brc-runner.png',
         data: [],
         name: 'sarah',
         id: 'c59c6e91-8314-5e0f-470d-4f803baf8e64',
@@ -52,10 +52,10 @@ var users = {
         chart: document.querySelector('#sarah-chart')
     },
     steven: {
-        img: 'https://storage.googleapis.com/stryd_static_assets/mantell-circle.png',
+        img: 'https://storage.googleapis.com/stryd_static_assets/pam.png',
         data: [],
         name: 'steven',
-        id: 'a4b09bb5-5b0a-506c-5a34-0d7aa975f29b',
+        id: 'a4b09bb5-5b0a-506c-5a34-0d7aa975f29b',  
         pts: [],
         active: true,
         avgs: {
@@ -109,45 +109,6 @@ window.addEventListener('WebComponentsReady', function() {
         var d = data;
         d.heartRate = d.heartrate;
 
-        // if (user.id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
-        //     d.total_p = parseInt(((d.cadence-50) * 2) + ((Math.random() - 0.5) * 10));
-        // }
-        // if (d.total_p > 900) {
-        //     d.total_p = d.total_p * 0.3;
-        // } else if (d.total_p > 800) {
-        //     d.total_p = d.total_p * 0.4;
-        // } else if (d.total_p > 700) {
-        //     d.total_p = d.total_p * 0.5;
-        // } else if (d.total_p > 600) {
-        //     d.total_p = d.total_p * 0.6;
-        // } else if (d.total_p > 500) {
-        //     d.total_p = d.total_p * 0.7;
-        // } else if (d.total_p > 400) {
-        //     d.total_p = d.total_p * 0.8;
-        // } else if (d.total_p < 100) {
-        //     d.total_p = d.total_p * 2.5 + 75;
-        // } else if (d.total_p < 150) {
-        //     d.total_p = d.total_p * 2.0 + 50;
-        // } else if (d.total_p < 190) {
-        //     d.total_p = d.total_p * 1.5 + 25;
-        // } else if (d.total_p === 0) {
-        //     d.total_p = Math.floor((Math.random() * 30) + 220);
-        // }
-            if (data.id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
-                d.total_p = d.total_p / 1000 * 200 + 150;
-                weight = 0.92 * weight + 0.08 * d.total_p;
-                d.total_p = weight;
-
-                var cadenceWeight = (d.cadence - 100) / 4;
-                d.total_p += cadenceWeight;
-            }
-        // if (d.total_p > 300) {
-        //     d.total_p = (d.total_p / 1500) * 70 + 200;
-        // } else if (d.total_p === 0) {
-        //     d.total_p = Math.floor((Math.random() * 20) + 200);
-        // } else if (d.total_p < 200) {
-        //     d.total_p = (d.total_p / 1500) * 70 + 200;
-        // }
         d.total_p = parseInt(d.total_p);
         d.power = d.total_p;
 
@@ -171,6 +132,13 @@ window.addEventListener('WebComponentsReady', function() {
         } else {
             d.date = Date.now();
         }
+
+        /* Prevent vertical oscillation jumps */
+        if (d.vertical_osc > 0.1) {
+            weight = 0.92 * weight + 0.08 * d.vertical_osc;
+            d.vertical_osc = weight.toFixed(2);
+        }
+
         mapStream.addPoint(d);
         user.chart.addPoint(d);
     };
@@ -182,7 +150,7 @@ window.addEventListener('WebComponentsReady', function() {
                 users.sarah.chart.refreshData();
             }
         }, 60000);
-    }, 5000);
+    }, 10000);
 
     setTimeout(function() { 
         setInterval(function() {
@@ -191,7 +159,7 @@ window.addEventListener('WebComponentsReady', function() {
                 users.steven.chart.refreshData();
             }
         }, 60000);
-    }, 5000);
+    }, 10000);
 
     var getNewData = function () {
         var streamSocket = new WebSocket('ws://104.197.114.91:8080/ws?t=receiver');
@@ -230,7 +198,7 @@ window.addEventListener('WebComponentsReady', function() {
             }
         }
 
-        var weight = 0;
+        var oscWeight = 0;
         for (var i = data.length - 1; i >= 0; i--) {
             var d = data[i];
 
@@ -247,48 +215,6 @@ window.addEventListener('WebComponentsReady', function() {
 
             // Set properties for workoutEle
             d.heartRate = d.heartrate;
-            // if (id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
-            //     d.total_p = parseInt(((d.cadence-50) * 2) + ((Math.random() - 0.5) * 10));
-            // }
-            // if (d.total_p > 900) {
-            //     d.total_p = d.total_p * 0.35;
-            // } else if (d.total_p > 800) {
-            //     d.total_p = d.total_p * 0.4;
-            // } else if (d.total_p > 700) {
-            //     d.total_p = d.total_p * 0.5;
-            // } else if (d.total_p > 600) {
-            //     d.total_p = d.total_p * 0.6;
-            // } else if (d.total_p > 500) {
-            //     d.total_p = d.total_p * 0.7;
-            // } else if (d.total_p > 400) {
-            //     d.total_p = d.total_p * 0.8;
-            // } else if (d.total_p < 100) {
-            //     d.total_p = d.total_p * 2.1 + 100;
-            // } else if (d.total_p < 150) {
-            //     d.total_p = d.total_p * 1.9 + 50;
-            // } else if (d.total_p < 190) {
-            //     d.total_p = d.total_p * 1.5 + 30;
-            // } else if (d.total_p === 0) {
-            //     d.total_p = Math.floor((Math.random() * 30) + 220);
-            // }
-            // if (id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
-            //     d.total_p = d.total_p / 1000 * 200 + 150;
-            // }
-            // if (d.total_p > 300) {
-            //     d.total_p = (d.total_p / 1500) * 20 + 200;
-            // } else if (d.total_p === 0) {
-            //     d.total_p = Math.floor((Math.random() * 20) + 200);
-            // } else if (d.total_p < 200) {
-            //     d.total_p = (d.total_p / 1500) * 20 + 200;
-            // }
-            if (id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
-                d.total_p = d.total_p / 1000 * 200 + 150;
-                weight = 0.92 * weight + 0.08 * d.total_p;
-                d.total_p = weight;
-
-                var cadenceWeight = (d.cadence - 100) / 4;
-                d.total_p += cadenceWeight;
-            }
 
             d.total_p = parseInt(d.total_p);
             if ('total_p' in d) {
@@ -311,6 +237,13 @@ window.addEventListener('WebComponentsReady', function() {
             } else {
                 d.date = Date.now();
             }
+
+            /* Prevent vertical oscillation jumps */
+            if (d.vertical_osc > 0.1) {
+                weight = 0.92 * weight + 0.08 * d.vertical_osc;
+                d.vertical_osc = weight.toFixed(2);
+            }
+
             user.data.unshift(d);
         }
 
@@ -348,9 +281,11 @@ window.addEventListener('WebComponentsReady', function() {
                         processOld(oldData, ids[0]);
                     } else {
                         console.log('Error: No data for', ids[0]);
+                        processOld([], ids[0]);
                     }
                 } else {
                     console.log('Error: Cannot fetch old data', ids[0]);
+                    processOld([], ids[0]);
                 }
             });
         superagent
@@ -365,9 +300,11 @@ window.addEventListener('WebComponentsReady', function() {
                         processOld(oldData, ids[1]);
                     } else {
                         console.log('Error: No data for', ids[1]);
+                        processOld([], ids[1]);
                     }
                 } else {
                     console.log('Error: Cannot fetch old data', ids[1]);
+                    processOld([], ids[1]);
                 }
             });
         getNewData();

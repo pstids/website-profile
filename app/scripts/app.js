@@ -118,7 +118,7 @@ var workoutFetching = function (id) {
             },
             parallelUploads: 1,
             maxFilesize: 60, // MB
-            acceptedFiles: '.fit,.tcx',
+            acceptedFiles: '.fit,.tcx,.offline',
             uploadMultiple: false,
             addRemoveLinks: true,
             dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',

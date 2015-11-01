@@ -358,6 +358,17 @@
                     }
                 }
 
+                var unit;
+                if (user.data.units === 'feet') {
+                    unit = 'Mi';
+                } else {
+                    stats.distance = (stats.distance / 0.621371).toFixed(1);
+                    stats.exactDistance = (stats.exactDistance / 0.621371).toFixed(8);
+                    this.querySelector('[type="avg_pace"]').setAttribute('unit', 'Min/KM');
+                    this.querySelector('[type="distance"]').setAttribute('unit', 'KM');
+                    unit = 'KM';
+                }
+
                 var movingTime = avgs.powerCount * step;
                 stats.timeHMS = hmsTime(movingTime * 1000);
 

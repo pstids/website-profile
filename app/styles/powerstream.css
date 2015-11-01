@@ -12,8 +12,6 @@ body {
 .content {
   /*flex: 1;*/
   background-color: #262626;
-  display: flex;
-  flex-direction: column;
 }
 
 map-stream {
@@ -27,7 +25,7 @@ map-stream {
 
 .twitter-timeline {
   flex: 1;
-  max-height: 100vh;
+  height: 100vh !important;
 }
 
 .parent {
@@ -81,8 +79,8 @@ workout-element {
 }
 
 .partners img {
-  height: 150px;
-  width: 150px;
+  /*height: 150px;
+  width: 150px;*/
   margin-right: 10px;
 }
 
@@ -98,8 +96,7 @@ workout-element {
 }
 
 .charts .chart {
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .charts .chart h1, .charts .chart p {

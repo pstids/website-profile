@@ -229,12 +229,12 @@
                         <div class="type">Pace</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="cadence toggle" data-toggle="off" on-click="toggle" data-graph="cadence">
-                        <div class="type">Cadence</div>
+                    <div class="cadence toggle" data-toggle="off" on-click="toggle" data-graph="ground_time">
+                        <div class="type">Ground Time</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="elevation toggle hidden" data-toggle="off" on-click="toggle" data-graph="elevation">
-                        <div class="type">Elevation</div>
+                    <div class="elevation toggle" data-toggle="off" on-click="toggle" data-graph="vertical_osc">
+                        <div class="type">Vertical Oscillation</div>
                         <div class="circle"></div>
                     </div>
                 </div>
@@ -266,7 +266,18 @@
                 this.data = data;
                 this.chartData = this.data;
                 this.startTime = this.data[0].date;
-                this.fillChart();
+                if (this.chartData.length > 0) {
+                    this.fillChart();
+                }
+            },
+            waitForData: function () {
+                this.data.push({
+                    heartRate: 0,
+                    power: 0,
+                    ground_time: 0,
+                    vertical_osc: 0,
+                    pace: 0
+                });
             },
             removeLoading: function () {
                 this.$.spinner.classList.remove('show');
@@ -282,18 +293,18 @@
                 this.graphs = {
                     heartRate: this.chart.getGraphById('heartRate'),
                     pace: this.chart.getGraphById('pace'),
-                    cadence: this.chart.getGraphById('cadence'),
+                    vertical_osc: this.chart.getGraphById('vertical_osc'),
                     power: this.chart.getGraphById('power'),
-                    elevation: this.chart.getGraphById('elevation')
+                    ground_time: this.chart.getGraphById('ground_time')
                 };
                 this.querySelector('[data-graph="heartRate"]').dataset.toggle = 'on';
                 this.querySelector('[data-graph="power"]').dataset.toggle = 'on';
                 this.querySelector('[data-graph="pace"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="cadence"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="elevation"]').dataset.toggle = 'off';
+                this.querySelector('[data-graph="vertical_osc"]').dataset.toggle = 'off';
+                this.querySelector('[data-graph="ground_time"]').dataset.toggle = 'off';
                 this.chart.hideGraph(this.graphs.pace);
-                this.chart.hideGraph(this.graphs.cadence);
-                this.chart.hideGraph(this.graphs.elevation);
+                this.chart.hideGraph(this.graphs.ground_time);
+                this.chart.hideGraph(this.graphs.vertical_osc);
             },
             toggle: function (e) {
                 var target = e.target;
@@ -386,9 +397,18 @@
                 this.querySelector('[type="distance"]').setAttribute('value', stats.distance);
             },
             addPoint: function (pt) {
-                this.chart.dataProvider.push(pt);
+                if (!('chartData' in this)) {
+                    this.chartData = [];
+                }
+                this.chartData.push(pt);
+                //this.chart.dataProvider.push(pt);
             },
             refreshData: function () {
+                if ('chart' in this) {
+                    this.chart.dataProvider = this.chartData;
+                } else {
+                    this.fillChart();
+                }
                 this.calcAvgs(0, this.chart.dataProvider.length - 1);
                 this.chart.validateData();
             },
@@ -415,7 +435,7 @@
                         'axisColor': '#074a8c',
                         'dashLength': 1
                     }, {
-                        'id': 'cadence',
+                        'id': 'ground_time',
                         'axisAlpha': 1,
                         'position': 'left',
                         'offset': 50,
@@ -433,7 +453,7 @@
                         'axisColor': '#f7a017',
                         'dashLength': 1
                     }, {
-                        'id': 'elevation',
+                        'id': 'vertical_osc',
                         'axisAlpha': 1,
                         'position': 'right',
                         'offset': 100,
@@ -471,19 +491,19 @@
                         'type': 'smoothedLine',
                         'balloonText': '[[value]] Min/Mile'
                     }, {
-                        'id': 'cadence',
-                        'valueAxis': 'cadence',
+                        'id': 'ground_time',
+                        'valueAxis': 'ground_time',
                         'bullet': 'round',
                         'bulletBorderAlpha': 1,
                         'bulletColor': '#FFFFFF',
                         'bulletSize': 5,
                         'hideBulletsCount': 50,
                         'lineThickness': 2,
-                        'title': 'cadence',
+                        'title': 'ground_time',
                         'useLineColorForBulletBorder': true,
-                        'valueField': 'cadence',
+                        'valueField': 'ground_time',
                         'type': 'smoothedLine',
-                        'balloonText': '[[value]] SPM'
+                        'balloonText': '[[value]] MS'
                     }, {
                         'id': 'power',
                         'valueAxis': 'power',
@@ -499,19 +519,19 @@
                         'type': 'smoothedLine',
                         'balloonText': '[[value]] Watts',
                     }, {
-                        'id': 'elevation',
-                        'valueAxis': 'elevation',
+                        'id': 'vertical_osc',
+                        'valueAxis': 'vertical_osc',
                         'bullet': 'round',
                         'bulletBorderAlpha': 1,
                         'bulletColor': '#FFFFFF',
                         'bulletSize': 5,
                         'hideBulletsCount': 50,
                         'lineThickness': 2,
-                        'title': 'elevation',
+                        'title': 'vertical_oscn',
                         'useLineColorForBulletBorder': true,
-                        'valueField': 'elevation',
+                        'valueField': 'vertical_osc',
                         'type': 'smoothedLine',
-                        'balloonText': '[[value]] Meters'
+                        'balloonText': '[[value]] CM'
                     }],
                     'chartScrollbar': {
                         'graph': 'power',

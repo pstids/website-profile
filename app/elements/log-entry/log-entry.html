@@ -1,24 +1,38 @@
 <dom-module id="log-entry">
     <style>
-        div.log {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            font-size: 2vw;
-            font-weight: 600;
+        :host {
+            @apply(--layout-vertical);
             border-bottom: 1px solid #4E4E4E;
-            padding: 0.7vw 0;
+            padding: 10px;
         }
-        div.log:hover {
+        :host .description {
+            display: none;
+        }
+        :host.expand .description {
+            @apply(--layout-horizontal);
+        }
+        :host.active, :host:hover {
             background-image: url('../../images/hover.png');
             background-size: cover;
             background-clip: padding-box;
             cursor: pointer;
         }
-        :host.active div.log {
+        .description p {
+            color: white;
+        }
+        div.log {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            font-size: 2vw;
+            font-weight: 600;
+            padding: 0.7vw 0;
+        }
+        /*div.log:hover {
             background-image: url('../../images/hover.png');
             background-size: cover;
             background-clip: padding-box;
-        }
+            cursor: pointer;
+        }*/
         div.date {
             color: white;
         }
@@ -38,6 +52,11 @@
         div.option div:hover iron-icon {
             color: white;
             fill: white;
+        }
+        .description iron-icon {
+            color: white;
+            fill: white;
+            margin: 16px;
         }
         div.stat {
             @apply(--layout-flex);
@@ -146,14 +165,33 @@
                 </div>
             </div>
 
-            <paper-dialog id="deleteaction">
+            <paper-dialog id="deleteAction">
                 <h1>Are you sure you want to remove this run?</h1>
                 <div class="buttons">
                     <paper-button dialog-dismiss>No</paper-button>
                     <paper-button dialog-confirm autofocus on-click="handleDelete">Yes</paper-button>
                 </div>
             </paper-dialog>
+            <paper-dialog id="updateDescription">
+                <paper-input
+                        type="text"
+                        placeholder="Description"
+                        label="Description"
+                        class="editable"
+                        value="{{display.description}}">
+                </paper-input>
+                <div class="buttons">
+                    <paper-button dialog-confirm autofocus on-click="handleDescription">Update</paper-button>
+                </div>
+            </paper-dialog>
             <paper-toast id="toast" text="This feature will be released soon. Please stay tuned"></paper-toast>
+        </div>
+        <div class="description">
+            <div on-click="handleDescriptionDialog">
+                <iron-icon icon="icons:create"></iron-icon>
+                <paper-tooltip>Edit Description</paper-tooltip>
+            </div>
+            <p>{{display.description}}</p>
         </div>
     </template>
     <script>
@@ -165,17 +203,31 @@
             properties: {
                 display: Object
             },
+            toggle: function () {
+                this.classList.toggle('expand');
+            },
             setData: function (data) {
                 this.data = data;
 
                 var date = new Date(data.timestamp * 1000);
                 var dateString = fillZero(date.getMonth() + 1) + '/' + fillZero(date.getDate()) + '/' + date.getFullYear();
+
+                var distance, unit;
+                if (user.data.units === 'feet') {
+                    distance = Math.round(meterToKM(data.distance) * 0.621371);
+                    unit = 'Mi';
+                } else {
+                    distance = meterToKM(data.distance);
+                    unit = 'KM';
+                }
+
                 this.display = {
                     date: dateString,
                     time: hmsTime(data.moving_time * 1000),
                     power: this.truncate(data.average_power),
-                    distance: meterToKM(data.distance),
-                    unit: 'KM'
+                    distance: distance,
+                    unit: unit,
+                    description: this.data.description
                 };
             },
             viewWorkout: function () {
@@ -204,8 +256,27 @@
             handleDownload: function () {
                 this.$.toast.show();
             },
+            handleDescriptionDialog: function () {
+                this.$.updateDescription.open();
+            },
+            handleDescription: function () {
+                superagent
+                    .put('/b/api/v1/activities/' + this.data.id)
+                    .send({
+                        description: this.display.description
+                    })
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.$.updateDescription.close();
+                        } else {
+                            console.log('failed to update description');
+                        }
+                    }.bind(this));
+            },
             handleDeleteDialog: function () {
-                this.$.deleteaction.open();
+                this.$.deleteAction.open();
             },
             handleDelete: function () {
                 superagent

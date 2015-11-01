@@ -30,6 +30,12 @@
                 this.mapObjs = [];
             },
             setData: function (data) {
+                if (data.length === 0) {
+                    this.classList.add('hidden');
+                    return;
+                } else {
+                    this.classList.remove('hidden');
+                }
                 this.data = data;
                 if (mapReadyTrigger) {
                     this.setMap();

@@ -24,8 +24,7 @@
             position: absolute;
             bottom: 0;
             left: 30%;
-            display: flex;
-            flex-direction: row;
+            @apply(--layout-horizontal);
         }
         .view-more .block {
             border-top: 3px solid #F5A214;
@@ -66,17 +65,16 @@
             border: 3px solid var(--primary-header-color);
         }
 
-        @media (max-width: 750px) {
+        @media (max-width: 600px) {
             :host {
-                display: flex;
-                flex-direction: column;
+                @apply(--layout-vertical);
             }
             .anchor {
                 position: static;
                 width: 100%;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
+                @apply(--layout-horizontal);
+                @apply(--layout-center-justified);
+                @apply(--layout-self-center);
             }
             .anchor map-small {
                 border: none;
@@ -84,10 +82,9 @@
             .view-more {
                 position: static;
                 width: 100%;
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
+                @apply(--layout-horizontal);
+                @apply(--layout-center-justified);
+                @apply(--layout-self-center);
             }
             .view-more .block {
                 border: 3px solid #F5A214;
@@ -101,11 +98,11 @@
         <div class="switch">
             <div class="profile active" on-click="switchUser" data-user="sarah">
                 <img src="{{users.sarah.img}}">
-                <h1>Sarah</h1>
+                <h1>Suzanne</h1>
             </div>
             <div class="profile active" on-click="switchUser" data-user="steven">
                 <img src="{{users.steven.img}}">
-                <h1>Steven</h1>
+                <h1>Pam</h1>
             </div>
             <!-- <div class="profile" on-click="switchUser" data-user="brent">
                 <img src="{{users.brent.img}}">
@@ -132,6 +129,9 @@
             </div>
             <div class="block">
                 <a href="/order" target="_blank">Order a Stryd</a>
+            </div>
+            <div class="block">
+                <a href="/ny-marathon-contest" target="_blank">Win a Stryd</a>
             </div>
         </div>
     </template>
@@ -329,7 +329,6 @@
                     }
                 }
 
-
                 // data.receivedTime = Date.now();
                 user.data.push(data);
                 user.pts.push(this.getCoor(data));
@@ -425,8 +424,8 @@
                     this.$.map,
                     {
                         center: {
-                            lat: 19.65231403,
-                            lng: -156.00367157
+                            lat: 40.7127,
+                            lng: -74.0058
                         },
                         zoom: 14,
                         panControl: false,
