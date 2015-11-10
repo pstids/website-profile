@@ -115,6 +115,7 @@ class User {
 					that.constructor();
 					if (callback) {
 						callback();
+						location.reload();
 					}
 				} else {
 					console.log('Error: Setting user information');
