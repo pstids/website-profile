@@ -9,6 +9,9 @@
         p {
             color: white;
         }
+        paper-input input {
+            text-align: center !important;
+        }
         .crit {
             @apply(--layout-vertical);
         }
@@ -21,29 +24,113 @@
         .crit .calcs div {
             @apply(--layout-flex);
         }
+
+        .zones {
+            @apply(--layout-horizontal);
+            @apply(--layout-around-justified);
+            margin-top: 25px;
+        }
+        .zone {
+            @apply(--layout-flex-2);
+        }
+        .zone.titles {
+             @apply(--layout-flex);
+        }
+        .entry {
+
+        }
+        .entry paper-input[name] {
+            margin-left: 0;
+        }
+        .entry .title {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            margin-top: 20px;
+        }
+        .entry .title h1 {
+            color: white;
+            margin: 0;
+            line-height: 40px;
+            width: 200px;
+        }
+        .entry .title span {
+            @apply(--layout-flex-2);
+            color: white;
+            line-height: 40px;
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+        }
+        .entry .title span:first-child {
+            /*margin-right: 20px;*/
+        }
+        .entry .title paper-input {
+            @apply(--layout-flex-2);
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .entry .title paper-input[name] {
+            @apply(--layout-flex-2);
+        }
+        .entry h1 {
+            color: white;
+        }
+
+        .entry .info {
+            @apply(--layout-horizontal);
+            @apply(--layout-end);
+            height: 40px;
+            margin-top: 10px;
+        }
+        .entry .info span {
+            flex: 2;
+            line-height: 40px;
+            color: white;
+        }
+        .entry .info paper-input {
+            flex: 2;
+        }
+        .entry .info .divider {
+            flex: 1;
+            font-weight: 700;
+            color: var(--accent-background-color);
+            text-align: center;
+            line-height: 40px;
+        }
+        .titles paper-input {
+            margin-top: 20px;
+        }
+        .to {
+            @apply(--layout-flex);
+            color: var(--accent-background-color);
+            text-transform: uppercase;
+            text-align: center;
+        }
     </style>
     <template>
         <div class="crit">
             <h1 class="title">Critical Power</h1>
-            <p>Critical power calculation. We will be providing additional information on this metric soon.</p>
             <div class="calcs">
                 <div>
                     <h2 class="subtitle">Three Minute Average Watts</h2>
-                    <paper-slider
-                        min="0"
-                        max="700"
+                    <paper-input
                         value="{{crit.three_minutes}}"
                         editable="true"
+                        type="text"
+                        placeholder="Watts"
+                        style="margin-right:30px; width: 200px;"
                         id="three_minutes">
                     </paper-input>
                 </div>
                 <div>
                     <h2 class="subtitle">Nine Minute Average Watts</h2>
-                    <paper-slider
-                        min="0"
-                        max="600"
+                    <paper-input
                         value="{{crit.nine_minutes}}"
                         editable="true"
+                        type="text"
+                        placeholder="Watts"
+                        style="margin-right:30px; width: 200px;"
                         id="nine_minutes">
                     </paper-input>
                 </div>
@@ -52,8 +139,235 @@
                     <p class="power"><span>{{calcCrit(crit.three_minutes, crit.nine_minutes)}}</span> Watts</p>
                 </div>
             </div>
+        <div class="crit" style="margin-top: 50px;">
+            <h1 class="title">Critical Pace</h1>
+            <div class="calcs">
+                <div>
+                    <h2 class="subtitle">Three Minute Average Pace</h2>
+                    <paper-input
+                        value="{{critPace.three}}"
+                        editable="true"
+                        type="text"
+                        placeholder="Pace (i.e. 4:40)"
+                        style="margin-right:30px; width: 200px;">
+                    </paper-input>
+                </div>
+                <div>
+                    <h2 class="subtitle">Nine Minute Average Pace</h2>
+                    <paper-input
+                        value="{{critPace.nine}}"
+                        editable="true"
+                        type="text"
+                        placeholder="Pace (i.e. 5:40)"
+                        style="width: 200px;">
+                    </paper-input>
+                </div>
+                <div>
+                    <h2 class="subtitle">Critical Pace</h2>
+                    <p class="power"><span>{{calcCritPace(critPace.three, critPace.nine)}}</span> <span>{{user.units}}</span><span>{{userLocal}}</span></p>
+                </div>
+            </div>
         </div>
-        <button is="stryd-button" on-click="saveCritPower">Save</button>
+        <button is="stryd-button" on-click="saveZones">Save</button>
+        <div class="zones" style="display: none;">
+            <div class="zone titles" style="margin-right: 15px;">
+                <h1 class="title" style="text-align: center;">
+                    Zone
+                </h1>
+                <h2 class="subtitle" style="text-align: center;">
+                    Names
+                </h2>
+                <paper-input
+                    no-label-float
+                    type="text"
+                    name="field"
+                    placeholder="Easy"
+                    class="editable"
+                    value="{{zonesNames.easy::input}}">
+                </paper-input>
+                <paper-input
+                    no-label-float
+                    name="field"
+                    type="text"
+                    placeholder="Aerobic"
+                    class="editable"
+                    value="{{zonesNames.aerobic::input}}">
+                </paper-input>
+                <paper-input
+                    no-label-float
+                    name="field"
+                    type="text"
+                    placeholder="Tempo"
+                    class="editable"
+                    value="{{zonesNames.tempo::input}}">
+                </paper-input>
+                <paper-input
+                    no-label-float
+                    name="field"
+                    type="text"
+                    placeholder="Threshold"
+                    class="editable"
+                    value="{{zonesNames.threshold::input}}">
+                </paper-input>
+                <paper-input
+                    no-label-float
+                    name="field"
+                    type="text"
+                    placeholder="VO2"
+                    class="editable"
+                    value="{{zonesNames.vo2::input}}">
+                </paper-input>
+            </div>
+            <div class="zone" style="margin-right: 15px;  margin-left: 30px; border-left: 1px solid rgb(255, 255, 255);">
+                <h1 class="title" style="text-align: center;">
+                    Power
+                </h1>
+                <h2 class="subtitle" style="text-align: center;">
+                    Zones (watts)
+                </h2>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{powerZonesValues.leasy}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Easy"
+                            class="editable"
+                            value="{{powerZonesValues.easy::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{powerZonesValues.easy}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Aerobic"
+                            class="editable"
+                            value="{{powerZonesValues.aerobic::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{powerZonesValues.aerobic}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Tempo"
+                            class="editable"
+                            value="{{powerZonesValues.tempo::input}}">
+                        </paper-input>
+                    </div>
+
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{powerZonesValues.tempo}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Threshold"
+                            class="editable"
+                            value="{{powerZonesValues.threshold::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{powerZonesValues.threshold}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="VO2"
+                            class="editable"
+                            value="{{powerZonesValues.vo2::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+            </div>
+            <div class="zone" style="margin-left: 15px;  margin-left: 45px; border-left: 1px solid rgb(255, 255, 255);">
+                <h1 class="title" style="text-align: center;">
+                    Pace
+                </h1>
+                <h2 class="subtitle" style="text-align: center;">
+                    Zones (<span>{{userLocal}}</span>)
+                </h2>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{paceZonesValues.leasy}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Easy"
+                            class="editable"
+                            value="{{paceZonesValues.easy::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{paceZonesValues.easy}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Aerobic"
+                            class="editable"
+                            value="{{paceZonesValues.aerobic::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{paceZonesValues.aerobic}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Tempo"
+                            class="editable"
+                            value="{{paceZonesValues.tempo::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{paceZonesValues.tempo}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="Threshold"
+                            class="editable"
+                            value="{{paceZonesValues.threshold::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="title">
+                        <span>{{paceZonesValues.threshold}}</span>
+                        <div class="to">to</div>
+                        <paper-input
+                            no-label-float
+                            type="text"
+                            placeholder="VO2"
+                            class="editable"
+                            value="{{paceZonesValues.vo2::input}}">
+                        </paper-input>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button is="stryd-button" on-click="jackDanielsVDOT" style="display: none;">Calculate Zones</button>
+        <button is="stryd-button" on-click="saveCritPower" style="margin-bottom: 30px; display: none;">Save Zones</button>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
     <script>
@@ -63,8 +377,27 @@
                 crit: {
                     type: Object,
                     notify: true
+                },
+                powerZonesValues: {
+                    type: Object,
+                    notify: true,
+                },
+                zonesNames: {
+                    type: Object,
+                    notify: true,
+                    readOnly: false
+                },
+                paceZonesValues: {
+                    type: Object,
+                    notify: true,
+                    readOnly: false
+                },
+                userLocal: {
+                    type: String,
+                    notify: true
                 }
             },
+            names: ['leasy', 'easy', 'aerobic', 'tempo', 'threshold', 'vo2'],
             jsonToQueryString: function (json) {
                 return '?' +
                     Object.keys(json).map(function(key) {
@@ -73,8 +406,70 @@
                     }).join('&');
             },
             ready: function () {
+                if ('power_zones' in user.data) {
+                    this.powerZonesValues = {
+                        leasy: user.data.power_zones.leasy,
+                        easy: user.data.power_zones.easy,
+                        aerobic: user.data.power_zones.aerobic,
+                        tempo: user.data.power_zones.tempo,
+                        threshold: user.data.power_zones.threshold,
+                        vo2: user.data.power_zones.vo2
+                    };
+                } else {
+                    this.paceZonesValues = {
+                        leasy: 0,
+                        easy: 0,
+                        aerobic: 0,
+                        tempo: 0,
+                        threshold: 0,
+                        vo2: 0
+                    };
+                }
+                if ('pace_zones' in user.data) {
+                    this.paceZonesValues = {
+                        leasy: user.data.pace_zones.leasy,
+                        easy: user.data.pace_zones.easy,
+                        aerobic: user.data.pace_zones.aerobic,
+                        tempo: user.data.pace_zones.tempo,
+                        threshold: user.data.pace_zones.threshold,
+                        vo2: user.data.pace_zones.vo2
+                    };
+                } else {
+                    this.paceZonesValues = {
+                        leasy: 0,
+                        easy: 0,
+                        aerobic: 0,
+                        tempo: 0,
+                        threshold: 0,
+                        vo2: 0
+                    };
+                }
+                if ('zone_names' in user.data) {
+                    this.zonesNames = {
+                        leasy: user.data.zone_names.leasy,
+                        easy: user.data.zone_names.easy,
+                        aerobic: user.data.zone_names.aerobic,
+                        tempo: user.data.zone_names.tempo,
+                        threshold: user.data.zone_names.threshold,
+                        vo2: user.data.zone_names.vo2
+                    };
+                } else {
+                    this.zonesNames = {
+                        leasy: 'Zone 0',
+                        easy: 'Zone 1: Easy',
+                        aerobic: 'Zone 2: Aerobic',
+                        tempo: 'Zone 3: Tempo',
+                        threshold: 'Zone 4: Threshold',
+                        vo2: 'Zone 5: VO2'
+                    };
+                }
+                if (user.data.units === 'feet') {
+                    this.userLocal = 'min/mile';
+                } else {
+                    this.userLocal = 'min/km';
+                }
                 console.log('init');
-                if (!('critical_power' in user.data)) {
+                if (!('critical_pace' in user.data) || !('critical_power' in user.data)) {
                     console.log('refetch');
                     user.fetchDetails(this.ready.bind(this));
                 } else  {
@@ -86,6 +481,14 @@
                         this.crit.nine_minutes = this.$.nine_minutes.value;
                     }.bind(this));
                 }
+                this.critPace = {
+                    nineStr: '',
+                    threeStr: '',
+                    nineDec: 0,
+                    threeDec: 0,
+                    three: user.data.critical_pace.three_minutes,
+                    nine: user.data.critical_pace.nine_minutes
+                };
             },
             calcCrit: function (three, nine) {
                 var crit_power, scaled_nine, scaled_three;
@@ -94,10 +497,56 @@
                 crit_power = ((scaled_nine - scaled_three)/(6));
                 return crit_power;
             },
+            calcCritPace: function (three, nine) {
+                this.critPace.threeDec = this.paceToDec(three);
+
+                this.critPace.nineDec = this.paceToDec(nine);
+
+                var speedThree = this.paceToMPH(this.critPace.threeDec);
+                var speedNine = this.paceToMPH(this.critPace.nineDec);
+
+                var scaledThree, scaledNine;
+                scaledThree = speedThree * 3;
+                scaledNine = speedNine * 9;
+                var cS = (scaledNine - scaledThree)/6;
+                var cP = this.decToPace(this.paceToMPH(cS));
+                
+                return cP;
+            },
             saveCritPower: function () {
+                var queryObj = {};
+                var types = ['powerZonesValues', 'paceZonesValues', 'zonesNames'];
+                var zones = ['leasy', 'easy', 'aerobic', 'tempo', 'threshold', 'vo2'];
+                for (var i = 0; i < 3; i++) {
+                    var type = types[i];
+                    for (var o = 0; o < 6; o++) {
+                        var zone = zones[o];
+                        var key = type + '_' + zone;
+                        queryObj[key] = this[type][zone];
+                    }
+                }
+                var queryString = this.jsonToQueryString(queryObj);
+                superagent
+                    .put('/b/api/v1/users/' + jwt.data.id + queryString)
+                    .send('{"empty":"empty"}')
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.$.toast.text = 'Your power & pace zone information is up-to-date!';
+                            user.updateData(res.body);
+                        } else {
+                            this.$.toast.text = 'Your information has not been updated. Please try again.';
+                        }
+                        this.$.toast.show();
+                    }.bind(this));
+            },
+            saveZones: function () {
                 var queryString = this.jsonToQueryString({
-                    crit_three_minutes: this.crit.three_minutes,
-                    crit_nine_minutes: this.crit.nine_minutes
+                    crit_power_three_minutes: this.crit.three_minutes,
+                    crit_power_nine_minutes: this.crit.nine_minutes,
+                    crit_pace_three_minutes: this.critPace.three,
+                    crit_pace_nine_minutes: this.critPace.nine
                 });
                 superagent
                     .put('/b/api/v1/users/' + jwt.data.id + queryString)
@@ -106,13 +555,115 @@
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {
                         if (res.ok) {
-                            this.$.toast.text = 'Your critical power information is updated!';
+                            this.$.toast.text = 'Your critical power & pace information is up-to-date!';
                             user.updateData(res.body);
                         } else {
-                            this.$.toast.text = 'Your information is not updated. Please try again.';
+                            this.$.toast.text = 'Your information has not been updated. Please try again.';
                         }
                         this.$.toast.show();
                     }.bind(this));
+            },
+            jackDanielsVDOT: function () {
+                var cons;
+                if (user.data.units === 'feet') {
+                    cons = 3.10686;
+                } else {
+                    cons = 5;
+                }
+                var approx5KDec = cons * this.paceToDec(this.calcCritPace(this.critPace.three, this.critPace.nine));
+                console.log('Approk 5k crit', approx5KDec);
+                var approx5K = this.decToPace(approx5KDec);
+
+                superagent
+                    .post('/b/api/v1/users/paces')
+                    .type('form')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .send({
+                        time: '00:' + approx5K
+                    })
+                    .set('Accept', 'application/json')
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            console.log(res);
+                            var data = res.body;
+                            this.paceZonesValues.leasy = data.paces.normal.E.mi.split('-')[1];
+                            this.paceZonesValues.easy = data.paces.normal.E.mi.split('-')[0];
+                            this.paceZonesValues.aerobic = data.paces.normal.M.mi;
+                            this.paceZonesValues.tempo = data.paces.normal.T.mi;
+                            this.paceZonesValues.threshold = data.paces.normal.I.mi;
+                            this.paceZonesValues.vo2 = data.paces.normal.R.mi;
+                            this.producePowerZones();
+                        } else {
+                            this.$.toast.text = 'Pace zones could not be retrieved.';
+                        }
+                        this.$.toast.show();
+                    }.bind(this));
+            },
+            paceToDec: function (pace) {
+                var parts = pace.split(':');
+                console.log(parts);
+                var secondFraction = parseInt(parts[1]) / 60;
+                console.log('Second Fraction', secondFraction);
+                console.log('Minute', parseInt(parts[0]));
+                var dec = parseInt(parts[0]) + parseFloat(secondFraction.toFixed(2));
+                console.log(dec, secondFraction.toFixed(2), parts[0]);
+                return dec;
+            },
+            decToPace: function (dec) {
+                dec = parseFloat(dec);
+                console.log('DEC', dec);
+                var min = Math.floor(dec);
+                console.log('MING', min);
+                var part = dec - min;
+                console.log('PART', part);
+                var seconds = part * 60;
+                console.log('SECONDS', seconds);
+                var stringSeconds = String(seconds.toFixed());
+                if (stringSeconds.length === 1) {
+                    stringSeconds = '0' + stringSeconds;
+                }
+                return String(min) + ':' + stringSeconds;
+            },
+            paceToMPH: function (val) {
+                var mph;
+                if (user.data.units === 'feet') {
+                    mph = (60/val);
+                } else {
+                    mph = (37.2822715/val);
+                }
+                return mph;
+            },
+            producePowerZones: function () {
+                var paceSlope = this.paceToMPH(this.critPace.threeDec) - this.paceToMPH(this.critPace.nineDec);
+                var powerSlope = this.crit.three_minutes - this.crit.nine_minutes;
+
+                var slope = powerSlope / paceSlope;
+                var offset = this.crit.three_minutes - slope * this.paceToMPH(this.critPace.threeDec);
+
+                console.log('Pace slope', paceSlope);
+                console.log('Power slope', powerSlope);
+                console.log('Slope', slope);
+                console.log('Offset', offset);
+                console.log('CritPower', this.crit);
+                console.log('CritPace', this.critPace);
+                for (var i = 0; i < 6; i++) {
+                    var name = this.names[i];
+                    this.powerZonesValues[name] = (this.paceToMPH(this.paceToDec(this.paceZonesValues[name])) * slope + offset).toFixed(0);
+                }
+
+                this.notifyPath('powerZonesValues.leasy', this.powerZonesValues.leasy);
+                this.notifyPath('powerZonesValues.easy', this.powerZonesValues.easy);
+                this.notifyPath('powerZonesValues.aerobic', this.powerZonesValues.aerobic);
+                this.notifyPath('powerZonesValues.tempo', this.powerZonesValues.tempo);
+                this.notifyPath('powerZonesValues.threshold', this.powerZonesValues.threshold);
+                this.notifyPath('powerZonesValues.vo2', this.powerZonesValues.vo2);
+
+                this.notifyPath('paceZonesValues.leasy', this.paceZonesValues.leasy);
+                this.notifyPath('paceZonesValues.easy', this.paceZonesValues.easy);
+                this.notifyPath('paceZonesValues.aerobic', this.paceZonesValues.aerobic);
+                this.notifyPath('paceZonesValues.tempo', this.paceZonesValues.tempo);
+                this.notifyPath('paceZonesValues.threshold', this.paceZonesValues.threshold);
+                this.notifyPath('paceZonesValues.vo2', this.paceZonesValues.vo2);
             }
         });
     </script>
