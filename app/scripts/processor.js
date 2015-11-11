@@ -61,21 +61,21 @@ onmessage = function (event) {
     }
 };
 
-function interpolate(start, end, steps, count) {
+var interpolate = function (start, end, steps, count) {
     var s = start,
         e = end,
         final = s + (((e - s) / steps) * count);
     return Math.floor(final);
-}
+};
 
 var componentToHex = function (c) {
     var hex = c.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
-}
+};
 
 var rgbToHex = function (r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
+};
 
 var calcThreshold = function (powers) {
     powers = JSON.parse(JSON.stringify(powers));
