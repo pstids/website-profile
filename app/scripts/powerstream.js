@@ -35,7 +35,7 @@ var calcHaversine = function (start, now) {
 
 var users = {
     sarah: {
-        img: 'https://storage.googleapis.com/stryd_static_assets/brc-runner.png',
+        img: 'https://storage.googleapis.com/stryd_static_assets/rmr-1.png',
         data: [],
         name: 'sarah',
         id: 'c59c6e91-8314-5e0f-470d-4f803baf8e64',
@@ -48,11 +48,10 @@ var users = {
             pts: 0
         },
         distance: 0,
-        lineColor: '#683a78',
-        chart: document.querySelector('#sarah-chart')
+        lineColor: '#683a78'
     },
     steven: {
-        img: 'https://storage.googleapis.com/stryd_static_assets/pam.png',
+        img: 'https://storage.googleapis.com/stryd_static_assets/rmr-2.png',
         data: [],
         name: 'steven',
         id: 'a4b09bb5-5b0a-506c-5a34-0d7aa975f29b',  
@@ -65,16 +64,15 @@ var users = {
             pts: 0
         },
         distance: 0,
-        lineColor: '#074a8c',
-        chart: document.querySelector('#steven-chart')
+        lineColor: '#074a8c'
     },
     brent: {
-        img: 'https://storage.googleapis.com/stryd_static_assets/phinney-circle.png',
+        img: 'https://storage.googleapis.com/stryd_static_assets/rmr-3.png',
         data: [],
         name: 'brent',
-        id: 'd1f875eb-40da-561b-543d-f5bbc6d7448e',
+        id: '197a1a1e-1910-5bfa-4716-b64d789b3016',
         pts: [],
-        active: false,
+        active: true,
         avgs: {
             heart_rate: 0,
             power: 0,
@@ -83,6 +81,22 @@ var users = {
         },
         distance: 0,
         lineColor: '#5ea7a1'
+    },
+    jon: {
+        img: 'https://storage.googleapis.com/stryd_static_assets/phinney-circle.png',
+        data: [],
+        name: 'jon',
+        id: '263d8deb-e68b-5781-432a-cebc5648db64',
+        pts: [],
+        active: true,
+        avgs: {
+            heart_rate: 0,
+            power: 0,
+            cadence: 0,
+            pts: 0
+        },
+        distance: 0,
+        lineColor: '#5ea7a2'
     }
 };
 
@@ -268,7 +282,7 @@ window.addEventListener('WebComponentsReady', function() {
     };
 
     var getOldData = function () {
-        var ids = ['c59c6e91-8314-5e0f-470d-4f803baf8e64', 'a4b09bb5-5b0a-506c-5a34-0d7aa975f29b'];
+        var ids = ['c59c6e91-8314-5e0f-470d-4f803baf8e64', 'a4b09bb5-5b0a-506c-5a34-0d7aa975f29b', '197a1a1e-1910-5bfa-4716-b64d789b3016', '263d8deb-e68b-5781-432a-cebc5648db64'];
         superagent
             .get('http://104.197.114.91:8080/fetch?id=' + ids[0])
             .end(function(err, res) {
@@ -305,6 +319,44 @@ window.addEventListener('WebComponentsReady', function() {
                 } else {
                     console.log('Error: Cannot fetch old data', ids[1]);
                     processOld([], ids[1]);
+                }
+            });
+        superagent
+            .get('http://104.197.114.91:8080/fetch?id=' + ids[2])
+            .end(function(err, res) {
+                if (res.ok) {
+                    if (res.text !== 'none') {
+                        console.log('Received data for', ids[2]);
+                        var text = res.text.slice(0, - 1);
+                        var oldData = JSON.parse('[' + text + ']');
+
+                        processOld(oldData, ids[2]);
+                    } else {
+                        console.log('Error: No data for', ids[2]);
+                        processOld([], ids[2]);
+                    }
+                } else {
+                    console.log('Error: Cannot fetch old data', ids[2]);
+                    processOld([], ids[2]);
+                }
+            });
+        superagent
+            .get('http://104.197.114.91:8080/fetch?id=' + ids[3])
+            .end(function(err, res) {
+                if (res.ok) {
+                    if (res.text !== 'none') {
+                        console.log('Received data for', ids[3]);
+                        var text = res.text.slice(0, - 1);
+                        var oldData = JSON.parse('[' + text + ']');
+
+                        processOld(oldData, ids[3]);
+                    } else {
+                        console.log('Error: No data for', ids[3]);
+                        processOld([], ids[3]);
+                    }
+                } else {
+                    console.log('Error: Cannot fetch old data', ids[3]);
+                    processOld([], ids[3]);
                 }
             });
         getNewData();

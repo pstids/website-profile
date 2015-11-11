@@ -98,16 +98,20 @@
         <div class="switch">
             <div class="profile active" on-click="switchUser" data-user="sarah">
                 <img src="{{users.sarah.img}}">
-                <h1>Suzanne</h1>
+                <h1>Ryan L.</h1>
             </div>
             <div class="profile active" on-click="switchUser" data-user="steven">
                 <img src="{{users.steven.img}}">
-                <h1>Pam</h1>
+                <h1>Silke</h1>
             </div>
-            <!-- <div class="profile" on-click="switchUser" data-user="brent">
+            <div class="profile" on-click="switchUser" data-user="brent">
                 <img src="{{users.brent.img}}">
-                <h1>Brent</h1>
-            </div> -->
+                <h1>Ryan S.</h1>
+            </div>
+            <div class="profile" on-click="switchUser" data-user="jon">
+                <img src="{{users.jon.img}}">
+                <h1>Jon</h1>
+            </div>
         </div>
         <div class="anchor">
             <!-- <button data-view="summary" on-click="router">Summary</button>
@@ -116,7 +120,8 @@
                 <section data-route="summary">
                     <map-small user="sarah" img="{{users.sarah.img}}"></map-small>
                     <map-small user="steven" img="{{users.steven.img}}"></map-small>
-                    <!-- <map-small user="brent" img="{{users.brent.img}}"></map-small> -->
+                    <map-small user="brent" img="{{users.brent.img}}"></map-small>
+                    <map-small user="jon" img="{{users.jon.img}}"></map-small>
                 </section>
                 <section data-route="average">
                     <map-average></map-average>
