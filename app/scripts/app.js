@@ -2,6 +2,7 @@
 /*jshint unused:false*/
 /*global Dropzone*/
 /*global Dexie*/
+/*exported mapReadyTrigger, mapReadyEvent*/
 
 var processor = new Worker('/powercenter/scripts/processor.js');
 
@@ -13,6 +14,13 @@ var workoutFetching = function (id) {
         type: 'workout',
         id: id
     });
+};
+
+var mapReadyTrigger = false;
+var mapReadyEvent = new CustomEvent('MapReady');
+window.mapReady = function () {
+    mapReadyTrigger = true;
+    window.dispatchEvent(mapReadyEvent);
 };
 
 (function(document) {
