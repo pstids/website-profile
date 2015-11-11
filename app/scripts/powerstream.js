@@ -15,6 +15,8 @@ var getCoor = function (data) {
     }
 };
 
+
+
 var calcHaversine = function (start, now) {
     if (('lat' in start) && ('lat' in now) && start.lat !== undefined && now.lat !== undefined) {
         var r = 6371;
