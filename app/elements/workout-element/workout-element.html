@@ -424,7 +424,8 @@
                         'axisThickness': 2,
                         'gridAlpha': 0.2,
                         'axisColor': '#074a8c',
-                        'dashLength': 1
+                        'dashLength': 1,
+                        'labelFunction': speedToPaceForValueAxis
                     }, {
                         'id': 'cadence',
                         'axisAlpha': 1,
@@ -480,6 +481,7 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'pace',
                         'type': 'smoothedLine',
+                        'balloonFunction': speedToPaceForBalloon,
                         'balloonText': '[[value]] Min/Mile'
                     }, {
                         'id': 'cadence',
@@ -570,11 +572,13 @@
                     'dataProvider': this.chartData,
                     'pathToImages': 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
                 }, 100);
+
                 this.chart.addListener('init', function (e) {
                     this.removeLoading();
                     this.bindToggles();
                     this.calcAvgs(0, this.chartData.length);
                 }.bind(this));
+
                 this.chart.addListener('zoomed', function (e) {
                     this.calcAvgs(e.startIndex, e.endIndex + 1);
                 }.bind(this));
