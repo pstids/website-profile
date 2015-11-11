@@ -63,14 +63,16 @@
         </div>
         <div class="row charts" id="chart">
             <div class="chart">
-                <h1>Suzanne's Data</h1>
+                <h1>Data Chart</h1>
                 <p>Updates every 60 seconds</p>
-                <workout-stream id="sarah-chart"></workout-stream>
-            </div>
-            <div class="chart">
-                <h1>Pam's Data</h1>
-                <p>Updates every 60 seconds</p>
-                <workout-stream id="steven-chart"></workout-stream>
+                <p>Switch between athletes</p>
+                <select name="athlete" id="athlete" onchange="triggerAth(event);" style="margin-left: 60px; margin-top: 20px; font-size: 20px;">
+                    <option value="sarah">Ryan L.</option>
+                    <option value="steven">Selke</option>
+                    <option value="brent">Ryan S.</option>
+                    <option value="jon">Jon</option>
+                </select>
+                <workout-stream id="chart2"></workout-stream>
             </div>
         </div>
         <div class="row fb">
