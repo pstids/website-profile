@@ -1,4 +1,4 @@
-<dom-module id="workout-element">
+<dom-module id="workout-stream">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
     <style>
         .sample {
@@ -202,14 +202,15 @@
         <section>
             <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
             <h2 class="subtitle sample" style="padding: 0px 0px 0px 50px;">Sample Data</h2>
+
             <div class="bubbles"
                 data-step="7"
                 data-intro="When you select a different portion of your run, your averages will update.">
                 <bubble-stat type="avg_power" title="Average Power" unit="Watts" icon="image:flash-on"></bubble-stat>
-                <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run"></bubble-stat>
+                <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run" class="hidden"></bubble-stat>
                 <bubble-stat type="avg_hr" title="Average Heart Rate" unit="BPM" icon="favorite"></bubble-stat>
-                <bubble-stat type="distance" title="Distance" unit="Miles" icon="communication:swap-calls"></bubble-stat>
-                <bubble-stat type="time" title="Elapsed Time" unit="HH:MM:SS" icon="image:timer"></bubble-stat>
+                <bubble-stat type="distance" title="Distance" unit="Miles" icon="communication:swap-calls" class="hidden"></bubble-stat>
+                <bubble-stat type="time" title="Run Time" unit="HH:MM:SS" icon="image:timer" class="hidden"></bubble-stat>
             </div>
             <div class="options">
                 <div>
@@ -225,16 +226,16 @@
                         <div class="type">Power</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="pace toggle" data-toggle="off" on-click="toggle" data-graph="pace">
+                    <div class="pace toggle hidden" data-toggle="off" on-click="toggle" data-graph="pace">
                         <div class="type">Pace</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="cadence toggle" data-toggle="off" on-click="toggle" data-graph="cadence">
-                        <div class="type">Cadence</div>
+                    <div class="cadence toggle" data-toggle="off" on-click="toggle" data-graph="ground_time">
+                        <div class="type">Ground Time</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="elevation toggle" data-toggle="off" on-click="toggle" data-graph="elevation">
-                        <div class="type">Elevation</div>
+                    <div class="elevation toggle" data-toggle="off" on-click="toggle" data-graph="vertical_osc">
+                        <div class="type">Vertical Oscillation</div>
                         <div class="circle"></div>
                     </div>
                 </div>
@@ -254,20 +255,30 @@
         /*global AmCharts*/
         /*jshint camelcase: false */
         Polymer({
-            is: 'workout-element',
+            is: 'workout-stream',
             ready: function () {
                 AmCharts.handleLoad();
             },
-            setChartData: function (data, steps) {
+            setChartData: function (data) {
                 this.setLoading();
                 if ('chart' in this) {
                     this.bindToggles();
                 }
                 this.data = data;
-                this.steps = steps;
                 this.chartData = this.data;
                 this.startTime = this.data[0].date;
-                this.fillChart();
+                if (this.chartData.length > 0) {
+                    this.fillChart();
+                }
+            },
+            waitForData: function () {
+                this.data.push({
+                    heartRate: 0,
+                    power: 0,
+                    ground_time: 0,
+                    vertical_osc: 0,
+                    pace: 0
+                });
             },
             removeLoading: function () {
                 this.$.spinner.classList.remove('show');
@@ -283,18 +294,18 @@
                 this.graphs = {
                     heartRate: this.chart.getGraphById('heartRate'),
                     pace: this.chart.getGraphById('pace'),
-                    cadence: this.chart.getGraphById('cadence'),
+                    vertical_osc: this.chart.getGraphById('vertical_osc'),
                     power: this.chart.getGraphById('power'),
-                    elevation: this.chart.getGraphById('elevation')
+                    ground_time: this.chart.getGraphById('ground_time')
                 };
                 this.querySelector('[data-graph="heartRate"]').dataset.toggle = 'on';
                 this.querySelector('[data-graph="power"]').dataset.toggle = 'on';
                 this.querySelector('[data-graph="pace"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="cadence"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="elevation"]').dataset.toggle = 'off';
+                this.querySelector('[data-graph="vertical_osc"]').dataset.toggle = 'off';
+                this.querySelector('[data-graph="ground_time"]').dataset.toggle = 'off';
                 this.chart.hideGraph(this.graphs.pace);
-                this.chart.hideGraph(this.graphs.cadence);
-                this.chart.hideGraph(this.graphs.elevation);
+                this.chart.hideGraph(this.graphs.ground_time);
+                this.chart.hideGraph(this.graphs.vertical_osc);
             },
             toggle: function (e) {
                 var target = e.target;
@@ -333,7 +344,9 @@
                 for (i = begin; i < end; i++) {
                     if (i !== begin) {
                         thisStep = (this.data[i].date - this.data[i-1].date) / 1000;
-                        if (step === 0 || thisStep < step) {
+                        if (step === 0) {
+                            step = thisStep;
+                        } else if (thisStep < step) {
                             step = thisStep;
                         }
                     }
@@ -357,19 +370,7 @@
                     }
                 }
 
-                var unit;
-                if (user.data.units === 'feet') {
-                    unit = 'Mi';
-                } else {
-                    stats.distance = (stats.distance / 0.621371).toFixed(1);
-                    stats.exactDistance = (stats.exactDistance / 0.621371).toFixed(8);
-                    this.querySelector('[type="avg_pace"]').setAttribute('unit', 'Min/KM');
-                    this.querySelector('[type="distance"]').setAttribute('unit', 'KM');
-                    unit = 'KM';
-                }
-
-                // var movingTime = avgs.powerCount * step * this.steps;
-                var movingTime = stats.seconds / 1000;
+                var movingTime = avgs.powerCount * step;
                 stats.timeHMS = hmsTime(movingTime * 1000);
 
                 avgs.power = avgs.power / avgs.powerCount;
@@ -382,12 +383,12 @@
 
                 this.querySelector('[type="avg_power"]').setAttribute('value', avgs.power.stat());
 
-                if (avgs.pace === null) {
-                    this.querySelector('[type="avg_pace"]').classList.add('hidden');
-                } else {
-                    this.querySelector('[type="avg_pace"]').classList.remove('hidden');
-                    this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
-                }
+                // if (avgs.pace === null) {
+                //     this.querySelector('[type="avg_pace"]').classList.add('hidden');
+                // } else {
+                //     this.querySelector('[type="avg_pace"]').classList.remove('hidden');
+                //     this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
+                // }
                 if (isNaN(avgs.heartRate)) {
                     this.querySelector('[type="avg_hr"]').classList.add('hidden');
                 } else {
@@ -397,9 +398,18 @@
                 this.querySelector('[type="distance"]').setAttribute('value', stats.distance);
             },
             addPoint: function (pt) {
-                this.chart.dataProvider.push(pt);
+                if (!('chartData' in this)) {
+                    this.chartData = [];
+                }
+                this.chartData.push(pt);
+                //this.chart.dataProvider.push(pt);
             },
             refreshData: function () {
+                if ('chart' in this) {
+                    this.chart.dataProvider = this.chartData;
+                } else {
+                    this.fillChart();
+                }
                 this.calcAvgs(0, this.chart.dataProvider.length - 1);
                 this.chart.validateData();
             },
@@ -424,10 +434,9 @@
                         'axisThickness': 2,
                         'gridAlpha': 0.2,
                         'axisColor': '#074a8c',
-                        'dashLength': 1,
-                        'labelFunction': speedToPaceForValueAxis
+                        'dashLength': 1
                     }, {
-                        'id': 'cadence',
+                        'id': 'ground_time',
                         'axisAlpha': 1,
                         'position': 'left',
                         'offset': 50,
@@ -445,7 +454,7 @@
                         'axisColor': '#f7a017',
                         'dashLength': 1
                     }, {
-                        'id': 'elevation',
+                        'id': 'vertical_osc',
                         'axisAlpha': 1,
                         'position': 'right',
                         'offset': 100,
@@ -481,22 +490,21 @@
                         'useLineColorForBulletBorder': true,
                         'valueField': 'pace',
                         'type': 'smoothedLine',
-                        'balloonFunction': speedToPaceForBalloon,
                         'balloonText': '[[value]] Min/Mile'
                     }, {
-                        'id': 'cadence',
-                        'valueAxis': 'cadence',
+                        'id': 'ground_time',
+                        'valueAxis': 'ground_time',
                         'bullet': 'round',
                         'bulletBorderAlpha': 1,
                         'bulletColor': '#FFFFFF',
                         'bulletSize': 5,
                         'hideBulletsCount': 50,
                         'lineThickness': 2,
-                        'title': 'cadence',
+                        'title': 'ground_time',
                         'useLineColorForBulletBorder': true,
-                        'valueField': 'cadence',
+                        'valueField': 'ground_time',
                         'type': 'smoothedLine',
-                        'balloonText': '[[value]] SPM'
+                        'balloonText': '[[value]] MS'
                     }, {
                         'id': 'power',
                         'valueAxis': 'power',
@@ -512,19 +520,19 @@
                         'type': 'smoothedLine',
                         'balloonText': '[[value]] Watts',
                     }, {
-                        'id': 'elevation',
-                        'valueAxis': 'elevation',
+                        'id': 'vertical_osc',
+                        'valueAxis': 'vertical_osc',
                         'bullet': 'round',
                         'bulletBorderAlpha': 1,
                         'bulletColor': '#FFFFFF',
                         'bulletSize': 5,
                         'hideBulletsCount': 50,
                         'lineThickness': 2,
-                        'title': 'elevation',
+                        'title': 'vertical_oscn',
                         'useLineColorForBulletBorder': true,
-                        'valueField': 'elevation',
+                        'valueField': 'vertical_osc',
                         'type': 'smoothedLine',
-                        'balloonText': '[[value]] Meters'
+                        'balloonText': '[[value]] CM'
                     }],
                     'chartScrollbar': {
                         'graph': 'power',
@@ -572,13 +580,11 @@
                     'dataProvider': this.chartData,
                     'pathToImages': 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
                 }, 100);
-
                 this.chart.addListener('init', function (e) {
                     this.removeLoading();
                     this.bindToggles();
                     this.calcAvgs(0, this.chartData.length);
                 }.bind(this));
-
                 this.chart.addListener('zoomed', function (e) {
                     this.calcAvgs(e.startIndex, e.endIndex + 1);
                 }.bind(this));

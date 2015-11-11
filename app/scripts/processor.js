@@ -37,21 +37,45 @@ var initDB = function () {
     db.open();
 };
 
- var interpolate = function (start, end, steps, count) {
+onmessage = function (event) {
+    initDB();
+
+    data = {};
+    token = event.data.token;
+
+    switch(event.data.type) {
+        case 'all':
+            logsFetching();
+            break;
+        case 'workout':
+            workoutFetching(event.data.id);
+            break;
+        case 'sample':
+            workoutFetching('sample');
+            break;
+        case 'addLog':
+            addLog(event.data.id);
+            break;
+        default:
+            console.log('Error in onmessage/processor: unknown action');
+    }
+};
+
+var interpolate = function (start, end, steps, count) {
     var s = start,
         e = end,
         final = s + (((e - s) / steps) * count);
     return Math.floor(final);
-}
+};
 
 var componentToHex = function (c) {
     var hex = c.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
-}
+};
 
 var rgbToHex = function (r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
+};
 
 var calcThreshold = function (powers) {
     powers = JSON.parse(JSON.stringify(powers));
@@ -124,27 +148,36 @@ var workoutProcessing = function (workout, id) {
 
     var maxPower = workout.max_power;
 
+    // Limit displayed records to prevent browser slugginess
     var steps = 1;
     if (workout.total_power_list.length > 800) {
         steps = parseInt(workout.total_power_list.length / 800);
     }
+
     var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
     var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
+
     var chartData = [], mapRunData = [];
     var hex, i;
-    var graphSegment = {}, entry = {};
+    var graphSegment = {};
+
+    var lastEntry;
+    var suuntoDrop = true;
     for (i = 0; i < workout.total_power_list.length; i = i + steps) {
         graphSegment = {};
-        entry = {};
-        /* Assemble Chart Data */
+        var entry = {};
+        /* Assemble chart data */
         if ('timestamp_list' in workout) {
             entry.date = setDate(workout.timestamp_list[i]);
         }
         if ('heart_rate_list' in workout) {
             entry.heartRate = workout.heart_rate_list[i];
+            if (entry.heartRate !== 0) {
+                suuntoDrop = false;
+            }
         }
-        if ('speed_list' in workout) {
-            entry.pace = minutesPerMile(workout.speed_list[i]);
+        if ('speed_list' in workout && workout.speed_list !== null) {
+            entry.pace = workout.speed_list[i];
         }
         if ('total_power_list' in workout) {
             entry.power = workout.total_power_list[i];
@@ -152,19 +185,36 @@ var workoutProcessing = function (workout, id) {
                 avgs.powerCount += 1;
                 avgs.power += entry.power;
             }
+            if (entry.power !== 0) {
+                suuntoDrop = false;
+            }
         }
         if ('cadence_list' in workout) {
             entry.cadence = workout.cadence_list[i];
+            if (entry.cadence !== 0) {
+                suuntoDrop = false;
+            }
         }
-        if ('elevation_list' in workout) {
+        if ('elevation_list' in workout && workout.elevation_list !== null) {
             entry.elevation = Math.round(workout.elevation_list[i]);
+            if (entry.elevation !== 0) {
+                suuntoDrop = false;
+            }
         }
-        if ('distance_list' in workout) {
+        if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
         }
+
+        if (suuntoDrop) {
+            entry = lastEntry;
+        } else {
+            lastEntry = entry;
+        }
+        suuntoDrop = true;
+        
         chartData.push(entry);
-        /* Assemble Map Data */
-        if (i > 0) {
+        /* Assemble map data */
+        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
@@ -202,6 +252,7 @@ var workoutProcessing = function (workout, id) {
 
     data.mapRunData = mapRunData;
     data.chartData = chartData;
+    data.steps = steps;
     if (id === 'sample') {
         data.logs = [workout];
         data.type = 'sample';

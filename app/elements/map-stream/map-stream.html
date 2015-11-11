@@ -1,0 +1,510 @@
+<dom-module id='map-stream'>
+    <style>
+        :host {
+            position: relative;
+        }
+        #map {
+            width: 100%;
+            height: 100vh;
+            min-height: 350px;
+        }
+        .anchor {
+            position: absolute;
+            top: 10%;
+            bottom: 10%;
+            left: 0;
+        }
+        .switch {
+            position: absolute;
+            top: 0;
+            right: 0;
+            @apply(--layout-horizontal);
+        }
+        .view-more {
+            position: absolute;
+            bottom: 0;
+            left: 30%;
+            @apply(--layout-horizontal);
+        }
+        .view-more .block {
+            border-top: 3px solid #F5A214;
+            background-color: rgba(41, 41, 39, 0.9);
+            margin-right: 15px;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            line-height: 26px;
+        }
+        .view-more a {
+            color: white;
+            text-decoration: none;
+        }
+        .profile {
+            @apply(--layout-vertical);
+            @apply(--layout-center-justified);
+            @apply(--layout-self-center);
+            margin: 20px;
+            cursor: pointer;
+        }
+        .profile h1 {
+            padding: 0;
+            margin: 10px 0 0 0;
+            font-weight: 300;
+            font-size: 20px;
+            color: white;
+            text-align: center;
+        }
+        .profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50px;
+            border: 3px solid var(--primary-background-color);
+        }
+        .profile.active img {
+            border: 3px solid var(--primary-header-color);
+        }
+
+        @media (max-width: 600px) {
+            :host {
+                @apply(--layout-vertical);
+            }
+            .anchor {
+                position: static;
+                width: 100%;
+                @apply(--layout-horizontal);
+                @apply(--layout-center-justified);
+                @apply(--layout-self-center);
+            }
+            .anchor map-small {
+                border: none;
+            }
+            .view-more {
+                position: static;
+                width: 100%;
+                @apply(--layout-horizontal);
+                @apply(--layout-center-justified);
+                @apply(--layout-self-center);
+            }
+            .view-more .block {
+                border: 3px solid #F5A214;
+            }
+        }
+    </style>
+    <template>
+        <div id="map"
+            data-step="5"
+            data-intro="Retrace your steps and find where you hit your stride. Red areas indicate high power output. Green areas indicate lower power output."></div>
+        <div class="switch">
+            <div class="profile active" on-click="switchUser" data-user="sarah">
+                <img src="{{users.sarah.img}}">
+                <h1>Ryan L.</h1>
+            </div>
+            <div class="profile active" on-click="switchUser" data-user="steven">
+                <img src="{{users.steven.img}}">
+                <h1>Silke</h1>
+            </div>
+            <div class="profile" on-click="switchUser" data-user="brent">
+                <img src="{{users.brent.img}}">
+                <h1>Ryan S.</h1>
+            </div>
+            <div class="profile" on-click="switchUser" data-user="jon">
+                <img src="{{users.jon.img}}">
+                <h1>Jon</h1>
+            </div>
+        </div>
+        <div class="anchor">
+            <!-- <button data-view="summary" on-click="router">Summary</button>
+            <button data-view="average" on-click="router">Average</button> -->
+            <iron-pages attr-for-selected="data-route" selected="{{route}}">
+                <section data-route="summary">
+                    <map-small user="sarah" img="{{users.sarah.img}}"></map-small>
+                    <map-small user="steven" img="{{users.steven.img}}"></map-small>
+                    <map-small user="brent" img="{{users.brent.img}}"></map-small>
+                    <map-small user="jon" img="{{users.jon.img}}"></map-small>
+                </section>
+                <section data-route="average">
+                    <map-average></map-average>
+                </section>
+            </iron-pages>
+        </div>
+        <div class="view-more">
+            <div class="block">
+                <a href="#chart">View Charts & Comments</a>
+            </div>
+            <div class="block">
+                <a href="/order" target="_blank">Order a Stryd</a>
+            </div>
+        </div>
+    </template>
+    <script>
+        /* globals users */
+        console.log('loaded');
+        var mapReadyTrigger = false;
+        var mapReadyEvent = new CustomEvent('MapReady');
+        window.mapReady = function () {
+            mapReadyTrigger = true;
+            window.dispatchEvent(mapReadyEvent);
+        };
+
+        if (typeof(Number.prototype.toRadians) === 'undefined') {
+          Number.prototype.toRadians = function() {
+            return this * Math.PI / 180;
+          };
+        }
+
+        Polymer({
+            is: 'map-stream',
+            ready: function () {
+                this.route = 'summary';
+                console.log('ready');
+                this.mapAverage = this.querySelector('map-average');
+                this.center = {
+                    lat: 0,
+                    lng: 0
+                };
+
+                this.mapObjs = [];
+                if (mapReadyTrigger) {
+                    this.setMap();
+                } else {
+                    window.addEventListener('MapReady', function() {
+                        this.setMap();
+                    }.bind(this));
+                }
+
+                this.users = users;
+
+            },
+            exportTimingData: function (userID) {
+                var user = this.users[userID];
+                var receivedTimes = '', loggedTimes = '';
+                for (var i = 0; i < user.data.length; i++) {
+                    receivedTimes += user.data[i].receivedTime + ',';
+                    loggedTimes += user.data[i].timestamp_l + ',';
+                }
+                var csvStr = receivedTimes + '\r\n' + loggedTimes;
+                var blob = new Blob([csvStr], {type: 'text/csv'});
+                console.log(window.URL.createObjectURL(blob));
+            },
+            switchUser: function (e) {
+                // Find targeted element
+                var target = e.target;
+                while (!target.dataset.user) {
+                    target = target.parentElement;
+                }
+                // Toggle off active user
+                // var activeUser;
+                // for (var key in this.users) {
+                //     if (this.users[key].active) {
+                //         activeUser = this.users[key];
+                //     }
+                // }
+                // console.log('activeUser', activeUser);
+                // if (activeUser) {
+                //     activeUserEle 
+                //     activeUser.classList.remove('active');
+                //     if ('marker' in activeUser) {
+                //         activeUser.path.setMap(null);
+                //         activeUser.marker.setMap(null);
+                //     }
+                //     activeUser.active = false;
+                // }
+                // Toggle on selected user
+                var user = this.users[target.dataset.user];
+                
+                target.classList.toggle('active');
+                user.active = !user.active;
+                if ('marker' in user) {
+                    if (!user.active) {
+                        user.path.setMap(null);
+                        user.marker.setMap(null);
+                    } else {
+                        user.path.setMap(this.map);
+                        user.marker.setMap(this.map);
+                        this.map.panTo(user.marker.getPosition());
+                        this.calcAvg();
+                        var lastPoint = user.data[user.data.length-1];
+                        lastPoint.distance = user.distance;
+                        var mapSummary = this.querySelector('[user=\'' + user.name + '\']');
+                        mapSummary.addPoint(lastPoint);
+                    }
+                }
+            },
+            calcAvg: function () {
+                var user;
+                for (var key in this.users) {
+                    if (this.users[key].active) {
+                        user = this.users[key];
+                    }
+                }
+                // Calculate averages for current interval
+                var tmp = {
+                    heart_rate: 0,
+                    power: 0,
+                    cadence: 0
+                };
+                for (var i = user.avgs.pts; i < user.data.length; i++) {
+                    tmp.heart_rate += user.data[i].heartrate;
+                    tmp.power += user.data[i].total_p;
+                    tmp.cadence += user.data[i].cadence;
+                }
+                var intervalCount = (user.data.length - user.avgs.pts - 1);
+                tmp.heart_rate = tmp.heart_rate / intervalCount;
+                tmp.power = tmp.power / intervalCount;
+                tmp.cadence = tmp.cadence / intervalCount;
+                // Weight old data vs new data
+                var oldWeight = user.avgs.pts / user.data.length;
+                var newWeight = intervalCount / user.data.length;
+                user.avgs.heart_rate = user.avgs.heart_rate * oldWeight + tmp.heart_rate * newWeight;
+                user.avgs.power = user.avgs.power * oldWeight + tmp.power * newWeight;
+                user.avgs.cadence = user.avgs.cadence * oldWeight + tmp.cadence * newWeight;
+                user.avgs.pts = user.data.length;
+                this.mapAverage.addPoint(user.avgs);
+            },
+            router: function (e) {
+                var target = e.target;
+                while (!target.dataset.view) {
+                    target = target.parentElement;
+                }
+                this.routerToggle(target.dataset.view);
+                this.route = target.dataset.view;
+            },
+            routerToggle: function (active) {
+                var anchor = this.querySelector('[data-view=\'' + active + '\']');
+                var current = this.querySelector('[data-view].active');
+                if (current) {
+                    current.classList.remove('active');
+                }
+                anchor.classList.add('active');
+            },
+            getCoor: function (data) {
+                if (typeof data ==='object' && 'lat' in data && 'lng' in data) {
+                    return {
+                        lat: data.lat,
+                        lng: data.lng
+                    };
+                } else {
+                    return {};
+                }
+            },
+            calcHaversine: function (start, now) {
+                if (('lat' in start) && start.lat !== undefined) {
+                    var r = 6371;
+                    var lat1 = start.lat.toRadians();
+                    var lat2 = now.lat.toRadians();
+                    var deltaLat = (now.lat - start.lat).toRadians();
+                    var deltaLng = (now.lng - start.lng).toRadians();
+
+                    var a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
+                            Math.cos(lat1) * Math.cos(lat2) * 
+                            Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                    return r * c;
+                } else {
+                    return 0;
+                }
+            },
+            setOld: function (id) {
+                var user = this.users.sarah;
+                for (var key in this.users) {
+                    if (this.users[key].id === id) {
+                        user = this.users[key];
+                    }
+                }
+                this.addPoint(user.data[user.data.length-1]);
+            },
+            addPoint: function (data) {
+                console.log('data LOG', data);
+                if (!('lat' in data)) {
+                    return false;
+                }
+
+                var bounds = new google.maps.LatLngBounds();
+                var user = this.users.sarah;
+                if ('id' in data) {
+                    for (var key in this.users) {
+                        if (this.users[key].id === data.id) {
+                            user = this.users[key];
+                        }
+                    }
+                }
+
+                // data.receivedTime = Date.now();
+                user.data.push(data);
+                user.pts.push(this.getCoor(data));
+
+                if (user.data.length === 0) {
+                    data.time = hmsTime(0);
+                } else {
+                    data.time = hmsTime((data.timestamp_p - user.data[0].timestamp_p));
+                }
+
+                if (user.active) {
+                    data.distance = user.distance;
+                    // data.speed = data.speed.toFixed(2);
+                }
+                var mapSummary = this.querySelector('[user=\'' + user.name + '\']');
+                mapSummary.addPoint(data);
+
+                if ('marker' in user) {
+                    user.marker.setPosition(this.getCoor(data));
+                    // this.map.panTo(data);
+                    user.path.setPath(user.pts);
+                    var latLng = new google.maps.LatLng(
+                        data.lat,
+                        data.lng
+                    );
+                    bounds.extend(latLng);
+                } else {
+                    var icon = {
+                        url: user.img,
+                        size: new google.maps.Size(50, 50),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(-12, 0),
+                        scaledSize: new google.maps.Size(40, 40)
+                    };
+
+                    var marker = {
+                        position: this.getCoor(data),
+                        icon: icon,
+                        shape: {
+                            coords: [1, 1, 1, 15, 15, 15, 15, 1],
+                            type: 'poly'
+                        },
+                        title: user.name,
+                        zIndex: 1
+                    };
+                    user.marker = new google.maps.Marker(marker);
+                    
+                    user.path = new google.maps.Polyline({
+                        path: user.pts,
+                        geodesic: false,
+                        strokeOpacity: 1,
+                        strokeWeight: 6,
+                        strokeColor: user.lineColor
+                    });
+
+                    if (user.active) {
+                        user.marker.setMap(this.map);
+                        user.path.setMap(this.map);
+                        this.map.panTo(user.marker.getPosition());
+                    }
+                }
+            },
+            setMap: function () {
+                console.log('setMap');
+
+                this.strydDarkId = 'strydDarkStyle';
+                this.strydDarkStyle = new google.maps.StyledMapType([
+                    {
+                        'featureType': 'All',
+                        'elementType': 'All'
+                    },
+                    {
+                        'featureType': 'All',
+                        'elementType': 'All',
+                        'stylers': [
+                            { 'lightness': -50 },
+                            { 'hue': '#1f1f1f' },
+                            { 'saturation': -80 },
+                            { 'weight': 1.3 },
+                            { 'visibility': 'simplified' },
+                            { 'gamma': 0.63 }
+                        ]
+                    },
+                    {
+                        'elementType': 'labels.text',
+                        'stylers': [
+                            { 'visibility': 'off' }
+                        ]
+                    }
+                ], { name: 'Power Map' });
+
+                this.map = new google.maps.Map(
+                    this.$.map,
+                    {
+                        center: {
+                            lat: 40.0274,
+                            lng: -105.2519
+                        },
+                        zoom: 14,
+                        panControl: false,
+                        zoomControl: true,
+                        scaleControl: false,
+                        scrollwheel: false,
+                        mapTypeControlOptions: {
+                            mapTypeIds: [google.maps.MapTypeId.SATELLITE, this.strydDarkId]
+                        }
+                    }
+                );
+                this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
+                this.map.setMapTypeId(this.strydDarkId);
+            },
+            setDataReady: function (graphSegments) {
+                var i, path, step, graphSegment;
+                for (i = 0; i < this.mapObjs.length; i++) {
+                    this.mapObjs[i].setMap(null);
+                }
+                var bounds = new google.maps.LatLngBounds();
+                step = 1;
+                for (i = 0; i < graphSegments.length; i=i+step) {
+                    // Set segments on map
+                    graphSegment = graphSegments[i];
+                    path = new google.maps.Polyline({
+                        path: graphSegment.location,
+                        geodesic: false,
+                        strokeColor: graphSegment.hex,
+                        strokeOpacity: 1,
+                        strokeWeight: 6
+                    });
+                    this.mapObjs.push(path);
+                    path.setMap(this.map);
+                    // Extend bounds for map
+                    var latLng = new google.maps.LatLng(
+                        graphSegment.location[0].lat,
+                        graphSegment.location[0].lng
+                    );
+                    bounds.extend(latLng);
+                }
+                this.center.lat = graphSegments[0].location[0].lat;
+                this.center.lng = graphSegments[0].location[0].lng;
+                this.map.fitBounds(bounds);
+                this.map.setCenter(bounds.getCenter());
+                // Start Marker
+                var start = new google.maps.Marker({
+                    position: {
+                        lat: this.center.lat,
+                        lng: this.center.lng
+                    },
+                    map: this.map,
+                    icon: {
+                        url: '/powercenter/images/green_circle.png',
+                        size: new google.maps.Size(25, 25),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(12, 12),
+                        scaledSize: new google.maps.Size(20, 20)
+                    }
+                });
+                this.mapObjs.push(start);
+                // End Marker
+                var stop = new google.maps.Marker({
+                    position: {
+                        lat: graphSegments[graphSegments.length-1].location[1].lat,
+                        lng: graphSegments[graphSegments.length-1].location[1].lng
+                    },
+                    map: this.map,
+                    icon: {
+                        url: '/powercenter/images/red_circle.png',
+                        size: new google.maps.Size(25, 25),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(12, 12),
+                        scaledSize: new google.maps.Size(20, 20)
+                    }
+                });
+                this.mapObjs.push(stop);
+            }
+        });
+    </script>
+    <script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady'></script>
+</dom-module>

@@ -2,6 +2,7 @@
 /*jshint unused:false*/
 /*global Dropzone*/
 /*global Dexie*/
+/*exported mapReadyTrigger, mapReadyEvent*/
 
 var processor = new Worker('/powercenter/scripts/processor.js');
 
@@ -13,6 +14,13 @@ var workoutFetching = function (id) {
         type: 'workout',
         id: id
     });
+};
+
+var mapReadyTrigger = false;
+var mapReadyEvent = new CustomEvent('MapReady');
+window.mapReady = function () {
+    mapReadyTrigger = true;
+    window.dispatchEvent(mapReadyEvent);
 };
 
 (function(document) {
@@ -45,7 +53,7 @@ var workoutFetching = function (id) {
                 mapRunEle.setData(event.data.mapRunData);
             }
             if ('chartData' in event.data) {
-                workoutElement.setChartData(event.data.chartData);
+                workoutElement.setChartData(event.data.chartData, event.data.steps);
             }
             if ('logs' in event.data) {
                 logBook.populateLogs(event.data.logs);
@@ -53,6 +61,7 @@ var workoutFetching = function (id) {
             if ('addLog' in event.data) {
                 logBook.addLog(event.data.addLog);
             }
+            // Toggle displays to show 'Sample' messages
             if (event.data.type === 'sample') {
                 mapRunEle.classList.add('sample');
                 workoutElement.classList.add('sample');
@@ -67,6 +76,7 @@ var workoutFetching = function (id) {
         };
 
         header = document.querySelector('header-element');
+
         // We use Page.js for routing. This is a Micro
         // client-side router inspired by the Express router
         // More info: https://visionmedia.github.io/page.js/
@@ -118,7 +128,7 @@ var workoutFetching = function (id) {
             },
             parallelUploads: 1,
             maxFilesize: 60, // MB
-            acceptedFiles: '.fit,.tcx',
+            acceptedFiles: '.fit,.tcx,.offline',
             uploadMultiple: false,
             addRemoveLinks: true,
             dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
