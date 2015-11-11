@@ -132,7 +132,7 @@
                 <div class="insight">
                     <iron-icon icon="image:timer"></iron-icon>
                     <div class="info">
-                        <div class="title">Time</div>
+                        <div class="title">Elapsed Time</div>
                         <div class="field">
                             <span class="value">{{display.time}}</span>
                         </div>
@@ -223,7 +223,7 @@
 
                 this.display = {
                     date: dateString,
-                    time: hmsTime(data.moving_time * 1000),
+                    time: hmsTime(data.elapsed_time * 1000),
                     power: this.truncate(data.average_power),
                     distance: distance,
                     unit: unit,

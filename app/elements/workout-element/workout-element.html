@@ -209,7 +209,7 @@
                 <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run"></bubble-stat>
                 <bubble-stat type="avg_hr" title="Average Heart Rate" unit="BPM" icon="favorite"></bubble-stat>
                 <bubble-stat type="distance" title="Distance" unit="Miles" icon="communication:swap-calls"></bubble-stat>
-                <bubble-stat type="time" title="Run Time" unit="HH:MM:SS" icon="image:timer"></bubble-stat>
+                <bubble-stat type="time" title="Elapsed Time" unit="HH:MM:SS" icon="image:timer"></bubble-stat>
             </div>
             <div class="options">
                 <div>
@@ -258,12 +258,13 @@
             ready: function () {
                 AmCharts.handleLoad();
             },
-            setChartData: function (data) {
+            setChartData: function (data, steps) {
                 this.setLoading();
                 if ('chart' in this) {
                     this.bindToggles();
                 }
                 this.data = data;
+                this.steps = steps;
                 this.chartData = this.data;
                 this.startTime = this.data[0].date;
                 this.fillChart();
@@ -332,9 +333,7 @@
                 for (i = begin; i < end; i++) {
                     if (i !== begin) {
                         thisStep = (this.data[i].date - this.data[i-1].date) / 1000;
-                        if (step === 0) {
-                            step = thisStep;
-                        } else if (thisStep < step) {
+                        if (step === 0 || thisStep < step) {
                             step = thisStep;
                         }
                     }
@@ -369,7 +368,8 @@
                     unit = 'KM';
                 }
 
-                var movingTime = avgs.powerCount * step;
+                // var movingTime = avgs.powerCount * step * this.steps;
+                var movingTime = stats.seconds / 1000;
                 stats.timeHMS = hmsTime(movingTime * 1000);
 
                 avgs.power = avgs.power / avgs.powerCount;

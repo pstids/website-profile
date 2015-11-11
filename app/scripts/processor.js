@@ -202,6 +202,7 @@ var workoutProcessing = function (workout, id) {
 
     data.mapRunData = mapRunData;
     data.chartData = chartData;
+    data.steps = steps;
     if (id === 'sample') {
         data.logs = [workout];
         data.type = 'sample';
