@@ -111,3 +111,12 @@ var meterToMile = function (m, precision) {
     }
     return (m/1600).toFixed(1);
 };
+
+var attribute = function(selector, parent) {
+  var eles = parent.querySelectorAll('[data-' + selector + ']');
+  var holder = {};
+  for (var i = 0; i < eles.length; i++) {
+    holder[eles[i].dataset[selector]] = eles[i];
+  }
+  return holder;
+};

@@ -326,7 +326,7 @@
                 var queryString = this.jsonToQueryString(this.userLocal);
                 superagent
                         .put('/b/api/v1/users/' + jwt.data.id + queryString)
-                        .send('{"empty":"empty"}')
+                        .send([])
                         .set('Accept', 'application/json')
                         .set('Authorization', 'Bearer: ' + jwt.token)
                         .end(function(err, res) {

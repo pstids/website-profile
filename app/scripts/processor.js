@@ -77,8 +77,11 @@ var rgbToHex = function (r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 };
 
-var calcThreshold = function (powers) {
-    powers = JSON.parse(JSON.stringify(powers));
+var calcThreshold = function (nPowers) {
+    var powers = [];
+    for (var i = 0; i < nPowers.length; i++) {
+        powers.push(nPowers[i]);
+    }
     var sortedPower = powers.sort(function (a, b) {
         return a - b;
     });
@@ -195,6 +198,12 @@ var workoutProcessing = function (workout, id) {
                 suuntoDrop = false;
             }
         }
+        if ('oscillation_list' in workout) {
+            entry.vertOsc = workout.oscillation_list[i];
+        }
+        if ('ground_time_list' in workout) {
+            entry.groundTime = workout.ground_time_list[i];
+        }
         if ('elevation_list' in workout && workout.elevation_list !== null) {
             entry.elevation = Math.round(workout.elevation_list[i]);
             if (entry.elevation !== 0) {
@@ -214,7 +223,7 @@ var workoutProcessing = function (workout, id) {
         
         chartData.push(entry);
         /* Assemble map data */
-        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null) {
+        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null && 'power' in entry) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
@@ -304,9 +313,9 @@ var addLog = function (id) {
 };
 
 var logsFetching = function (user='') {
-    var link = '/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc';
+    var link = '/b/api/v1/activities/summary?limit=40&sortby=Timestamp&order=desc';
     if (user.length > 0) {
-        link = '/b/admin/users/' + user + '/activities/summary?limit=20&sortby=Timestamp&order=desc';
+        link = '/b/admin/users/' + user + '/activities/summary?limit=40&sortby=Timestamp&order=desc';
     }
     superagent
         .get(link)

@@ -132,7 +132,7 @@
                 <div class="insight">
                     <iron-icon icon="image:timer"></iron-icon>
                     <div class="info">
-                        <div class="title">Elapsed Time</div>
+                        <div class="title">Moving Time</div>
                         <div class="field">
                             <span class="value">{{display.time}}</span>
                         </div>
@@ -223,7 +223,7 @@
 
                 this.display = {
                     date: dateString,
-                    time: hmsTime(data.elapsed_time * 1000),
+                    time: hmsTime(data.moving_time * 1000),
                     power: this.truncate(data.average_power),
                     distance: distance,
                     unit: unit,
@@ -254,7 +254,22 @@
                 this.$.toast.show();
             },
             handleDownload: function () {
-                this.$.toast.show();
+                // this.$.toast.show();
+                superagent
+                    .post('/b/api/v1/activities/' + this.data.id + '/fit')
+                    .send({
+                        description: this.display.description
+                    })
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            document.querySelector('#dlFrame').src = res.body.url;
+                            // window.open(res.body.url);
+                        } else {
+                            console.log('get download link failed');
+                        }
+                    }.bind(this));
             },
             handleDescriptionDialog: function () {
                 this.$.updateDescription.open();

@@ -74,15 +74,16 @@ class User {
 	}
 
 	get(path) {
-		if (!(path in user.data)) {
+		if (!(path in user.data) || user.data.path === null) {
 			user.data[path] = null;
+			this.fetchDetails(true);
 		}
 		return user.data[path];
 	}
 
 	checkStorage() {
 		if (!this.storage) {
-			this.fetchDetails(null);
+			this.fetchDetails(true);
 		} else {
 			this.parseData();
 		}
@@ -112,11 +113,13 @@ class User {
 				if (res.ok) {
 					console.log(res.body);
 					localStorage.setItem('user', JSON.stringify(res.body));
-					that.constructor();
 					if (callback) {
-						callback();
+						if (typeof callback === 'object') {
+							callback();
+						}
 						location.reload();
 					}
+					that.constructor();
 				} else {
 					console.log('Error: Setting user information');
 				}

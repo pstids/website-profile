@@ -16,12 +16,12 @@ var workoutFetching = function (id) {
     });
 };
 
-var mapReadyTrigger = false;
-var mapReadyEvent = new CustomEvent('MapReady');
-window.mapReady = function () {
-    mapReadyTrigger = true;
-    window.dispatchEvent(mapReadyEvent);
-};
+// var mapReadyTrigger = false;
+// var mapReadyEvent = new CustomEvent('MapReady');
+// window.mapReady = function () {
+//     mapReadyTrigger = true;
+//     window.dispatchEvent(mapReadyEvent);
+// };
 
 (function(document) {
     'use strict';

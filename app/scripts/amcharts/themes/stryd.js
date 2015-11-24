@@ -7,7 +7,7 @@ AmCharts.themes.stryd = {
 	},
 
 	AmCoordinateChart: {
-		colors: ["#683a78", "#074a8c", "#5ea7a1", "#f7a017", "#a06a81", "#8aabb0", "#69c8ff", "#cfd27e", "#9d9888", "#916b8a", "#724887", "#7256bc"]
+		colors: ["#683a78", "#074a8c", "#f7a017", "#5ea7a1", "#a06a81", "#8aabb0", "#69c8ff", "#cfd27e", "#9d9888", "#916b8a", "#724887", "#7256bc"]
 	},
 
 	AmStockChart: {
