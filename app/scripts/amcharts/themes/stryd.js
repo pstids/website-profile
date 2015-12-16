@@ -7,11 +7,11 @@ AmCharts.themes.stryd = {
 	},
 
 	AmCoordinateChart: {
-		colors: ["#683a78", "#074a8c", "#f7a017", "#5ea7a1", "#a06a81", "#8aabb0", "#69c8ff", "#cfd27e", "#9d9888", "#916b8a", "#724887", "#7256bc"]
+		colors: ["#683a78", "#074a8c", "#f7a017", "#5ea7a1", "#a06a81", "#2BAF2B", "#00ACEE", "#69c8ff", "#9d9888", "#916b8a", "#724887", "#7256bc"]
 	},
 
 	AmStockChart: {
-		colors: ["#de4c4f", "#d8854f", "#eea638", "#a7a737", "#86a965", "#8aabb0", "#69c8ff", "#cfd27e", "#9d9888", "#916b8a", "#724887", "#7256bc"]
+		colors: ["#de4c4f", "#d8854f", "#eea638", "#a7a737", "#86a965", "#00ACEE", "#69c8ff", "#cfd27e", "#9d9888", "#916b8a", "#724887", "#7256bc"]
 	},
 
 	AmSlicedChart: {
