@@ -112,6 +112,34 @@
             font-size: 1.3vw;
             padding: 0.8vw;
         }
+
+        .share-container {
+            position: relative;
+        }
+
+        .share-container .share {
+            visibility: hidden;
+            position: absolute;
+            transition: visibility 0.1s;
+            border: 1px solid #4E4E4E;
+            background: #262626;
+            padding: 9px;
+            top: -15px;
+            right: -70px;
+            z-index: 20;
+        }
+        .share-container[data-open="true"] .share {
+            visibility: visible;
+            animation-delay: 2s;
+            -webkit-animation-delay: 2s;
+        }
+        .share paper-input {
+            flex: 1 1 0%;
+        }
+        .share button {
+            margin-left: 10px;
+            margin-top: 0;
+        }
     </style>
     <template>
         <div class="log">
@@ -151,9 +179,34 @@
             </div>
             <div class="option">
                 <!--<iron-icon icon="editor:mode-edit"></iron-icon>-->
-                <div>
-                    <iron-icon icon="social:share" on-click="handleShare"></iron-icon>
-                    <paper-tooltip>Share</paper-tooltip>
+                <div class="share-container" data-open="false">
+                    <iron-icon icon="social:share" data-share></iron-icon>
+                    <paper-tooltip>Share Workout</paper-tooltip>
+                    <div class="share layout horizontal">
+                        <input
+                            value="test"
+                            type="text"
+                            id="{{shareInputID}}"
+                            data-shareURL
+                            style="font-size: 12px; width: 300px;">
+                        </input>
+                        <button
+                            is="stryd-button"
+                            data-clipboard-target="{{shareInputSelector}}"
+                            data-click>
+                            Copy
+                        </button>
+                        <button
+                            is="stryd-button"
+                            id="shareToggle"
+                            class="hidden">
+                            <span class="layout horizontal center">
+                               <paper-toggle-button id="share" class="center"></paper-toggle-button>
+                               <p style="font-size: 1vw; color: white; font-weight: 300; white-space: nowrap;">{{shareMessage}}</p> 
+                           </span>
+                        </button>
+                        <button is="stryd-button" data-close>Close</button>
+                    </div>
                 </div>
                 <div>
                     <iron-icon icon="icons:file-download" on-click="handleDownload"></iron-icon>
@@ -198,17 +251,68 @@
         /*jshint camelcase: false*/
         /*global jwt*/
         /*global superagent*/
+        /*global Clipboard*/
+        /*global updateWorkout*/
         Polymer({
             is: 'log-entry',
             properties: {
-                display: Object
+                display: Object,
+                sharedMessage: String,
+                isShared: Boolean,
+                shareInputSelector: String,
+                shareInputID: String,
+            },
+            ready: function () {
+                new Clipboard('[data-click]');
+                this.querySelector('[data-share]').addEventListener('click', () => {
+                    this.shared(true, true);
+                    this.querySelector('[data-open]').dataset.open = 'true';
+                });
+                this.querySelector('[data-close]').addEventListener('click', () => {
+                    this.querySelector('[data-open]').dataset.open = 'false';
+                });
+                this.$.shareToggle.addEventListener('click', () => {
+                    console.log('clicked shareToggle');
+                    this.shared(!this.$.share.checked, true);
+                });
+
+                this.shareInputID = '1';
+                this.shareInputSelector = '#1';
+            },
+            shared: function (state, changed) {
+                console.log('Trigger change is ', changed);
+                console.log('State is ', state);
+                this.$.share.checked = state;
+                this.isShared = !state;
+                if (state) {
+                    this.shareMessage = 'Shared Publically';
+                } else {
+                    this.shareMessage = 'Not Shared Publically';
+                }
+                if (changed && ('id' in this.data)) {
+                    updateWorkout(
+                        this.data.id,
+                        {
+                            public: state
+                        },
+                        function(err, res) {
+                            if (res.ok) {
+                                console.log('updated public');
+                            } else {
+                                console.log('failed to update public');
+                            }
+                        }.bind(this)
+                    );
+                }
             },
             toggle: function () {
                 this.classList.toggle('expand');
             },
             setData: function (data) {
                 this.data = data;
-
+                this.shareInputSelector = '#share_' + this.data.id;
+                this.querySelector('[data-click]').dataset.clipboardTarget = this.shareInputSelector;
+                this.shareInputID = 'share_' + this.data.id;
                 var date = new Date(data.timestamp * 1000);
                 var dateString = fillZero(date.getMonth() + 1) + '/' + fillZero(date.getDate()) + '/' + date.getFullYear();
 
@@ -229,6 +333,12 @@
                     unit: unit,
                     description: this.data.description
                 };
+
+                var shareURL = 'https://www.stryd.com/powercenter/run/' + this.data.id;
+
+                this.querySelector('[data-shareURL]').value = shareURL;
+
+                this.shared(this.data.public, false);
             },
             viewWorkout: function () {
                 var bubbles = document.querySelector('.bubbles');
@@ -250,11 +360,7 @@
                 workoutFetching(this.data.id);
                 window.scrollTo(0, bubbles.offsetTop);
             },
-            handleShare: function () {
-                this.$.toast.show();
-            },
             handleDownload: function () {
-                // this.$.toast.show();
                 superagent
                     .post('/b/api/v1/activities/' + this.data.id + '/fit')
                     .send({
