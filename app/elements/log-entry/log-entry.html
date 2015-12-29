@@ -227,11 +227,11 @@
             </paper-dialog>
             <paper-dialog id="updateDescription">
                 <paper-input
-                        type="text"
-                        placeholder="Description"
-                        label="Description"
-                        class="editable"
-                        value="{{display.description}}">
+                    type="text"
+                    placeholder="Description"
+                    label="Description"
+                    class="editable"
+                    value="{{display.description}}">
                 </paper-input>
                 <div class="buttons">
                     <paper-button dialog-confirm autofocus on-click="handleDescription">Update</paper-button>
@@ -272,7 +272,6 @@
                     this.querySelector('[data-open]').dataset.open = 'false';
                 });
                 this.$.shareToggle.addEventListener('click', () => {
-                    console.log('clicked shareToggle');
                     this.shared(!this.$.share.checked, true);
                 });
 
@@ -280,8 +279,6 @@
                 this.shareInputSelector = '#1';
             },
             shared: function (state, changed) {
-                console.log('Trigger change is ', changed);
-                console.log('State is ', state);
                 this.$.share.checked = state;
                 this.isShared = !state;
                 if (state) {
@@ -297,9 +294,9 @@
                         },
                         function(err, res) {
                             if (res.ok) {
-                                console.log('updated public');
+                                console.log('updated public status');
                             } else {
-                                console.log('failed to update public');
+                                console.log('failed to update public status');
                             }
                         }.bind(this)
                     );
@@ -381,20 +378,19 @@
                 this.$.updateDescription.open();
             },
             handleDescription: function () {
-                superagent
-                    .put('/b/api/v1/activities/' + this.data.id)
-                    .send({
+                updateWorkout(
+                    this.data.id,
+                    {
                         description: this.display.description
-                    })
-                    .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    },
+                    function(err, res) {
                         if (res.ok) {
                             this.$.updateDescription.close();
                         } else {
                             console.log('failed to update description');
                         }
-                    }.bind(this));
+                    }.bind(this)
+                );
             },
             handleDeleteDialog: function () {
                 this.$.deleteAction.open();
