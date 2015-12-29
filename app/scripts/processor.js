@@ -54,27 +54,34 @@ var rgbToHex = function (r, g, b) {
 };
 
 var calcThreshold = function (nPowers) {
-    var powers = [];
-    for (var i = 0; i < nPowers.length; i++) {
-        powers.push(nPowers[i]);
-    }
-    var sortedPower = powers.sort(function (a, b) {
-        return a - b;
-    });
-
-    var count = sortedPower.length;
-    var segment = parseInt(count / 4, 10);
-    var lowIQR = sortedPower[segment],
-        median = sortedPower[segment * 2],
-        highIQR = sortedPower[segment * 3];
-    var IQR = parseInt((highIQR - lowIQR) * 1.5, 10);
-    var thresholdHigh = median + IQR,
-        thresholdLow = median - IQR;
     var threshold = {
-        range: thresholdHigh - thresholdLow,
-        high: thresholdHigh,
-        low: thresholdLow
+        range: 1,
+        high: 1,
+        low: 0
     };
+    if (nPowers !== null) {
+        var powers = [];
+        for (var i = 0; i < nPowers.length; i++) {
+            powers.push(nPowers[i]);
+        }
+        var sortedPower = powers.sort(function (a, b) {
+            return a - b;
+        });
+
+        var count = sortedPower.length;
+        var segment = parseInt(count / 4, 10);
+        var lowIQR = sortedPower[segment],
+            median = sortedPower[segment * 2],
+            highIQR = sortedPower[segment * 3];
+        var IQR = parseInt((highIQR - lowIQR) * 1.5, 10);
+        var thresholdHigh = median + IQR,
+            thresholdLow = median - IQR;
+        threshold = {
+            range: thresholdHigh - thresholdLow,
+            high: thresholdHigh,
+            low: thresholdLow
+        };
+    }
     return threshold;
 };
 
