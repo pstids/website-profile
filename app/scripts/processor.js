@@ -92,7 +92,7 @@ var workoutSave = function (workout, id) {
     });
 };
 
-var workoutFetchingAJAX = function (workout) {
+var workoutFetchingAJAX = function (workout, scope) {
     superagent
         .get('/b/api/v1/activities/' + workout)
         .send()
@@ -100,7 +100,7 @@ var workoutFetchingAJAX = function (workout) {
         .set('Authorization', 'Bearer: ' + token)
         .end(function(err, res) {
             if (res.ok) {
-                workoutProcessing(res.body, workout);
+                workoutProcessing(res.body, workout, scope);
                 workoutSave(res.body, workout);
             } else {
                 console.log('Error: cannot fetch workout');
@@ -108,22 +108,27 @@ var workoutFetchingAJAX = function (workout) {
         });
 };
 
-var workoutFetching = function (workout) {
+var workoutFetching = function (workoutID, scope) {
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (!checkIndexedDB) {
-        workoutFetchingAJAX(workout);
+        workoutFetchingAJAX(workoutID);
     } else {
-        db.log.get(workout, function (log) {
+        db.log.get(workoutID, function (log) {
             if (log === undefined) {
-                workoutFetchingAJAX(workout);
+                workoutFetchingAJAX(workoutID, scope);
             } else {
-                workoutProcessing(log.data, log.id);
+                workoutProcessing(log.data, log.id, scope);
             }
         });
     }
 };
 
-var workoutProcessing = function (workout, id) {
+var workoutProcessing = function (workout, id, scope) {
+    if (workout.total_power_list === null) {
+        data.error = true;
+        postMessage(data);
+        return;
+    }
     var threshold = calcThreshold(workout.total_power_list);
 
     var avgs = {
@@ -147,8 +152,9 @@ var workoutProcessing = function (workout, id) {
     var hex, i;
     var graphSegment = {};
 
-    var lastEntry;
+    var lastEntry = {};
     var suuntoDrop = true;
+
     for (i = 0; i < workout.total_power_list.length; i = i + steps) {
         graphSegment = {};
         var entry = {};
@@ -251,6 +257,16 @@ var workoutProcessing = function (workout, id) {
     } else {
         data.type = 'data';
     }
+    data.workoutShared = {
+        date: workout.timestamp,
+        id: workout.id,
+        scope: scope,
+        public: workout.public,
+        name: workout.name,
+        photo: workout.photo
+    };
+    data.scope = scope;
+    console.log('SCOPE IN PROCESSOR IS:', scope);
     postMessage(data);
 };
 
