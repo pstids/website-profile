@@ -31,19 +31,26 @@ var fillZero = function (n) {
 
 // Return pace in minutes per mile from meters per second
 var minutesPerMile = function (mps, opt) {
-    if (mps === 0) {
-        return 0;
+    if (mps === 0 || isNaN(mps)) {
+        return '--:--';
     }
     var mpm = parseFloat(26.8224 / mps).toFixed(2);
     if (opt && opt === 'minutes') {
         var minutes = Math.floor(mpm);
         var secondPartial = ((mpm - minutes) * 60).toPrecision(2);
+        if (secondPartial.indexOf('.') !== -1) {
+            var parts = secondPartial.split('.');
+            secondPartial = '0' + parts[0];
+        }
         mpm = minutes + ':' + secondPartial;
     }
     return mpm;
 };
 
 var minutesPerKM = function (mps) {
+    if (mps === 0) {
+        return '--:--';
+    }
     var mpk = parseFloat(16.6666666 / mps).toFixed(2);
     var minutes = Math.floor(mpk);
     var secondPartial = ((mpk - minutes) * 60).toPrecision(2);
@@ -56,10 +63,10 @@ var minutesPerKM = function (mps) {
 };
 
 var formatPace = function (pace) {
-    if (pace === 'Infinity') {
-        return null;
-    }
     var paceFloat = parseFloat(pace);
+    if (pace === 'Infinity' || isNaN(pace) || paceFloat > 100 || paceFloat < 1) {
+        return '--:--';
+    }
     var floor = Math.floor(paceFloat);
     var seconds = ((paceFloat - floor) * 60).toFixed(0);
     var secondsFilled = fillZero(seconds);
@@ -70,7 +77,7 @@ var formatPace = function (pace) {
 var speedToPaceForBalloon = function (graphDataItem, graph) {
     var value = graphDataItem.values.value;
     if (user.data.units === 'feet') {
-        return minutesPerMile(value) + ' Min/Mile';
+        return minutesPerMile(value, 'minutes') + ' Min/Mile';
     } else {
         return minutesPerKM(value) + ' Min/KM';
     }
