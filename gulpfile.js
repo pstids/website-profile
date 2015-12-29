@@ -76,7 +76,8 @@ gulp.task('jshint', function () {
         'speedToPaceForValueAxis',
         'windowFocusEvent',
         'formatPace',
-        'attribute'
+        'attribute',
+        'moment'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
