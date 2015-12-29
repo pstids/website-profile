@@ -1,17 +1,22 @@
 /*jshint -W079 */
 /*jshint unused: false*/
+/*global CryptoJS*/
 
 class JWT {
 	constructor() {
 		this.token = localStorage.getItem('token');
 		this.data = {};
+		this.hasToken = false;
 		this.checkToken();
 	}
 
 	checkToken() {
 		if (!this.token) {
-			location.pathname = '/signin';
+			// location.pathname = '/signin';
+			this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
+			console.log('No token present!');
 		} else {
+			this.hasToken = true;
 			this.parseData();
 		}
 	}
@@ -57,8 +62,13 @@ class JWT {
 		}
 	}
 
-	logout() {
+	removeToken() {
+		this.hasToken = false;
 		localStorage.removeItem('token');
+	}
+
+	logout() {
+		this.removeToken();
 		location.pathname = '/signin';
 	}
 }
@@ -79,6 +89,23 @@ class User {
 			this.fetchDetails(true);
 		}
 		return user.data[path];
+	}
+
+	getImage() {
+		this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+		if ('profile_medium' in user.data && user.data.profile_medium !== '') {
+			return decodeURIComponent(user.data.profile_medium.replace('+', ' '));
+		} else if ('email' in user.data && user.data.email !== '') {
+			var gravHash = CryptoJS.MD5(user.data.email.toLowerCase());
+			return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
+		} else {
+			return 'https://www.stryd.com/powercenter/images/favicon.png';
+		}
+	}
+
+	getData() {
+		this.data.available = jwt.hasToken;
+		return this.data;
 	}
 
 	checkStorage() {
