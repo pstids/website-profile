@@ -2,12 +2,6 @@
 <html lang="">
 
 <head>
-    <script>
-        var token = localStorage.getItem('token');
-        if (!token) {
-            location.pathname = '/signin';
-        }
-    </script>
     <meta charset="utf-8">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,18 +51,22 @@
 <span id="browser-sync-binding"></span>
 
 <template is="dom-bind" id="app">
-    <header-element></header-element>
+
     <!-- Main Content -->
     <div class="content">
+        <header-element></header-element>
         <iron-pages attr-for-selected="data-route" selected="{{route}}">
-
             <section data-route="home">
-                <map-run></map-run>
-                <workout-element></workout-element>
-                <log-book></log-book>
-                <div class="uploader" 
+                <div class="layout horizontal">
+                    <map-run id="map-run" class="flex-4"></map-run>
+                    <workout-shared id="workout-shared" class="flex hidden"></workout-shared>
+                </div>
+                <workout-element id="workout-element"></workout-element>
+                <log-book id="log-book"></log-book>
+                <div class="uploader"
                     data-step="9"
-                    data-intro="Have FIT and GPX files? Upload them here.">
+                    data-intro="Have FIT and GPX files? Upload them here."
+                    id="uploader">
                     <h1 class="title">Upload</h1>
                     <form class="dropzone" id="file">
                         <div class="dz-message" data-dz-message>
@@ -88,28 +86,41 @@
                 <stryd-settings></stryd-settings>
             </section>
 
-            <!--<section data-route="admin/:name">-->
-                <!--<map-run></map-run>-->
-                <!--<workout-element></workout-element>-->
-                <!--<log-book></log-book>-->
-            <!--</section>-->
+            <section data-route="welcome" class="welcome">
+                <h1>Welcome to the Stryd PowerCenter!</h1>
+                <p>Stryd is the world’s first wearable power meter for running. Power is the most direct measure of your training effort, running efficiency, and calorie use. Worn on the chest, Stryd provides real-time feedback via smartphone or sports watch, to guide improvement in your run form, efficiency, and pacing. Whether you’re out for a casual run or racing your next Ironman, Stryd will help you discover the best runner within you.</p>
+                <a href="/">Learn more</a>
+                <a href="/order">Buy Stryd</a>
+                <a href="/signin">Create a PowerCenter Account</a>
+            </section>
+
+            <section data-route="*">
+                <h1>How did you end up here? <a href="/powercenter/">Let's return to somewhere familar.</a></h1>
+                <img src="https://storage.googleapis.com/stryd_static_assets/stryd-fail.png" alt="">
+            </section>
         </iron-pages>
         
         <footer-element></footer-element>
         <paper-toast duration="1000000" text="You are viewing sample data. Visit settings to associate your platform account." id="sample"></paper-toast>
-        <paper-toast id="upload-toast" duration="5000"></paper-toast>
+        <paper-toast id="upload-toast" duration="5000" style="z-index: 999999;"></paper-toast>
+        <iframe id="dlFrame" style="display:none;">
     </div>
     
     <google-analytics code="UA-56986987-2"></google-analytics>
 </template>
+
 <script src="//cdnjs.cloudflare.com/ajax/libs/superagent/1.2.0/superagent.min.js"></script>
-<script src="/powercenter/scripts/dexie.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/dexie/1.2.0/Dexie.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/intro.js/1.1.1/intro.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/page.js/1.6.4/page.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.5/clipboard.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+
 <script src="/powercenter/scripts/jwt.js"></script>
-<script src="/powercenter/bower_components/page/page.js"></script>
 <script src="/powercenter/scripts/toolbox.js"></script>
 <script src="/powercenter/scripts/app.js"></script>
+
 </body>
 
 </html>

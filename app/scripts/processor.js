@@ -37,30 +37,6 @@ var initDB = function () {
     db.open();
 };
 
-onmessage = function (event) {
-    initDB();
-
-    data = {};
-    token = event.data.token;
-
-    switch(event.data.type) {
-        case 'all':
-            logsFetching();
-            break;
-        case 'workout':
-            workoutFetching(event.data.id);
-            break;
-        case 'sample':
-            workoutFetching('sample');
-            break;
-        case 'addLog':
-            addLog(event.data.id);
-            break;
-        default:
-            console.log('Error in onmessage/processor: unknown action');
-    }
-};
-
 var interpolate = function (start, end, steps, count) {
     var s = start,
         e = end,
@@ -77,25 +53,35 @@ var rgbToHex = function (r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 };
 
-var calcThreshold = function (powers) {
-    powers = JSON.parse(JSON.stringify(powers));
-    var sortedPower = powers.sort(function (a, b) {
-        return a - b;
-    });
-
-    var count = sortedPower.length;
-    var segment = parseInt(count / 4, 10);
-    var lowIQR = sortedPower[segment],
-        median = sortedPower[segment * 2],
-        highIQR = sortedPower[segment * 3];
-    var IQR = parseInt((highIQR - lowIQR) * 1.5, 10);
-    var thresholdHigh = median + IQR,
-        thresholdLow = median - IQR;
+var calcThreshold = function (nPowers) {
     var threshold = {
-        range: thresholdHigh - thresholdLow,
-        high: thresholdHigh,
-        low: thresholdLow
+        range: 1,
+        high: 1,
+        low: 0
     };
+    if (nPowers !== null) {
+        var powers = [];
+        for (var i = 0; i < nPowers.length; i++) {
+            powers.push(nPowers[i]);
+        }
+        var sortedPower = powers.sort(function (a, b) {
+            return a - b;
+        });
+
+        var count = sortedPower.length;
+        var segment = parseInt(count / 4, 10);
+        var lowIQR = sortedPower[segment],
+            median = sortedPower[segment * 2],
+            highIQR = sortedPower[segment * 3];
+        var IQR = parseInt((highIQR - lowIQR) * 1.5, 10);
+        var thresholdHigh = median + IQR,
+            thresholdLow = median - IQR;
+        threshold = {
+            range: thresholdHigh - thresholdLow,
+            high: thresholdHigh,
+            low: thresholdLow
+        };
+    }
     return threshold;
 };
 
@@ -106,7 +92,7 @@ var workoutSave = function (workout, id) {
     });
 };
 
-var workoutFetchingAJAX = function (workout) {
+var workoutFetchingAJAX = function (workout, scope) {
     superagent
         .get('/b/api/v1/activities/' + workout)
         .send()
@@ -114,7 +100,7 @@ var workoutFetchingAJAX = function (workout) {
         .set('Authorization', 'Bearer: ' + token)
         .end(function(err, res) {
             if (res.ok) {
-                workoutProcessing(res.body, workout);
+                workoutProcessing(res.body, workout, scope);
                 workoutSave(res.body, workout);
             } else {
                 console.log('Error: cannot fetch workout');
@@ -122,22 +108,27 @@ var workoutFetchingAJAX = function (workout) {
         });
 };
 
-var workoutFetching = function (workout) {
+var workoutFetching = function (workoutID, scope) {
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (!checkIndexedDB) {
-        workoutFetchingAJAX(workout);
+        workoutFetchingAJAX(workoutID);
     } else {
-        db.log.get(workout, function (log) {
+        db.log.get(workoutID, function (log) {
             if (log === undefined) {
-                workoutFetchingAJAX(workout);
+                workoutFetchingAJAX(workoutID, scope);
             } else {
-                workoutProcessing(log.data, log.id);
+                workoutProcessing(log.data, log.id, scope);
             }
         });
     }
 };
 
-var workoutProcessing = function (workout, id) {
+var workoutProcessing = function (workout, id, scope) {
+    if (workout.total_power_list === null) {
+        data.error = true;
+        postMessage(data);
+        return;
+    }
     var threshold = calcThreshold(workout.total_power_list);
 
     var avgs = {
@@ -161,8 +152,9 @@ var workoutProcessing = function (workout, id) {
     var hex, i;
     var graphSegment = {};
 
-    var lastEntry;
+    var lastEntry = {};
     var suuntoDrop = true;
+
     for (i = 0; i < workout.total_power_list.length; i = i + steps) {
         graphSegment = {};
         var entry = {};
@@ -195,6 +187,12 @@ var workoutProcessing = function (workout, id) {
                 suuntoDrop = false;
             }
         }
+        if ('oscillation_list' in workout && workout.oscillation_list !== null) {
+            entry.vertOsc = workout.oscillation_list[i];
+        }
+        if ('ground_time_list' in workout && workout.ground_time_list !== null) {
+            entry.groundTime = workout.ground_time_list[i];
+        }
         if ('elevation_list' in workout && workout.elevation_list !== null) {
             entry.elevation = Math.round(workout.elevation_list[i]);
             if (entry.elevation !== 0) {
@@ -205,7 +203,7 @@ var workoutProcessing = function (workout, id) {
             entry.distance = workout.distance_list[i];
         }
 
-        if (suuntoDrop) {
+        if (suuntoDrop && i !== 0) {
             entry = lastEntry;
         } else {
             lastEntry = entry;
@@ -214,7 +212,7 @@ var workoutProcessing = function (workout, id) {
         
         chartData.push(entry);
         /* Assemble map data */
-        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null) {
+        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null && 'power' in entry) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
@@ -259,31 +257,22 @@ var workoutProcessing = function (workout, id) {
     } else {
         data.type = 'data';
     }
+    data.workoutShared = {
+        date: workout.timestamp,
+        id: workout.id,
+        scope: scope,
+        public: workout.public,
+        name: workout.name,
+        photo: workout.photo
+    };
+    data.scope = scope;
+    console.log('SCOPE IN PROCESSOR IS:', scope);
     postMessage(data);
 };
 
 var logsProcessing = function (logs) {
     data.logs = logs;
     postMessage(data);
-};
-
-/* Public method */
-onmessage = function (event) {
-    initDB();
-
-    data = {};
-    token = event.data.token;
-    if (event.data.type === 'all') {
-        logsFetching();
-    } else if (event.data.type === 'admin') {
-        logsFetching(event.data.user);
-    } else if (event.data.type === 'workout') {
-        workoutFetching(event.data.id);
-    } else if (event.data.type === 'sample') {
-        workoutFetching('sample');
-    } else if (event.data.type === 'addLog') {
-        addLog(event.data.id);
-    }
 };
 
 var addLog = function (id) {
@@ -304,9 +293,9 @@ var addLog = function (id) {
 };
 
 var logsFetching = function (user='') {
-    var link = '/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc';
+    var link = '/b/api/v1/activities/summary?limit=40&sortby=Timestamp&order=desc';
     if (user.length > 0) {
-        link = '/b/admin/users/' + user + '/activities/summary?limit=20&sortby=Timestamp&order=desc';
+        link = '/b/admin/users/' + user + '/activities/summary?limit=40&sortby=Timestamp&order=desc';
     }
     superagent
         .get(link)
@@ -318,10 +307,41 @@ var logsFetching = function (user='') {
                 if (res.body !== null) {
                     logsProcessing(res.body);
                 } else {
-                    workoutFetching('sample');
+                    workoutFetching('sample', 'owned');
                 }
             } else {
                 console.log('Error: failure on grabLogs', err, res);
             }
         }.bind(this));
+};
+
+/* Public method */
+onmessage = function (event) {
+    initDB();
+
+    data = {};
+    token = event.data.token;
+
+    switch(event.data.type) {
+        case 'all':
+            logsFetching();
+            break;
+        case 'workout':
+            workoutFetching(event.data.id, 'owned');
+            break;
+        case 'workout-view':
+            workoutFetching(event.data.id, 'shared');
+            break;
+        case 'sample':
+            workoutFetching('sample', 'owned');
+            break;
+        case 'addLog':
+            addLog(event.data.id);
+            break;
+        case 'admin':
+            logsFetching(event.data.user);
+            break;
+        default:
+            console.log('Error in onmessage/processor: unknown action');
+    }
 };

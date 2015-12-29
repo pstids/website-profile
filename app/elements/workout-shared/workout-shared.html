@@ -1,0 +1,152 @@
+<dom-module id="workout-shared">
+    <style>
+        .shared {
+            margin: 30px 10px;
+        }
+        h1 {
+            color: white;
+            margin-bottom: 0;
+        }
+        .social {
+            @apply(--layout-horizontal);
+        }
+        .social .network {
+            @apply(--layout-flex);
+        }
+        .shareURL {
+            margin-top: 5px;
+            display: inline-block;
+            vertical-align: middle;
+            box-sizing: border-box;
+            background: none;
+            border: medium none;
+            border-bottom: 1px solid #FFFFFF;
+            transition: color .5s;
+            padding: 5px 0;
+            font-weight: 700;
+            color: white;
+            min-width: 350px;
+        }
+        img {
+            border-radius: 50%;
+            width: 5.5vw;
+            height: auto;
+        }
+    </style>
+    <template>
+        <div class="layout vertical center center-justified shared">
+            <img src="{{user.image}}" class="flex-none">
+            <h1 class="flex-none" style=" margin: 10px 20px; text-align: center;"><span>{{user.fullname}}</span></h1>
+            <h2 style="color: white; margin: 10px 20px; text-align: center;">Workout on <span>{{runStart}}</span></h2>
+            <div class="layout vertical flex-none hidden" >
+            <!-- hidden$="{{nOwner2>}}" -->
+                <div class="layout horizontal" hidden$="{{notPublic(public)}}">
+                    <input type="text" value="{{publicURL}}" class="shareURL" data-copy="text">
+                    <button is="stryd-button" data-clipboard-target="[data-copy='text']" data-copy="btn" style="margin: 0 0 0 10px;">Copy URL to Clipboard</button>
+                </div>
+                
+                <div class="link layout horizontal end">
+                    <paper-checkbox id="sharePublic" class="flex-none" checked="{{public}}"></paper-checkbox>
+                    <p class="flex-none" style="color:white; margin-bottom: 0;">Share Workout Publically</p>
+                </div>
+                    <!-- <div class="social">
+                        <div class="network" style="color:white;">FB</div>
+                        <div class="network" style="color:white;">TWIT</div>
+                        <div class="network" style="color:white;">GOOG</div>
+                    </div> -->
+            </div>
+        </div>
+    </template>
+    <script>
+        /*global CryptoJS*/
+        /*global Clipboard*/
+        /*global updateWorkout*/
+        Polymer({
+            is: 'workout-shared',
+            properties: {
+                user: Object,
+                activity: Object,
+                public: Boolean,
+                publicURL: String,
+                runStart: String,
+                nOwner: Boolean
+            },
+            notPublic: function (public1) {
+                return !public1;
+            },
+            ready: function () {
+                this.user = {};
+                this.activity = {};
+                this.public = false;
+                this.nOwner = true;
+                this.username = '';
+                console.log('WS ready event');
+                new Clipboard('[data-copy="btn"]');
+            },
+            updatePref: function () {
+                updateWorkout(
+                    this.activity.id,
+                    {
+                        public: true
+                    },
+                    function (err, res) {
+                        if (res.ok && !err) {
+                            console.log('Updated public status of workout.');
+                        } else {
+                            console.log('Failed to update status of workout.');
+                        }
+                    });
+
+            },
+            getImage: function (user) {
+                this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+                if ('photo' in user && user.photo !== '' && user.photo !== undefined) {
+                    return decodeURIComponent(user.photo.replace('+', ' '));
+                } else if ('email' in user && user.email !== '') {
+                    var gravHash = CryptoJS.MD5(user.email.toLowerCase());
+                    return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
+                } else {
+                    return 'https://www.stryd.com/powercenter/images/favicon.png';
+                }
+            },
+            fetchUser: function () {
+                this.user.fullname = this.activity.name;
+                this.set('user.fullname', this.activity.name);
+                this.set('user.image', this.getImage(this.activity));
+                // this.username = username;
+                // console.log(username, user.data.user_name, username === user.data.user_name);
+                // if (username === user.data.user_name) {
+                //     this.updatePref();
+                //     console.log('We have this user information stored locally!');
+                //     this.user.image = user.getImage();
+                //     this.user.fullname = user.data.first_name + ' ' + user.data.last_name;
+                //     this.set('user.fullname', this.user.fullname);
+                //     this.set('user.image', this.user.image);
+                //     this.nOwner = false;
+                // } else {
+                //     console.log('We have have to fetch user information!');
+                //     superagent
+                //         .get('/b/api/v1/users/username/' + username)
+                //         .send()
+                //         .set('Authorization', 'Bearer: ' + jwt.token)
+                //         .set('Accept', 'application/json')
+                //         .end(function(err, res) {
+                //             this.user.fullname = res.body.first_name + ' ' + res.body.last_name;
+                //             this.user.image = this.getImage(res.body);
+                //             this.set('user.fullname', this.user.fullname);
+                //             this.set('user.image', this.user.image);
+                //         }.bind(this));
+                // }
+            },
+            setData: function (activity) {
+                this.activity = activity;
+
+                this.fetchUser();
+                this.publicURL = 'https://www.stryd.com/powercenter/run/' + activity.id;
+                this.public = activity.public;
+                this.$.sharePublic.checked = this.public;
+                this.runStart = moment(new Date(activity.date * 1000)).format('LL');
+            }
+        });
+    </script>
+</dom-module>

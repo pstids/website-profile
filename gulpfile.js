@@ -58,6 +58,7 @@ gulp.task('jshint', function () {
         'superagent',
         'setDate',
         'minutesPerMile',
+        'minutesPerKM',
         'workoutProcessing',
         'workoutFetching',
         'addLog',
@@ -74,7 +75,9 @@ gulp.task('jshint', function () {
         'speedToPaceForBalloon',
         'speedToPaceForValueAxis',
         'windowFocusEvent',
-        'formatPace'
+        'formatPace',
+        'attribute',
+        'moment'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

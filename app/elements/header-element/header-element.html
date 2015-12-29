@@ -241,58 +241,74 @@
                 </li>
             </ul>
             <div class="space-taker"></div>
-            <div class="insights"
-                data-step="4"
-                data-intro="View your run statistics from this week.">
-                <div class="insights-header">
-                    <div class="subtitle">WEEK</div>
-                    <div class="title">{{weekly.week_num}}</div>
-                </div>
-                <div class="insight">
-                    <iron-icon icon="image:timer"></iron-icon>
-                    <div class="info">
-                        <div class="title">Run Time</div>
-                        <div class="field">
-                            <span class="value">{{weekly.total_time}}</span>
-                            <span class="unit">HR</span>
+
+            <template is="dom-if" if="{{user.available}}">
+                <div class="insights"
+                    data-step="4"
+                    data-intro="View your run statistics from this week.">
+                    <div class="insights-header">
+                        <div class="subtitle">WEEK</div>
+                        <div class="title">{{weekly.week_num}}</div>
+                    </div>
+                    <div class="insight">
+                        <iron-icon icon="image:timer"></iron-icon>
+                        <div class="info">
+                            <div class="title">Run Time</div>
+                            <div class="field">
+                                <span class="value">{{weekly.total_time}}</span>
+                                <span class="unit">HR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insight">
+                        <iron-icon icon="communication:swap-calls"></iron-icon>
+                        <div class="info">
+                            <div class="title">Distance</div>
+                            <div class="field">
+                                <span class="value">{{weekly.total_distance}}</span>
+                                <span class="unit">{{units}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insight">
+                        <iron-icon icon="image:flash-on"></iron-icon>
+                        <div class="info">
+                            <div class="title">
+                                Avg Power
+                            </div>
+                            <div class="field">
+                                <span class="value">{{weekly.average_power}}</span>
+                                <span class="unit">W</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="insight">
-                    <iron-icon icon="communication:swap-calls"></iron-icon>
-                    <div class="info">
-                        <div class="title">Distance</div>
-                        <div class="field">
-                            <span class="value">{{weekly.total_distance}}</span>
-                            <span class="unit">{{units}}</span>
+
+                <div class="profile">
+                    <div class="text">
+                        <div class="hello">Hello</div>
+                        <div class="name">{{username}}</div>
+                        <div class="logout">
+                            <span on-click="intro">Help?</span>
+                            <span on-click="logout">Logout?</span>
+                        </div>
+                    </div>
+                    <img src="{{profileImage}}" class="image">
+                </div>
+            </template>
+
+            <template is="dom-if" if="{{!user.available}}">
+                <div class="profile">
+                    <div class="text">
+                        <div class="hello">Hello</div>
+                        <div class="name">Unregistered User</div>
+                        <div class="logout">
+                            <span on-click="intro">Help?</span>
+                            <a href="/signin">Signup?</a>
                         </div>
                     </div>
                 </div>
-                <div class="insight">
-                    <iron-icon icon="image:flash-on"></iron-icon>
-                    <div class="info">
-                        <div class="title">
-                            Avg Power
-                        </div>
-                        <div class="field">
-                            <span class="value">{{weekly.average_power}}</span>
-                            <span class="unit">W</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
-            <div class="profile">
-                <div class="text">
-                    <div class="hello">Hello</div>
-                    <div class="name">{{username}}</div>
-                    <div class="logout">
-                        <span on-click="intro">Help?</span>
-                        <span on-click="logout">Logout?</span>
-                    </div>
-                </div>
-                <img src="{{profileImage}}" class="image">
-            </div>
+            </template>
         </header>
     </template>
     <script src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
@@ -300,45 +316,43 @@
         /*jshint camelcase: false*/
         /*global jwt*/
         /*global superagent*/
-        /*global CryptoJS*/
         /*global introJs*/
-        Polymer({
-            is: 'header-element',
-            properties: {
-                weekly: Object,
-                units: String
-            },
-            ready: function () {
-                this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
-                this.username = jwt.data.username;
-                this.grabStats();
-                this.setProfileIMG();
-            },
-            intro: function () {
-                console.log('called intro');
-                introJs().start();
-            },
-            logout: function () {
-                jwt.logout();
-                user.clearData();
-            },
-            setProfileIMG: function () {
-                if (jwt.data && jwt.data.image !== undefined && jwt.data.image.length !== 0) {
-                    this.profileImage = decodeURIComponent(jwt.data.image.replace('+', ' '));
-                } else {
-                    var gravHash = CryptoJS.MD5(jwt.data.email.toLowerCase());
-                    this.profileImage = 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
-                }
-            },
-            toggleActive: function (active) {
+    Polymer({
+        is: 'header-element',
+        properties: {
+            weekly: Object,
+            units: String,
+            user: Object
+        },
+        ready: function () {
+            this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+            this.username = jwt.data.username;
+            this.user = user.getData();
+            this.grabStats();
+            this.profileImage = user.getImage();
+        },
+        intro: function () {
+            console.log('Called intro.');
+            introJs().start();
+        },
+        logout: function () {
+            jwt.logout();
+            user.clearData();
+        },
+        toggleActive: function (active) {
+            var current = this.querySelector('.active');
+            if (current) {
+                current.classList.remove('active');
+            }
+
+            if (active !== null) {
                 var anchor = this.querySelector('[data-route="' + active + '"]');
-                var current = this.querySelector('.active');
-                if (current) {
-                    current.classList.remove('active');
-                }
                 anchor.parentElement.classList.add('active');
-            },
-            grabStats: function () {
+
+            }
+        },
+        grabStats: function () {
+            if (jwt.hasToken) {
                 superagent
                     .get('/b/api/v1/activities/weekly-stat')
                     .send()
@@ -363,6 +377,7 @@
                         }
                     }.bind(this));
             }
-        });
+        }
+    });
     </script>
 </dom-module>
