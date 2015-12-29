@@ -187,10 +187,10 @@ var workoutProcessing = function (workout, id, scope) {
                 suuntoDrop = false;
             }
         }
-        if ('oscillation_list' in workout) {
+        if ('oscillation_list' in workout && workout.oscillation_list !== null) {
             entry.vertOsc = workout.oscillation_list[i];
         }
-        if ('ground_time_list' in workout) {
+        if ('ground_time_list' in workout && workout.ground_time_list !== null) {
             entry.groundTime = workout.ground_time_list[i];
         }
         if ('elevation_list' in workout && workout.elevation_list !== null) {
@@ -203,7 +203,7 @@ var workoutProcessing = function (workout, id, scope) {
             entry.distance = workout.distance_list[i];
         }
 
-        if (suuntoDrop) {
+        if (suuntoDrop && i !== 0) {
             entry = lastEntry;
         } else {
             lastEntry = entry;
