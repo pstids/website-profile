@@ -26,6 +26,8 @@ var initDB = function () {
 };
 initDB();
 
+var scope = 'owned';
+
 var updateWorkout = function (id, updates, cb) {
     superagent
         .put('/b/api/v1/activities/' + id)
@@ -53,24 +55,41 @@ var updateWorkout = function (id, updates, cb) {
     // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
     let app = document.querySelector('#app');
 
-    app.displayInstalledToast = function() {
-        document.querySelector('#caching-complete').show();
-    };
-
-    var mapSummary;
     var mapRunEle;
     var logBook;
     var workoutElement;
     var header;
+    var uploader;
+
+    app.displayInstalledToast = function() {
+        document.querySelector('#caching-complete').show();
+    };
     // Listen for template bound event to know when bindings
     // have resolved and content has been stamped to the page
     app.addEventListener('dom-change', function() {
-        console.log('Our app is ready to rock!');
-        mapSummary = document.querySelector('map-summary');
-        mapRunEle = document.querySelector('map-run');
-        logBook = document.querySelector('log-book');
-        workoutElement = document.querySelector('workout-element');
+        console.log('Stryd is ready to rock!');
+
+        mapRunEle = document.querySelector('#map-run');
+        logBook = document.querySelector('#log-book');
+        workoutElement = document.querySelector('#workout-element');
+        workoutShared = document.querySelector('#workout-shared');
+        uploader = document.querySelector('#uploader');
+
         processor.onmessage = (event) => {
+            if ('error' in event.data && event.data.error === true) {
+                uploadToast.text = 'Cannot load workout! Visit the log book to select another.';
+                uploadToast.show();
+                return;
+            }
+            if (scope === 'shared') {
+                logBook.classList.add('hidden');
+                uploader.classList.add('hidden');
+                workoutShared.classList.remove('hidden');
+            } else {
+                logBook.classList.remove('hidden');
+                uploader.classList.remove('hidden');
+                workoutShared.classList.add('hidden');
+            }
             if ('mapRunData' in event.data) {
                 mapRunEle.setData(event.data.mapRunData);
             }
@@ -82,6 +101,9 @@ var updateWorkout = function (id, updates, cb) {
             }
             if ('addLog' in event.data) {
                 logBook.addLog(event.data.addLog);
+            }
+            if ('workoutShared' in event.data) {
+                workoutShared.setData(event.data.workoutShared);
             }
             // Toggle displays to show 'Sample' messages
             if (event.data.type === 'sample') {
@@ -105,14 +127,31 @@ var updateWorkout = function (id, updates, cb) {
         page.base('/powercenter');
 
         page('/', () => {
-            logsFetching();
-            app.route = 'home';
-            header.toggleActive('home');
+            scope = 'owned';
+            if (jwt.hasToken) {
+                workoutShared.fetchUser(user.data.user_name);
+                logsFetching();
+                app.route = 'home';
+                header.toggleActive('home');
+            } else {
+                page.redirect('/welcome');
+            }
+        });
+
+        page('/welcome', () => {
+            document.location = '/signin';
+            // app.route = 'welcome';
+            // console.log('Welcome to STRYD.');
+            // header.toggleActive(null);
         });
 
         page('/connect', () =>{
-            app.route = 'connect';
-            header.toggleActive('connect');
+            if (jwt.hasToken) {
+                app.route = 'connect';
+                header.toggleActive('connect');
+            } else {
+                page.redirect('/welcome');
+            }
         });
 
         page('/users/:name', (data) => {
@@ -120,19 +159,46 @@ var updateWorkout = function (id, updates, cb) {
             app.params = data.params;
         });
 
+        page('/run/:id', (data) => {
+            console.log('Trying to load workout.');
+            app.route = 'home';
+            scope = 'shared';
+            header.toggleActive(null);
+            app.params = data.params;
+            workoutShared.fetchUser(data.params.name);
+            processor.postMessage({
+                token: jwt.token,
+                type: 'workout-view',
+                id: data.params.id
+            });
+        });
+
         page('/settings', () => {
-            app.route = 'settings';
-            header.toggleActive('settings');
+            if (jwt.hasToken) {
+                app.route = 'settings';
+                header.toggleActive('settings');
+            } else {
+                page.redirect('/welcome');
+            }
         });
 
         page('/a/:name', (data) => {
-            console.log('user is ' + data.params.name);
-            app.route = 'home';
-            processor.postMessage({
-                token: jwt.token,
-                type: 'admin',
-                user: data.params.name
-            });
+            if (jwt.hasToken) {
+                console.log('user is ' + data.params.name);
+                app.route = 'home';
+                processor.postMessage({
+                    token: jwt.token,
+                    type: 'admin',
+                    user: data.params.name
+                });
+            } else {
+                page.redirect('/welcome');
+            }
+        });
+
+        page('*', () => {
+            document.location = '/signin';
+            app.route = '*';
         });
 
         // add #! before urls
