@@ -120,42 +120,81 @@
 				'click': 'click'
 			},
 			click: function () {
-				console.log('That is what I call a click!');
 				this.$.wrap.classList.toggle('popped');
 			},
+			setMode: function (opt) {
+				var activeKey;
+				if (this.objects.active.length === 0) {
+					activeKey = null;
+				} else {
+					activeKey = this.objects.active[0];
+				}
+				if (activeKey !== null) {
+					var active = this.objects[activeKey];
+					var title;
+					if (opt === 'moving') {
+						title = active.title;
+						if (title !== 'Time') {
+							title = 'Average Moving ' + active.title;
+						} else {
+							title = 'Moving ' + active.title;
+						}
+						this.set('obja.title', title);
+						this.set('obja.value', active.moving);
+					} else {
+						title = active.title;
+						if (title !== 'Time') {
+							title = 'Average Elapsed ' + active.title;
+						} else {
+							title = 'Elapsed ' + active.title;
+						}
+						this.set('obja.title', title);
+						this.set('obja.value', active.elapsed);
+					}
+				}
+			},
 			setData: function (objs) {
-				console.log(this);
+				this.objects = objs;
 				var props = ['a', 'b', 'c'];
 				var i = 0;
+
+				var activeKey;
+				if (this.objects.active.length === 0) {
+					activeKey = null;
+				} else {
+					activeKey = this.objects.active[0];
+				}
+
 				for (var key in objs) {
-					var obj = objs[key];
-					var prop = props[i];
-					this.set('obj' + prop + '.icon', obj.icon);
-					// console.log('found path', i);
-					this.set('obj' + prop + '.title', obj.title);
-					// console.log('found path', i);
-					this.set('obj' + prop + '.value', obj.value);
-					// console.log('found path', i);
-					this.set('obj' + prop + '.unit', obj.unit);
-					// console.log('found path', i);
-					i++;
+					if (key !== 'active') {
+						var obj = objs[key];
+						var prop = props[i];
+						this.set('obj' + prop + '.icon', obj.icon);
+						this.set('obj' + prop + '.unit', obj.unit);
+						if (activeKey !== null && key === activeKey) {
+							this.set('obj' + prop + '.title', 'Average Elapsed ' + obj.title);
+							this.set('obj' + prop + '.value', obj.elapsed);
+						} else {
+							this.set('obj' + prop + '.title', obj.title);
+							this.set('obj' + prop + '.value', obj.value);
+						}
+						i++;
+					}
+				}
+				for (; i < 3; i++) {
+					this.querySelector('[data-bubble="' + parseInt(i+1) + '"]').classList.add('hidden');
 				}
 			},
 			ready: function () {
-				// this.bubbles = this.querySelectorAll('[data-bubble]');
-				// console.log(this.bubbles);
-				// for (var i = 0; i < this.bubbles.length; i++) {
-				// 	this.bubbles[i].addEventListener('click', this.bubblePop.bind(this));
-				// }
 				this.obja = {};
 				this.objb = {};
 				this.objc = {};
+				this.objects = {};
 				this.addEventListener('click', this.bubblePop.bind(this));
 			},
 			bubblePop: function (e) {
 				var target = e.target;
 				var keepLooking = true;
-				console.log(target);
 				while (!('bubble' in target.dataset) && keepLooking) {
 					target = target.parentNode;
 					if (this === target) {
@@ -167,7 +206,6 @@
 					activeBubble.classList.remove('active');
 				}
 				target.classList.add('active');
-				console.log(target, activeBubble);
 			}
 		});
 	</script>
