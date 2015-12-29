@@ -60,6 +60,7 @@ var updateWorkout = function (id, updates, cb) {
     var workoutElement;
     var header;
     var uploader;
+    var workoutShared;
 
     app.displayInstalledToast = function() {
         document.querySelector('#caching-complete').show();
