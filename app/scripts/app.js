@@ -26,6 +26,25 @@ var initDB = function () {
 };
 initDB();
 
+var updateWorkout = function (id, updates, cb) {
+    superagent
+        .put('/b/api/v1/activities/' + id)
+        .send(updates)
+        .set('Authorization', 'Bearer: ' + jwt.token)
+        .end(cb);
+    db.log.get(id, function (log) {
+        if (log !== undefined) {
+            for (var key in updates) {
+                log.data[key] = updates[key];
+            }
+            db.log.put({
+                id: log.id,
+                data: log.data
+            });
+        }
+    });
+};
+
 (function(document) {
     'use strict';
 
