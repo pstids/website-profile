@@ -241,58 +241,74 @@
                 </li>
             </ul>
             <div class="space-taker"></div>
-            <div class="insights"
-                data-step="4"
-                data-intro="View your run statistics from this week.">
-                <div class="insights-header">
-                    <div class="subtitle">WEEK</div>
-                    <div class="title">{{weekly.week_num}}</div>
-                </div>
-                <div class="insight">
-                    <iron-icon icon="image:timer"></iron-icon>
-                    <div class="info">
-                        <div class="title">Run Time</div>
-                        <div class="field">
-                            <span class="value">{{weekly.total_time}}</span>
-                            <span class="unit">HR</span>
+
+            <template is="dom-if" if="{{user.available}}">
+                <div class="insights"
+                    data-step="4"
+                    data-intro="View your run statistics from this week.">
+                    <div class="insights-header">
+                        <div class="subtitle">WEEK</div>
+                        <div class="title">{{weekly.week_num}}</div>
+                    </div>
+                    <div class="insight">
+                        <iron-icon icon="image:timer"></iron-icon>
+                        <div class="info">
+                            <div class="title">Run Time</div>
+                            <div class="field">
+                                <span class="value">{{weekly.total_time}}</span>
+                                <span class="unit">HR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insight">
+                        <iron-icon icon="communication:swap-calls"></iron-icon>
+                        <div class="info">
+                            <div class="title">Distance</div>
+                            <div class="field">
+                                <span class="value">{{weekly.total_distance}}</span>
+                                <span class="unit">{{units}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insight">
+                        <iron-icon icon="image:flash-on"></iron-icon>
+                        <div class="info">
+                            <div class="title">
+                                Avg Power
+                            </div>
+                            <div class="field">
+                                <span class="value">{{weekly.average_power}}</span>
+                                <span class="unit">W</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="insight">
-                    <iron-icon icon="communication:swap-calls"></iron-icon>
-                    <div class="info">
-                        <div class="title">Distance</div>
-                        <div class="field">
-                            <span class="value">{{weekly.total_distance}}</span>
-                            <span class="unit">{{units}}</span>
+
+                <div class="profile">
+                    <div class="text">
+                        <div class="hello">Hello</div>
+                        <div class="name">{{username}}</div>
+                        <div class="logout">
+                            <span on-click="intro">Help?</span>
+                            <span on-click="logout">Logout?</span>
+                        </div>
+                    </div>
+                    <img src="{{profileImage}}" class="image">
+                </div>
+            </template>
+
+            <template is="dom-if" if="{{!user.available}}">
+                <div class="profile">
+                    <div class="text">
+                        <div class="hello">Hello</div>
+                        <div class="name">Unregistered User</div>
+                        <div class="logout">
+                            <span on-click="intro">Help?</span>
+                            <a href="/signin">Signup?</a>
                         </div>
                     </div>
                 </div>
-                <div class="insight">
-                    <iron-icon icon="image:flash-on"></iron-icon>
-                    <div class="info">
-                        <div class="title">
-                            Avg Power
-                        </div>
-                        <div class="field">
-                            <span class="value">{{weekly.average_power}}</span>
-                            <span class="unit">W</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
-            <div class="profile">
-                <div class="text">
-                    <div class="hello">Hello</div>
-                    <div class="name">{{username}}</div>
-                    <div class="logout">
-                        <span on-click="intro">Help?</span>
-                        <span on-click="logout">Logout?</span>
-                    </div>
-                </div>
-                <img src="{{profileImage}}" class="image">
-            </div>
+            </template>
         </header>
     </template>
     <script src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
