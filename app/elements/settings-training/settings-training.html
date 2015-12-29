@@ -93,7 +93,7 @@
         .faux-input {
             @apply(--layout-vertical);
             height: 46px;
-            width: 196px;
+            width: 162px;
             padding: 8px 0;
         }
         .faux-input label {
@@ -145,6 +145,15 @@
             font-size: 14px;
             margin-right: 15px;
         }
+        .save-line {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(38, 38, 38, 0.4);
+            width: 100vw;
+            height: 100px;
+        }
 
         #critTestContainer.hide, #critValuesContainer.hide {
             max-height: 0;
@@ -156,12 +165,38 @@
             transition: max-height 0.8s;
             overflow: hidden;
         }
+
+        .instructions {
+            padding: 20px;
+            border: 1px solid #FFFFFF;
+            margin-bottom: 20px;
+        }
+        .instructions h1 {
+            color: #FFFFFF;
+            font-size: 18px;
+            margin: 0;
+        }
+        .instructions p {
+            line-height: 18px;
+            padding: 0;
+            margin: 10px 0 0 0;
+            font-weight: 300;
+            font-size: 15px;
+        }
     </style>
     <template>
     <div data-zone="container">
-        <div class="layout horizontal center">
-            <h1 class="title">Critical Power & Pace</h1>
-            <button is="stryd-button" style="margin: 0 0 0 20px;" on-click="toggleTests">
+        <div class="layout vertical instructions">
+            <h1>Instructions</h1>
+            <p>1. Complete the <a href="http://club.stryd.com/t/a-protocol-for-establishing-critical-power-in-running/574">Stryd Critical Power Test</a> or your own critical power test.</p>
+            <p>2. Check 'Use 3-9 Minute Critical Power Test' box if you used the Stryd critical power test. Uncheck it if you used your own test.</p>
+            <p>3. Fill in your test results.</p>
+            <p>4. Click 'Calculate Zones on Jack Daniel's Method'. Manually adjust your zones as necessary. The zones may be too tight or narrow for your fitness. The power ranges will be clearer as you run more.</p>
+            <p>5. Save your information in the bottom right.</p>
+        </div>
+        <div class="layout horizontal justified">
+            <h1 class="title self-center">Critical Power & Pace</h1>
+            <button is="stryd-button" class="self-center self-end" style="margin-top: 0;" on-click="toggleTests">
                 <div class="layout horizontal">
                     <span class="self-center" style="margin-right: 15px;">USE 3-9 MINUTE CRITICAL POWER TEST</span>
                     <paper-checkbox id="critToggle" checked class="self-center"></paper-checkbox>
@@ -169,7 +204,6 @@
             </button>
         </div>
         <div class="crit" id="critTestContainer">
-            <p>Fill in your critical values from your 3-9 minute critical power test & click calculate zones. Stryd automatically determines your training zones and critical values. If you want to manually set your critical values, untoggle 'Use 3-9 Minutes Test'.</p>
             <div class="layout vertical">
                 <div class="layout horizontal" style="margin-top: 10px;">
                     <div class="layout horizontal item">
@@ -219,7 +253,7 @@
                         <span class="units self-end">{{userLocal}}</span>
                     </div>
                 </div>
-                <div class="layout horizontal" style="margin-top: 10px;">
+                <div class="layout horizontal" style="margin-top: 10px; border-top: 2px solid #F5A214; padding-top: 30px; width: 540px;">
                     <div class="layout horizontal item">
                         <div class="faux-input">
                             <label>CRITICAL POWER</label>
@@ -238,7 +272,6 @@
             </div>
         </div>
         <div class="crit" id="critValuesContainer">
-            <p>Based off your own critical power test.</p>
             <div class="layout horizontal">
                 <div class="layout horizontal item">
                     <paper-input
@@ -261,12 +294,11 @@
             </div>
         </div>
         <div data-zones="container">
-            <div class="layout horizontal center">
+            <div class="layout horizontal justified">
                 <div class="zones-titles self-center">
                     <h1 class="title">Power & Pace Zones</h1>
-                    <h2 class="subtitle">Based off your critical power & pace.</h2>
                 </div>
-                <button is="stryd-button" on-click="automatic" style="margin-left: 20px;">Calculate Zones on Jack Daniel's Method</button>
+                <button is="stryd-button" on-click="calculateZones" class="self-center self-end" style="margin-top: 0;">Calculate Zones on Jack Daniel's Method</button>
             </div>
             <div class="titles layout horizontal">
                 <div class="title flex-1">
@@ -284,6 +316,7 @@
             </div>
             <button is="stryd-button" class="self-center" on-click="addZone" style="margin: 0 0 20px 20px;">Add Zone</button>
         </div>
+        <div class="save-line"></div>
         <div class="save" on-click="saveZones">
             <p>Save Training Information</p>
             <paper-fab icon="inbox"></paper-fab>
@@ -302,7 +335,11 @@
         Polymer({
             is: 'settings-training',
             properties: {
-                crit: {
+                critPower: {
+                    type: Object,
+                    notify: true
+                },
+                critPace: {
                     type: Object,
                     notify: true
                 },
@@ -319,14 +356,15 @@
                     }).join('&');
             },
             ready: function () {
+                if (!jwt.hasToken) {
+                    return;
+                }
                 if (user.data.units === 'feet') {
                     this.userLocal = 'MIN/MILE';
                 } else {
                     this.userLocal = 'MIN/KM';
                 }
-                console.log('init');
                 if (!('critical_pace' in user.data) || !('critical_power' in user.data)) {
-                    console.log('Refetch user details.');
                     user.fetchDetails(this.ready.bind(this));
                 }
 
@@ -335,6 +373,8 @@
                     nine: user.data.critical_power.nine_minutes,
                     value: user.data.critical_power.value
                 };
+
+                this.set('critPower.value', this.critPower.value);
 
                 this.critPace = {
                     nineDec: 0,
@@ -352,9 +392,23 @@
                         this.$.zones.appendChild(zoneEntry);
                     }
                 } else {
-                    this.addZone({});
+                    var names = ['Easy/Long', 'Marathon', 'Threshold', 'Interval', 'Repetition'];
+                    this.addZone({
+                        name: names[0]
+                    });
+                    this.addZone({
+                        name: names[1]
+                    });
+                    this.addZone({
+                        name: names[2]
+                    });
+                    this.addZone({
+                        name: names[3]
+                    });
+                    this.addZone({
+                        name: names[4]
+                    });
                 }
-
 
                 var useTest = (localStorage.getItem('useTest') === 'true');
                 if (useTest === null) {
@@ -366,6 +420,7 @@
                         this.$.critTestContainer.classList.add('hide');
                     } else {
                         this.$.critValuesContainer.classList.add('hide');
+                        this.calcCritPace(this.critPace.three, this.critPace.nine);
                     }
                 }
             },
@@ -374,6 +429,8 @@
                 this.$.critTestContainer.classList.toggle('hide');
                 this.$.critValuesContainer.classList.toggle('hide');
                 this.$.critToggle.checked = this.useTest;
+                this.calcCritPower(this.critPower.three, this.critPower.nine);
+                this.calcCritPace(this.critPace.three, this.critPace.nine);
             },
             addZone: function (zone) {
                 var zoneEntry = document.createElement('zone-entry');
@@ -387,18 +444,6 @@
             },
             automatic: function () {
                 this.$.autoCalc.open();
-            },
-            autoCalc: function () {
-                this.jackDanielsVDOT();
-                if (this.useTest) {
-                    this.calcCrits();
-                }
-            },
-            calcCrits: function () {
-                var critPaceMess = this.calcCritPace();
-                var critPowerMess = this.calcCritPower();
-                this.$.toast.text = critPowerMess + ' ' + critPaceMess;
-                this.$.toast.show();
             },
             calcCritPower: function (three, nine) {
                 if (three === '' || nine === '') {
@@ -414,8 +459,7 @@
                 if (crit_power < 0) {
                     crit_power = 0;
                 }
-                this.critPower.value = crit_power;
-                this.notifyPath('critPower.value', crit_power);
+                this.isCritPower = crit_power;
                 return crit_power;
             },
             calcCritPace: function (three, nine) {
@@ -444,6 +488,7 @@
                 if (critSpeed < 0) {
                     critSpeed = 0;
                 }
+
                 var critPace = this.decToPace(this.paceToMPH(critSpeed));
 
                 this.critPace.value = critPace;
@@ -453,9 +498,12 @@
             saveZones: function () {
                 localStorage.setItem('useTest', this.useTest);
                 var queryObj = {};
-                queryObj.crit_power_three_minutes = this.critPower.three;
-                queryObj.crit_power_nine_minutes = this.critPower.nine;
-                queryObj.crit_power_value = this.critPower.value;
+                if (this.useTest) {
+                    this.critPower.value = this.isCritPower;
+                }
+                queryObj.crit_power_three_minutes = parseInt(this.critPower.three);
+                queryObj.crit_power_nine_minutes = parseInt(this.critPower.nine);
+                queryObj.crit_power_value = parseInt(this.critPower.value);
                 queryObj.crit_pace_three_minutes = this.critPace.three;
                 queryObj.crit_pace_nine_minutes = this.critPace.nine;
                 queryObj.crit_pace_value = this.critPace.value;
@@ -464,7 +512,6 @@
                 for (var i = 0; i < this.$.zones.children.length; i++) {
                     zones.push(this.$.zones.children[i].export());
                 }
-                console.log('Zones:', zones);
 
                 var queryString = this.jsonToQueryString(queryObj);
                 superagent
@@ -484,52 +531,66 @@
                         this.$.toast.show();
                     }.bind(this));
             },
-            jackDanielsVDOT: function () {
-                var cons;
-                if (user.data.units === 'feet') {
-                    cons = 3.10686;
-                } else {
-                    cons = 5;
+            calculateZones: function () {
+                if (this.useTest) {
+                    this.critPower.value = this.isCritPower;
                 }
-                var approx5KDec = cons * this.paceToDec(this.critPace.value);
-                var approx5K = this.decToPace(approx5KDec);
+
+                var paceDec = this.paceToDec(this.critPace.value);
+                if (isNaN(paceDec) || isNaN(this.critPower.value) || this.critPower.value === 0) {
+                    this.$.toast.text = 'Your critical power & pace values are incorrect. Please review.';
+                    this.$.toast.show();
+                    return;
+                }
+
+                var conv;
+                var mps;
+                if (user.data.units === 'feet') {
+                    conv = 26.8224;
+                    mps = conv / paceDec;
+                } else {
+                    conv = 16.6667;
+                    mps = conv / paceDec;
+                }
+
+                this.clearZones();
 
                 superagent
-                    .post('/b/api/v1/users/paces')
-                    .type('form')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .post('/b/api/v1/users/' + user.data.id + '/training-zone')
                     .send({
-                        time: '00:' + approx5K
+                        critical_speed: mps,
+                        critical_power: parseInt(this.critPower.value)
                     })
-                    .set('Accept', 'application/json')
-                    .end(function(err, res) {
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end((err, res) => {
                         if (res.ok) {
-                            var data = res.body;
-                            var key;
-                            if (user.data.units === 'feet') {
-                                key = 'mi';
-                            } else {
-                                key = 'k';
+                            var zones = res.body.zones;
+                            var zone;
+                            for (var i = 0; i < zones.length; i++) {
+                                zone = zones[i];
+                                if (zone.power_low > 0) {
+                                    zones[i].power_high = parseInt(zones[i].power_high);
+                                    zones[i].power_low = parseInt(zones[i].power_low);
+                                    this.addZone(zones[i]);
+                                }
                             }
-                            this.paces = [];
-                            this.paces.push(data.paces.normal.E[key].split('-')[1]);
-                            this.paces.push(data.paces.normal.E[key].split('-')[0]);
-                            this.paces.push(data.paces.normal.M[key]);
-                            this.paces.push(data.paces.normal.T[key]);
-                            this.paces.push(data.paces.normal.I[key]);
-                            this.paces.push(data.paces.normal.R[key]);
-                            this.producePowerZones();
-                        } else {
-                            this.$.toast.text = 'Pace zones could not be retrieved.';
                         }
-                        this.$.toast.show();
-                    }.bind(this));
+                    });
+                this.$.toast.text = 'Zones are updated.';
+                this.$.toast.show();
             },
             paceToDec: function (pace) {
                 var parts = pace.split(':');
-                var secondFraction = parseInt(parts[1]) / 60;
-                var dec = parseInt(parts[0]) + parseFloat(secondFraction.toFixed(2));
-                return dec;
+                var secondFraction;
+
+                if (parts.length > 1) { 
+                    secondFraction = parseFloat(parseInt(parts[1]) / 60);
+                } else {
+                    secondFraction = 0;
+                }
+
+                var dec = parseFloat(parts[0]) + secondFraction;
+                return parseFloat(dec);
             },
             decToPace: function (dec) {
                 dec = parseFloat(dec);
@@ -541,11 +602,15 @@
                     stringSeconds = '0' + stringSeconds;
                 }
                 min = String(min);
+
                 if (isNaN(min)) {
                     min = '--';
                 }
                 if (isNaN(stringSeconds)) {
                     stringSeconds = '--';
+                }
+                if (min.length === 1) {
+                    min = '0' + min;
                 }
                 return min + ':' + stringSeconds;
             },
@@ -557,54 +622,6 @@
                     mph = (37.2822715/val);
                 }
                 return mph;
-            },
-            producePowerZones: function () {
-                var slope, offset;
-                if (!this.useTest) {
-                    var slopeNonWeight = 0.5421;
-                    offset = 0.0649;
-                    var weightKg = parseInt(user.data.weight);
-                    if (user.data.units === 'feet') {
-                        weightKg = weightKg * 0.453592;
-                    }
-                    offset = offset * weightKg;
-                    slope = slopeNonWeight * weightKg;
-                } else {
-                    var paceSlope = this.paceToMPH(this.critPace.threeDec) - this.paceToMPH(this.critPace.nineDec);
-                    var powerSlope = this.critPower.three - this.critPower.nine;
-
-                    slope = powerSlope / paceSlope;
-                    offset = this.critPower.three - slope * this.paceToMPH(this.critPace.threeDec);
-                }
-                var powers = [];
-                for (var i = 0; i < 6; i++) {
-                    var pace = this.paces[i];
-                    var power = (this.paceToMPH(this.paceToDec(pace)) * slope + offset).toFixed(0);
-                    powers.push(power);
-                }
-                var names = ['Easy', 'Aerobic', 'Tempo', 'Threshold', 'VO2'];
-                this.clearZones();
-                for (i = 0; i < 5; i++) {
-                    var paceLow = this.paces[i];
-                    var last = parseInt(paceLow.charAt(paceLow.length-1)) + 1;
-                    var paceLowPlus;
-                    if (last === 10 || isNaN(last)) {
-                        paceLowPlus = paceLow;
-                    } else {
-                        paceLowPlus = paceLow.slice(0, -1) + last;
-                    }
-                    console.log(paceLow, last, paceLowPlus);
-                    var zone = {
-                        name: names[i],
-                        power_low: parseInt(powers[i]) + 1,
-                        power_high: powers[i+1],
-                        pace_low: paceLowPlus,
-                        pace_high: this.paces[i+1]
-                    };
-                    this.addZone(zone);
-                }
-                this.$.toast.text = 'Zones are updated.';
-                this.$.toast.show();
             }
         });
     </script>
