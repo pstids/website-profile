@@ -25,7 +25,6 @@
             padding-bottom: 5vh;
         }
         #chartdiv {
-            /*background: #3f3f4f;*/
             color: #ffffff;
             min-width: 100%;
             height: 60vh;
@@ -113,6 +112,27 @@
             box-shadow: 0px 0px 5px #2BAF2B;
             background-color: #2BAF2B;
         }
+        .toggles .stat[data-toggle="on"] {
+            border-color: #F7A016;
+        }
+        .toggles .stat[data-toggle="on"] .circle {
+            border-color: #F7A016;
+            box-shadow: 0px 0px 5px #F7A016;
+            background-color: #F7A016;
+        }
+
+        [data-graph="cadence"] {
+            --paper-radio-button-checked-color: #5ea7a1;
+            --paper-radio-button-checked-ink-color: #5ea7a1;
+        }
+        [data-graph="groundTime"] {
+            --paper-radio-button-checked-color: #00ACEE;
+            --paper-radio-button-checked-ink-color: #00ACEE;
+        }
+        [data-graph="vertOsc"] {
+            --paper-radio-button-checked-color: #2BAF2B;
+            --paper-radio-button-checked-ink-color: #2BAF2B;
+        }
 
         .toggle .circle {
             width: 1.3vw;
@@ -130,7 +150,7 @@
         div.bubbles {
             @apply(--layout-horizontal);
             @apply(--layout-around-justified);
-            padding: 4vw 7vw;
+            padding: 4vw 4vw;
         }
 
         bubble-stat {
@@ -218,14 +238,13 @@
             border-radius: 6px 6px 0 0;
         }
         .dynamics .radios {
-            /*transform: scale(1, 0);
-            transition: transform 0.5s;*/
             visibility: hidden;
+            transition: visibility 0.1s;
             position: absolute;
             @apply(--layout-vertical);
             width: 103%;
             left: -2px;
-            top: 40px;
+            top: 34px;
             padding: 0.8vw 1.1vw;
             border: 2px solid #FFFFFF;
             border-top: none;
@@ -242,8 +261,9 @@
             padding-bottom: 0px;
         }
         .dynamics:hover .radios {
-            /*transform: scale(1, 1);*/
             visibility: visible;
+            animation-delay: 2s;
+            -webkit-animation-delay: 2s;
         }
     </style>
     <template>
@@ -254,8 +274,20 @@
             </div>
         </div>
         <section>
-            <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
-            <h2 class="subtitle" style="padding: 0px 0px 0px 50px;">New Feature: Click on the bubbles to expand</h2>
+            <div class="layout horizontal end" style="margin: 20px 50px 0 50px;">
+                <h1 class="header">Statistics</h1>
+                <div class="toggles">
+                    <div class="stat toggle" data-toggle="on" on-click="toggleMetrics" data-stat="elapsed">
+                        <div class="type">Show Elapsed Statistics</div>
+                        <div class="circle"></div>
+                    </div>
+                    <div class="stat toggle" data-toggle="off" on-click="toggleMetrics" data-stat="moving">
+                        <div class="type">Show Moving Statistics</div>
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+
             <h2 class="subtitle sample" style="padding: 0px 0px 0px 50px;">Sample Data</h2>
             <div class="bubbles"
                 data-step="7"
@@ -264,6 +296,7 @@
                 <bubble-stat type="time"></bubble-stat>
                 <bubble-stat type="power"></bubble-stat>
                 <bubble-stat type="heartRate"></bubble-stat>
+                <bubble-stat type="cadence"></bubble-stat>
                 <bubble-stat type="misc"></bubble-stat>
             </div>
             <div class="options">
@@ -289,7 +322,7 @@
                         <div class="circle"></div>
                     </div>
                     <div class="toggle dynamics">
-                        <div class="type">Run Dynamics</div>
+                        <div class="type">Run Form</div>
                         <iron-icon icon="icons:arrow-drop-down"></iron-icon>
                         <div class="radios">
                             <paper-radio-button on-click="toggle" data-graph="cadence">Cadence</paper-radio-button>
@@ -297,24 +330,12 @@
                             <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
                         </div>
                     </div>
-                    <!-- <div class="cadence toggle" data-toggle="off" on-click="toggle" data-graph="cadence">
-                        <div class="type">Cadence</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="groundTime toggle" data-toggle="off" on-click="toggle" data-graph="groundTime">
-                        <div class="type">Ground Time</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="vertOsc toggle" data-toggle="off" on-click="toggle" data-graph="verticalOsc">
-                        <div class="type">Vertical Oscillation</div>
-                        <div class="circle"></div>
-                    </div> -->
                 </div>
             </div>
             <div class="chart">
                 <div id="chartdiv"
                     data-step="6"
-                    data-intro="See how your run came together. See how power, cadence, heart rate, and more influenced your run. You can focus on certain section by clicking &dragging over an area.">
+                    data-intro="See how your run came together. See how power, cadence, heart rate, and more influenced your run. You can focus on certain section by clicking & dragging over an area.">
                 </div>
             </div>
         </section>
@@ -365,7 +386,8 @@
                             'useLineColorForBulletBorder': true,
                             'valueField': 'heartRate',
                             'type': 'smoothedLine',
-                            'balloonText': '[[value]] BPM'
+                            'balloonText': '[[value]] BPM',
+                            'lineColor': '#683a78'
                         },
                         switch: function (state) {
                             if (
@@ -409,7 +431,8 @@
                             'useLineColorForBulletBorder': true,
                             'valueField': 'power',
                             'type': 'smoothedLine',
-                            'balloonText': '[[value]] Watts'
+                            'balloonText': '[[value]] Watts',
+                            'lineColor': '#f7a017'
                         },
                         switch: function (state) {
                             if (
@@ -455,7 +478,8 @@
                             'valueField': 'pace',
                             'type': 'smoothedLine',
                             'balloonFunction': speedToPaceForBalloon,
-                            'balloonText': '[[value]] Min/Mile'
+                            'balloonText': '[[value]] Min/Mile',
+                            'lineColor': '#074a8c',
                         },
                         switch: function (state) {
                             if (
@@ -499,21 +523,19 @@
                             'useLineColorForBulletBorder': true,
                             'valueField': 'cadence',
                             'type': 'smoothedLine',
-                            'balloonText': '[[value]] SPM'
+                            'balloonText': '[[value]] SPM',
+                            'lineColor': '#5ea7a1'
                         },
                         switch: function (state) {
-                            console.log('FLIP AND SWITCH CADENCE');
-                            console.log(this.metrics.cadence.toggle.checked);
                             if (
                                 state === 'off' ||
                                 (state === 'flip' &&
                                 this.metrics.cadence.toggle.checked === false)
                             ) {
-                                // this.metrics.cadence.toggle.checked = false;
-                                console.log('FLIP OFF', this.metrics.cadence.toggle);
+                                this.metrics.cadence.toggle.checked = false;
                                 this.chart.hideGraph(this.metrics.cadence.graph());
                             } else {
-                                // this.metrics.cadence.toggle.checked = true;
+                                this.metrics.cadence.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.cadence.graph());
                             }
                         }.bind(this)
@@ -527,7 +549,7 @@
                             'id': 'elevation',
                             'axisAlpha': 1,
                             'position': 'right',
-                            'offset': 100,
+                            'offset': 120,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#a06a81',
@@ -546,7 +568,8 @@
                             'useLineColorForBulletBorder': true,
                             'valueField': 'elevation',
                             'type': 'smoothedLine',
-                            'balloonText': '[[value]] Meters'
+                            'balloonText': '[[value]] Meters',
+                            'lineColor': '#a06a81',
                         },
                         switch: function (state) {
                             if (
@@ -590,7 +613,8 @@
                             'useLineColorForBulletBorder': true,
                             'valueField': 'groundTime',
                             'type': 'smoothedLine',
-                            'balloonText': '[[value]] MS'
+                            'balloonText': '[[value]] MS',
+                            'lineColor': '#00ACEE',
                         },
                         switch: function (state) {
                             if (
@@ -598,10 +622,10 @@
                                 (state === 'flip' &&
                                 this.metrics.groundTime.toggle.checked === false)
                             ) {
-                                // this.metrics.groundTime.toggle.checked = false;
+                                this.metrics.groundTime.toggle.checked = false;
                                 this.chart.hideGraph(this.metrics.groundTime.graph());
                             } else {
-                                // this.metrics.groundTime.toggle.checked = true;
+                                this.metrics.groundTime.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.groundTime.graph());
                             }
                         }.bind(this)
@@ -634,7 +658,8 @@
                             'useLineColorForBulletBorder': true,
                             'valueField': 'vertOsc',
                             'type': 'smoothedLine',
-                            'balloonText': '[[value]] CM'
+                            'balloonText': '[[value]] CM',
+                            'lineColor': '#2BAF2B'
                         },
                         switch: function (state) {
                             if (
@@ -642,10 +667,10 @@
                                 (state === 'flip' &&
                                 this.metrics.vertOsc.toggle.checked === false)
                             ) {
-                                // this.metrics.vertOsc.toggle.checked = false;
+                                this.metrics.vertOsc.toggle.checked = false;
                                 this.chart.hideGraph(this.metrics.vertOsc.graph());
                             } else {
-                                // this.metrics.vertOsc.toggle.checked = true;
+                                this.metrics.vertOsc.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.vertOsc.graph());
                             }
                         }.bind(this)
@@ -668,7 +693,6 @@
                         graphs.push(this.metrics[key].info);
                     }
                 }
-                console.log('Available metrics', this.availableMetrics);
                 this.fillChart(valueAxes, graphs);
                 if ('chart' in this) {
                     this.bindToggles();
@@ -684,9 +708,26 @@
                 this.$.spinner.classList.remove('hide');
                 this.$.spinner.classList.remove('fade');
             },
+            toggleMetrics: function (e) {
+                var target = e.target;
+                while (!('stat' in target.dataset)) {
+                    target = target.parentElement;
+                }
+                var opt = target.dataset.stat;
+
+                /* Change visual state */
+                var active = this.querySelector('[data-toggle="on"].stat');
+                active.dataset.toggle = 'off';
+                target.dataset.toggle = 'on';
+                
+                var bubbles = this.querySelectorAll('bubble-stat');
+                for (var i = 0; i < bubbles.length; i++) {
+                    var bubble = bubbles[i];
+                    bubble.setMode(opt);
+                }
+            },
             bindToggles: function () {
                 for (var key in this.metrics) {
-                    console.log('key', key);
                     if (this.availableMetrics.indexOf(key) === -1) {
                         this.metrics[key].toggle.classList.add('hidden');
                     } else {
@@ -697,7 +738,6 @@
                 this.metrics.heartRate.switch('on');
                 var hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc'];
                 for (key of this.availableMetrics) {
-                    console.log('key am', key);
                     if (hiddenMetrics.indexOf(key) > -1) {
                         this.metrics[key].switch('off');
                     }
@@ -712,7 +752,7 @@
                 this.metrics[graph].switch('flip');
             },
             calcAvgs: function (begin, end) {
-                var total = end - begin - 1;
+                var total = end - begin;
 
                 var exactDistance = meterToMile(this.data[end-1].distance - this.data[begin].distance, 8);
                 var distance = meterToMile(this.data[end-1].distance - this.data[begin].distance, 1);
@@ -726,16 +766,12 @@
                     distanceUnit = 'KM';
                 }
                 var pace = {
-                    movingPace: {
+                    active: ['pace'],
+                    pace: {
                         icon: 'maps:directions-run',
-                        title: 'Moving Pace',
-                        value: 0,
-                        unit: paceUnit
-                    },
-                    elapsedPace: {
-                        icon: 'maps:directions-run',
-                        title: 'Elapsed Pace',
-                        value: 0,
+                        title: 'Pace',
+                        moving: 0,
+                        elapsed: 0,
                         unit: paceUnit
                     },
                     maxPace: {
@@ -745,19 +781,14 @@
                         unit: paceUnit
                     }
                 };
-
                 var time = {
-                    elapsedTime: {
+                    active: ['time'],
+                    time: {
                         icon: 'image:timer',
-                        title: 'Elapsed Time',
+                        title: 'Time',
                         value: 0,
-                        mseconds: 0,
-                        unit: 'HH:MM:SS'
-                    },
-                    movingTime: {
-                        icon: 'image:timer',
-                        title: 'Moving Time',
-                        value: 0,
+                        moving: 0,
+                        elapsed: 0,
                         mseconds: 0,
                         unit: 'HH:MM:SS'
                     },
@@ -769,18 +800,19 @@
                     }
                 };
                 var power = {
+                    active: ['power'],
+                    power: {
+                        icon: 'image:flash-on',
+                        title: 'Power',
+                        moving: 0,
+                        elapsed: 0,
+                        mTotal: 0,
+                        unit: 'Watts'
+                    },
                     maxPower: {
                         icon: 'image:flash-on',
                         title: 'Max Power',
                         value: 0,
-                        unit: 'Watts'
-                    },
-                    movingPower: {
-                        icon: 'image:flash-on',
-                        title: 'Average Power',
-                        value: 0,
-                        sum: 0,
-                        total: 0,
                         unit: 'Watts'
                     },
                     timeInMaxZone: {
@@ -791,49 +823,44 @@
                     }
                 };
                 var heartRate = {
+                    active: ['heartRate'],
+                    heartRate: {
+                        icon: 'favorite',
+                        title: 'HR',
+                        moving: 0,
+                        elapsed: 0,
+                        mTotal: 0,
+                        value: 0,
+                        sum: 0,
+                        total: 0,
+                        unit: 'BPM'
+                    },
                     maxHR: {
                         icon: 'favorite',
                         title: 'Max Heart Rate',
                         value: 0,
                         unit: 'BPM'
-                    },
-                    movingHR: {
-                        icon: 'favorite',
-                        title: 'Average Moving HR',
-                        value: 0,
-                        sum: 0,
-                        total: 0,
-                        unit: 'BPM'
-                    },
-                    elapsedHR: {
-                        icon: 'favorite',
-                        title: 'Average Elapsed HR',
-                        value: 0,
-                        sum: 0,
-                        total: 0,
-                        unit: 'BPM'
+                    }
+                };
+                var cadence = {
+                    active: ['cadence'],
+                    cadence: {
+                        icon: 'maps:directions-walk',
+                        title: 'Cadence',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'SPM'
                     }
                 };
                 var misc = {
+                    active: [],
                     distance: {
                         icon: 'communication:swap-calls',
                         title: 'Distance',
                         value: 0,
                         unit: distanceUnit
-                    },
-                    avgCadence: {
-                        icon: 'maps:directions-walk',
-                        title: 'Average Cadence',
-                        value: 0,
-                        sum: 0,
-                        unit: 'SPM'
                     }
-                    // avgVertOsc: {
-                    //     icon: 'communication:call-missed',
-                    //     title: 'Average',
-                    //     value: '123',
-                    //     unit: 'CM'
-                    // }
                 };
 
                 var milliseconds = this.data[end-1].date - this.data[begin].date;
@@ -850,11 +877,6 @@
                     }
 
                     /* Pace */
-                    if (data.pace > 0) {
-                        time.movingTime.mseconds += timeSectionMSeconds;
-                    }
-                    time.elapsedTime.mseconds += timeSectionMSeconds;
-
                     if (data.pace > pace.maxPace.value) {
                         pace.maxPace.value = data.pace;
                     }
@@ -864,14 +886,21 @@
                         power.maxPower.value = data.power;
                     }
 
+                    if (data.power > 0) {
+                        time.time.moving += timeSectionMSeconds;
+                    }
+                    time.time.elapsed += timeSectionMSeconds;
+
                     // power.movingPower.sum += data.power;
 
-                    if (data.power > 40) {
-                        power.movingPower.sum += data.power;
-                        power.movingPower.total += 1;
+                    power.power.elapsed += data.power;
+
+                    if (data.power > 10) {
+                        power.power.moving += data.power;
+                        power.power.mTotal += 1;
                     }
 
-                    if (data.power > 400) {
+                    if (data.power > 300) {
                         power.timeInMaxZone.value += timeSectionMSeconds;
                     }
 
@@ -880,51 +909,60 @@
                         heartRate.maxHR.value = data.heartRate;
                     }
 
-                    if (data.power > 40) {
-                        heartRate.movingHR.sum += data.heartRate;
-                        heartRate.movingHR.total += 1;
+                    heartRate.heartRate.elapsed += data.heartRate;
+
+                    if (data.power > 10) {
+                        heartRate.heartRate.moving += data.heartRate;
+                        heartRate.heartRate.mTotal += 1;
                     }
 
-                    heartRate.elapsedHR.sum += data.heartRate;
-
-                    misc.avgCadence.sum += data.cadence;
+                    cadence.cadence.elapsed += data.cadence;
+                    if (data.power > 10) {
+                        cadence.cadence.moving += data.cadence;
+                        cadence.cadence.mTotal += 1;
+                    }
                 }
 
                 var elapsedMinutes = seconds / 60;
-                var movingMinutes = time.movingTime.mseconds / 1000 / 60;
+                var movingMinutes = time.time.moving / 1000 / 60;
                 var elapsedDec, movingDec, maxPace;
                 if (user.data.units === 'feet') {
                     elapsedDec = elapsedMinutes / exactDistance;
                     movingDec = movingMinutes / exactDistance;
                     maxPace = minutesPerMile(pace.maxPace.value, 'minutes');
                 } else {
-                    elapsedDec = elapsedMinutes / exactDistance / 0.621371;
-                    movingDec = movingMinutes / exactDistance / 0.621371;
+                    elapsedDec = elapsedMinutes / exactDistance * 0.621371;
+                    movingDec = movingMinutes / exactDistance * 0.621371;
                     maxPace = minutesPerKM(pace.maxPace.value);
                 }
-                pace.elapsedPace.value = formatPace(elapsedDec.toFixed(2));
-                pace.movingPace.value = formatPace(movingDec.toFixed(2));
+                pace.pace.elapsed = formatPace(elapsedDec.toFixed(2));
+                pace.pace.moving = formatPace(movingDec.toFixed(2));
                 pace.maxPace.value = maxPace;
 
-                // power.movingPower.value = (power.movingPower.sum / total).toFixed(1);
-                power.movingPower.value = (power.movingPower.sum / power.movingPower.total).toFixed(1);
+                power.power.moving = (power.power.moving / power.power.mTotal).toFixed(1);
+                power.power.elapsed = (power.power.elapsed / total).toFixed(1);
 
-                heartRate.elapsedHR.value = (heartRate.elapsedHR.sum / total).toFixed(1);
-                heartRate.movingHR.value = (heartRate.movingHR.sum / heartRate.movingHR.total).toFixed(1);
+                heartRate.heartRate.moving = (heartRate.heartRate.moving / heartRate.heartRate.mTotal).toFixed(1);
+                heartRate.heartRate.elapsed = (heartRate.heartRate.elapsed / total).toFixed(1);
 
-                time.elapsedTime.value = hmsTime(time.elapsedTime.mseconds);
-                time.movingTime.value = hmsTime(time.movingTime.mseconds);
+                time.time.elapsed = hmsTime(time.time.elapsed);
+                time.time.moving = hmsTime(time.time.moving);
 
                 misc.distance.value = distance;
                 if (user.data.units !== 'feet') {
                     misc.distance.value = (distance / 0.621371).toFixed(1);
                 }
-                misc.avgCadence.value = (misc.avgCadence.sum / total).toFixed(1);
 
+                cadence.cadence.moving = (cadence.cadence.moving / cadence.cadence.mTotal).toFixed(1);
+                cadence.cadence.elapsed = (cadence.cadence.elapsed / total).toFixed(1);
+
+                delete heartRate.movingHR;
+                delete power.timeInMaxZone;
                 this.querySelector('[type="pace"]').setData(pace);
                 this.querySelector('[type="time"]').setData(time);
                 this.querySelector('[type="power"]').setData(power);
                 this.querySelector('[type="heartRate"]').setData(heartRate);
+                this.querySelector('[type="cadence"]').setData(cadence);
                 this.querySelector('[type="misc"]').setData(misc);
             },
             addPoint: function (pt) {
