@@ -37,30 +37,6 @@ var initDB = function () {
     db.open();
 };
 
-onmessage = function (event) {
-    initDB();
-
-    data = {};
-    token = event.data.token;
-
-    switch(event.data.type) {
-        case 'all':
-            logsFetching();
-            break;
-        case 'workout':
-            workoutFetching(event.data.id);
-            break;
-        case 'sample':
-            workoutFetching('sample');
-            break;
-        case 'addLog':
-            addLog(event.data.id);
-            break;
-        default:
-            console.log('Error in onmessage/processor: unknown action');
-    }
-};
-
 var interpolate = function (start, end, steps, count) {
     var s = start,
         e = end,
@@ -276,25 +252,6 @@ var logsProcessing = function (logs) {
     postMessage(data);
 };
 
-/* Public method */
-onmessage = function (event) {
-    initDB();
-
-    data = {};
-    token = event.data.token;
-    if (event.data.type === 'all') {
-        logsFetching();
-    } else if (event.data.type === 'admin') {
-        logsFetching(event.data.user);
-    } else if (event.data.type === 'workout') {
-        workoutFetching(event.data.id);
-    } else if (event.data.type === 'sample') {
-        workoutFetching('sample');
-    } else if (event.data.type === 'addLog') {
-        addLog(event.data.id);
-    }
-};
-
 var addLog = function (id) {
     superagent
         .get('/b/api/v1/activities/' + id)
@@ -327,10 +284,41 @@ var logsFetching = function (user='') {
                 if (res.body !== null) {
                     logsProcessing(res.body);
                 } else {
-                    workoutFetching('sample');
+                    workoutFetching('sample', 'owned');
                 }
             } else {
                 console.log('Error: failure on grabLogs', err, res);
             }
         }.bind(this));
+};
+
+/* Public method */
+onmessage = function (event) {
+    initDB();
+
+    data = {};
+    token = event.data.token;
+
+    switch(event.data.type) {
+        case 'all':
+            logsFetching();
+            break;
+        case 'workout':
+            workoutFetching(event.data.id, 'owned');
+            break;
+        case 'workout-view':
+            workoutFetching(event.data.id, 'shared');
+            break;
+        case 'sample':
+            workoutFetching('sample', 'owned');
+            break;
+        case 'addLog':
+            addLog(event.data.id);
+            break;
+        case 'admin':
+            logsFetching(event.data.user);
+            break;
+        default:
+            console.log('Error in onmessage/processor: unknown action');
+    }
 };
