@@ -9,13 +9,41 @@ body {
   flex-direction: column;*/
 }
 
+a {
+  color: #F5A214;
+}
+a:visited {
+  color: #F5A214;
+}
+
+h1 {
+  color: white;
+  margin: 20px;
+}
+
 .content {
   /*flex: 1;*/
   background-color: #262626;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 iron-pages {
   padding: 0 !important;
+  flex: 1 0 auto;
+}
+
+iron-pages::after {
+  content: '\00a0'; /* &nbsp; */
+  display: block;
+  margin-top: var(--space);
+  height: 0px;
+  visibility: hidden;
+}
+
+header-element, footer-element {
+  flex: none;
 }
 
 div.connect {
@@ -53,4 +81,8 @@ div.connect {
 
 .hidden {
   display: none !important;
+}
+
+.welcome {
+  padding: 20px;
 }
