@@ -16,6 +16,15 @@ var workoutFetching = function (id) {
     });
 };
 
+var db;
+var initDB = function () {
+    db = new Dexie('Logs');
+    db.version(1).stores({
+        log: '++id, data'
+    });
+    db.open();
+};
+initDB();
 
 (function(document) {
     'use strict';
