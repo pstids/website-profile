@@ -271,6 +271,7 @@ var workoutProcessing = function (workout, id, scope) {
 };
 
 var logsProcessing = function (logs) {
+    console.log('Trying to process logs: ', logs);
     data.logs = logs;
     postMessage(data);
 };
@@ -292,6 +293,24 @@ var addLog = function (id) {
         });
 };
 
+var suuntoProcessing = function () {
+    superagent
+        .post('/b/internal/fetch/suunto')
+        .send({})
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer: ' + token)
+        .end(function (err, res) {
+            if (res.ok) {
+                if (res.body.workouts !== null) {
+                    for (var i = 0; i < res.body.workouts.length; i++) {
+                        var workoutID = res.body.workouts[i];
+                        addLog(workoutID);
+                    }
+                }
+            }
+        }.bind(this));
+};
+
 var logsFetching = function (user='') {
     var link = '/b/api/v1/activities/summary?limit=40&sortby=Timestamp&order=desc';
     if (user.length > 0) {
@@ -309,10 +328,12 @@ var logsFetching = function (user='') {
                 } else {
                     workoutFetching('sample', 'owned');
                 }
+                suuntoProcessing();
             } else {
                 console.log('Error: failure on grabLogs', err, res);
             }
         }.bind(this));
+
 };
 
 /* Public method */

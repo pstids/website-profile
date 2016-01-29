@@ -52,8 +52,7 @@
                     <a href="https://www.suunto.com">
                         <img class="logo" src="/powercenter/images/logos/logo_suunto.png" width="150px" height="48px"/>
                     </a>
-                    <button is="stryd-button" data-suunto="connect" class="hidden">Connect</button>
-                    <button is="stryd-button">Coming Soon</button>
+                    <button is="stryd-button" data-suunto="connect">Connect</button>
                     <div data-suunto="authStep" class="hidden">
                         <paper-input
                             no-label-float
@@ -65,7 +64,9 @@
                         <button is="stryd-button" data-suunto="auth">Connect to Movescount</button>
                     </div>
                     <a is="stryd-button" data-suunto="confirm" href="http://www.movescount.com/settings#connections" class="hidden" target="_blank">Visit Movescount to Confirm</a>
-                    <button is="stryd-button" data-suunto="disconnect" on-click="suuntoDisconnect" class="hidden">Fetch New Workouts</button>
+                    <button is="stryd-button" data-suunto="fetch" class="hidden">Fetch New Workouts</button>
+                    <button is="stryd-button" data-suunto="fetching" class="hidden" disabled>Fetching</button>
+                    <button is="stryd-button" data-suunto="disconnect" class="hidden">Disconnect</button>
                 </div>
                 <div style="width:150px;"></div>
             </div>
@@ -89,7 +90,7 @@
                     <a href="https://www.2peak.com">
                         <img class="logo" src="/powercenter/images/logos/logo_2peak.png" width="150px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="2peak" on-click="">Coming Soon</button>
+                    <button is="stryd-button" data-toggle="off" id="2peak" on-click="oauthConnect">Connect</button>
                 </div>
             </div>
             <div class="authenticate">
@@ -115,7 +116,6 @@
         /*global jwt */
         /*jshint unused: false*/
         /*jshint camelcase: false */
-        (function () {
             Polymer({
                 is: 'platform-connect',
                 properties: {
@@ -128,12 +128,17 @@
                         this.suuntoCheck.bind(this),
                         false
                     );
+                    this.suuntoCheck();
+                },
+                notify: function (message) {
+                    this.suunto.alert.text = message;
+                    this.suunto.alert.show();
                 },
                 suuntoCheck: function (e) {
                     if (document.visibilityState === 'visible' &&
                         !this.suunto.confirm.classList.contains('hidden')) {
                         superagent
-                            .post('/b/internal/suunto/check')
+                            .post('/b/platform/auth/suunto/check')
                             .send()
                             .set('Accept', 'application/json')
                             .set('Authorization', 'Bearer: ' + jwt.token)
@@ -141,6 +146,7 @@
                                 if (res.ok) {
                                     if (res.body && res.body.status === 200) {
                                         this.suunto.confirm.classList.add('hidden');
+                                        this.suunto.fetch.classList.remove('hidden');
                                         this.suunto.disconnect.classList.remove('hidden');
                                     }
                                 }
@@ -154,25 +160,40 @@
                         auth: this.querySelector('[data-suunto=\'auth\']'),
                         authStep: this.querySelector('[data-suunto=\'authStep\']'),
                         confirm: this.querySelector('[data-suunto=\'confirm\']'),
-                        disconnect: this.querySelector('[data-suunto=\'disconnect\']'),
-                        alert: this.querySelector('[data-suunto=\'alert\']')
+                        fetch: this.querySelector('[data-suunto=\'fetch\']'),
+                        fetching: this.querySelector('[data-suunto=\'fetching\']'),
+                        alert: this.querySelector('[data-suunto=\'alert\']'),
+                        disconnect: this.querySelector('[data-suunto=\'disconnect\']')
                     };
-                    this.suunto.disconnect.addEventListener('click', function (e) {
+                    this.suunto.fetch.addEventListener('click', function (e) {
+                        var target = e.target;
+                        this.suunto.fetch.classList.add('hidden');
+                        this.suunto.fetching.classList.remove('hidden');
                         superagent
-                            .post('/b/api/v1/fetch/suunto')
+                            .post('/b/internal/fetch/suunto')
                             .send({})
                             .set('Accept', 'application/json')
                             .set('Authorization', 'Bearer: ' + jwt.token)
                             .end(function (err, res) {
                                 if (res.ok) {
-                                    this.suunto.alert.text = res.body.message;
-                                    this.suunto.alert.show();
+                                    this.suunto.fetch.classList.remove('hidden');
+                                    this.suunto.fetching.classList.add('hidden');
+                                    this.notify(res.body.message);
+                                    if (res.body.workouts !== null) {
+                                        for (var i = 0; i < res.body.workouts.length; i++) {
+                                            var workoutID = res.body.workouts[i];
+                                            addLog(workoutID);
+                                        }
+                                    }
+                                } else {
+                                    this.notify(res.body.message);
                                 }
                             }.bind(this));
                     }.bind(this));
                     this.suunto.connect.addEventListener('click', function (e) {
                         this.suunto.connect.classList.add('hidden');
                         this.suunto.authStep.classList.remove('hidden');
+                        this.suunto.disconnect.classList.remove('hidden');
                     }.bind(this));
                     this.suunto.auth.addEventListener('click', function (e) {
                         superagent
@@ -186,27 +207,43 @@
                                 if (res.ok) {
                                     this.suunto.authStep.classList.add('hidden');
                                     this.suunto.confirm.classList.remove('hidden');
+                                    this.suunto.disconnect.classList.remove('hidden');
+                                } else {
+                                    this.notify(res.body.message);
                                 }
                             }.bind(this));
                     }.bind(this));
+                    this.suunto.disconnect.addEventListener('click', function (e) {
+                        this.oauthDisconnect('suunto', function () {
+                            this.suunto.confirm.classList.add('hidden');
+                            this.suunto.disconnect.classList.add('hidden');
+                            this.suunto.fetch.classList.add('hidden');
+                            this.suunto.authStep.classList.add('hidden');
+                            this.suunto.connect.classList.remove('hidden');
+                        }.bind(this));
+                    }.bind(this));
+                },
+                oauthDisconnect: function (platform, cb) {
+                    superagent
+                        .del('/b/platform/oauth/' + platform)
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', 'Bearer: ' + jwt.token)
+                        .end(function (err, res) {
+                            if (res) {
+                                cb();
+                                this.notify(res.body.message);
+                            }
+                        }.bind(this));
                 },
                 oauthConnect: function (e) {
                     var platform = e.target.getAttribute('id');
                     var ele = this.$[platform];
                     if (this.$[platform].dataset.toggle === 'on') {
-                        superagent
-                            .del('/b/platform/oauth/' + platform)
-                            .send()
-                            .set('Accept', 'application/json')
-                            .set('Authorization', 'Bearer: ' + jwt.token)
-                            .end(function (err, res) {
-                                console.log(res);
-                                if (res.ok) {
-                                    ele.dataset.toggle = 'off';
-                                    ele.textContent = 'Connect';
-                                }
-                            });
-
+                        this.oauthDisconnect(platform, function () {
+                            ele.dataset.toggle = 'off';
+                            ele.textContent = 'Connect';
+                        }.bind(this));
                     } else {
                         superagent
                             .get('/b/platform/oauth/' + platform)
@@ -216,6 +253,8 @@
                             .end(function (err, res) {
                                 if (res.ok) {
                                     window.location = res.body.redirect_url;
+                                } else {
+                                    this.notify(res.body.message);
                                 }
                             });
                     }
@@ -235,7 +274,7 @@
                     }
                 },
                 updateView: function (platforms) {
-                    var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava'], verifyPlatforms = ['suunto'];
+                    var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak'], verifyPlatforms = ['suunto'];
                     var platform, i;
                     for (i = 0; i < platforms.length; i++) {
                         platform = platforms[i];
@@ -257,19 +296,19 @@
                     }
                 },
                 verifyPlatformsController: function (platform) {
-                    console.log('trigger');
                     if (platform.platform === 'suunto') {
                         if (platform.status === 1) {
                             this.suunto.connect.classList.add('hidden');
                             this.suunto.confirm.classList.remove('hidden');
+                            this.suunto.disconnect.classList.remove('hidden');
                         } else if (platform.status === 2) {
                             this.suunto.connect.classList.add('hidden');
+                            this.suunto.fetch.classList.remove('hidden');
                             this.suunto.disconnect.classList.remove('hidden');
                         }
                     }
                 }
             });
-        })();
     </script>
 
 </dom-module>

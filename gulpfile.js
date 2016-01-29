@@ -77,7 +77,8 @@ gulp.task('jshint', function () {
         'windowFocusEvent',
         'formatPace',
         'attribute',
-        'moment'
+        'moment',
+        'addLog'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

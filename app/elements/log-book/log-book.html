@@ -132,7 +132,21 @@
             addLog: function (log) {
                 var logEle = document.createElement('log-entry');
                 logEle.setData(log);
-                this.$.logContainer.appendChild(logEle);
+                var targetChild = null;
+                var existing = false;
+                for (var i = 0; i < this.$.logContainer.children.length; i++) {
+                    var child = this.$.logContainer.children[i];
+                    if (log.id === child.data.id) {
+                        existing = true;
+                    }
+                    if (log.timestamp > child.data.timestamp) {
+                        targetChild = child;
+                        break;
+                    }
+                }
+                if (!existing) {
+                    this.$.logContainer.insertBefore(logEle, targetChild);
+                }
             },
             expandLogs: function () {
                 for (var i = 0; i < this.$.logContainer.children.length; i++) {
@@ -141,6 +155,7 @@
                 }
             },
             populateLogs: function (logs) {
+                console.log('Trying to populate logs:', logs);
                 while (this.$.logContainer.firstChild) {
                     this.$.logContainer.removeChild(this.$.logContainer.firstChild);
                 }

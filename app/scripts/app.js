@@ -8,6 +8,8 @@ var processor = new Worker('/powercenter/scripts/processor.js');
 
 Dropzone.autoDiscover = false;
 
+var addLog;
+
 var workoutFetching = function (id) {
     processor.postMessage({
         token: jwt.token,
@@ -130,8 +132,9 @@ var updateWorkout = function (id, updates, cb) {
         page('/', () => {
             scope = 'owned';
             if (jwt.hasToken) {
-                workoutShared.fetchUser(user.data.user_name);
                 logsFetching();
+                workoutShared.fetchUser(user.data.user_name);
+                // suuntoChecking();
                 app.route = 'home';
                 header.toggleActive('home');
             } else {
@@ -281,7 +284,10 @@ var updateWorkout = function (id, updates, cb) {
             type: 'all'
         });
     };
-    var addLog = function (id) {
+    // var suuntoChecking = function () {
+
+    // };
+    window.addLog = function (id) {
         processor.postMessage({
             token: jwt.token,
             type: 'addLog',
