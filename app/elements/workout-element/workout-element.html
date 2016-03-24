@@ -296,7 +296,7 @@
                 <bubble-stat type="time"></bubble-stat>
                 <bubble-stat type="power"></bubble-stat>
                 <bubble-stat type="heartRate"></bubble-stat>
-                <bubble-stat type="cadence"></bubble-stat>
+                <bubble-stat type="dynamics"></bubble-stat>
                 <bubble-stat type="misc"></bubble-stat>
             </div>
             <div class="options">
@@ -842,8 +842,8 @@
                         unit: 'BPM'
                     }
                 };
-                var cadence = {
-                    active: ['cadence'],
+                var dynamics = {
+                    active: ['cadence', 'groundTime', 'vertOsc'],
                     cadence: {
                         icon: 'maps:directions-walk',
                         title: 'Cadence',
@@ -851,6 +851,22 @@
                         moving: 0,
                         mTotal: 0,
                         unit: 'SPM'
+                    },
+                    groundTime: {
+                        icon: 'av:av-timer',
+                        title: 'Ground Time',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'MS'
+                    },
+                    vertOsc: {
+                        icon: 'communication:call-missed',
+                        title: 'Vert. Osc.',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'CM'
                     }
                 };
                 var misc = {
@@ -916,10 +932,25 @@
                         heartRate.heartRate.mTotal += 1;
                     }
 
-                    cadence.cadence.elapsed += data.cadence;
+                    dynamics.cadence.elapsed += data.cadence;
                     if (data.power > 10) {
-                        cadence.cadence.moving += data.cadence;
-                        cadence.cadence.mTotal += 1;
+                        dynamics.cadence.moving += data.cadence;
+                        dynamics.cadence.mTotal += 1;
+                    }
+
+                    if ('groundTime' in data) {
+                        dynamics.groundTime.elapsed += data.groundTime;
+                        if (data.power > 10) {
+                            dynamics.groundTime.moving += data.groundTime;
+                            dynamics.groundTime.mTotal += 1;
+                        }
+                    }
+                    if ('vertOsc' in data) {
+                        dynamics.vertOsc.elapsed += data.vertOsc;
+                        if (data.power > 10) {
+                            dynamics.vertOsc.moving += data.vertOsc;
+                            dynamics.vertOsc.mTotal += 1;
+                        }
                     }
                 }
 
@@ -953,8 +984,22 @@
                     misc.distance.value = (distance / 0.621371).toFixed(1);
                 }
 
-                cadence.cadence.moving = (cadence.cadence.moving / cadence.cadence.mTotal).toFixed(1);
-                cadence.cadence.elapsed = (cadence.cadence.elapsed / total).toFixed(1);
+                dynamics.cadence.moving = (dynamics.cadence.moving / dynamics.cadence.mTotal).toFixed(1);
+                dynamics.cadence.elapsed = (dynamics.cadence.elapsed / total).toFixed(1);
+
+                if (dynamics.groundTime.elapsed !== 0) {
+                    dynamics.groundTime.moving = (dynamics.groundTime.moving / dynamics.groundTime.mTotal).toFixed(1);
+                    dynamics.groundTime.elapsed = (dynamics.groundTime.elapsed / total).toFixed(1);
+                } else {
+                    delete dynamics.groundTime;
+                }
+
+                if (dynamics.vertOsc.elapsed !== 0) {
+                    dynamics.vertOsc.moving = (dynamics.vertOsc.moving / dynamics.vertOsc.mTotal).toFixed(1);
+                    dynamics.vertOsc.elapsed = (dynamics.vertOsc.elapsed / total).toFixed(1);
+                } else {
+                    delete dynamics.vertOsc;
+                }
 
                 delete heartRate.movingHR;
                 delete power.timeInMaxZone;
@@ -962,7 +1007,7 @@
                 this.querySelector('[type="time"]').setData(time);
                 this.querySelector('[type="power"]').setData(power);
                 this.querySelector('[type="heartRate"]').setData(heartRate);
-                this.querySelector('[type="cadence"]').setData(cadence);
+                this.querySelector('[type="dynamics"]').setData(dynamics);
                 this.querySelector('[type="misc"]').setData(misc);
             },
             addPoint: function (pt) {

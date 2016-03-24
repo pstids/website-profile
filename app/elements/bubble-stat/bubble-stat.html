@@ -123,13 +123,9 @@
 				this.$.wrap.classList.toggle('popped');
 			},
 			setMode: function (opt) {
-				var activeKey;
-				if (this.objects.active.length === 0) {
-					activeKey = null;
-				} else {
-					activeKey = this.objects.active[0];
-				}
-				if (activeKey !== null) {
+				var activeKeys = this.objects.active;
+				for (var i = 0; i < activeKeys.length; i++) {
+					var activeKey = activeKeys[i];
 					var active = this.objects[activeKey];
 					var title;
 					if (opt === 'moving') {
@@ -139,8 +135,8 @@
 						} else {
 							title = 'Moving ' + active.title;
 						}
-						this.set('obja.title', title);
-						this.set('obja.value', active.moving);
+						this.set('obj' + active.prop + '.title', title);
+						this.set('obj' + active.prop + '.value', active.moving);
 					} else {
 						title = active.title;
 						if (title !== 'Time') {
@@ -148,8 +144,8 @@
 						} else {
 							title = 'Elapsed ' + active.title;
 						}
-						this.set('obja.title', title);
-						this.set('obja.value', active.elapsed);
+						this.set('obj' + active.prop + '.title', title);
+						this.set('obj' + active.prop + '.value', active.elapsed);
 					}
 				}
 			},
@@ -158,20 +154,17 @@
 				var props = ['a', 'b', 'c'];
 				var i = 0;
 
-				var activeKey;
-				if (this.objects.active.length === 0) {
-					activeKey = null;
-				} else {
-					activeKey = this.objects.active[0];
-				}
+				var activeKeys = this.objects.active;
 
-				for (var key in objs) {
+				for (var key in this.objects) {
 					if (key !== 'active') {
-						var obj = objs[key];
+						var obj = this.objects[key];
 						var prop = props[i];
+						obj.prop = prop;
 						this.set('obj' + prop + '.icon', obj.icon);
 						this.set('obj' + prop + '.unit', obj.unit);
-						if (activeKey !== null && key === activeKey) {
+						// Check if this is an object that can be toggled by elapsed/moving
+						if (activeKeys.indexOf(key) !== -1) {
 							this.set('obj' + prop + '.title', 'Average Elapsed ' + obj.title);
 							this.set('obj' + prop + '.value', obj.elapsed);
 						} else {
@@ -181,6 +174,7 @@
 						i++;
 					}
 				}
+				// If there are less than three objects, hide the remaining bubbles.
 				for (; i < 3; i++) {
 					this.querySelector('[data-bubble="' + parseInt(i+1) + '"]').classList.add('hidden');
 				}
