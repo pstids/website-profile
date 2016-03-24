@@ -324,10 +324,26 @@
                 };
             },
             saveDetails: function () {
-                var queryString = this.jsonToQueryString(this.userLocal);
+                // var queryString = this.jsonToQueryString(this.userLocal);
+                var updateParams = '?fields=gender,weight,height,units,city,state,country,about_me,birth';
+
                 superagent
-                    .put('/b/api/v1/users/' + jwt.data.id + queryString)
-                    .send([])
+                    .put('/b/api/v1/users/' + jwt.data.id + updateParams)
+                    .send({
+                        gender: this.userLocal.gender,
+                        weight:  parseInt(this.userLocal.weight),
+                        height: parseInt(this.userLocal.height),
+                        units: this.userLocal.units,
+                        city: this.userLocal.city,
+                        state: this.userLocal.state,
+                        country: this.userLocal.country,
+                        about_me: this.userLocal.about_me,
+                        birth: {
+                            year: parseInt(this.userLocal.birth_year),
+                            month: parseInt(this.userLocal.birth_month),
+                            day: parseInt(this.userLocal.birth_day)
+                        }
+                    })
                     .set('Accept', 'application/json')
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {

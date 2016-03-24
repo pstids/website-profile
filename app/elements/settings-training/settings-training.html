@@ -497,26 +497,32 @@
             },
             saveZones: function () {
                 localStorage.setItem('useTest', this.useTest);
-                var queryObj = {};
+                // var queryObj = {};
                 if (this.useTest) {
                     this.critPower.value = this.isCritPower;
                 }
-                queryObj.crit_power_three_minutes = parseInt(this.critPower.three);
-                queryObj.crit_power_nine_minutes = parseInt(this.critPower.nine);
-                queryObj.crit_power_value = parseInt(this.critPower.value);
-                queryObj.crit_pace_three_minutes = this.critPace.three;
-                queryObj.crit_pace_nine_minutes = this.critPace.nine;
-                queryObj.crit_pace_value = this.critPace.value;
 
+
+                var updateParams = '?fields=critical_power,critical_pace,zones';
                 var zones = [];
                 for (var i = 0; i < this.$.zones.children.length; i++) {
                     zones.push(this.$.zones.children[i].export());
                 }
 
-                var queryString = this.jsonToQueryString(queryObj);
+                // var queryString = this.jsonToQueryString(queryObj);
                 superagent
-                    .put('/b/api/v1/users/' + jwt.data.id + queryString)
+                    .put('/b/api/v1/users/' + jwt.data.id + updateParams)
                     .send({
+                        critical_pace: {
+                            three_minutes: this.critPace.three,
+                            nine_minutes: this.critPace.nine,
+                            value: this.critPace.value
+                        },
+                        critical_power: {
+                            three_minutes: parseInt(this.critPower.three),
+                            nine_minutes: parseInt(this.critPower.nine),
+                            value: parseInt(this.critPower.value)
+                        },
                         zones: zones
                     })
                     .set('Accept', 'application/json')
