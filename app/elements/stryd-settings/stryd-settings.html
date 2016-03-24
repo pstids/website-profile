@@ -118,7 +118,7 @@
                             <div class="settings">Settings</div>
                         </div>
                     </li>
-                    <li class="setting" on-click="router" data-view="training">
+                    <li class="setting" on-click="router" data-view="time-training">
                         <div class="icon-border">
                             <div class="icon">
                                 <iron-icon icon="maps:directions-run"></iron-icon>
@@ -126,6 +126,17 @@
                         </div>
                         <div class="text">
                             <div class="type">Training</div>
+                            <div class="settings">Settings</div>
+                        </div>
+                    </li>
+                    <li class="setting hidden" on-click="router" data-view="distance-training" id="ambassador">
+                        <div class="icon-border">
+                            <div class="icon">
+                                <iron-icon icon="maps:directions-run"></iron-icon>
+                            </div>
+                        </div>
+                        <div class="text">
+                            <div class="type">3-6 Lap Test</div>
                             <div class="settings">Settings</div>
                         </div>
                     </li>
@@ -158,8 +169,11 @@
                     <section data-route="profile">
                         <user-info></user-info>
                     </section>
-                    <section data-route="training">
+                    <section data-route="time-training">
                         <settings-training></settings-training>
+                    </section>
+                    <section data-route="distance-training">
+                        <distance-training id="distanceTraining"></distance-training>
                     </section>
                 </iron-pages>
             </div>
@@ -174,6 +188,18 @@
             }
             ready() {
                 this.route = 'profile';
+                superagent
+                    .get('/b/api/v1/users/' + user.data.id + '/training')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end((err, res) => {
+                        if (res.ok) {
+                            if (res.body.critical_power !== 0) {
+                                this.$.ambassador.classList.remove('hidden');
+                                this.$.distanceTraining.setData(res.body);
+                            }
+                        }
+                    });
+                    
             }
             notReady() {
                 this.$.toast.show();
