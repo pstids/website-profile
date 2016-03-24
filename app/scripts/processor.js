@@ -108,7 +108,7 @@ var workoutFetchingAJAX = function (workout, scope) {
         });
 };
 
-var workoutFetching = function (workoutID, scope) {
+var workoutFetching = function (workoutID, workoutUpdated, scope) {
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (!checkIndexedDB) {
         workoutFetchingAJAX(workoutID);
@@ -117,7 +117,15 @@ var workoutFetching = function (workoutID, scope) {
             if (log === undefined) {
                 workoutFetchingAJAX(workoutID, scope);
             } else {
-                workoutProcessing(log.data, log.id, scope);
+                var workoutUpdatedTS = new Date(workoutUpdated);
+                var logUpdatedTS = new Date(log.data.updated_time);
+                var getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
+                    (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
+                if (getExternal) {
+                    workoutFetchingAJAX(workoutID, scope);
+                } else {
+                    workoutProcessing(log.data, log.id, scope);
+                }
             }
         });
     }
@@ -326,7 +334,7 @@ var logsFetching = function (user='') {
                 if (res.body !== null) {
                     logsProcessing(res.body);
                 } else {
-                    workoutFetching('sample', 'owned');
+                    workoutFetching('sample', '2020-03-02T18:19:51.582355Z',  'owned');
                 }
                 suuntoProcessing();
             } else {
@@ -348,13 +356,13 @@ onmessage = function (event) {
             logsFetching();
             break;
         case 'workout':
-            workoutFetching(event.data.id, 'owned');
+            workoutFetching(event.data.id, event.data.updated_time, 'owned');
             break;
         case 'workout-view':
-            workoutFetching(event.data.id, 'shared');
+            workoutFetching(event.data.id, event.data.updated_time, 'shared');
             break;
         case 'sample':
-            workoutFetching('sample', 'owned');
+            workoutFetching('sample', Date.now(), 'owned');
             break;
         case 'addLog':
             addLog(event.data.id);

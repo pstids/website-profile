@@ -354,7 +354,7 @@
                 }
 
                 document.querySelector('workout-element').setLoading();
-                workoutFetching(this.data.id);
+                workoutFetching(this.data.id, this.data.updated_time);
                 window.scrollTo(0, bubbles.offsetTop);
             },
             handleDownload: function () {

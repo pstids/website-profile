@@ -10,11 +10,12 @@ Dropzone.autoDiscover = false;
 
 var addLog;
 
-var workoutFetching = function (id) {
+var workoutFetching = function (id, updated_time) {
     processor.postMessage({
         token: jwt.token,
         type: 'workout',
-        id: id
+        id: id,
+        updated_time: updated_time
     });
 };
 
