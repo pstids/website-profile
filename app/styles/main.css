@@ -86,3 +86,24 @@ div.connect {
 .welcome {
   padding: 20px;
 }
+
+paper-button {
+  min-width: 5.14em;
+  margin: 0 0.29em;
+  padding: 0.7em 0.57em;
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  background-color: #262626;
+  border: 3px solid rgb(146, 54, 54);
+  -webkit-box-shadow: 0px 0px 20px 2px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 20px 2px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 20px 2px rgba(0,0,0,0.75);
+  color: white;
+  z-index: 9999999;
+  padding: 20px;
+}
