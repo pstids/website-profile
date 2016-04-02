@@ -189,8 +189,8 @@
             ready() {
                 this.route = 'profile';
                 superagent
-                    .get('/b/api/v1/users/' + user.data.id + '/training')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .get(`/b/api/v1/users/${user.data.id}/training`)
+                    .set('Authorization', `Bearer: ${jwt.token}`)
                     .end((err, res) => {
                         if (res.ok) {
                             if (res.body.critical_power !== 0) {
