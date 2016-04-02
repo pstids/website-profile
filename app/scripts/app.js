@@ -37,6 +37,7 @@ var updateWorkout = function (id, updates, cb) {
         .send(updates)
         .set('Authorization', 'Bearer: ' + jwt.token)
         .end(cb);
+    console.log(id);
     db.log.get(id, function (log) {
         if (log !== undefined) {
             for (var key in updates) {
@@ -48,6 +49,15 @@ var updateWorkout = function (id, updates, cb) {
             });
         }
     });
+};
+
+var toastEle = null;
+
+var toast = function (message) {
+    if (toastEle !== null) {
+        toastEle.text = message;
+        toastEle.show();
+    }
 };
 
 (function(document) {
@@ -64,6 +74,7 @@ var updateWorkout = function (id, updates, cb) {
     var header;
     var uploader;
     var workoutShared;
+    var logCalendar;
 
     app.displayInstalledToast = function() {
         document.querySelector('#caching-complete').show();
@@ -78,21 +89,20 @@ var updateWorkout = function (id, updates, cb) {
         workoutElement = document.querySelector('#workout-element');
         workoutShared = document.querySelector('#workout-shared');
         uploader = document.querySelector('#uploader');
+        logCalendar = document.querySelector('log-calendar');
+        toastEle = document.querySelector('#toast');
 
         processor.onmessage = (event) => {
             if ('error' in event.data && event.data.error === true) {
-                uploadToast.text = 'Cannot load workout! Visit the log book to select another.';
-                uploadToast.show();
+                toast('Cannot load workout! Visit the log book to select another.');
                 return;
             }
-            if (scope === 'shared') {
-                logBook.classList.add('hidden');
+            if (!jwt.hasToken) {
+                logCalendar.classList.add('hidden');
                 uploader.classList.add('hidden');
-                workoutShared.classList.remove('hidden');
             } else {
-                logBook.classList.remove('hidden');
+                logCalendar.classList.remove('hidden');
                 uploader.classList.remove('hidden');
-                workoutShared.classList.add('hidden');
             }
             if ('mapRunData' in event.data) {
                 mapRunEle.setData(event.data.mapRunData);
@@ -104,22 +114,13 @@ var updateWorkout = function (id, updates, cb) {
                 logBook.populateLogs(event.data.logs);
             }
             if ('addLog' in event.data) {
+                var activityDate = moment.unix(event.data.addLog.start_time);
+                toast(`Workout from ${activityDate.format('MMMM Do YYYY')} uploaded!`);
                 logBook.addLog(event.data.addLog);
+                logCalendar.addActivity(event.data.addLog);
             }
             if ('workoutShared' in event.data) {
                 workoutShared.setData(event.data.workoutShared);
-            }
-            // Toggle displays to show 'Sample' messages
-            if (event.data.type === 'sample') {
-                mapRunEle.classList.add('sample');
-                workoutElement.classList.add('sample');
-                logBook.classList.add('sample');
-                document.querySelector('#sample').show();
-            } else {
-                mapRunEle.classList.remove('sample');
-                workoutElement.classList.remove('sample');
-                logBook.classList.remove('sample');
-                document.querySelector('#sample').hide();
             }
         };
 
@@ -133,9 +134,7 @@ var updateWorkout = function (id, updates, cb) {
         page('/', () => {
             scope = 'owned';
             if (jwt.hasToken) {
-                logsFetching();
                 workoutShared.fetchUser(user.data.user_name);
-                // suuntoChecking();
                 app.route = 'home';
                 header.toggleActive('home');
             } else {
@@ -150,7 +149,7 @@ var updateWorkout = function (id, updates, cb) {
             // header.toggleActive(null);
         });
 
-        page('/connect', () =>{
+        page('/connect', () => {
             if (jwt.hasToken) {
                 app.route = 'connect';
                 header.toggleActive('connect');
@@ -165,16 +164,17 @@ var updateWorkout = function (id, updates, cb) {
         });
 
         page('/run/:id', (data) => {
-            console.log('Trying to load workout.');
+
+            // app.route = 'home';
+            // scope = 'shared';
+            header.toggleActive('home');
+            //app.params = data.params;
             app.route = 'home';
-            scope = 'shared';
-            header.toggleActive(null);
-            app.params = data.params;
-            workoutShared.fetchUser(data.params.name);
             processor.postMessage({
                 token: jwt.token,
-                type: 'workout-view',
-                id: data.params.id
+                type: 'workout',
+                id: data.params.id,
+                updated_time: ''
             });
         });
 
@@ -191,11 +191,13 @@ var updateWorkout = function (id, updates, cb) {
             if (jwt.hasToken) {
                 console.log('user is ' + data.params.name);
                 app.route = 'home';
-                processor.postMessage({
-                    token: jwt.token,
-                    type: 'admin',
-                    user: data.params.name
-                });
+                logCalendar.setMode('admin', data.params.name);
+                this.displayedTime = moment();
+                logCalendar.fetchMonth(
+                    this.displayedTime.month(),
+                    this.displayedTime.year(),
+                    true
+                );
             } else {
                 page.redirect('/welcome');
             }
@@ -211,7 +213,7 @@ var updateWorkout = function (id, updates, cb) {
             hashbang: false,
         });
 
-        var uploadToast = document.querySelector('#upload-toast');
+        
         var d = document.querySelector('#file');
         this.Dropzone = new Dropzone(d, {
             paramName: 'file', // The name that will be used to transfer the file
@@ -230,13 +232,10 @@ var updateWorkout = function (id, updates, cb) {
                 done();
             },
             success: function (file, message) {
-                uploadToast.text = 'Workout uploaded!';
-                uploadToast.show();
                 addLog(message.activity_id);
             },
             error: function (file, message) {
-                uploadToast.text = message.message;
-                uploadToast.show();
+                toast('Workout could not be uploaded');
             },
             sending: function (file, xhr, formData) {
                 var uid = new Date().getUTCMilliseconds();
@@ -285,9 +284,6 @@ var updateWorkout = function (id, updates, cb) {
             type: 'all'
         });
     };
-    // var suuntoChecking = function () {
-
-    // };
     window.addLog = function (id) {
         processor.postMessage({
             token: jwt.token,

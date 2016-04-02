@@ -101,7 +101,6 @@ var workoutFetchingAJAX = function (workout, scope) {
         .end(function(err, res) {
             if (res.ok) {
                 workoutProcessing(res.body, workout, scope);
-                workoutSave(res.body, workout);
             } else {
                 console.log('Error: cannot fetch workout');
             }
@@ -132,6 +131,7 @@ var workoutFetching = function (workoutID, workoutUpdated, scope) {
 };
 
 var workoutProcessing = function (workout, id, scope) {
+    workoutSave(workout, id);
     if (workout.total_power_list === null) {
         data.error = true;
         postMessage(data);
@@ -265,21 +265,12 @@ var workoutProcessing = function (workout, id, scope) {
     } else {
         data.type = 'data';
     }
-    data.workoutShared = {
-        date: workout.timestamp,
-        id: workout.id,
-        scope: scope,
-        public: workout.public,
-        name: workout.name,
-        photo: workout.photo
-    };
+    data.workoutShared = workout;
     data.scope = scope;
-    console.log('SCOPE IN PROCESSOR IS:', scope);
     postMessage(data);
 };
 
 var logsProcessing = function (logs) {
-    console.log('Trying to process logs: ', logs);
     data.logs = logs;
     postMessage(data);
 };
@@ -320,27 +311,6 @@ var suuntoProcessing = function () {
 };
 
 var logsFetching = function (user='') {
-    var link = '/b/api/v1/activities/summary?limit=40&sortby=Timestamp&order=desc';
-    if (user.length > 0) {
-        link = '/b/admin/users/' + user + '/activities/summary?limit=40&sortby=Timestamp&order=desc';
-    }
-    superagent
-        .get(link)
-        .send()
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
-        .end(function(err, res) {
-            if (res.ok) {
-                if (res.body !== null) {
-                    logsProcessing(res.body);
-                } else {
-                    workoutFetching('sample', '2020-03-02T18:19:51.582355Z',  'owned');
-                }
-                suuntoProcessing();
-            } else {
-                console.log('Error: failure on grabLogs', err, res);
-            }
-        }.bind(this));
 
 };
 
@@ -359,7 +329,7 @@ onmessage = function (event) {
             workoutFetching(event.data.id, event.data.updated_time, 'owned');
             break;
         case 'workout-view':
-            workoutFetching(event.data.id, event.data.updated_time, 'shared');
+            workoutFetching(event.data.id, event.data.updated_time, 'owned');
             break;
         case 'sample':
             workoutFetching('sample', Date.now(), 'owned');
