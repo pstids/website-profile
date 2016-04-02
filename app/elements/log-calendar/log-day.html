@@ -1,0 +1,362 @@
+<dom-module id="log-day">
+    <style>
+        :host {
+            @apply(--layout-flex);
+            position: relative;
+            border-right: 1px solid #4d4d4d;
+            transition: 0.5s border;
+        }
+        :host:hover.hasChild {
+            border: 1px solid #FFFFFF;
+            border-bottom:none;
+            box-sizing: border-box;
+        }
+        :host log-day {
+            z-index: 300;
+            width: 100%;
+            border-left: 1px solid #FFFFFF;
+            border-right: 1px solid #FFFFFF;
+            left: -1px;
+        }
+        :host:hover log-day {
+            display: block !important;
+        }
+        :host log-day:last-child {
+            border-bottom: 1px solid #FFFFFF;
+        }
+        :host:hover .header .options {
+            opacity: 1;
+        }
+        :host:last-child {
+            border-right: 0;
+        }
+        :host.active {
+            border: 1px solid #FFFFFF;
+        }
+
+        .container {
+            @apply(--layout-flex);
+            @apply(--layout-vertical);
+            /*border: 1px solid transparent;*/
+            overflow: hidden;
+            
+            cursor: pointer;
+            background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+            background-size: cover;
+            min-height: 100px;
+        }
+        .container:hover .header {
+            opacity: 1;
+        }
+
+        .header {
+            @apply(--layout-horizontal);
+            height: 24px;
+            padding: 0 3px;
+            opacity: 0.6;
+            transition: 0.5s opacity;
+        }
+        .header .options {
+            @apply(--layout-flex-2);
+            @apply(--layout-horizontal);
+            opacity: 0;
+            transition: 0.5s opacity;
+        }
+
+        .header .numday {
+            @apply(--layout-flex);
+            text-align: right;
+            color: white;
+            line-height: 24px;
+            font-size: 14px;
+        }
+
+        .id {
+            height: 80px;
+            @apply(--layout-center-justified);
+            @apply(--layout-center);
+            @apply(--layout-horizontal);
+        }
+        .id .wattage {
+            color: white;
+            text-align: center;
+            font-size: 30px;
+
+            margin-right: 10px;
+        }
+        .id .unit {
+            color: white;
+            text-align: center;
+            font-size: 20px;
+        }
+        .id iron-icon {
+            margin-right: 5px;
+            color: var(--primary-icon-color);
+            fill: var(--primary-icon-color);
+        }
+
+        .options iron-icon {
+            color: white;
+            fill: white;
+            margin: 5px 3px;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        .more {
+            font-size: 12px;
+            text-align: center;
+            background-color: #000000;
+            opacity: 0.6;
+            color: #FFFFFF;
+        }
+    </style>
+    <template>
+        <div class="container" id="container">
+            <div class="header" id="headera">
+                <div class="options" id="options">
+                    <div id="share">
+                        <iron-icon icon="social:share"></iron-icon>
+                        <paper-tooltip>Share Workout</paper-tooltip>
+                    </div>
+                    <div id="fit">
+                        <iron-icon icon="icons:file-download"></iron-icon>
+                        <paper-tooltip>Download FIT</paper-tooltip>
+                    </div>
+                    <div id="delete">
+                        <iron-icon icon="icons:delete"></iron-icon>
+                        <paper-tooltip>Delete</paper-tooltip>
+                    </div>
+                    <div id="pin">
+                        <iron-icon icon="maps:place"></iron-icon>
+                        <paper-tooltip>Pin to Graph</paper-tooltip>
+                    </div>
+                </div>
+                <div class="numday">
+                    {{day}}
+                </div>
+            </div>
+            <div class="id">
+                <iron-icon icon="image:flash-on" id="bolt"></iron-icon>
+                <div class="wattage">
+                    {{power}}
+                </div>
+                <!-- <div class="unit">
+                    {{unit}}
+                </div> -->
+            </div>
+            <div class="more hidden" id="more">{{more}}</div>
+        </div>
+    </template>
+    <script>
+        /*global page*/
+        class Color {
+            constructor(r, g, b) {
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+            getColors() {
+                return {
+                    r: this.r,
+                    g: this.g,
+                    b: this.b
+                };
+            }
+        }
+        var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
+        var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
+        var interpolate = function (start, end, steps, count) {
+            var s = start,
+                e = end,
+                final = s + (((e - s) / steps) * count);
+            return Math.floor(final);
+        };
+        var threshold = {
+            range: 200,
+            high: 400,
+            low: 200
+        };
+
+        Polymer({
+            is: 'log-day',
+            attached: function () {
+                this.logOption = document.querySelector('log-options');
+            },
+            clearWorkout: function () {
+                this.data = {};
+                this.sameDays = [];
+                this.classList.remove('hasChild');
+                this.classList.remove('active');
+                this.$.more.classList.add('hidden');
+                var logDays = this.querySelectorAll('log-day');
+                for (var i = 0; i < logDays.length; i++) {
+                    this.removeChild(logDays[i]);
+                }
+            },
+            ready: function () {
+                this.sameDays = [];
+                this.data = {};
+
+                this.more = 'hover for more';
+
+                this.$.container.addEventListener('click', function (e) {
+                    var found = false;
+                    var target = e.target;
+                    while (!found) {
+                        if (target === this.$.container) {
+                            this.viewWorkout();
+                            found = true;
+                        } else if (target.id === 'share') {
+                            if ('id' in this.data) {
+                                this.logOption.callShare(this.data.id);
+                            }
+                            found = true;
+                        } else if (target.id === 'fit') {
+                            this.fit();
+                            found = true;
+                        } else if (target.id === 'delete') {
+                            if ('id' in this.data) {
+                                this.logOption.callDelete(this.data.id);
+                            }
+                            found = true;
+                        }
+                        target = target.parentNode;
+                    }
+                }.bind(this));
+
+                var tooltip = document.querySelector('[data-tooltip]');
+                var tooltipTime = tooltip.querySelector('#time');
+                var tooltipDistance = tooltip.querySelector('#distance');
+
+                this.$.container.addEventListener('mouseenter', function () {
+                    if ('power' in this.data) {
+                        tooltip.classList.remove('hidden');
+                        tooltip.style.borderColor = this.rgb;
+
+                        var duration = moment.duration(this.data.time, 'seconds');
+                        var minutesStr = duration.minutes().toString();
+                        if (minutesStr.length === 1) {
+                            minutesStr = '0' + minutesStr;
+                        }
+                        tooltipTime.textContent = `${duration.hours()}:${minutesStr} duration`;
+                        tooltipDistance.textContent = `${this.data.distance} meters`;
+                    }
+                }.bind(this), false);
+
+                this.$.container.addEventListener('mouseleave', function () {
+                    if ('power' in this.data) {
+                        tooltip.classList.add('hidden');
+                    }
+                }.bind(this), false);
+            },
+            setData: function (data) {
+                this.data = data;
+                this.day = data.day;
+                this.rgb = '#000000';
+                if ('power' in data) {
+                    this.$.options.classList.remove('hidden');
+                    this.$.container.style.cursor = 'pointer';
+                    if (this.$.container.style.backgroundImage !== 'url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png)') {
+                        this.$.container.style.backgroundImage = 'url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png)';
+                    }
+
+                    this.$.bolt.classList.remove('hidden');
+                    this.unit = 'watts';
+                    this.power = data.power.toFixed(0);
+
+                    var relativePower;
+                    if (data.power > threshold.high) {
+                        relativePower = threshold.range;
+                    } else if (data.power < threshold.low) {
+                        relativePower = 0;
+                    } else {
+                        relativePower = (data.power - threshold.low);
+                    }
+
+                    var r = interpolate(lowColors.r, highColors.r, threshold.range, relativePower);
+                    var g = interpolate(lowColors.g, highColors.g, threshold.range, relativePower);
+                    var b = interpolate(lowColors.b, highColors.b, threshold.range, relativePower);
+                    this.rgb = `rgb(${r}, ${g}, ${b})`;
+
+                    this.$.headera.style.backgroundColor = this.rgb;
+                } else {
+                    this.$.options.classList.add('hidden');
+                    this.$.container.style.cursor = 'auto';
+                    this.$.container.style.backgroundImage = 'none';
+
+                    this.$.bolt.classList.add('hidden');
+                    this.unit = '';
+                    this.power = '';
+                    this.rgb = `rgb(0, 0, 0)`;
+                    this.$.headera.style.backgroundColor = this.rgb;
+                }
+            },
+            fit: function () {
+                superagent
+                    .post('/b/api/v1/activities/' + this.data.id + '/fit')
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            document.querySelector('#dlFrame').src = res.body.url;
+                            // window.open(res.body.url);
+                        } else {
+                            console.log('get download link failed');
+                        }
+                    }.bind(this));
+            },
+            viewWorkout: function () {
+                if (!('id' in this.data)) {
+                    return;
+                }
+                var bubbles = document.querySelector('.bubbles');
+                // Set this element as the only active element
+                var logDayActive = document.querySelector('log-day.active');
+                if (logDayActive) {
+                    logDayActive.classList.remove('active');
+                }
+                this.classList.add('active');
+
+                document.querySelector('workout-element').setLoading();
+                // workoutFetching(this.data.id, this.data.updated_time);
+                page(`/run/${this.data.id}`);
+                // location.pathname = `/run/${this.data.id}`;
+                window.scrollTo(0, bubbles.offsetTop);
+            },
+            // returns true or false whether a workout has been inserted already
+            hasWorkout: function () {
+                if ('power' in this.data) {
+                    return true;
+                }
+                return false;
+            },
+            // add another workout to this day
+            addChild: function (node) {
+                console.log('added child element');
+                this.classList.add('hasChild');
+                this.$.more.classList.remove('hidden');
+                node.style.display = 'none';
+                node.style.position = 'absolute';
+                node.classList.add('style-scope');
+                node.classList.add('log-day');
+                this.appendChild(node);
+                this.sameDays.push(node);
+            },
+            getID: function () {
+                if ('id' in this.data) {
+                    return this.data.id;
+                }
+                return 0;
+            },
+            getDay: function () {
+                if ('day' in this.data) {
+                    return this.data.day;
+                }
+                return 0;
+            }
+        });
+    </script>
+</dom-module>

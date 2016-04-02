@@ -55,18 +55,18 @@
 <span id="browser-sync-binding"></span>
 
 <template is="dom-bind" id="app">
-
     <!-- Main Content -->
     <div class="content">
         <header-element></header-element>
         <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="home">
-                <div class="layout horizontal">
+                <div class="layout horizontal" style="display: relative">
                     <map-run id="map-run" class="flex-4"></map-run>
-                    <workout-shared id="workout-shared" class="flex hidden"></workout-shared>
+                    <workout-shared id="workout-shared"></workout-shared>
                 </div>
                 <workout-element id="workout-element"></workout-element>
-                <log-book id="log-book"></log-book>
+                <log-book id="log-book" style="display: none !important; opacity: 0;"></log-book>
+                <log-calendar></log-calendar>
                 <div class="uploader"
                     data-step="9"
                     data-intro="Have FIT and TCX files? Upload them here."
@@ -104,6 +104,7 @@
             </section>
         </iron-pages>
         
+        <log-options></log-options>
         <footer-element></footer-element>
         <paper-toast duration="1000000" text="You are viewing sample data. Visit settings to associate your platform account." id="sample"></paper-toast>
         <paper-toast id="upload-toast" duration="5000" style="z-index: 999999;"></paper-toast>

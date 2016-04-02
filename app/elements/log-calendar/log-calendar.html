@@ -1,0 +1,361 @@
+<dom-module id="log-calendar">
+    <style>
+        :host {
+            font-family: "Stryd", sans-serif;
+            background-color: var(--dark-background-color);
+            @apply(--layout-vertical);
+        }
+        h1.header {
+            @apply(--header);
+        }
+        h2.subtitle {
+            @apply(--subtitle);
+        }
+        .title {
+            padding: 20px;
+            @apply(--layout-end);
+        }
+
+        .horizontal-section {
+            text-align: center;
+            @apply(--layout-flex-4);
+        }
+        .vertical-section {
+            text-align: center;
+            @apply(--layout-flex-2);
+        }
+
+        .day {
+            @apply(--layout-flex);
+            @apply(--layout-center-justified);
+            border-right: 1px solid #4d4d4d;
+            font-size: 24px;
+            height: 72px;
+            color: white;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 72px;
+        }
+        .day:last-child {
+            border-right: 0;
+        }
+
+        .row {
+            @apply(--layout-horizontal);
+            border-bottom: 1px solid #4d4d4d;
+        }
+
+        .entry {
+            @apply(--layout-flex);
+            @apply(--layout-vertical);
+            border: 1px solid transparent;
+            border-right: 1px solid #4d4d4d;
+            overflow: hidden;
+            transition: 0.5s border;
+            cursor: pointer;
+            background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+            background-size: cover;
+        }
+        .entry:hover {
+            border: 1px solid #FFFFFF;
+        }
+        .entry:last-child {
+            border-right: 0;
+        }
+        .entry .header {
+            @apply(--layout-horizontal);
+            background-color: #923636;
+            height: 24px;
+            background: rgb(146, 54, 54);
+            background: rgba(146, 54, 54, .7);
+            padding: 0 3px;
+        }
+        .entry .header .options {
+            @apply(--layout-flex-2);
+            opacity: 0;
+            transition: 0.5s opacity;
+        }
+        .entry:hover .header .options {
+            opacity: 1;
+        }
+        .entry .header .numday {
+            @apply(--layout-flex);
+            text-align: right;
+            color: white;
+            line-height: 24px;
+            font-size: 14px;
+        }
+        .entry .id {
+            height: 80px;
+            @apply(--layout-center-justified);
+            @apply(--layout-vertical);
+        }
+        .entry .id .wattage {
+            color: white;
+            text-align: center;
+            font-size: 30px;
+        }
+        .entry .id .unit {
+            color: white;
+            text-align: center;
+            font-size: 20px;
+        }
+        button {
+            margin-left: 20px;
+        }
+    </style>
+    <template>
+        <!--<div class="seperator"></div>-->
+        <div class="row title">
+            <div class="flex">
+                <h1 class="header">{{month}}</h1>
+            </div>
+            <div class="flex layout horizontal end-justified">
+                <button on-click="prevMonth" is="stryd-button" class="self-end">{{prevMonthText}}</button>
+                <button on-click="nextMonth" is="stryd-button" class="self-end">{{nextMonthText}}</button>
+            </div>
+        </div>
+        <div id="calendarContainer">
+            <div class="days row">
+                <div class="day">Mon</div>
+                <div class="day">Tues</div>
+                <div class="day">Wed</div>
+                <div class="day">Thur</div>
+                <div class="day">Fri</div>
+                <div class="day">Sat</div>
+                <div class="day">Sun</div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'log-calendar',
+            ready: function () {
+                this.dom = [];
+                this.activeDom = [];
+                this.dates = [];
+                this.nextMonthText = 'Next Month';
+                this.prevMonthText = 'Previous Month';
+
+                // Mode attributes
+                this.mode = 'user';
+                this.user = '';
+
+                this.displayedTime = moment();
+                this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+                var tooltip = document.querySelector('[data-tooltip]');
+                var x = 0, y = 0;
+                document.addEventListener('mousemove', function (e) {
+                    x = e.pageX;
+                    y = e.pageY;
+                });
+                var setPosition = function () {
+                    if (!tooltip.classList.contains('hidden')) {
+                        var xPos;
+                        if ((window.innerWidth - x) < 150) {
+                            xPos = x - 150;
+                        } else {
+                            xPos = x + 30;
+                        }
+                        tooltip.style.left = String(xPos) + 'px';
+                        tooltip.style.top = String(y + 30) + 'px';
+                    }
+                };
+                setInterval(setPosition, 20);
+
+                
+                this.assembleDOM();
+                if (jwt.hasToken) {
+                    this.fetchMonth(
+                        this.displayedTime.month(),
+                        this.displayedTime.year(),
+                        true
+                    );
+                }
+            },
+            // Mode is either user or admin
+            // User is username for admin
+            setMode: function (mode, user) {
+                this.mode = mode;
+                this.user = user;
+            },
+            // Creates dom structure of 5 rows of 7 columns of log-day elements
+            assembleDOM: function () {
+                var column = [];
+                var calendarContainer = this.$.calendarContainer;
+                for (var i = 0; i < 5; i++) {
+                    var row = document.createElement('div');
+                    row.classList.add('row');
+                    row.classList.add('style-scope');
+                    row.classList.add('log-calendar');
+                    column = [];
+                    for (var o = 0; o < 7; o++) {
+                        var node = document.createElement('log-day');
+                        node.dataset.row = i;
+                        node.dataset.column = o;
+                        node.setData({
+                            day: 0
+                        });
+                        row.appendChild(node);
+                        column.push(node);
+                    }
+                    calendarContainer.appendChild(row);
+                    this.dom.push(column);
+                }
+            },
+            // Grabs array of activity data to populate calendar for month (int) and year (int)
+            fetchMonth: function (month, year, loadLast) {
+                var obj = this.dateRange(month, year);
+                this.switchMonthContext('TEST', obj.firstMonday);
+                var srtDate = obj.firstMonday.format('MM-DD-YYYY');
+                var endDate = obj.lastSunday.format('MM-DD-YYYY');
+                var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+                if (this.mode === 'admin') {
+                    activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+                }
+                superagent
+                    .get(activityEndPoint)
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            if (res.body !== null) {
+                                this.processActivities(res.body.activities);
+                                this.loadLast(loadLast, res.body.last_activity);
+                            }
+                        } else {
+                            console.log('Error: failure on grabLogs', err, res);
+                        }
+                    }.bind(this));
+            },
+            loadLast: function (loadLast, id) {
+                if (!loadLast) {
+                    return;
+                }
+                var bubbles = document.querySelector('.bubbles');
+                document.querySelector('workout-element').setLoading();
+                page(`/run/${id}`);
+                window.scrollTo(0, bubbles.offsetTop);
+            },
+            // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
+            dateRange: function (monthInt, year) {
+                var month = moment({
+                    month: monthInt,
+                    year: year
+                });
+                console.log('selectedMonth', month);
+                var startOfMonth = month.startOf('month');
+                var indexFOM = startOfMonth.isoWeekday();
+                var firstMonday = startOfMonth.subtract(indexFOM - 1, 'days');
+                var lastSunday = moment(firstMonday).add(35, 'days');
+                return {
+                    firstMonday: firstMonday,
+                    lastSunday: lastSunday
+                };
+            },
+            processActivities: function (activities) {
+                for (var i = 0; i < activities.length; i++) {
+                    var activity = activities[i];
+                    this.addActivity(activity);
+                }
+                // if (loadLast) {
+                //     this.activeDom[this.activeDom.length - 1].viewWorkout();
+                // }
+            },
+            switchMonthContext: function (monthName, firstMonday) {
+                this.dates = [];
+                var movingDay = moment(firstMonday);
+                for (var i = 0; i < this.dom.length; i++) {
+                    var column = this.dom[i];
+                    for (var o = 0; o < column.length; o++) {
+                        var day = column[o];
+                        day.clearWorkout();
+                        day.setData({
+                            day: moment(movingDay).format('DD')
+                        });
+                        movingDay.add(1, 'days');
+                    }
+                    this.dates.push(moment(movingDay).subtract(1, 'days'));
+                }
+            },
+            addActivity: function (activity) {
+                var activityMoment = moment.unix(activity.start_time).hour(0);
+                for (var i = 0; i < this.dates.length; i++) {
+                    var date = this.dates[i].hour(0);
+                    if (activityMoment.isSameOrBefore(date, 'day')) {
+                        var days = Math.floor(activityMoment.diff(date, 'days', true));
+                        if (i > 4 || days < -6) {
+                            console.log('Out of range');
+                            break;
+                        }
+                        var calendarDay = this.dom[i][6+days];
+                        if (!calendarDay.hasWorkout()) {
+                            calendarDay.setData({
+                                day: activityMoment.format('DD'),
+                                power: activity.average_power,
+                                id: activity.id,
+                                updated_time: activity.updated_time,
+                                time: activity.moving_time,
+                                distance: activity.distance
+                            });
+                        } else {
+                            console.log('FOUND WORKOUT COLLISION');
+                            var newCalendarDay = document.createElement('log-day');
+                            newCalendarDay.setData({
+                                day: activityMoment.format('DD'),
+                                power: activity.average_power,
+                                id: activity.id,
+                                updated_time: activity.updated_time,
+                                time: activity.moving_time,
+                                distance: activity.distance
+                            });
+                            calendarDay.addChild(newCalendarDay);
+                        }
+                        this.activeDom.push(calendarDay);
+                        break;
+                    }
+                }
+            },
+            removeActivity: function (id) {
+                for (var i = 0; i < this.activeDom.length; i++) {
+                    var activeEle = this.activeDom[i];
+                    if (activeEle.getID() === id) {
+                        var day = activeEle.getDay();
+                        activeEle.clearWorkout();
+                        activeEle.setData({
+                            day: day
+                        });
+                        break;
+                    }
+                }
+            },
+            nextMonth: function () {
+                this.displayedTime.add(1, 'months');
+                this.fetchMonth(
+                    this.displayedTime.month(),
+                    this.displayedTime.year(),
+                    false
+                );
+                this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+                var logDayActive = document.querySelector('log-day.active');
+                if (logDayActive) {
+                    logDayActive.classList.remove('active');
+                }
+            },
+            prevMonth: function () {
+                this.displayedTime.subtract(1, 'months');
+                this.fetchMonth(
+                    this.displayedTime.month(),
+                    this.displayedTime.year(),
+                    false
+                );
+                this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+                var logDayActive = document.querySelector('log-day.active');
+                if (logDayActive) {
+                    logDayActive.classList.remove('active');
+                }
+            }
+        });
+    </script>
+</dom-module>
