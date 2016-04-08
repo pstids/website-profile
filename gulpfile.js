@@ -70,6 +70,7 @@ gulp.task('jshint', function () {
         'hmsTime',
         'google',
         'meterToKM',
+        'meterToUserUnit',
         'hrTime',
         'meterToMile',
         'speedToPaceForBalloon',
