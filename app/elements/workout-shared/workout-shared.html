@@ -50,8 +50,8 @@
                     <div class="text">{{runDate}}</div>
                 </div>
             </div>
-            <div class="text" style="padding-top: 20px;">{{description}}</div>
-            <button is="stryd-button" on-click="callDescription" id="modifyDescription">{{modifyDescription}}</button>
+            <!-- <div class="text" style="padding-top: 20px;">{{description}}</div> -->
+            <!-- <button is="stryd-button" on-click="callDescription" id="modifyDescription">{{modifyDescription}}</button> -->
         </div>
         <paper-dialog id="dialogDescription">
             <paper-input
@@ -96,22 +96,22 @@
                 this.user.fullname = this.activity.name;
                 this.set('user.fullname', this.activity.name);
                 this.set('user.image', this.getImage(this.activity));
-                if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
-                    this.$.modifyDescription.classList.remove('hidden');
-                } else {
-                    this.$.modifyDescription.classList.add('hidden');
-                }
+                // if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
+                //     this.$.modifyDescription.classList.remove('hidden');
+                // } else {
+                //     this.$.modifyDescription.classList.add('hidden');
+                // }
             },
             setData: function (activity) {
                 this.activity = activity;
                 this.fetchUser();
                 this.runDate = moment.unix(activity.start_time).format('LL');
-                this.description = activity.description;
-                if (this.description === '') {
-                    this.modifyDescription = 'Add Description';
-                } else {
-                    this.modifyDescription = 'Edit Description';
-                }
+                // this.description = activity.description;
+                // if (this.description === '') {
+                //     this.modifyDescription = 'Add Description';
+                // } else {
+                //     this.modifyDescription = 'Edit Description';
+                // }
             },
             callDescription: function () {
                 this.$.dialogDescription.open();
