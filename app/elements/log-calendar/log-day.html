@@ -229,9 +229,10 @@
                 var tooltip = document.querySelector('[data-tooltip]');
                 var tooltipTime = tooltip.querySelector('#time');
                 var tooltipDistance = tooltip.querySelector('#distance');
+                var tooltipDescription = tooltip.querySelector('#description');
 
                 this.$.container.addEventListener('mouseenter', function () {
-                    if ('power' in this.data) {
+                    if ('description' in this.data && this.data.description.length > 0) {
                         tooltip.classList.remove('hidden');
                         tooltip.style.borderColor = this.rgb;
 
@@ -240,8 +241,17 @@
                         if (minutesStr.length === 1) {
                             minutesStr = '0' + minutesStr;
                         }
-                        tooltipTime.textContent = `${duration.hours()}:${minutesStr} duration`;
-                        tooltipDistance.textContent = `${this.data.distance} meters`;
+                        // tooltipTime.textContent = `${duration.hours()}:${minutesStr} duration`;
+                        tooltipTime.textContent = '';
+                        // var distance = meterToUserUnit(this.data.distance);
+                        // tooltipDistance.textContent = distance;
+                        tooltipDistance.textContent = '';
+                        
+                        if (this.data.description.length > 40) {
+                            tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
+                        } else {
+                            tooltipDescription.textContent = this.data.description;
+                        }
                     }
                 }.bind(this), false);
 
