@@ -4,6 +4,7 @@
             font-family: "Stryd", sans-serif;
             background-color: var(--dark-background-color);
             @apply(--layout-vertical);
+            padding: 0 20px 20px 20px;
         }
         h1.header {
             @apply(--header);
@@ -29,20 +30,26 @@
             @apply(--layout-flex);
             @apply(--layout-center-justified);
             border-right: 1px solid #4d4d4d;
-            font-size: 24px;
-            height: 72px;
+            font-size: 20px;
+            height: 64px;
             color: white;
             text-transform: uppercase;
             text-align: center;
-            line-height: 72px;
+            line-height: 64px;
         }
         .day:last-child {
             border-right: 0;
         }
 
+        .days {
+            border-top: 1px solid #4d4d4d;
+        }
+
         .row {
             @apply(--layout-horizontal);
             border-bottom: 1px solid #4d4d4d;
+            border-left: 1px solid #4d4d4d;
+            border-right: 1px solid #4d4d4d;
         }
 
         .entry {
@@ -106,7 +113,7 @@
     </style>
     <template>
         <!--<div class="seperator"></div>-->
-        <div class="row title">
+        <div class="layout horizontal title">
             <div class="flex">
                 <h1 class="header">{{month}}</h1>
             </div>
