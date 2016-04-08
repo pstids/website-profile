@@ -60,6 +60,7 @@ var calcThreshold = function (nPowers) {
         low: 0
     };
     if (nPowers !== null) {
+        // We need to create a duplicate list, so the original list is not sorted
         var powers = [];
         for (var i = 0; i < nPowers.length; i++) {
             powers.push(nPowers[i]);
@@ -94,10 +95,10 @@ var workoutSave = function (workout, id) {
 
 var workoutFetchingAJAX = function (workout, scope) {
     superagent
-        .get('/b/api/v1/activities/' + workout)
+        .get(`/b/api/v1/activities/${workout}`)
         .send()
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
+        .set('Authorization', `Bearer: ${token}`)
         .end(function(err, res) {
             if (res.ok) {
                 workoutProcessing(res.body, workout, scope);
@@ -220,7 +221,12 @@ var workoutProcessing = function (workout, id, scope) {
         
         chartData.push(entry);
         /* Assemble map data */
-        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null && 'power' in entry) {
+        if (
+            i > 0 &&
+            'loc_list' in workout &&
+            workout.loc_list !== null &&
+            'power' in entry
+        ) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
@@ -277,10 +283,10 @@ var logsProcessing = function (logs) {
 
 var addLog = function (id) {
     superagent
-        .get('/b/api/v1/activities/' + id)
+        .get(`/b/api/v1/activities/${id}`)
         .send()
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
+        .set('Authorization', `Bearer: ${token}`)
         .end(function(err, res) {
             if (res.ok) {
                 workoutSave(res.body, id);
@@ -297,21 +303,15 @@ var suuntoProcessing = function () {
         .post('/b/internal/fetch/suunto')
         .send({})
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
+        .set('Authorization', `Bearer: ${token}`)
         .end(function (err, res) {
-            if (res.ok) {
-                if (res.body.workouts !== null) {
-                    for (var i = 0; i < res.body.workouts.length; i++) {
-                        var workoutID = res.body.workouts[i];
-                        addLog(workoutID);
-                    }
+            if (res.ok && res.body.workouts !== null) {
+                for (var i = 0; i < res.body.workouts.length; i++) {
+                    var workoutID = res.body.workouts[i];
+                    addLog(workoutID);
                 }
             }
         }.bind(this));
-};
-
-var logsFetching = function (user='') {
-
 };
 
 /* Public method */
@@ -322,23 +322,14 @@ onmessage = function (event) {
     token = event.data.token;
 
     switch(event.data.type) {
-        case 'all':
-            logsFetching();
-            break;
         case 'workout':
             workoutFetching(event.data.id, event.data.updated_time, 'owned');
             break;
         case 'workout-view':
             workoutFetching(event.data.id, event.data.updated_time, 'owned');
             break;
-        case 'sample':
-            workoutFetching('sample', Date.now(), 'owned');
-            break;
         case 'addLog':
             addLog(event.data.id);
-            break;
-        case 'admin':
-            logsFetching(event.data.user);
             break;
         default:
             console.log('Error in onmessage/processor: unknown action');
