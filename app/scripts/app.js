@@ -4,12 +4,24 @@
 /*global Dexie*/
 /*exported mapReadyTrigger, mapReadyEvent*/
 
+/*
+processor is a webworker than handles workout fetching.
+It requests the data from the API and operates on it
+for display.
+*/
 var processor = new Worker('/powercenter/scripts/processor.js');
 
 Dropzone.autoDiscover = false;
 
-var addLog;
-
+/*
+workoutFetching grabs a workout by ID and
+sends the content to workout-element, map-run, and
+workout-shared.
+{
+    id: id of the activity,
+    updated_time: a value parsable by new Date()
+}
+*/
 var workoutFetching = function (id, updated_time) {
     processor.postMessage({
         token: jwt.token,
@@ -19,6 +31,28 @@ var workoutFetching = function (id, updated_time) {
     });
 };
 
+var addLog = function (id) {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'addLog',
+        id: id
+    });
+};
+
+var logsFetching = function () {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'all'
+    });
+};
+
+/*
+Creates a local storage database using Dexie.
+Items are fetched using ID and the workout data
+is stored as JSON in the storage.
+Use db.log.clear() to wipe the storage for
+testing.
+*/
 var db;
 var initDB = function () {
     db = new Dexie('Logs');
@@ -29,30 +63,42 @@ var initDB = function () {
 };
 initDB();
 
-var scope = 'owned';
-
+/*
+updateWorkout is a helper function.
+It updates the local databases with
+new information and updates the server.
+{
+    id: the id of the activity,
+    updates: json object with updates keys and fields,
+    cb: callback function for execution on
+        server response
+}
+*/
 var updateWorkout = function (id, updates, cb) {
     superagent
-        .put('/b/api/v1/activities/' + id)
+        .put(`/b/api/v1/activities/${id}`)
         .send(updates)
-        .set('Authorization', 'Bearer: ' + jwt.token)
+        .set('Authorization', `Bearer: ${jwt.token}`)
         .end(cb);
-    console.log(id);
-    db.log.get(id, function (log) {
+
+    db.log.get(String(id), function (log) {
         if (log !== undefined) {
             for (var key in updates) {
                 log.data[key] = updates[key];
             }
             db.log.put({
-                id: log.id,
+                id: String(log.id),
                 data: log.data
             });
         }
     });
 };
 
+/*
+toast is a helper function to set
+and display toast messages to user
+*/
 var toastEle = null;
-
 var toast = function (message) {
     if (toastEle !== null) {
         toastEle.text = message;
@@ -63,9 +109,6 @@ var toast = function (message) {
 (function(document) {
     'use strict';
 
-    // Grab a reference to our auto-binding template
-    // and give it some initial binding values
-    // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
     let app = document.querySelector('#app');
 
     var mapRunEle;
@@ -91,12 +134,14 @@ var toast = function (message) {
         uploader = document.querySelector('#uploader');
         logCalendar = document.querySelector('log-calendar');
         toastEle = document.querySelector('#toast');
+        header = document.querySelector('header-element');
 
         processor.onmessage = (event) => {
             if ('error' in event.data && event.data.error === true) {
                 toast('Cannot load workout! Visit the log book to select another.');
                 return;
             }
+            // If a user is signed in, display the uploader and calendar
             if (!jwt.hasToken) {
                 logCalendar.classList.add('hidden');
                 uploader.classList.add('hidden');
@@ -108,7 +153,11 @@ var toast = function (message) {
                 mapRunEle.setData(event.data.mapRunData);
             }
             if ('chartData' in event.data) {
-                workoutElement.setChartData(event.data.chartData, event.data.steps);
+                workoutElement.setChartData(
+                    event.data.chartData,
+                    event.data.steps,
+                    event.data.chartDescription
+                );
             }
             if ('logs' in event.data) {
                 logBook.populateLogs(event.data.logs);
@@ -120,11 +169,10 @@ var toast = function (message) {
                 logCalendar.addActivity(event.data.addLog);
             }
             if ('workoutShared' in event.data) {
+                console.log(event.data.workoutShared);
                 workoutShared.setData(event.data.workoutShared);
             }
         };
-
-        header = document.querySelector('header-element');
 
         // We use Page.js for routing. This is a Micro
         // client-side router inspired by the Express router
@@ -132,9 +180,7 @@ var toast = function (message) {
         page.base('/powercenter');
 
         page('/', () => {
-            scope = 'owned';
             if (jwt.hasToken) {
-                workoutShared.fetchUser(user.data.user_name);
                 app.route = 'home';
                 header.toggleActive('home');
             } else {
@@ -144,9 +190,6 @@ var toast = function (message) {
 
         page('/welcome', () => {
             document.location = '/signin';
-            // app.route = 'welcome';
-            // console.log('Welcome to STRYD.');
-            // header.toggleActive(null);
         });
 
         page('/connect', () => {
@@ -164,11 +207,8 @@ var toast = function (message) {
         });
 
         page('/run/:id', (data) => {
-
-            // app.route = 'home';
-            // scope = 'shared';
             header.toggleActive('home');
-            //app.params = data.params;
+            app.params = data.params;
             app.route = 'home';
             processor.postMessage({
                 token: jwt.token,
@@ -189,7 +229,7 @@ var toast = function (message) {
 
         page('/a/:name', (data) => {
             if (jwt.hasToken) {
-                console.log('user is ' + data.params.name);
+                console.log('user is ', data.params.name);
                 app.route = 'home';
                 logCalendar.setMode('admin', data.params.name);
                 this.displayedTime = moment();
@@ -210,16 +250,15 @@ var toast = function (message) {
 
         // add #! before urls
         page({
-            hashbang: false,
+            hashbang: false
         });
-
         
         var d = document.querySelector('#file');
         this.Dropzone = new Dropzone(d, {
             paramName: 'file', // The name that will be used to transfer the file
             url: '/b/platform/data/stryd',
             headers: {
-                'Authorization': 'Bearer: ' + jwt.token
+                'Authorization': `Bearer: ${jwt.token}`
             },
             parallelUploads: 1,
             maxFilesize: 60, // MB
@@ -254,41 +293,5 @@ var toast = function (message) {
 
     app.logout = function() {
         jwt.logout();
-    };
-
-    // Close drawer after menu item is selected if drawerPanel is narrow
-    app.onMenuSelect = function() {
-        var drawerPanel = document.querySelector('#paperDrawerPanel');
-        if (drawerPanel.narrow) {
-            drawerPanel.closeDrawer();
-        }
-    };
-
-    window.addEventListener('WebComponentsReady', function() {
-        var db = new Dexie('Logs');
-        db.version(1).stores({
-            log: '++id, data'
-        });
-        db.open();
-    });
-
-    var sampleFetching = function () {
-        processor.postMessage({
-            token: jwt.token,
-            type: 'sample'
-        });
-    };
-    var logsFetching = function () {
-        processor.postMessage({
-            token: jwt.token,
-            type: 'all'
-        });
-    };
-    window.addLog = function (id) {
-        processor.postMessage({
-            token: jwt.token,
-            type: 'addLog',
-            id: id
-        });
     };
 })(document);
