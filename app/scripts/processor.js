@@ -88,7 +88,7 @@ var calcThreshold = function (nPowers) {
 
 var workoutSave = function (workout, id) {
     db.log.put({
-        id: id,
+        id: String(id),
         data: workout
     });
 };
@@ -113,7 +113,7 @@ var workoutFetching = function (workoutID, workoutUpdated, scope) {
     if (!checkIndexedDB) {
         workoutFetchingAJAX(workoutID);
     } else {
-        db.log.get(workoutID, function (log) {
+        db.log.get(String(workoutID), function (log) {
             if (log === undefined) {
                 workoutFetchingAJAX(workoutID, scope);
             } else {
