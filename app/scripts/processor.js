@@ -264,6 +264,11 @@ var workoutProcessing = function (workout, id, scope) {
 
     data.mapRunData = mapRunData;
     data.chartData = chartData;
+    data.chartDescription = {
+        description: workout.description,
+        id: workout.id,
+        user_id: workout.user_id
+    };
     data.steps = steps;
     if (id === 'sample') {
         data.logs = [workout];

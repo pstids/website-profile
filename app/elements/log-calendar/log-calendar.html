@@ -310,7 +310,8 @@
                                 id: activity.id,
                                 updated_time: activity.updated_time,
                                 time: activity.moving_time,
-                                distance: activity.distance
+                                distance: activity.distance,
+                                description: activity.description
                             });
                         } else {
                             console.log('FOUND WORKOUT COLLISION');
@@ -321,7 +322,8 @@
                                 id: activity.id,
                                 updated_time: activity.updated_time,
                                 time: activity.moving_time,
-                                distance: activity.distance
+                                distance: activity.distance,
+                                description: activity.description
                             });
                             calendarDay.addChild(newCalendarDay);
                         }
