@@ -55,6 +55,7 @@
             padding: 0 3px;
             opacity: 0.6;
             transition: 0.5s opacity;
+            flex: 0 1 24px;
         }
         .header .options {
             @apply(--layout-flex-2);
@@ -71,28 +72,53 @@
             font-size: 14px;
         }
 
-        .id {
-            height: 80px;
+        .wattage {
+            margin-top: 20px;
             @apply(--layout-center-justified);
             @apply(--layout-center);
             @apply(--layout-horizontal);
         }
-        .id .wattage {
+        .wattage .value {
             color: white;
             text-align: center;
             font-size: 30px;
 
             margin-right: 10px;
         }
-        .id .unit {
+        .wattage .unit {
             color: white;
             text-align: center;
             font-size: 20px;
         }
-        .id iron-icon {
+
+        .other {
+            height: 28px;
+        }
+        .distance, .time {
+            height: 28px;
+            @apply(--layout-center-justified);
+            @apply(--layout-center);
+            @apply(--layout-horizontal);
+        }
+        .distance .value, .time .value {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .wattage iron-icon {
             margin-right: 5px;
             color: var(--primary-icon-color);
             fill: var(--primary-icon-color);
+        }
+
+        .distance iron-icon, .time iron-icon {
+            margin-right: 5px;
+            color: var(--primary-icon-color);
+            fill: var(--primary-icon-color);
+            height: 14px;
+            width: 14px;
         }
 
         .options iron-icon {
@@ -128,7 +154,7 @@
                         <iron-icon icon="icons:delete"></iron-icon>
                         <paper-tooltip>Delete</paper-tooltip>
                     </div>
-                    <div id="pin">
+                    <div id="pin" class="hidden">
                         <iron-icon icon="maps:place"></iron-icon>
                         <paper-tooltip>Pin to Graph</paper-tooltip>
                     </div>
@@ -137,15 +163,29 @@
                     {{day}}
                 </div>
             </div>
-            <div class="id">
-                <iron-icon icon="image:flash-on" id="bolt"></iron-icon>
+            <div class="layout vertical center-justified flex-auto" id="data">
                 <div class="wattage">
-                    {{power}}
+                    <iron-icon icon="image:flash-on"></iron-icon>
+                    <div class="value">
+                        {{power}}
+                    </div>
                 </div>
-                <!-- <div class="unit">
-                    {{unit}}
-                </div> -->
+                <div class="layout horizontal around-justified other">
+                    <div class="time">
+                        <iron-icon icon="image:timer"></iron-icon>
+                        <div class="value">
+                            {{time}}
+                        </div>
+                    </div>
+                    <div class="distance">
+                        <iron-icon icon="communication:swap-calls"></iron-icon>
+                        <div class="value">
+                            {{distance}}
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div class="more hidden" id="more">{{more}}</div>
         </div>
     </template>
@@ -272,9 +312,19 @@
                         this.$.container.style.backgroundImage = 'url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png)';
                     }
 
-                    this.$.bolt.classList.remove('hidden');
+                    this.$.data.classList.remove('hidden');
                     this.unit = 'watts';
                     this.power = data.power.toFixed(0);
+
+                    var distance = meterToUserUnit(this.data.distance);
+                    this.distance = distance;
+
+                    var duration = moment.duration(this.data.time, 'seconds');
+                    var minutesStr = duration.minutes().toString();
+                    if (minutesStr.length === 1) {
+                        minutesStr = '0' + minutesStr;
+                    }
+                    this.time = `${duration.hours()}:${minutesStr}`;
 
                     var relativePower;
                     if (data.power > threshold.high) {
@@ -296,7 +346,7 @@
                     this.$.container.style.cursor = 'auto';
                     this.$.container.style.backgroundImage = 'none';
 
-                    this.$.bolt.classList.add('hidden');
+                    this.$.data.classList.add('hidden');
                     this.unit = '';
                     this.power = '';
                     this.rgb = `rgb(0, 0, 0)`;
@@ -331,9 +381,7 @@
                 this.classList.add('active');
 
                 document.querySelector('workout-element').setLoading();
-                // workoutFetching(this.data.id, this.data.updated_time);
                 page(`/run/${this.data.id}`);
-                // location.pathname = `/run/${this.data.id}`;
                 window.scrollTo(0, bubbles.offsetTop);
             },
             // returns true or false whether a workout has been inserted already
