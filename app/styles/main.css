@@ -91,6 +91,7 @@ paper-button {
   min-width: 5.14em;
   margin: 0 0.29em;
   padding: 0.7em 0.57em;
+  cursor: pointer;
 }
 
 .tooltip {
@@ -106,4 +107,5 @@ paper-button {
   color: white;
   z-index: 9999999;
   padding: 20px;
+  width: 120px;
 }
