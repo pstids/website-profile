@@ -111,8 +111,8 @@
                 <h1 class="header">{{month}}</h1>
             </div>
             <div class="flex layout horizontal end-justified">
-                <button on-click="prevMonth" is="stryd-button" class="self-end">{{prevMonthText}}</button>
-                <button on-click="nextMonth" is="stryd-button" class="self-end">{{nextMonthText}}</button>
+                <button on-click="prevMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-back"></iron-icon></button>
+                <button on-click="nextMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-forward"></iron-icon></button>
             </div>
         </div>
         <div id="calendarContainer">
@@ -134,8 +134,6 @@
                 this.dom = [];
                 this.activeDom = [];
                 this.dates = [];
-                this.nextMonthText = 'Next Month';
-                this.prevMonthText = 'Previous Month';
 
                 // Mode attributes
                 this.mode = 'user';
@@ -172,6 +170,14 @@
                         true
                     );
                 }
+
+                document.addEventListener('keyup', (e) => {
+                    if (e.code === 'ArrowLeft') {
+                        this.prevMonth();
+                    } else if (e.code === 'ArrowRight') {
+                        this.nextMonth();
+                    }
+                });
             },
             // Mode is either user or admin
             // User is username for admin
