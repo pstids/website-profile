@@ -168,13 +168,18 @@
                 };
                 setInterval(setPosition, 20);
 
-                
                 this.assembleDOM();
                 if (jwt.hasToken) {
+                    var state;
+                    if (location.pathname.length > 20) {
+                        state = false;
+                    } else {
+                        state = true;
+                    }
                     this.fetchMonth(
                         this.displayedTime.month(),
                         this.displayedTime.year(),
-                        true
+                        state
                     );
                 }
 
