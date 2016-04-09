@@ -121,7 +121,7 @@ var meterToMile = function (m, precision) {
 
 var meterToUserUnit = function (m) {
     if (user.data.units === 'feet') {
-        var mi = meterToMile(m);
+        var mi = meterToMile(m, 0);
         return `${mi} mi`;
     } else {
         var km = meterToKM(m);
