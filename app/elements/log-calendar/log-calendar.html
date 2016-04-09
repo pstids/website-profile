@@ -224,7 +224,7 @@
             // Grabs array of activity data to populate calendar for month (int) and year (int)
             fetchMonth: function (month, year, loadLast) {
                 var obj = this.dateRange(month, year);
-                this.switchMonthContext('TEST', obj.firstMonday);
+
                 var srtDate = obj.firstMonday.format('MM-DD-YYYY');
                 var endDate = obj.lastSunday.format('MM-DD-YYYY');
                 var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
@@ -239,6 +239,7 @@
                     .end(function(err, res) {
                         if (res.ok) {
                             if (res.body !== null) {
+                                this.switchMonthContext('TEST', obj.firstMonday);
                                 this.processActivities(res.body.activities);
                                 this.loadLast(loadLast, res.body.last_activity);
                             }
