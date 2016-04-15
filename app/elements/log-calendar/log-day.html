@@ -297,8 +297,6 @@
                 }.bind(this));
 
                 var tooltip = document.querySelector('[data-tooltip]');
-                var tooltipTime = tooltip.querySelector('#time');
-                var tooltipDistance = tooltip.querySelector('#distance');
                 var tooltipDescription = tooltip.querySelector('#description');
 
                 this.$.container.addEventListener('mouseenter', function () {
@@ -311,11 +309,6 @@
                         if (minutesStr.length === 1) {
                             minutesStr = '0' + minutesStr;
                         }
-                        // tooltipTime.textContent = `${duration.hours()}:${minutesStr} duration`;
-                        tooltipTime.textContent = '';
-                        // var distance = meterToUserUnit(this.data.distance);
-                        // tooltipDistance.textContent = distance;
-                        tooltipDistance.textContent = '';
                         
                         if (this.data.description.length > 40) {
                             tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
@@ -326,7 +319,7 @@
                 }.bind(this), false);
 
                 this.$.container.addEventListener('mouseleave', function () {
-                    if ('power' in this.data) {
+                    if ('description' in this.data) {
                         tooltip.classList.add('hidden');
                     }
                 }.bind(this), false);
@@ -392,7 +385,6 @@
                     .end(function(err, res) {
                         if (res.ok) {
                             document.querySelector('#dlFrame').src = res.body.url;
-                            // window.open(res.body.url);
                         } else {
                             console.log('get download link failed');
                         }
