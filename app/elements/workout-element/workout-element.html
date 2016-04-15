@@ -1019,9 +1019,15 @@
                 time.time.elapsed = hmsTime(time.time.elapsed);
                 time.time.moving = hmsTime(time.time.moving);
 
-                misc.distance.value = distance;
-                if (user.data.units !== 'feet') {
-                    misc.distance.value = (distance / 0.621371).toFixed(1);
+                if (isNaN(distance)) {
+                    misc.distance.value = 'Not';
+                    misc.distance.unit = 'Available';
+                } else {
+                    misc.distance.value = distance;
+                    if (user.data.units !== 'feet') {
+                        misc.distance.value = (distance / 0.621371).toFixed(1);
+                    }
+                    misc.distance.unit = distanceUnit;
                 }
 
                 dynamics.cadence.moving = (dynamics.cadence.moving / dynamics.cadence.mTotal).toFixed(1);
