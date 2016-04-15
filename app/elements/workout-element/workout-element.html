@@ -291,15 +291,19 @@
                 <bubble-stat type="misc"></bubble-stat>
             </div>
             <div class="layout horizontal end options wrap">
-                <div class="layout vertical" style="flex: 0 275px;">
-                    <paper-textarea
-                        class="editable"
-                        label="Description"
-                        rows="1"
-                        max-rows="3"
-                        value="{{descriptionText}}"
-                        id="descriptionInput">
-                    </paper-textarea>
+                <div class="layout vertical" style="flex: 0 375px;">
+                    <div class="layout horizontal end">
+                        <paper-textarea
+                            class="editable"
+                            label="Description"
+                            rows="1"
+                            max-rows="3"
+                            value="{{descriptionText}}"
+                            id="descriptionInput"
+                            style="flex: 0 275px;">
+                        </paper-textarea>
+                        <button is="stryd-button" id="descriptionButton" on-click=""style="margin-left: 10px;">Save</button> 
+                    </div>
                     <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
                 </div>
                 <div class="toggles" style="flex: 1;">
@@ -708,9 +712,11 @@
                 this.descriptionText = activity.description;
                 if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
                     this.$.descriptionInput.classList.remove('hidden');
+                    this.$.descriptionButton.classList.remove('hidden');
                     this.$.descriptionDisplay.classList.add('hidden');
                 } else {
                     this.$.descriptionInput.classList.add('hidden');
+                    this.$.descriptionButton.classList.add('hidden');
                     this.$.descriptionDisplay.classList.remove('hidden');
                 }
 
