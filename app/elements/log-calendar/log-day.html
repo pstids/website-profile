@@ -11,13 +11,6 @@
             border-bottom:none;
             box-sizing: border-box;
         }
-        :host log-day {
-            z-index: 300;
-            width: 100%;
-            border-left: 1px solid #FFFFFF;
-            border-right: 1px solid #FFFFFF;
-            left: -1px;
-        }
         :host:hover log-day {
             display: block !important;
         }
@@ -34,10 +27,39 @@
             border: 1px solid #FFFFFF;
         }
 
+        .half-items {
+            @apply(--layout-vertical);
+            position: absolute;
+            width: 100%;
+            top: 100%;
+        }
+        :host:hover .half-items log-day {
+            display: block !important;
+        }
+        .half-items log-day {
+            z-index: 300;
+            width: 100%;
+            border-left: 1px solid #FFFFFF;
+            border-right: 1px solid #FFFFFF;
+            left: -1px;
+            flex: 1;
+        }
+        .half-items .container {
+            min-height: 70px;
+        }
+        .half-items log-day .wattage {
+            margin-top: 0;
+        }
+        .half-items log-day:last-child {
+            border-bottom: 1px solid #FFFFFF;
+        }
+        .half-items .other {
+            display: none;
+        }
+
         .container {
             @apply(--layout-flex);
             @apply(--layout-vertical);
-            /*border: 1px solid transparent;*/
             overflow: hidden;
             
             cursor: pointer;
@@ -187,6 +209,11 @@
             </div>
 
             <div class="more hidden" id="more">{{more}}</div>
+
+
+        </div>
+        <div class="half-items" id="half">
+            
         </div>
     </template>
     <script>
@@ -229,10 +256,11 @@
                 this.sameDays = [];
                 this.classList.remove('hasChild');
                 this.classList.remove('active');
+
                 this.$.more.classList.add('hidden');
                 var logDays = this.querySelectorAll('log-day');
                 for (var i = 0; i < logDays.length; i++) {
-                    this.removeChild(logDays[i]);
+                    this.$.half.removeChild(logDays[i]);
                 }
             },
             ready: function () {
@@ -395,12 +423,13 @@
             addChild: function (node) {
                 console.log('added child element');
                 this.classList.add('hasChild');
+
                 this.$.more.classList.remove('hidden');
+
                 node.style.display = 'none';
-                node.style.position = 'absolute';
-                node.classList.add('style-scope');
-                node.classList.add('log-day');
-                this.appendChild(node);
+
+                Polymer.dom(this.$.half).appendChild(node);
+
                 this.sameDays.push(node);
             },
             getID: function () {
