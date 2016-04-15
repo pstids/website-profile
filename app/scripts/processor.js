@@ -12,6 +12,8 @@ importScripts('/powercenter/scripts/dexie.js');
 
 var data = {}, token, db;
 
+var updatedTime = '';
+
 class Color {
     constructor(r, g, b) {
         this.r = r;

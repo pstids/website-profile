@@ -13,6 +13,8 @@ var processor = new Worker('/powercenter/scripts/processor.js');
 
 Dropzone.autoDiscover = false;
 
+var updatedTime = '';
+
 /*
 workoutFetching grabs a workout by ID and
 sends the content to workout-element, map-run, and
@@ -27,7 +29,7 @@ var workoutFetching = function (id, updated_time) {
         token: jwt.token,
         type: 'workout',
         id: id,
-        updated_time: updated_time
+        updated_time: updatedTime
     });
 };
 

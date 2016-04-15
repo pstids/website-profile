@@ -219,6 +219,7 @@
     </template>
     <script>
         /*global page*/
+        /*global updatedTime:true*/
         class Color {
             constructor(r, g, b) {
                 this.r = r;
@@ -408,6 +409,7 @@
                     logDayActive.classList.remove('active');
                 }
                 this.classList.add('active');
+                updatedTime = this.data.updated_time;
 
                 document.querySelector('workout-element').setLoading();
                 page(`/run/${this.data.id}`);
