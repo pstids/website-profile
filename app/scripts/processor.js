@@ -12,8 +12,6 @@ importScripts('/powercenter/scripts/dexie.js');
 
 var data = {}, token, db;
 
-var updatedTime = '';
-
 class Color {
     constructor(r, g, b) {
         this.r = r;
@@ -337,6 +335,9 @@ onmessage = function (event) {
             break;
         case 'addLog':
             addLog(event.data.id);
+            break;
+        case 'suuntoProcessing':
+            suuntoProcessing();
             break;
         default:
             console.log('Error in onmessage/processor: unknown action');

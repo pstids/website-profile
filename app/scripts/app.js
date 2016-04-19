@@ -48,6 +48,13 @@ var logsFetching = function () {
     });
 };
 
+var suuntoProcessing = function () {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'suuntoProcessing'
+    });
+};
+
 /*
 Creates a local storage database using Dexie.
 Items are fetched using ID and the workout data
@@ -185,6 +192,7 @@ var toast = function (message) {
             if (jwt.hasToken) {
                 app.route = 'home';
                 header.toggleActive('home');
+                suuntoProcessing();
             } else {
                 page.redirect('/welcome');
             }
