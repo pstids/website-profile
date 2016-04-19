@@ -60,6 +60,7 @@ var calcThreshold = function (nPowers) {
         low: 0
     };
     if (nPowers !== null) {
+        // We need to create a duplicate list, so the original list is not sorted
         var powers = [];
         for (var i = 0; i < nPowers.length; i++) {
             powers.push(nPowers[i]);
@@ -87,43 +88,51 @@ var calcThreshold = function (nPowers) {
 
 var workoutSave = function (workout, id) {
     db.log.put({
-        id: id,
+        id: String(id),
         data: workout
     });
 };
 
 var workoutFetchingAJAX = function (workout, scope) {
     superagent
-        .get('/b/api/v1/activities/' + workout)
+        .get(`/b/api/v1/activities/${workout}`)
         .send()
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
+        .set('Authorization', `Bearer: ${token}`)
         .end(function(err, res) {
             if (res.ok) {
                 workoutProcessing(res.body, workout, scope);
-                workoutSave(res.body, workout);
             } else {
                 console.log('Error: cannot fetch workout');
             }
         });
 };
 
-var workoutFetching = function (workoutID, scope) {
+var workoutFetching = function (workoutID, workoutUpdated, scope) {
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (!checkIndexedDB) {
         workoutFetchingAJAX(workoutID);
     } else {
-        db.log.get(workoutID, function (log) {
+        db.log.get(String(workoutID), function (log) {
             if (log === undefined) {
                 workoutFetchingAJAX(workoutID, scope);
             } else {
-                workoutProcessing(log.data, log.id, scope);
+                var workoutUpdatedTS = new Date(workoutUpdated);
+                var logUpdatedTS = new Date(log.data.updated_time);
+                var getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
+                    (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
+                if (getExternal) {
+                    workoutFetchingAJAX(workoutID, scope);
+                } else {
+                    workoutProcessing(log.data, log.id, scope);
+                }
             }
         });
     }
 };
 
 var workoutProcessing = function (workout, id, scope) {
+    workoutSave(workout, id);
     if (workout.total_power_list === null) {
         data.error = true;
         postMessage(data);
@@ -212,7 +221,12 @@ var workoutProcessing = function (workout, id, scope) {
         
         chartData.push(entry);
         /* Assemble map data */
-        if (i > 0 && 'loc_list' in workout && workout.loc_list !== null && 'power' in entry) {
+        if (
+            i > 0 &&
+            'loc_list' in workout &&
+            workout.loc_list !== null &&
+            'power' in entry
+        ) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
@@ -250,6 +264,11 @@ var workoutProcessing = function (workout, id, scope) {
 
     data.mapRunData = mapRunData;
     data.chartData = chartData;
+    data.chartDescription = {
+        description: workout.description,
+        id: workout.id,
+        user_id: workout.user_id
+    };
     data.steps = steps;
     if (id === 'sample') {
         data.logs = [workout];
@@ -257,16 +276,8 @@ var workoutProcessing = function (workout, id, scope) {
     } else {
         data.type = 'data';
     }
-    data.workoutShared = {
-        date: workout.timestamp,
-        id: workout.id,
-        scope: scope,
-        public: workout.public,
-        name: workout.name,
-        photo: workout.photo
-    };
+    data.workoutShared = workout;
     data.scope = scope;
-    console.log('SCOPE IN PROCESSOR IS:', scope);
     postMessage(data);
 };
 
@@ -277,10 +288,10 @@ var logsProcessing = function (logs) {
 
 var addLog = function (id) {
     superagent
-        .get('/b/api/v1/activities/' + id)
+        .get(`/b/api/v1/activities/${id}`)
         .send()
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
+        .set('Authorization', `Bearer: ${token}`)
         .end(function(err, res) {
             if (res.ok) {
                 workoutSave(res.body, id);
@@ -292,25 +303,18 @@ var addLog = function (id) {
         });
 };
 
-var logsFetching = function (user='') {
-    var link = '/b/api/v1/activities/summary?limit=40&sortby=Timestamp&order=desc';
-    if (user.length > 0) {
-        link = '/b/admin/users/' + user + '/activities/summary?limit=40&sortby=Timestamp&order=desc';
-    }
+var suuntoProcessing = function () {
     superagent
-        .get(link)
-        .send()
+        .post('/b/internal/fetch/suunto')
+        .send({})
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
-        .end(function(err, res) {
-            if (res.ok) {
-                if (res.body !== null) {
-                    logsProcessing(res.body);
-                } else {
-                    workoutFetching('sample', 'owned');
+        .set('Authorization', `Bearer: ${token}`)
+        .end(function (err, res) {
+            if (res.ok && res.body.workouts !== null) {
+                for (var i = 0; i < res.body.workouts.length; i++) {
+                    var workoutID = res.body.workouts[i];
+                    addLog(workoutID);
                 }
-            } else {
-                console.log('Error: failure on grabLogs', err, res);
             }
         }.bind(this));
 };
@@ -323,23 +327,17 @@ onmessage = function (event) {
     token = event.data.token;
 
     switch(event.data.type) {
-        case 'all':
-            logsFetching();
-            break;
         case 'workout':
-            workoutFetching(event.data.id, 'owned');
+            workoutFetching(event.data.id, event.data.updated_time, 'owned');
             break;
         case 'workout-view':
-            workoutFetching(event.data.id, 'shared');
-            break;
-        case 'sample':
-            workoutFetching('sample', 'owned');
+            workoutFetching(event.data.id, event.data.updated_time, 'owned');
             break;
         case 'addLog':
             addLog(event.data.id);
             break;
-        case 'admin':
-            logsFetching(event.data.user);
+        case 'suuntoProcessing':
+            suuntoProcessing();
             break;
         default:
             console.log('Error in onmessage/processor: unknown action');

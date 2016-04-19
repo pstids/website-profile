@@ -251,7 +251,6 @@
         /*jshint camelcase: false*/
         /*global jwt*/
         /*global superagent*/
-        /*global Clipboard*/
         /*global updateWorkout*/
         Polymer({
             is: 'log-entry',
@@ -263,7 +262,6 @@
                 shareInputID: String,
             },
             ready: function () {
-                new Clipboard('[data-click]');
                 this.querySelector('[data-share]').addEventListener('click', () => {
                     this.shared(true, true);
                     this.querySelector('[data-open]').dataset.open = 'true';
@@ -354,7 +352,7 @@
                 }
 
                 document.querySelector('workout-element').setLoading();
-                workoutFetching(this.data.id);
+                workoutFetching(this.data.id, this.data.updated_time);
                 window.scrollTo(0, bubbles.offsetTop);
             },
             handleDownload: function () {

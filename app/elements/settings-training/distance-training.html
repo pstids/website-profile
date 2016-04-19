@@ -1,4 +1,4 @@
-<dom-module id="settings-training">
+<dom-module id="distance-training">
     <style>
         h1.title {
             @apply(--header);
@@ -188,108 +188,82 @@
     <div data-zone="container">
         <div class="layout vertical instructions">
             <h1>Instructions</h1>
-            <p>1. Complete the <a href="http://club.stryd.com/t/a-protocol-for-establishing-critical-power-in-running/574">Stryd Critical Power Test</a> or your own critical power test.</p>
-            <p>2. Check 'Use 3-9 Minute Critical Power Test' box if you used the Stryd critical power test. Uncheck it if you used your own test.</p>
-            <p>3. Fill in your test results.</p>
-            <p>4. Click 'Calculate Zones on Jack Daniel's Method'. Manually adjust your zones as necessary. The zones may be too tight or narrow for your fitness. The power ranges will be clearer as you run more.</p>
-            <p>5. Save your information in the bottom right.</p>
+            <p>1. Complete the <a href="http://club.stryd.com/t/coach-mike-ricci-and-his-team-do-the-critical-power-test/1592">Distance Based Critical Power Test</a> on Stryd Mobile. The testing results from the mobile app are updated when the test is complete.</p>
         </div>
         <div class="layout horizontal justified">
             <h1 class="title self-center">Critical Power & Pace</h1>
-            <button is="stryd-button" class="self-center self-end" style="margin-top: 0;" on-click="toggleTests">
+            <button is="stryd-button" class="hidden self-center self-end" style="margin-top: 0;" on-click="toggleTests">
                 <div class="layout horizontal">
-                    <span class="self-center" style="margin-right: 15px;">USE 3-9 MINUTE CRITICAL POWER TEST</span>
+                    <span class="self-center" style="margin-right: 15px;">USE 3-6 AP CRITICAL POWER TEST</span>
                     <paper-checkbox id="critToggle" checked class="self-center"></paper-checkbox>
                 </div>
             </button>
         </div>
-        <div class="crit" id="critTestContainer">
+        <div class="crit">
             <div class="layout vertical">
-                <div class="layout horizontal" style="margin-top: 10px;">
+                <!-- <div class="layout horizontal">
                     <div class="layout horizontal item">
-                        <paper-input
-                            value="{{critPower.three}}"
-                            editable="true"
-                            type="text"
-                            placeholder="Watts"
-                            class="flex"
-                            label="THREE MIN AVG WATTS">
-                        </paper-input>
+                        <div class="faux-input">
+                            <label>800M AVG WATTS</label>
+                            <span>200</span>
+                        </div>
                         <span class="units self-end">WATTS</span>
                     </div>
                     <div class="layout horizontal item">
-                        <paper-input
-                            value="{{critPace.three}}"
-                            editable="true"
-                            type="text"
-                            placeholder="Pace (i.e. 4:40)"
-                            label="THREE MIN AVG PACE"
-                            class="flex">
-                        </paper-input>
+                        <div class="faux-input">
+                            <label>800M AVG PACE</label>
+                            <span>8:00</span>
+                        </div>
                         <span class="units self-end">{{userLocal}}</span>
                     </div>
-                </div>
-                <div class="layout horizontal" style="margin-top: 10px;">
+                </div> -->
+                <div class="layout horizontal" style="margin-top: 10px; border-top: 0px solid #FFFFFF; width: 540px;">
                     <div class="layout horizontal item">
-                        <paper-input
-                            value="{{critPower.nine}}"
-                            editable="true"
-                            type="text"
-                            placeholder="Watts"
-                            class="flex"
-                            label="NINE MIN AVG WATTS">
-                        </paper-input>
+                        <div class="faux-input">
+                            <label>1200M AVG WATTS</label>
+                            <span>{{power_short}}</span>
+                        </div>
                         <span class="units self-end">WATTS</span>
                     </div>
                     <div class="layout horizontal item">
-                        <paper-input
-                            value="{{critPace.nine}}"
-                            editable="true"
-                            type="text"
-                            placeholder="Pace (i.e. 5:40)"
-                            label="NINE MIN AVG PACE"
-                            class="flex">
-                        </paper-input>
+                        <div class="faux-input">
+                            <label>1200M AVG PACE</label>
+                            <span>{{pace_short}}</span>
+                        </div>
                         <span class="units self-end">{{userLocal}}</span>
                     </div>
                 </div>
-                <div class="layout horizontal" style="margin-top: 10px; border-top: 2px solid #F5A214; padding-top: 30px; width: 540px;">
+                <div class="layout horizontal" style="margin-top: 10px; border-top: 1px solid #FFFFFF; width: 540px;">
+                    <div class="layout horizontal item">
+                        <div class="faux-input">
+                            <label>2400M AVG WATTS</label>
+                            <span>{{power_long}}</span>
+                        </div>
+                        <span class="units self-end">WATTS</span>
+                    </div>
+                    <div class="layout horizontal item">
+                        <div class="faux-input">
+                            <label>2400M AVG PACE</label>
+                            <span>{{pace_long}}</span>
+                        </div>
+                        <span class="units self-end">{{userLocal}}</span>
+                    </div>
+                </div>
+                <div class="layout horizontal" style="margin-top: 10px; border-top: 2px solid #F5A214; padding: 15px 0; width: 540px;">
                     <div class="layout horizontal item">
                         <div class="faux-input">
                             <label>CRITICAL POWER</label>
-                            <span>{{calcCritPower(critPower.three, critPower.nine)}}</span>
+                            <span>{{critical_power}}</span>
                         </div>
                         <span class="units self-end">WATTS</span>
                     </div>
                     <div class="layout horizontal item">
                         <div class="faux-input">
                             <label>CRITICAL PACE</label>
-                            <span>{{calcCritPace(critPace.three, critPace.nine)}}</span>
+                            <span>{{critical_pace}}</span>
                         </div>
                         <span class="units self-end">{{userLocal}}</span>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="crit" id="critValuesContainer">
-            <div class="layout horizontal">
-                <div class="layout horizontal item">
-                    <paper-input
-                    value="{{critPower.value}}"
-                    type="text"
-                    placeholder="Power (i.e. 300)"
-                    label="CRITICAL POWER">
-                    </paper-input>
-                    <span class="self-end units">WATTS</span>
-                </div>
-                <div class="layout horizontal item">
-                    <paper-input
-                    value="{{critPace.value}}"
-                    type="text"
-                    placeholder="Pace (i.e. 5:40)"
-                    label="CRITICAL PACE">
-                    </paper-input>
-                    <span class="self-end units">{{userLocal}}</span>
                 </div>
             </div>
         </div>
@@ -298,7 +272,7 @@
                 <div class="zones-titles self-center">
                     <h1 class="title">Power & Pace Zones</h1>
                 </div>
-                <button is="stryd-button" on-click="calculateZones" class="self-center self-end" style="margin-top: 0;">Calculate Zones on Jack Daniel's Method</button>
+                <button is="stryd-button" on-click="calculateZones" class="self-center self-end hidden" style="margin-top: 0;">Calculate Zones on Jack Daniel's Method</button>
             </div>
             <div class="titles layout horizontal">
                 <div class="title flex-1">
@@ -314,10 +288,10 @@
             </div>
             <div class="zones" id="zones" style="margin-bottom: 20px;">
             </div>
-            <button is="stryd-button" class="self-center" on-click="addZone" style="margin: 0 0 20px 20px;">Add Zone</button>
+            <button is="stryd-button" class="self-center hidden" on-click="addZone" style="margin: 0 0 20px 20px;">Add Zone</button>
         </div>
-        <div class="save-line"></div>
-        <div class="save" on-click="saveZones">
+        <!-- <div class="save-line"></div> -->
+        <div class="save hidden" on-click="saveZones">
             <p>Save Training Information</p>
             <paper-fab icon="inbox"></paper-fab>
         </div>
@@ -333,7 +307,7 @@
     </template>
     <script>
         Polymer({
-            is: 'settings-training',
+            is: 'distance-training',
             properties: {
                 critPower: {
                     type: Object,
@@ -364,76 +338,59 @@
                 } else {
                     this.userLocal = 'MIN/KM';
                 }
-                if (!('critical_pace' in user.data) || !('critical_power' in user.data)) {
-                    user.fetchDetails(this.ready.bind(this));
-                }
 
-                this.critPower = {
-                    three: user.data.critical_power.three_minutes,
-                    nine: user.data.critical_power.nine_minutes,
-                    value: user.data.critical_power.value
-                };
-
-                this.set('critPower.value', this.critPower.value);
-
-                this.critPace = {
-                    nineDec: 0,
-                    threeDec: 0,
-                    three: user.data.critical_pace.three_minutes,
-                    nine: user.data.critical_pace.nine_minutes,
-                    value: user.data.critical_pace.value
-                };
-
-                var zones = user.get('zones');
-                if (zones) {
+                var storedZones = (typeof localStorage.getItem('ambassadorZones') === 'string');
+                
+                if (storedZones !== false) {
+                    var zones = JSON.parse(localStorage.getItem('ambassadorZones'));
                     for (var i = 0; i < zones.length; i++) {
                         var zoneEntry = document.createElement('zone-entry');
                         zoneEntry.import(zones[i]);
                         this.$.zones.appendChild(zoneEntry);
                     }
                 } else {
-                    var names = ['Easy/Long', 'Marathon', 'Threshold', 'Interval', 'Repetition'];
-                    this.addZone({
-                        name: names[0]
-                    });
-                    this.addZone({
-                        name: names[1]
-                    });
-                    this.addZone({
-                        name: names[2]
-                    });
-                    this.addZone({
-                        name: names[3]
-                    });
-                    this.addZone({
-                        name: names[4]
-                    });
+                //     var names = ['Easy/Long', 'Marathon', 'Threshold', 'Interval', 'Repetition'];
+                //     this.addZone({
+                //         name: names[0]
+                //     });
+                //     this.addZone({
+                //         name: names[1]
+                //     });
+                //     this.addZone({
+                //         name: names[2]
+                //     });
+                //     this.addZone({
+                //         name: names[3]
+                //     });
+                //     this.addZone({
+                //         name: names[4]
+                //     });
                 }
 
-                var useTest = (localStorage.getItem('useTest') === 'true');
-                if (useTest === null) {
-                    this.useTest = true;
-                } else {
-                    this.useTest = useTest;
-                    this.$.critToggle.checked = this.useTest;
-                    if (!this.useTest) {
-                        this.$.critTestContainer.classList.add('hide');
-                    } else {
-                        this.$.critValuesContainer.classList.add('hide');
-                        this.calcCritPace(this.critPace.three, this.critPace.nine);
-                    }
-                }
             },
-            toggleTests: function () {
-                this.useTest = !this.useTest;
-                this.$.critTestContainer.classList.toggle('hide');
-                this.$.critValuesContainer.classList.toggle('hide');
-                this.$.critToggle.checked = this.useTest;
-                this.calcCritPower(this.critPower.three, this.critPower.nine);
-                this.calcCritPace(this.critPace.three, this.critPace.nine);
+            setData: function (pl) {
+                console.log('called with', pl);
+                this.set('power_long', pl.critical_result.power_long);
+                this.set('power_short', pl.critical_result.power_short);
+                this.set('pace_long', this.mpsToPace(pl.critical_result.speed_long));
+                this.set('pace_short', this.mpsToPace(pl.critical_result.speed_short));
+                this.set('critical_power', pl.critical_power);
+                this.set('critical_pace', this.mpsToPace(pl.critical_speed));
+
+                for (var i = 0; i < pl.training_zones.length; i++) {
+                    var zone = pl.training_zones[i];
+                    this.addZone({
+                        name: zone.name,
+                        power_low: parseInt(zone.power_low),
+                        power_high: parseInt(zone.power_high),
+                        pace_low: this.mpsToPace(zone.speed_low),
+                        pace_high: this.mpsToPace(zone.speed_high)
+                    });
+                }
             },
             addZone: function (zone) {
                 var zoneEntry = document.createElement('zone-entry');
+                zoneEntry.setAttribute('keep', 'true');
                 zoneEntry.import(zone);
                 this.$.zones.appendChild(zoneEntry);
             },
@@ -445,103 +402,20 @@
             automatic: function () {
                 this.$.autoCalc.open();
             },
-            calcCritPower: function (three, nine) {
-                if (three === '' || nine === '') {
-                    this.$.toast.text = 'Fill in the critical power values.';
-                    this.$.toast.show();
-                    return '';
-                }
-                three = parseInt(three);
-                nine = parseInt(nine);
-                var scaled_nine = (nine*9);
-                var scaled_three = (three*3);
-                var crit_power = ((scaled_nine - scaled_three)/(6));
-                if (crit_power < 0) {
-                    crit_power = 0;
-                }
-                this.isCritPower = crit_power;
-                return crit_power;
-            },
-            calcCritPace: function (three, nine) {
-                if (three === '' || nine === '') {
-                    this.$.toast.text = 'Fill in the critical pace values.';
-                    this.$.toast.show();
-                    return '';
-                }
-
-                if (three.indexOf(':') === -1 || nine.indexOf(':') === -9) {
-                    this.$.toast.text = 'Use colon notation. i.e. 10:00, 5:15';
-                    this.$.toast.show();
-                    return '';
-                }
-
-                this.critPace.threeDec = this.paceToDec(three);
-                this.critPace.nineDec = this.paceToDec(nine);
-
-                var speedThree = this.paceToMPH(this.critPace.threeDec);
-                var speedNine = this.paceToMPH(this.critPace.nineDec);
-
-                var scaledThree = speedThree * 3;
-                var scaledNine = speedNine * 9;
-
-                var critSpeed = (scaledNine - scaledThree)/6;
-                if (critSpeed < 0) {
-                    critSpeed = 0;
-                }
-
-                var critPace = this.decToPace(this.paceToMPH(critSpeed));
-
-                this.critPace.value = critPace;
-                this.notifyPath('critPace.value', critPace);
-                return critPace;
-            },
             saveZones: function () {
-                localStorage.setItem('useTest', this.useTest);
-                // var queryObj = {};
-                if (this.useTest) {
-                    this.critPower.value = this.isCritPower;
-                }
 
-
-                var updateParams = '?fields=critical_power,critical_pace,zones';
                 var zones = [];
                 for (var i = 0; i < this.$.zones.children.length; i++) {
                     zones.push(this.$.zones.children[i].export());
                 }
 
-                // var queryString = this.jsonToQueryString(queryObj);
-                superagent
-                    .put('/b/api/v1/users/' + jwt.data.id + updateParams)
-                    .send({
-                        critical_pace: {
-                            three_minutes: this.critPace.three,
-                            nine_minutes: this.critPace.nine,
-                            value: this.critPace.value
-                        },
-                        critical_power: {
-                            three_minutes: parseInt(this.critPower.three),
-                            nine_minutes: parseInt(this.critPower.nine),
-                            value: parseInt(this.critPower.value)
-                        },
-                        zones: zones
-                    })
-                    .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
-                        if (res.ok) {
-                            this.$.toast.text = 'Your training information is up-to-date!';
-                            user.updateData(res.body);
-                        } else {
-                            this.$.toast.text = 'Your information has not been updated. Please try again.';
-                        }
-                        this.$.toast.show();
-                    }.bind(this));
+                var zoneString = JSON.stringify(zones);
+
+                localStorage.setItem('ambassadorZones', zoneString);
+                this.$.toast.text = 'Your training information is up-to-date!';
+                this.$.toast.show();
             },
             calculateZones: function () {
-                if (this.useTest) {
-                    this.critPower.value = this.isCritPower;
-                }
-
                 var paceDec = this.paceToDec(this.critPace.value);
                 if (isNaN(paceDec) || isNaN(this.critPower.value) || this.critPower.value === 0) {
                     this.$.toast.text = 'Your critical power & pace values are incorrect. Please review.';
@@ -628,6 +502,24 @@
                     mph = (37.2822715/val);
                 }
                 return mph;
+            },
+            mpsToPace: function (val) {
+                var pace;
+                if (user.data.units === 'feet') {
+                    pace = 26.8224 / val;
+                } else {
+                    pace = 16.6666667 / val;
+                }
+                return this.formatPace(parseInt(pace*60));
+            },
+            formatPace: function (seconds) {
+                var dec = seconds / 60;
+                var minutes = parseInt(dec);
+                var remaining = (seconds - (minutes * 60)).toString();
+                if (remaining.length === 1) {
+                    remaining = '0' + remaining;
+                }
+                return minutes + ':' + remaining;
             }
         });
     </script>

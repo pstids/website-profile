@@ -1,0 +1,71 @@
+<dom-module id="log-options">
+    <template>
+        <paper-dialog id="dialogDelete">
+            <h1>Are you sure you want to remove this run?</h1>
+            <div class="buttons">
+                <paper-button dialog-dismiss>No</paper-button>
+                <paper-button autofocus on-click="handleDelete">Yes</paper-button>
+            </div>
+        </paper-dialog>
+        <paper-dialog id="dialogShare">
+            <h1>Share URL</h1>
+            <div class="layout horizontal">
+                <input
+                    value="test"
+                    type="text"
+                    data-shareURL
+                    style="width: 500px; height: 30px;">
+                </input>
+            </div>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Close</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: 'log-options',
+            attached: function () {
+                this.logCalendar = document.querySelector('log-calendar');
+                console.log('found log-caelndar');
+            },
+            ready: function () {
+                this.shareBox = this.querySelector('[data-shareURL]');
+                this.deleteID = null;
+                this.shareID = null;
+                this.descriptionID = null;
+                this.logCalendar = null;
+            },
+            callDelete: function (id) {
+                this.deleteID = id;
+                this.$.dialogDelete.open();
+            },
+            callShare: function (id) {
+                this.shareID = id;
+                this.shareBox.value = `https://www.stryd.com/powercenter/run/${this.shareID}`;
+                this.$.dialogShare.open();
+                this.shareID = null;
+            },
+            handleDelete: function () {
+                if (this.deleteID !== null) {
+                    superagent
+                        .del('/b/api/v1/activities/' + this.deleteID)
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', 'Bearer: ' + jwt.token)
+                        .end(function(err, res) {
+                            if (res.ok) {
+                                if (this.logCalendar !== null) {
+                                    this.logCalendar.removeActivity(this.deleteID);
+                                }
+                                console.log('workout deleted');
+                            } else {
+                                console.log('failed to delete element');
+                            }
+                        }.bind(this));
+                }
+                this.$.dialogDelete.close();
+            }
+        });
+    </script>
+</dom-module>

@@ -119,6 +119,16 @@ var meterToMile = function (m, precision) {
     return (m/1600).toFixed(1);
 };
 
+var meterToUserUnit = function (m) {
+    if (user.data.units === 'feet') {
+        var mi = meterToMile(m, 0);
+        return `${mi} mi`;
+    } else {
+        var km = meterToKM(m);
+        return `${km} km`;
+    }
+};
+
 var attribute = function(selector, parent) {
   var eles = parent.querySelectorAll('[data-' + selector + ']');
   var holder = {};

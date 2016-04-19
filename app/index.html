@@ -48,29 +48,32 @@
 </head>
 
 <body unresolved class="fullbleed layout vertical">
+<div class="tooltip hidden" data-tooltip>
+    <div class="description" id="description">Description</div>
+</div>
 <span id="browser-sync-binding"></span>
 
 <template is="dom-bind" id="app">
-
     <!-- Main Content -->
     <div class="content">
         <header-element></header-element>
         <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="home">
-                <div class="layout horizontal">
+                <div class="layout horizontal" style="display: relative">
                     <map-run id="map-run" class="flex-4"></map-run>
-                    <workout-shared id="workout-shared" class="flex hidden"></workout-shared>
+                    <workout-shared id="workout-shared"></workout-shared>
                 </div>
                 <workout-element id="workout-element"></workout-element>
-                <log-book id="log-book"></log-book>
+                <log-book id="log-book" style="display: none !important; opacity: 0;"></log-book>
+                <log-calendar></log-calendar>
                 <div class="uploader"
                     data-step="9"
-                    data-intro="Have FIT and GPX files? Upload them here."
+                    data-intro="Have FIT and TCX files? Upload them here."
                     id="uploader">
                     <h1 class="title">Upload</h1>
                     <form class="dropzone" id="file">
                         <div class="dz-message" data-dz-message>
-                            <span>Drop your FIT file here to upload (Or click to select from computer)</span>
+                            <span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
                         </div>
                     </form>
                 </div>
@@ -95,14 +98,15 @@
             </section>
 
             <section data-route="*">
-                <h1>How did you end up here? <a href="/powercenter/">Let's return to somewhere familar.</a></h1>
-                <img src="https://storage.googleapis.com/stryd_static_assets/stryd-fail.png" alt="">
+                <!-- <h1>How did you end up here? <a href="/powercenter/">Let's return to somewhere familar.</a></h1>
+                <img src="https://storage.googleapis.com/stryd_static_assets/stryd-fail.png" alt=""> -->
             </section>
         </iron-pages>
         
+        <log-options></log-options>
         <footer-element></footer-element>
         <paper-toast duration="1000000" text="You are viewing sample data. Visit settings to associate your platform account." id="sample"></paper-toast>
-        <paper-toast id="upload-toast" duration="5000" style="z-index: 999999;"></paper-toast>
+        <paper-toast id="toast" duration="5000" style="z-index: 999999;"></paper-toast>
         <iframe id="dlFrame" style="display:none;">
     </div>
     
@@ -114,8 +118,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/intro.js/1.1.1/intro.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/page.js/1.6.4/page.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.5/clipboard.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
 
 <script src="/powercenter/scripts/jwt.js"></script>
 <script src="/powercenter/scripts/toolbox.js"></script>

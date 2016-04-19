@@ -1,11 +1,19 @@
 <dom-module id="workout-shared">
     <style>
-        .shared {
-            margin: 30px 10px;
+        :host {
+            position: absolute;
+            right: 0;
+            background-color: rgba(34, 34, 34, 0.6);
+            height: auto;
+            margin-top: 5%;
+            border-radius: 40px 0 0 40px;
+            padding: 20px;
+            width: 200px;
         }
-        h1 {
+        .text {
+            line-height: 30px;
+            font-size: 18px;
             color: white;
-            margin-bottom: 0;
         }
         .social {
             @apply(--layout-horizontal);
@@ -29,74 +37,49 @@
         }
         img {
             border-radius: 50%;
-            width: 5.5vw;
-            height: auto;
+            width: auto;
+            height: 60px;
         }
     </style>
     <template>
-        <div class="layout vertical center center-justified shared">
-            <img src="{{user.image}}" class="flex-none">
-            <h1 class="flex-none" style=" margin: 10px 20px; text-align: center;"><span>{{user.fullname}}</span></h1>
-            <h2 style="color: white; margin: 10px 20px; text-align: center;">Workout on <span>{{runStart}}</span></h2>
-            <div class="layout vertical flex-none hidden" >
-            <!-- hidden$="{{nOwner2>}}" -->
-                <div class="layout horizontal" hidden$="{{notPublic(public)}}">
-                    <input type="text" value="{{publicURL}}" class="shareURL" data-copy="text">
-                    <button is="stryd-button" data-clipboard-target="[data-copy='text']" data-copy="btn" style="margin: 0 0 0 10px;">Copy URL to Clipboard</button>
+        <div class="layout vertical shared">
+            <div class="layout horizontal">
+                <img src="{{user.image}}">
+                <div class="layout vertical" style="padding: 0 10px;">
+                    <div class="text">{{user.fullname}}</div>
+                    <div class="text">{{runDate}}</div>
                 </div>
-                
-                <div class="link layout horizontal end">
-                    <paper-checkbox id="sharePublic" class="flex-none" checked="{{public}}"></paper-checkbox>
-                    <p class="flex-none" style="color:white; margin-bottom: 0;">Share Workout Publically</p>
-                </div>
-                    <!-- <div class="social">
-                        <div class="network" style="color:white;">FB</div>
-                        <div class="network" style="color:white;">TWIT</div>
-                        <div class="network" style="color:white;">GOOG</div>
-                    </div> -->
             </div>
+            <!-- <div class="text" style="padding-top: 20px;">{{description}}</div> -->
+            <!-- <button is="stryd-button" on-click="callDescription" id="modifyDescription">{{modifyDescription}}</button> -->
         </div>
+        <paper-dialog id="dialogDescription">
+            <paper-input
+                type="text"
+                placeholder="Description"
+                label="Description"
+                class="editable"
+                value="{{description}}">
+            </paper-input>
+            <div class="buttons">
+                <paper-button dialog-confirm autofocus on-click="handleDescription">Update</paper-button>
+            </div>
+        </paper-dialog>
     </template>
     <script>
         /*global CryptoJS*/
-        /*global Clipboard*/
         /*global updateWorkout*/
         Polymer({
             is: 'workout-shared',
             properties: {
                 user: Object,
                 activity: Object,
-                public: Boolean,
-                publicURL: String,
-                runStart: String,
-                nOwner: Boolean
-            },
-            notPublic: function (public1) {
-                return !public1;
+                runDate: String
             },
             ready: function () {
                 this.user = {};
                 this.activity = {};
-                this.public = false;
-                this.nOwner = true;
                 this.username = '';
-                console.log('WS ready event');
-                new Clipboard('[data-copy="btn"]');
-            },
-            updatePref: function () {
-                updateWorkout(
-                    this.activity.id,
-                    {
-                        public: true
-                    },
-                    function (err, res) {
-                        if (res.ok && !err) {
-                            console.log('Updated public status of workout.');
-                        } else {
-                            console.log('Failed to update status of workout.');
-                        }
-                    });
-
             },
             getImage: function (user) {
                 this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
@@ -113,40 +96,46 @@
                 this.user.fullname = this.activity.name;
                 this.set('user.fullname', this.activity.name);
                 this.set('user.image', this.getImage(this.activity));
-                // this.username = username;
-                // console.log(username, user.data.user_name, username === user.data.user_name);
-                // if (username === user.data.user_name) {
-                //     this.updatePref();
-                //     console.log('We have this user information stored locally!');
-                //     this.user.image = user.getImage();
-                //     this.user.fullname = user.data.first_name + ' ' + user.data.last_name;
-                //     this.set('user.fullname', this.user.fullname);
-                //     this.set('user.image', this.user.image);
-                //     this.nOwner = false;
+                // if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
+                //     this.$.modifyDescription.classList.remove('hidden');
                 // } else {
-                //     console.log('We have have to fetch user information!');
-                //     superagent
-                //         .get('/b/api/v1/users/username/' + username)
-                //         .send()
-                //         .set('Authorization', 'Bearer: ' + jwt.token)
-                //         .set('Accept', 'application/json')
-                //         .end(function(err, res) {
-                //             this.user.fullname = res.body.first_name + ' ' + res.body.last_name;
-                //             this.user.image = this.getImage(res.body);
-                //             this.set('user.fullname', this.user.fullname);
-                //             this.set('user.image', this.user.image);
-                //         }.bind(this));
+                //     this.$.modifyDescription.classList.add('hidden');
                 // }
             },
             setData: function (activity) {
                 this.activity = activity;
-
                 this.fetchUser();
-                this.publicURL = 'https://www.stryd.com/powercenter/run/' + activity.id;
-                this.public = activity.public;
-                this.$.sharePublic.checked = this.public;
-                this.runStart = moment(new Date(activity.date * 1000)).format('LL');
-            }
+                this.runDate = moment.unix(activity.start_time).format('LL');
+                // this.description = activity.description;
+                // if (this.description === '') {
+                //     this.modifyDescription = 'Add Description';
+                // } else {
+                //     this.modifyDescription = 'Edit Description';
+                // }
+            },
+            callDescription: function () {
+                this.$.dialogDescription.open();
+            },
+            handleDescription: function () {
+                updateWorkout(
+                    this.activity.id,
+                    {
+                        description: this.description
+                    },
+                    function(err, res) {
+                        if (res.ok) {
+                            if (this.description === '') {
+                                this.modifyDescription = 'Add Description';
+                            } else {
+                                this.modifyDescription = 'Edit Description';
+                            }
+                            this.$.dialogDescription.close();
+                        } else {
+                            console.log('failed to update description');
+                        }
+                    }.bind(this)
+                );
+            },
         });
     </script>
 </dom-module>

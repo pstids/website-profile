@@ -18,8 +18,8 @@
             text-transform: uppercase;
             text-align: center;
         }
-        [dark] {
-            
+        :host[keep] iron-icon {
+            display: none;
         }
     </style>
     <template>
@@ -81,6 +81,9 @@
                 power_high: String,
                 pace_low: String,
                 pace_high: String
+            },
+            ready: function () {
+
             },
             import: function (data) {
                 this.name = data.name;

@@ -1,10 +1,8 @@
 <dom-module id="workout-element">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
     <style>
-        .sample {
-            display: none;
-        }
-        :host.sample .sample {
+        :host {
+            position: relative;
             display: block;
         }
         section {
@@ -18,8 +16,9 @@
         h2.subtitle {
             @apply(--subtitle);
         }
+
         .chart {
-            display: block;
+            flex: none;
             width: 100%;
             height: 60vh;
             padding-bottom: 5vh;
@@ -47,8 +46,9 @@
         }
         .options {
             @apply(--layout-horizontal);
-            @apply(--layout-justified);
+            /*@apply(--layout-justified);*/
             padding: 1vw 3.3vw;
+            flex: none;
         }
         .toggles {
             @apply(--layout-horizontal);
@@ -147,10 +147,11 @@
             @apply(--layout-flex-auto);
             z-index: 2;
         }
-        div.bubbles {
+        .bubbles {
             @apply(--layout-horizontal);
             @apply(--layout-around-justified);
             padding: 4vw 4vw;
+            flex: none;
         }
 
         bubble-stat {
@@ -161,34 +162,29 @@
         .outer-spinner {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 110%;
             position: absolute;
             background-color: var(--primary-background-color);
             z-index: 10;
-            display: flex;
-            display: -webkit-flex;
-            -ms-flex-align: center;
-            -webkit-align-items: center;
-            align-items: center;
-            -ms-flex-pack: center;
-            -webkit-justify-content: center;
-            justify-content: center;
+            @apply(--layout-horizontal);
+            @apply(--layout-center)
+            @apply(--layout-center-justified)
             transition: opacity 2s;
             opacity: 1;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 12;
         }
         .outer-spinner.fade {
             opacity: 0;
             z-index: 0;
-            height: 0px !important;
         }
 
         .spinner {
             margin: 100px auto;
             width: 40px;
             height: 40px;
-            position: relative;
-            text-align: center;
             -webkit-animation: sk-rotate 2.0s infinite linear;
             animation: sk-rotate 2.0s infinite linear;
         }
@@ -200,7 +196,6 @@
             top: 0;
             background-color: var(--primary-icon-color);
             border-radius: 100%;
-
             -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
             animation: sk-bounce 2.0s infinite ease-in-out;
         }
@@ -267,14 +262,14 @@
         }
     </style>
     <template>
-        <div class="outer-spinner" id="spinner">
-            <div class="spinner">
-                <div class="dot1"></div>
-                <div class="dot2"></div>
-            </div>
-        </div>
         <section>
-            <div class="layout horizontal end" style="margin: 20px 50px 0 50px;">
+            <div class="outer-spinner" id="spinner">
+                <div class="spinner">
+                    <div class="dot1"></div>
+                    <div class="dot2"></div>
+                </div>
+            </div>
+            <div class="layout horizontal end options">
                 <h1 class="header">Statistics</h1>
                 <div class="toggles">
                     <div class="stat toggle" data-toggle="on" on-click="toggleMetrics" data-stat="elapsed">
@@ -287,37 +282,56 @@
                     </div>
                 </div>
             </div>
-
-            <h2 class="subtitle sample" style="padding: 0px 0px 0px 50px;">Sample Data</h2>
-            <div class="bubbles"
-                data-step="7"
-                data-intro="When you select a different portion of your run, your averages will update.">
+            <div class="bubbles">
                 <bubble-stat type="pace"></bubble-stat>
                 <bubble-stat type="time"></bubble-stat>
                 <bubble-stat type="power"></bubble-stat>
                 <bubble-stat type="heartRate"></bubble-stat>
-                <bubble-stat type="cadence"></bubble-stat>
+                <bubble-stat type="dynamics"></bubble-stat>
                 <bubble-stat type="misc"></bubble-stat>
             </div>
-            <div class="options">
-                <div>
-                    <h1 class="header">Chart</h1>
-                    <h2 class="subtitle sample">Sample Data</h2>
+            <div class="layout horizontal end options wrap">
+                <div class="layout vertical" style="flex: 0 375px;">
+                    <div class="layout horizontal end">
+                        <paper-textarea
+                            class="editable"
+                            label="Description"
+                            rows="1"
+                            max-rows="3"
+                            value="{{descriptionText}}"
+                            id="descriptionInput"
+                            style="flex: 0 275px;">
+                        </paper-textarea>
+                        <button is="stryd-button" id="descriptionButton" on-click=""style="margin-left: 10px;">Save</button> 
+                    </div>
+                    <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
                 </div>
-                <div class="toggles">
-                    <div class="heartRate toggle" data-toggle="on" on-click="toggle" data-graph="heartRate">
+                <div class="toggles" style="flex: 1;">
+                    <div class="heartRate toggle"
+                    data-toggle="on"
+                    on-click="toggle"
+                    data-graph="heartRate">
                         <div class="type">Heart Rate</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="power toggle" data-toggle="on" on-click="toggle" data-graph="power">
+                    <div class="power toggle"
+                    data-toggle="on"
+                    on-click="toggle"
+                    data-graph="power">
                         <div class="type">Power</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="pace toggle" data-toggle="off" on-click="toggle" data-graph="pace">
+                    <div class="pace toggle"
+                    data-toggle="off"
+                    on-click="toggle"
+                    data-graph="pace">
                         <div class="type">Pace</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="elevation toggle" data-toggle="off" on-click="toggle" data-graph="elevation">
+                    <div class="elevation toggle"
+                    data-toggle="off"
+                    on-click="toggle"
+                    data-graph="elevation">
                         <div class="type">Elevation</div>
                         <div class="circle"></div>
                     </div>
@@ -333,19 +347,19 @@
                 </div>
             </div>
             <div class="chart">
-                <div id="chartdiv"
-                    data-step="6"
-                    data-intro="See how your run came together. See how power, cadence, heart rate, and more influenced your run. You can focus on certain section by clicking & dragging over an area.">
+                <div id="chartdiv">
                 </div>
             </div>
         </section>
     </template>
+
     <script src="../../scripts/amcharts/amcharts.js"></script>
     <script src="../../scripts/amcharts/serial.js"></script>
     <script src="../../scripts/amcharts/themes/stryd.js"></script>
     <script>
         /*global AmCharts*/
         /*jshint camelcase: false */
+        /*global updateWorkout*/
 
         var mapReadyTrigger = false;
         var mapReadyEvent = new CustomEvent('MapReady');
@@ -357,6 +371,20 @@
         Polymer({
             is: 'workout-element',
             ready: function () {
+                this.activity = null;
+                this.descriptionText = '';
+                this.$.descriptionInput.addEventListener('blur', () => {
+                    if (this.activity !== null) {
+                        updateWorkout(
+                            this.activity.id,
+                            {
+                                description: this.descriptionText
+                            },
+                            null
+                        );
+                    }
+                });
+
                 AmCharts.handleLoad();
                 this.metrics = {
                     heartRate: {
@@ -677,8 +705,20 @@
                     }
                 };
             },
-            setChartData: function (data, steps) {
+            setChartData: function (data, steps, activity) {
                 this.setLoading();
+
+                this.activity = activity;
+                this.descriptionText = activity.description;
+                if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
+                    this.$.descriptionInput.classList.remove('hidden');
+                    this.$.descriptionButton.classList.remove('hidden');
+                    this.$.descriptionDisplay.classList.add('hidden');
+                } else {
+                    this.$.descriptionInput.classList.add('hidden');
+                    this.$.descriptionButton.classList.add('hidden');
+                    this.$.descriptionDisplay.classList.remove('hidden');
+                }
 
                 this.data = data;
                 this.steps = steps;
@@ -842,8 +882,8 @@
                         unit: 'BPM'
                     }
                 };
-                var cadence = {
-                    active: ['cadence'],
+                var dynamics = {
+                    active: ['cadence', 'groundTime', 'vertOsc'],
                     cadence: {
                         icon: 'maps:directions-walk',
                         title: 'Cadence',
@@ -851,6 +891,22 @@
                         moving: 0,
                         mTotal: 0,
                         unit: 'SPM'
+                    },
+                    groundTime: {
+                        icon: 'av:av-timer',
+                        title: 'Ground Time',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'MS'
+                    },
+                    vertOsc: {
+                        icon: 'communication:call-missed',
+                        title: 'Vert. Osc.',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'CM'
                     }
                 };
                 var misc = {
@@ -916,10 +972,25 @@
                         heartRate.heartRate.mTotal += 1;
                     }
 
-                    cadence.cadence.elapsed += data.cadence;
+                    dynamics.cadence.elapsed += data.cadence;
                     if (data.power > 10) {
-                        cadence.cadence.moving += data.cadence;
-                        cadence.cadence.mTotal += 1;
+                        dynamics.cadence.moving += data.cadence;
+                        dynamics.cadence.mTotal += 1;
+                    }
+
+                    if ('groundTime' in data) {
+                        dynamics.groundTime.elapsed += data.groundTime;
+                        if (data.power > 10) {
+                            dynamics.groundTime.moving += data.groundTime;
+                            dynamics.groundTime.mTotal += 1;
+                        }
+                    }
+                    if ('vertOsc' in data) {
+                        dynamics.vertOsc.elapsed += data.vertOsc;
+                        if (data.power > 10) {
+                            dynamics.vertOsc.moving += data.vertOsc;
+                            dynamics.vertOsc.mTotal += 1;
+                        }
                     }
                 }
 
@@ -948,13 +1019,33 @@
                 time.time.elapsed = hmsTime(time.time.elapsed);
                 time.time.moving = hmsTime(time.time.moving);
 
-                misc.distance.value = distance;
-                if (user.data.units !== 'feet') {
-                    misc.distance.value = (distance / 0.621371).toFixed(1);
+                if (isNaN(distance)) {
+                    misc.distance.value = 'Not';
+                    misc.distance.unit = 'Available';
+                } else {
+                    misc.distance.value = distance;
+                    if (user.data.units !== 'feet') {
+                        misc.distance.value = (distance / 0.621371).toFixed(1);
+                    }
+                    misc.distance.unit = distanceUnit;
                 }
 
-                cadence.cadence.moving = (cadence.cadence.moving / cadence.cadence.mTotal).toFixed(1);
-                cadence.cadence.elapsed = (cadence.cadence.elapsed / total).toFixed(1);
+                dynamics.cadence.moving = (dynamics.cadence.moving / dynamics.cadence.mTotal).toFixed(1);
+                dynamics.cadence.elapsed = (dynamics.cadence.elapsed / total).toFixed(1);
+
+                if (dynamics.groundTime.elapsed !== 0) {
+                    dynamics.groundTime.moving = (dynamics.groundTime.moving / dynamics.groundTime.mTotal).toFixed(1);
+                    dynamics.groundTime.elapsed = (dynamics.groundTime.elapsed / total).toFixed(1);
+                } else {
+                    delete dynamics.groundTime;
+                }
+
+                if (dynamics.vertOsc.elapsed !== 0) {
+                    dynamics.vertOsc.moving = (dynamics.vertOsc.moving / dynamics.vertOsc.mTotal).toFixed(1);
+                    dynamics.vertOsc.elapsed = (dynamics.vertOsc.elapsed / total).toFixed(1);
+                } else {
+                    delete dynamics.vertOsc;
+                }
 
                 delete heartRate.movingHR;
                 delete power.timeInMaxZone;
@@ -962,7 +1053,7 @@
                 this.querySelector('[type="time"]').setData(time);
                 this.querySelector('[type="power"]').setData(power);
                 this.querySelector('[type="heartRate"]').setData(heartRate);
-                this.querySelector('[type="cadence"]').setData(cadence);
+                this.querySelector('[type="dynamics"]').setData(dynamics);
                 this.querySelector('[type="misc"]').setData(misc);
             },
             addPoint: function (pt) {

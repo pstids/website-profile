@@ -70,6 +70,7 @@ gulp.task('jshint', function () {
         'hmsTime',
         'google',
         'meterToKM',
+        'meterToUserUnit',
         'hrTime',
         'meterToMile',
         'speedToPaceForBalloon',
@@ -77,7 +78,8 @@ gulp.task('jshint', function () {
         'windowFocusEvent',
         'formatPace',
         'attribute',
-        'moment'
+        'moment',
+        'addLog'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

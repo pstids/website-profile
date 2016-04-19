@@ -5,7 +5,9 @@
 class JWT {
 	constructor() {
 		this.token = localStorage.getItem('token');
-		this.data = {};
+		this.data = {
+			id: 0
+		};
 		this.hasToken = false;
 		this.checkToken();
 	}
@@ -28,7 +30,7 @@ class JWT {
 	parseData() {
 		var blocks = this.token.split('.');
 		this.data = JSON.parse(atob(blocks[1].replace(/\s/g, '')));
-		this.checkRenewal();
+		// this.checkRenewal();
 	}
 
 	checkRenewal() {
@@ -131,6 +133,9 @@ class User {
 
 	fetchDetails(callback) {
         var that = this;
+        if (jwt.data.id === 0) {
+        	return;
+        }
 		superagent
 			.get('/b/api/v1/users/' + jwt.data.id)
 			.send()
