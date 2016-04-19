@@ -1,0 +1,141 @@
+<dom-module id="workout-shared">
+    <style>
+        :host {
+            position: absolute;
+            right: 0;
+            background-color: rgba(34, 34, 34, 0.6);
+            height: auto;
+            margin-top: 5%;
+            border-radius: 40px 0 0 40px;
+            padding: 20px;
+            width: 200px;
+        }
+        .text {
+            line-height: 30px;
+            font-size: 18px;
+            color: white;
+        }
+        .social {
+            @apply(--layout-horizontal);
+        }
+        .social .network {
+            @apply(--layout-flex);
+        }
+        .shareURL {
+            margin-top: 5px;
+            display: inline-block;
+            vertical-align: middle;
+            box-sizing: border-box;
+            background: none;
+            border: medium none;
+            border-bottom: 1px solid #FFFFFF;
+            transition: color .5s;
+            padding: 5px 0;
+            font-weight: 700;
+            color: white;
+            min-width: 350px;
+        }
+        img {
+            border-radius: 50%;
+            width: auto;
+            height: 60px;
+        }
+    </style>
+    <template>
+        <div class="layout vertical shared">
+            <div class="layout horizontal">
+                <img src="{{user.image}}">
+                <div class="layout vertical" style="padding: 0 10px;">
+                    <div class="text">{{user.fullname}}</div>
+                    <div class="text">{{runDate}}</div>
+                </div>
+            </div>
+            <!-- <div class="text" style="padding-top: 20px;">{{description}}</div> -->
+            <!-- <button is="stryd-button" on-click="callDescription" id="modifyDescription">{{modifyDescription}}</button> -->
+        </div>
+        <paper-dialog id="dialogDescription">
+            <paper-input
+                type="text"
+                placeholder="Description"
+                label="Description"
+                class="editable"
+                value="{{description}}">
+            </paper-input>
+            <div class="buttons">
+                <paper-button dialog-confirm autofocus on-click="handleDescription">Update</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        /*global CryptoJS*/
+        /*global updateWorkout*/
+        Polymer({
+            is: 'workout-shared',
+            properties: {
+                user: Object,
+                activity: Object,
+                runDate: String
+            },
+            ready: function () {
+                this.user = {};
+                this.activity = {};
+                this.username = '';
+            },
+            getImage: function (user) {
+                this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+                if ('photo' in user && user.photo !== '' && user.photo !== undefined) {
+                    return decodeURIComponent(user.photo.replace('+', ' '));
+                } else if ('email' in user && user.email !== '') {
+                    var gravHash = CryptoJS.MD5(user.email.toLowerCase());
+                    return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
+                } else {
+                    return 'https://www.stryd.com/powercenter/images/favicon.png';
+                }
+            },
+            fetchUser: function () {
+                this.user.fullname = this.activity.name;
+                this.set('user.fullname', this.activity.name);
+                this.set('user.image', this.getImage(this.activity));
+                // if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
+                //     this.$.modifyDescription.classList.remove('hidden');
+                // } else {
+                //     this.$.modifyDescription.classList.add('hidden');
+                // }
+            },
+            setData: function (activity) {
+                this.activity = activity;
+                this.fetchUser();
+                this.runDate = moment.unix(activity.start_time).format('LL');
+                // this.description = activity.description;
+                // if (this.description === '') {
+                //     this.modifyDescription = 'Add Description';
+                // } else {
+                //     this.modifyDescription = 'Edit Description';
+                // }
+            },
+            callDescription: function () {
+                this.$.dialogDescription.open();
+            },
+            handleDescription: function () {
+                updateWorkout(
+                    this.activity.id,
+                    {
+                        description: this.description
+                    },
+                    function(err, res) {
+                        if (res.ok) {
+                            if (this.description === '') {
+                                this.modifyDescription = 'Add Description';
+                            } else {
+                                this.modifyDescription = 'Edit Description';
+                            }
+                            this.$.dialogDescription.close();
+                        } else {
+                            console.log('failed to update description');
+                        }
+                    }.bind(this)
+                );
+            },
+        });
+    </script>
+</dom-module>

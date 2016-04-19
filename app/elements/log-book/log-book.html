@@ -27,6 +27,7 @@
         .subnav .filters {
             @apply(--layout-horizontal);
             @apply(--layout-around-justified);
+            @apply(--layout-center);
         }
         .logs .seperator {
             @apply(--layout-horizontal);
@@ -91,6 +92,7 @@
                     <h2 class="subtitle sample">Sample Data</h2>
                 </div>
                 <div class="filters">
+                    <button on-click="expandLogs" is="stryd-button">Expand Logs</button>
                     <div class="horizontal-section">
                         <paper-dropdown-menu label="Sort By" id="sortDropdown">
                             <paper-tabs attr-for-selected="value" class="dropdown-content" selected="date">
@@ -112,7 +114,7 @@
                 </div>
             </div>
             <div class="logs" id="logContainer"></div>
-            <!--<div class="full-log button">View Full Logbook</div>-->
+            <!-- <div class="full-log button hidden">Load 10 More Workouts</div> -->
         </section>
     </template>
     <script>
@@ -124,17 +126,36 @@
                 'sortDropdown.mouseenter': '',
                 'sortDropdown.mouseleave': '',
             },
-            attached: function() {
-            },
             sampleLog: function () {
                 sampleFetching();
             },
             addLog: function (log) {
                 var logEle = document.createElement('log-entry');
                 logEle.setData(log);
-                this.$.logContainer.appendChild(logEle);
+                var targetChild = null;
+                var existing = false;
+                for (var i = 0; i < this.$.logContainer.children.length; i++) {
+                    var child = this.$.logContainer.children[i];
+                    if (log.id === child.data.id) {
+                        existing = true;
+                    }
+                    if (log.timestamp > child.data.timestamp) {
+                        targetChild = child;
+                        break;
+                    }
+                }
+                if (!existing) {
+                    this.$.logContainer.insertBefore(logEle, targetChild);
+                }
+            },
+            expandLogs: function () {
+                for (var i = 0; i < this.$.logContainer.children.length; i++) {
+                    var child = this.$.logContainer.children[i];
+                    child.toggle();
+                }
             },
             populateLogs: function (logs) {
+                console.log('Trying to populate logs:', logs);
                 while (this.$.logContainer.firstChild) {
                     this.$.logContainer.removeChild(this.$.logContainer.firstChild);
                 }

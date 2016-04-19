@@ -1,0 +1,109 @@
+<dom-module id="zone-entry">
+    <style>
+        .entry {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            @apply(--layout-justified);
+            margin: 5px 20px;
+        }
+        .entry paper-input {
+            @apply(--layout-flex-2);
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .entry .to {
+            @apply(--layout-flex);
+            color: var(--accent-background-color);
+            text-transform: uppercase;
+            text-align: center;
+        }
+        :host[keep] iron-icon {
+            display: none;
+        }
+    </style>
+    <template>
+        <div class="layout horizontal">
+            <div class="flex-1 entry">
+                <paper-input
+                    no-label-float
+                    type="text"
+                    name="field"
+                    placeholder="Zone Name"
+                    class="editable"
+                    value="{{name}}">
+                </paper-input>
+            </div>
+            <div class="flex-1 entry">
+                <paper-input
+                    no-label-float
+                    type="text"
+                    class="editable"
+                    placeholder="Low"
+                    value="{{power_low}}">
+                </paper-input>
+                <div class="to">to</div>
+                <paper-input
+                    no-label-float
+                    type="text"
+                    class="editable"
+                    placeholder="High"
+                    value="{{power_high}}">
+                </paper-input>
+            </div>
+            <div class="flex-1 entry">
+                <paper-input
+                    no-label-float
+                    type="text"
+                    class="editable"
+                    placeholder="Low"
+                    value="{{pace_low}}">
+                </paper-input>
+                <div class="to">to</div>
+                <paper-input
+                    no-label-float
+                    type="text"
+                    class="editable"
+                    placeholder="High"
+                    value="{{pace_high}}">
+                </paper-input>
+            </div>
+            <iron-icon icon="icons:delete" on-click="delete" class="self-end" style="color: white; fill: white; margin: 10px 10px 20px 10px;"></iron-icon>
+        </div>
+    </template>
+    <script>
+        /*jshint camelcase: false*/
+        Polymer({
+            is: 'zone-entry',
+            properties: {
+                name: String,
+                power_low: String,
+                power_high: String,
+                pace_low: String,
+                pace_high: String
+            },
+            ready: function () {
+
+            },
+            import: function (data) {
+                this.name = data.name;
+                this.power_low = data.power_low;
+                this.power_high = data.power_high;
+                this.pace_low = data.pace_low;
+                this.pace_high = data.pace_high;
+            },
+            export: function () {
+                return {
+                    name: this.name,
+                    power_low: parseInt(this.power_low),
+                    power_high: parseInt(this.power_high),
+                    pace_low: this.pace_low,
+                    pace_high: this.pace_high
+                };
+            },
+            delete: function () {
+                this.parentNode.removeChild(this);
+            }
+        });
+    </script>
+</dom-module>

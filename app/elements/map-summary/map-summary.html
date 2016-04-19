@@ -1,11 +1,7 @@
 <dom-module id="map-summary">
-    <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-    <link rel="import" href="../../styles/app-theme.html">
     <style>
         section {
             @apply(--layout-horizontal);
-            background-color: var(--secondary-background-color);
-            height: 700px;
             @apply(--layout-center);
             @apply(--layout);
         }
@@ -27,8 +23,8 @@
         .summary {
             background-color: rgba(41, 41, 39, 0.9); 
             padding: 30px;
-            border-top-left-radius: 30px;
-            border-bottom-left-radius: 30px;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
             @apply(--layout-vertical);
             @apply(--layout-end-justified);
             @apply(--layout-flex-3);
@@ -80,72 +76,59 @@
                 <ul class="insights">
                     <li class="insight">
                         <div class="icon">
-                            <iron-icon icon="face"></iron-icon>
+                            <iron-icon icon="communication:swap-calls"></iron-icon>
                         </div>
                         <div class="info">
                             <div class="title">Distance</div>
                             <div class="field">
                                 <span>{{display.distance}}</span>
-                                Miles
+                                KM
                             </div>
                         </div>
                     </li>
                     <li class="insight">
                         <div class="icon">
-                            <iron-icon icon="cloud"></iron-icon>
+                            <iron-icon icon="image:timer"></iron-icon>
                         </div>
                         <div class="info">
                             <div class="title">Time</div>
                             <div class="field">
                                 <span>{{display.time}}</span>
-                                Mins
                             </div>
                         </div>
                     </li>
                     <li class="insight">
                         <div class="icon">
-                            <iron-icon icon="code"></iron-icon>
+                            <iron-icon icon="maps:directions-run"></iron-icon>
                         </div>
                         <div class="info">
-                            <div class="title">Pace</div>
+                            <div class="title">Cadence</div>
                             <div class="field">
-                                <span>{{display.pace}}</span>
-                                Min/Mile
+                                <span>{{display.cadence}}</span>
+                                SPM
                             </div>
                         </div>
                     </li>
                     <li class="insight">
                         <div class="icon">
-                            <iron-icon icon="favorite-border"></iron-icon>
+                            <iron-icon icon="favorite"></iron-icon>
                         </div>
                         <div class="info">
-                            <div class="title">Max Heart Rate</div>
+                            <div class="title">Heart Rate</div>
                             <div class="field">
-                                <span>{{display.max_hr}}</span>
+                                <span>{{display.heart_rate}}</span>
                                 BPM
                             </div>
                         </div>
                     </li>
                     <li class="insight">
                         <div class="icon">
-                            <iron-icon icon="favorite-border"></iron-icon>
+                            <iron-icon icon="image:flash-on"></iron-icon>
                         </div>
                         <div class="info">
-                            <div class="title">Avg Heart Rate</div>
+                            <div class="title">Power</div>
                             <div class="field">
-                                <span>{{display.avg_hr}}</span>
-                                BPM
-                            </div>
-                        </div>
-                    </li>
-                    <li class="insight">
-                        <div class="icon">
-                            <iron-icon icon="star"></iron-icon>
-                        </div>
-                        <div class="info">
-                            <div class="title">Avg Power</div>
-                            <div class="field">
-                                <span>{{display.avg_watts}}</span>
+                                <span>{{display.watts}}</span>
                                 W
                             </div>
                         </div>
@@ -160,24 +143,21 @@
             ready: function () {
                 
             },
-            assembleData: function (data) {
-                var i = 0, power = 0, avg_power_count = 0, avg_power_total = 0;
-                for (i = 0; i < data.heart_rate_list.length; i=i+1) {
-                    power = data.total_power_list[i];
-                    if (power > 10) {
-                        avg_power_count += 1;
-                        avg_power_total += power;
-                    }
+            addPoint: function (data) {
+                if (data === null || data === {}) {
+                    data = {
+                        distance: 0,
+                        time: 0,
+                        cadence: 0,
+                        heartrate: 0,
+                        total_p: 0
+                    };
                 }
-                var avg_power = avg_power_total / avg_power_count;
-                var miles = data.distance / 1600;
-                var minutes = data.moving_time / 60;
-                this.notifyPath('display.distance', this.truncate(miles));
-                this.notifyPath('display.time', this.truncate(minutes));
-                this.notifyPath('display.pace', this.truncate(minutes/miles));
-                this.notifyPath('display.max_hr', this.truncate(data.max_heart_rate));
-                this.notifyPath('display.avg_hr', this.truncate(data.average_heart_rate));
-                this.notifyPath('display.avg_watts', this.truncate(avg_power));
+                this.notifyPath('display.distance', data.distance.toFixed(2));
+                this.notifyPath('display.time', data.time);
+                this.notifyPath('display.cadence', data.cadence);
+                this.notifyPath('display.heart_rate', data.heartrate);
+                this.notifyPath('display.watts', data.total_p);
             }
         });
     </script>

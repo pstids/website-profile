@@ -1,10 +1,8 @@
 <dom-module id="workout-element">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
     <style>
-        .sample {
-            display: none;
-        }
-        :host.sample .sample {
+        :host {
+            position: relative;
             display: block;
         }
         section {
@@ -18,14 +16,14 @@
         h2.subtitle {
             @apply(--subtitle);
         }
+
         .chart {
-            display: block;
+            flex: none;
             width: 100%;
             height: 60vh;
             padding-bottom: 5vh;
         }
         #chartdiv {
-            /*background: #3f3f4f;*/
             color: #ffffff;
             min-width: 100%;
             height: 60vh;
@@ -42,14 +40,15 @@
             color: #FFFFFF;
             font-size: 1vw;
             font-weight: 500;
-            overflow: auto;
             @apply(--layout-center);
             z-index: 5;
+            position: relative;
         }
         .options {
             @apply(--layout-horizontal);
-            @apply(--layout-justified);
+            /*@apply(--layout-justified);*/
             padding: 1vw 3.3vw;
+            flex: none;
         }
         .toggles {
             @apply(--layout-horizontal);
@@ -97,6 +96,44 @@
             box-shadow: 0px 0px 5px #a06a81;
             background-color: #a06a81;
         }
+        .toggles .groundTime[data-toggle="on"] {
+            border-color: #00ACEE;
+        }
+        .toggles .groundTime[data-toggle="on"] .circle {
+            border-color: #00ACEE;
+            box-shadow: 0px 0px 5px #00ACEE;
+            background-color: #00ACEE;
+        }
+        .toggles .vertOsc[data-toggle="on"] {
+            border-color: #2BAF2B;
+        }
+        .toggles .vertOsc[data-toggle="on"] .circle {
+            border-color: #2BAF2B;
+            box-shadow: 0px 0px 5px #2BAF2B;
+            background-color: #2BAF2B;
+        }
+        .toggles .stat[data-toggle="on"] {
+            border-color: #F7A016;
+        }
+        .toggles .stat[data-toggle="on"] .circle {
+            border-color: #F7A016;
+            box-shadow: 0px 0px 5px #F7A016;
+            background-color: #F7A016;
+        }
+
+        [data-graph="cadence"] {
+            --paper-radio-button-checked-color: #5ea7a1;
+            --paper-radio-button-checked-ink-color: #5ea7a1;
+        }
+        [data-graph="groundTime"] {
+            --paper-radio-button-checked-color: #00ACEE;
+            --paper-radio-button-checked-ink-color: #00ACEE;
+        }
+        [data-graph="vertOsc"] {
+            --paper-radio-button-checked-color: #2BAF2B;
+            --paper-radio-button-checked-ink-color: #2BAF2B;
+        }
+
         .toggle .circle {
             width: 1.3vw;
             height: 1.3vw;
@@ -110,11 +147,13 @@
             @apply(--layout-flex-auto);
             z-index: 2;
         }
-        div.bubbles {
+        .bubbles {
             @apply(--layout-horizontal);
             @apply(--layout-around-justified);
-            padding: 4vw 2vw;
+            padding: 4vw 4vw;
+            flex: none;
         }
+
         bubble-stat {
             width: 12vw;
             height: 12vw;
@@ -123,34 +162,29 @@
         .outer-spinner {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 110%;
             position: absolute;
             background-color: var(--primary-background-color);
             z-index: 10;
-            display: flex;
-            display: -webkit-flex;
-            -ms-flex-align: center;
-            -webkit-align-items: center;
-            align-items: center;
-            -ms-flex-pack: center;
-            -webkit-justify-content: center;
-            justify-content: center;
+            @apply(--layout-horizontal);
+            @apply(--layout-center)
+            @apply(--layout-center-justified)
             transition: opacity 2s;
             opacity: 1;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 12;
         }
         .outer-spinner.fade {
             opacity: 0;
             z-index: 0;
-            height: 0px !important;
         }
 
         .spinner {
             margin: 100px auto;
             width: 40px;
             height: 40px;
-            position: relative;
-            text-align: center;
             -webkit-animation: sk-rotate 2.0s infinite linear;
             animation: sk-rotate 2.0s infinite linear;
         }
@@ -162,7 +196,6 @@
             top: 0;
             background-color: var(--primary-icon-color);
             border-radius: 100%;
-
             -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
             animation: sk-bounce 2.0s infinite ease-in-out;
         }
@@ -191,81 +224,519 @@
                 -webkit-transform: scale(1.0);
             }
         }
+
+        .dynamics {
+            border-radius: 6px;
+        }
+        .dynamics:hover {
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+        }
+        .dynamics .radios {
+            visibility: hidden;
+            transition: visibility 0.1s;
+            position: absolute;
+            @apply(--layout-vertical);
+            width: 103%;
+            left: -2px;
+            top: 34px;
+            padding: 0.8vw 1.1vw;
+            border: 2px solid #FFFFFF;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            margin: 0;
+            cursor: pointer;
+            background-color: var(--primary-background-color);
+            box-sizing: border-box;
+        }
+        .dynamics .radios paper-radio-button {
+            padding-bottom: 15px;
+        }
+        .dynamics .radios paper-radio-button:last-child {
+            padding-bottom: 0px;
+        }
+        .dynamics:hover .radios {
+            visibility: visible;
+            animation-delay: 2s;
+            -webkit-animation-delay: 2s;
+        }
     </style>
     <template>
-        <div class="outer-spinner" id="spinner">
-            <div class="spinner">
-                <div class="dot1"></div>
-                <div class="dot2"></div>
-            </div>
-        </div>
         <section>
-            <h1 class="header" style="padding: 50px 0px 0px 50px;">Statistics</h1>
-            <h2 class="subtitle sample" style="padding: 0px 0px 0px 50px;">Sample Data</h2>
-            <div class="bubbles"
-                data-step="7"
-                data-intro="When you select a different portion of your run, your averages will update.">
-                <bubble-stat type="avg_power" title="Average Power" unit="Watts" icon="image:flash-on"></bubble-stat>
-                <bubble-stat type="avg_pace" title="Average Pace" unit="Min/Mile" icon="maps:directions-run"></bubble-stat>
-                <bubble-stat type="avg_hr" title="Average Heart Rate" unit="BPM" icon="favorite"></bubble-stat>
-                <bubble-stat type="distance" title="Distance" unit="Miles" icon="communication:swap-calls"></bubble-stat>
-                <bubble-stat type="time" title="Run Time" unit="HH:MM:SS" icon="image:timer"></bubble-stat>
-            </div>
-            <div class="options">
-                <div>
-                    <h1 class="header">Chart</h1>
-                    <h2 class="subtitle sample">Sample Data</h2>
+            <div class="outer-spinner" id="spinner">
+                <div class="spinner">
+                    <div class="dot1"></div>
+                    <div class="dot2"></div>
                 </div>
+            </div>
+            <div class="layout horizontal end options">
+                <h1 class="header">Statistics</h1>
                 <div class="toggles">
-                    <div class="heartRate toggle" data-toggle="on" on-click="toggle" data-graph="heartRate">
+                    <div class="stat toggle" data-toggle="on" on-click="toggleMetrics" data-stat="elapsed">
+                        <div class="type">Show Elapsed Statistics</div>
+                        <div class="circle"></div>
+                    </div>
+                    <div class="stat toggle" data-toggle="off" on-click="toggleMetrics" data-stat="moving">
+                        <div class="type">Show Moving Statistics</div>
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="bubbles">
+                <bubble-stat type="pace"></bubble-stat>
+                <bubble-stat type="time"></bubble-stat>
+                <bubble-stat type="power"></bubble-stat>
+                <bubble-stat type="heartRate"></bubble-stat>
+                <bubble-stat type="dynamics"></bubble-stat>
+                <bubble-stat type="misc"></bubble-stat>
+            </div>
+            <div class="layout horizontal end options wrap">
+                <div class="layout vertical" style="flex: 0 375px;">
+                    <div class="layout horizontal end">
+                        <paper-textarea
+                            class="editable"
+                            label="Description"
+                            rows="1"
+                            max-rows="3"
+                            value="{{descriptionText}}"
+                            id="descriptionInput"
+                            style="flex: 0 275px;">
+                        </paper-textarea>
+                        <button is="stryd-button" id="descriptionButton" on-click=""style="margin-left: 10px;">Save</button> 
+                    </div>
+                    <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
+                </div>
+                <div class="toggles" style="flex: 1;">
+                    <div class="heartRate toggle"
+                    data-toggle="on"
+                    on-click="toggle"
+                    data-graph="heartRate">
                         <div class="type">Heart Rate</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="power toggle" data-toggle="on" on-click="toggle" data-graph="power">
+                    <div class="power toggle"
+                    data-toggle="on"
+                    on-click="toggle"
+                    data-graph="power">
                         <div class="type">Power</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="pace toggle" data-toggle="off" on-click="toggle" data-graph="pace">
+                    <div class="pace toggle"
+                    data-toggle="off"
+                    on-click="toggle"
+                    data-graph="pace">
                         <div class="type">Pace</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="cadence toggle" data-toggle="off" on-click="toggle" data-graph="cadence">
-                        <div class="type">Cadence</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="elevation toggle" data-toggle="off" on-click="toggle" data-graph="elevation">
+                    <div class="elevation toggle"
+                    data-toggle="off"
+                    on-click="toggle"
+                    data-graph="elevation">
                         <div class="type">Elevation</div>
                         <div class="circle"></div>
+                    </div>
+                    <div class="toggle dynamics">
+                        <div class="type">Run Form</div>
+                        <iron-icon icon="icons:arrow-drop-down"></iron-icon>
+                        <div class="radios">
+                            <paper-radio-button on-click="toggle" data-graph="cadence">Cadence</paper-radio-button>
+                            <paper-radio-button on-click="toggle" data-graph="groundTime">Ground Time</paper-radio-button>
+                            <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="chart">
-                <div id="chartdiv"
-                    data-step="6"
-                    data-intro="See how your run came together. See how power, cadence, heart rate, and more influenced your run. You can focus on certain section by clicking &dragging over an area.">
+                <div id="chartdiv">
                 </div>
             </div>
         </section>
     </template>
+
     <script src="../../scripts/amcharts/amcharts.js"></script>
     <script src="../../scripts/amcharts/serial.js"></script>
     <script src="../../scripts/amcharts/themes/stryd.js"></script>
     <script>
         /*global AmCharts*/
         /*jshint camelcase: false */
+        /*global updateWorkout*/
+
+        var mapReadyTrigger = false;
+        var mapReadyEvent = new CustomEvent('MapReady');
+        window.mapReady = function () {
+            mapReadyTrigger = true;
+            window.dispatchEvent(mapReadyEvent);
+        };
+
         Polymer({
             is: 'workout-element',
             ready: function () {
+                this.activity = null;
+                this.descriptionText = '';
+                this.$.descriptionInput.addEventListener('blur', () => {
+                    if (this.activity !== null) {
+                        updateWorkout(
+                            this.activity.id,
+                            {
+                                description: this.descriptionText
+                            },
+                            null
+                        );
+                    }
+                });
+
                 AmCharts.handleLoad();
+                this.metrics = {
+                    heartRate: {
+                        toggle: this.querySelector('[data-graph="heartRate"]'),
+                        graph: function () {
+                            return this.chart.getGraphById('heartRate');
+                        }.bind(this),
+                        axis: {
+                            'id': 'heartRate',
+                            'axisAlpha': 1,
+                            'position': 'left',
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#683a78',
+                            'dashLength': 1
+                        },
+                        info: {
+                            'id': 'heartRate',
+                            'valueAxis': 'heartRate',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'heartRate',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'heartRate',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] BPM',
+                            'lineColor': '#683a78'
+                        },
+                        switch: function (state) {
+                            if (
+                                state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.heartRate.toggle.dataset.toggle === 'on')
+                            ) {
+                                this.metrics.heartRate.toggle.dataset.toggle = 'off';
+                                this.chart.hideGraph(this.metrics.heartRate.graph());
+                            } else {
+                                this.metrics.heartRate.toggle.dataset.toggle = 'on';
+                                this.chart.showGraph(this.metrics.heartRate.graph());
+                            }
+                        }.bind(this)
+                    },
+                    power: {
+                        toggle: this.querySelector('[data-graph="power"]'),
+                        graph: function () {
+                            return this.chart.getGraphById('power');
+                        }.bind(this),
+                        axis: {
+                            'id': 'power',
+                            'axisAlpha': 1,
+                            'position': 'right',
+                            'offset': 0,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#f7a017',
+                            'dashLength': 1
+                        },
+                        info: {
+                            'id': 'power',
+                            'valueAxis': 'power',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'power',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'power',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] Watts',
+                            'lineColor': '#f7a017'
+                        },
+                        switch: function (state) {
+                            if (
+                                state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.power.toggle.dataset.toggle === 'on')
+                            ) {
+                                this.metrics.power.toggle.dataset.toggle = 'off';
+                                this.chart.hideGraph(this.metrics.power.graph());
+                            } else {
+                                this.metrics.power.toggle.dataset.toggle = 'on';
+                                this.chart.showGraph(this.metrics.power.graph());
+                            }
+                        }.bind(this)
+                    },
+                    pace: {
+                        toggle: this.querySelector('[data-graph="pace"]'),
+                        graph: function () {
+                            return this.chart.getGraphById('pace');
+                        }.bind(this),
+                        axis: {
+                            'id': 'pace',
+                            'axisAlpha': 1,
+                            'position': 'right',
+                            'offset': 50,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#074a8c',
+                            'dashLength': 1,
+                            'labelFunction': speedToPaceForValueAxis
+                        },
+                        info: {
+                            'id': 'pace',
+                            'valueAxis': 'pace',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'pace',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'pace',
+                            'type': 'smoothedLine',
+                            'balloonFunction': speedToPaceForBalloon,
+                            'balloonText': '[[value]] Min/Mile',
+                            'lineColor': '#074a8c',
+                        },
+                        switch: function (state) {
+                            if (
+                                state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.pace.toggle.dataset.toggle === 'on')
+                            ) {
+                                this.metrics.pace.toggle.dataset.toggle = 'off';
+                                this.chart.hideGraph(this.metrics.pace.graph());
+                            } else {
+                                this.metrics.pace.toggle.dataset.toggle = 'on';
+                                this.chart.showGraph(this.metrics.pace.graph());
+                            }
+                        }.bind(this)
+                    },
+                    cadence : {
+                        toggle: this.querySelector('[data-graph="cadence"]'),
+                        graph: function () {
+                            return this.chart.getGraphById('cadence');
+                        }.bind(this),
+                        axis: {
+                            'id': 'cadence',
+                            'axisAlpha': 1,
+                            'position': 'left',
+                            'offset': 50,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#5ea7a1',
+                            'dashLength': 1
+                        },
+                        info: {
+                            'id': 'cadence',
+                            'valueAxis': 'cadence',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'cadence',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'cadence',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] SPM',
+                            'lineColor': '#5ea7a1'
+                        },
+                        switch: function (state) {
+                            if (
+                                state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.cadence.toggle.checked === false)
+                            ) {
+                                this.metrics.cadence.toggle.checked = false;
+                                this.chart.hideGraph(this.metrics.cadence.graph());
+                            } else {
+                                this.metrics.cadence.toggle.checked = true;
+                                this.chart.showGraph(this.metrics.cadence.graph());
+                            }
+                        }.bind(this)
+                    },
+                    elevation: {
+                        toggle: this.querySelector('[data-graph="elevation"]'),
+                        graph: function () {
+                            return this.chart.getGraphById('elevation');
+                        }.bind(this),
+                        axis: {
+                            'id': 'elevation',
+                            'axisAlpha': 1,
+                            'position': 'right',
+                            'offset': 120,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#a06a81',
+                            'dashLength': 1
+                        },
+                        info: {
+                            'id': 'elevation',
+                            'valueAxis': 'elevation',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'elevation',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'elevation',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] Meters',
+                            'lineColor': '#a06a81',
+                        },
+                        switch: function (state) {
+                            if (
+                                state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.elevation.toggle.dataset.toggle === 'on')
+                            ) {
+                                this.metrics.elevation.toggle.dataset.toggle = 'off';
+                                this.chart.hideGraph(this.metrics.elevation.graph());
+                            } else {
+                                this.metrics.elevation.toggle.dataset.toggle = 'on';
+                                this.chart.showGraph(this.metrics.elevation.graph());
+                            }
+                        }.bind(this)
+                    },
+                    groundTime: {
+                        toggle: this.querySelector('[data-graph="groundTime"]'),
+                        graph: function () {
+                            return this.chart.getGraphById('groundTime');
+                        }.bind(this),
+                        axis: {
+                            'id': 'groundTime',
+                            'axisAlpha': 1,
+                            'position': 'left',
+                            'offset': 100,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#00ACEE',
+                            'dashLength': 1
+                        },
+                        info: {
+                            'id': 'groundTime',
+                            'valueAxis': 'groundTime',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'groundTime',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'groundTime',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] MS',
+                            'lineColor': '#00ACEE',
+                        },
+                        switch: function (state) {
+                            if (
+                                state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.groundTime.toggle.checked === false)
+                            ) {
+                                this.metrics.groundTime.toggle.checked = false;
+                                this.chart.hideGraph(this.metrics.groundTime.graph());
+                            } else {
+                                this.metrics.groundTime.toggle.checked = true;
+                                this.chart.showGraph(this.metrics.groundTime.graph());
+                            }
+                        }.bind(this)
+                    },
+                    vertOsc: {
+                        toggle: this.querySelector('[data-graph="vertOsc"]'),
+                        graph: function () {
+                            return this.chart.getGraphById('vertOsc');
+                        }.bind(this),
+                        axis: {
+                            'id': 'vertOsc',
+                            'axisAlpha': 1,
+                            'position': 'right',
+                            'offset': 100,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#2BAF2B',
+                            'dashLength': 1
+                        },
+                        info: {
+                            'id': 'vertOsc',
+                            'valueAxis': 'vertOsc',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'vertOsc',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'vertOsc',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] CM',
+                            'lineColor': '#2BAF2B'
+                        },
+                        switch: function (state) {
+                            if (
+                                state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.vertOsc.toggle.checked === false)
+                            ) {
+                                this.metrics.vertOsc.toggle.checked = false;
+                                this.chart.hideGraph(this.metrics.vertOsc.graph());
+                            } else {
+                                this.metrics.vertOsc.toggle.checked = true;
+                                this.chart.showGraph(this.metrics.vertOsc.graph());
+                            }
+                        }.bind(this)
+                    }
+                };
             },
-            setChartData: function (data) {
+            setChartData: function (data, steps, activity) {
+                this.setLoading();
+
+                this.activity = activity;
+                this.descriptionText = activity.description;
+                if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
+                    this.$.descriptionInput.classList.remove('hidden');
+                    this.$.descriptionButton.classList.remove('hidden');
+                    this.$.descriptionDisplay.classList.add('hidden');
+                } else {
+                    this.$.descriptionInput.classList.add('hidden');
+                    this.$.descriptionButton.classList.add('hidden');
+                    this.$.descriptionDisplay.classList.remove('hidden');
+                }
+
+                this.data = data;
+                this.steps = steps;
+                this.chartData = this.data;
+                this.startTime = this.data[0].date;
+                this.availableMetrics = [];
+                var valueAxes = [], graphs = [];
+                for (var key in this.data[0]) {
+                    if (key in this.metrics) {
+                        this.availableMetrics.push(key);
+                        valueAxes.push(this.metrics[key].axis);
+                        graphs.push(this.metrics[key].info);
+                    }
+                }
+                this.fillChart(valueAxes, graphs);
                 if ('chart' in this) {
                     this.bindToggles();
                 }
-                this.data = data;
-                this.chartData = this.data;
-                this.startTime = this.data[0].date;
-                this.fillChart();
             },
             removeLoading: function () {
                 this.$.spinner.classList.remove('show');
@@ -277,22 +748,40 @@
                 this.$.spinner.classList.remove('hide');
                 this.$.spinner.classList.remove('fade');
             },
+            toggleMetrics: function (e) {
+                var target = e.target;
+                while (!('stat' in target.dataset)) {
+                    target = target.parentElement;
+                }
+                var opt = target.dataset.stat;
+
+                /* Change visual state */
+                var active = this.querySelector('[data-toggle="on"].stat');
+                active.dataset.toggle = 'off';
+                target.dataset.toggle = 'on';
+                
+                var bubbles = this.querySelectorAll('bubble-stat');
+                for (var i = 0; i < bubbles.length; i++) {
+                    var bubble = bubbles[i];
+                    bubble.setMode(opt);
+                }
+            },
             bindToggles: function () {
-                this.graphs = {
-                    heartRate: this.chart.getGraphById('heartRate'),
-                    pace: this.chart.getGraphById('pace'),
-                    cadence: this.chart.getGraphById('cadence'),
-                    power: this.chart.getGraphById('power'),
-                    elevation: this.chart.getGraphById('elevation')
-                };
-                this.querySelector('[data-graph="heartRate"]').dataset.toggle = 'on';
-                this.querySelector('[data-graph="power"]').dataset.toggle = 'on';
-                this.querySelector('[data-graph="pace"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="cadence"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="elevation"]').dataset.toggle = 'off';
-                this.chart.hideGraph(this.graphs.pace);
-                this.chart.hideGraph(this.graphs.cadence);
-                this.chart.hideGraph(this.graphs.elevation);
+                for (var key in this.metrics) {
+                    if (this.availableMetrics.indexOf(key) === -1) {
+                        this.metrics[key].toggle.classList.add('hidden');
+                    } else {
+                        this.metrics[key].toggle.classList.remove('hidden');
+                    }
+                }
+                this.metrics.power.switch('on');
+                this.metrics.heartRate.switch('on');
+                var hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc'];
+                for (key of this.availableMetrics) {
+                    if (hiddenMetrics.indexOf(key) > -1) {
+                        this.metrics[key].switch('off');
+                    }
+                }
             },
             toggle: function (e) {
                 var target = e.target;
@@ -300,211 +789,287 @@
                     target = target.parentElement;
                 }
                 var graph = target.dataset.graph;
-                if (target.dataset.toggle === 'on') {
-                    target.dataset.toggle = 'off';
-                    this.chart.hideGraph(this.graphs[graph]);
-                } else {
-                    target.dataset.toggle = 'on';
-                    this.chart.showGraph(this.graphs[graph]);
-                }
+                this.metrics[graph].switch('flip');
             },
             calcAvgs: function (begin, end) {
-                var i, total = end - begin - 1;
-                var avgs = {
-                    power: 0,
-                    powerCount: 0,
-                    pace: 0,
-                    paceCount: 0,
-                    heartRate: 0,
-                    heartRateCount: 0,
-                    elevation: 0
-                };
-                var stats = {
-                    maxHeartRate: 0,
-                    seconds: this.data[end-1].date - this.data[begin].date,
-                    distance: meterToMile(this.data[end-1].distance - this.data[begin].distance, 1),
-                    exactDistance: meterToMile(this.data[end-1].distance - this.data[begin].distance, 8)
-                };
-                
-                var step = 0;
-                var thisStep;
-                for (i = begin; i < end; i++) {
-                    if (i !== begin) {
-                        thisStep = (this.data[i].date - this.data[i-1].date) / 1000;
-                        if (step === 0) {
-                            step = thisStep;
-                        } else if (thisStep < step) {
-                            step = thisStep;
-                        }
-                    }
-                    if ('power' in this.data[0]) {
-                        if (this.data[i].power > 5) {
-                            avgs.powerCount += 1;
-                            avgs.power += this.data[i].power;
-                        }
-                    }
-                    if ('heartRate' in this.data[0]) {
-                        if (this.data[i].heartRate > 5) {
-                            avgs.heartRateCount += 1;
-                            avgs.heartRate += this.data[i].heartRate;
-                        }
-                        if (this.data[i].heartRate > stats.maxHeartRate) {
-                            stats.maxHeartRate = this.data[i].heartRate;
-                        }
-                    }
-                    if ('elevation' in this.data[0]) {
-                        avgs.elevation += this.data[i].elevation;
-                    }
-                }
+                var total = end - begin;
 
-                var movingTime = avgs.powerCount * step;
-                stats.timeHMS = hmsTime(movingTime * 1000);
+                var exactDistance = meterToMile(this.data[end-1].distance - this.data[begin].distance, 8);
+                var distance = meterToMile(this.data[end-1].distance - this.data[begin].distance, 1);
 
-                avgs.power = avgs.power / avgs.powerCount;
-                avgs.heartRate = avgs.heartRate / avgs.heartRateCount;
-                avgs.elevation = avgs.elevation / total;
-
-                var minutes = (movingTime) / 60;
-                var pace = (minutes / stats.exactDistance).toFixed(2);
-                avgs.pace = formatPace(pace);
-
-                this.querySelector('[type="avg_power"]').setAttribute('value', avgs.power.stat());
-
-                if (avgs.pace === null) {
-                    this.querySelector('[type="avg_pace"]').classList.add('hidden');
+                var paceUnit, distanceUnit;
+                if (user.data.units === 'feet') {
+                    paceUnit = 'Min/Mi';
+                    distanceUnit = 'Mi';
                 } else {
-                    this.querySelector('[type="avg_pace"]').classList.remove('hidden');
-                    this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
+                    paceUnit = 'Min/KM';
+                    distanceUnit = 'KM';
                 }
-                if (isNaN(avgs.heartRate)) {
-                    this.querySelector('[type="avg_hr"]').classList.add('hidden');
+                var pace = {
+                    active: ['pace'],
+                    pace: {
+                        icon: 'maps:directions-run',
+                        title: 'Pace',
+                        moving: 0,
+                        elapsed: 0,
+                        unit: paceUnit
+                    },
+                    maxPace: {
+                        icon: 'maps:directions-run',
+                        title: 'Max Pace',
+                        value: 0,
+                        unit: paceUnit
+                    }
+                };
+                var time = {
+                    active: ['time'],
+                    time: {
+                        icon: 'image:timer',
+                        title: 'Time',
+                        value: 0,
+                        moving: 0,
+                        elapsed: 0,
+                        mseconds: 0,
+                        unit: 'HH:MM:SS'
+                    },
+                    totalTime: {
+                        icon: 'image:timer',
+                        title: 'Total Time',
+                        value: 0,
+                        unit: 'HH:MM:SS'
+                    }
+                };
+                var power = {
+                    active: ['power'],
+                    power: {
+                        icon: 'image:flash-on',
+                        title: 'Power',
+                        moving: 0,
+                        elapsed: 0,
+                        mTotal: 0,
+                        unit: 'Watts'
+                    },
+                    maxPower: {
+                        icon: 'image:flash-on',
+                        title: 'Max Power',
+                        value: 0,
+                        unit: 'Watts'
+                    },
+                    timeInMaxZone: {
+                        icon: 'image:flash-on',
+                        title: 'Time in Max Zone',
+                        value: 0,
+                        unit: 'Watts'
+                    }
+                };
+                var heartRate = {
+                    active: ['heartRate'],
+                    heartRate: {
+                        icon: 'favorite',
+                        title: 'HR',
+                        moving: 0,
+                        elapsed: 0,
+                        mTotal: 0,
+                        value: 0,
+                        sum: 0,
+                        total: 0,
+                        unit: 'BPM'
+                    },
+                    maxHR: {
+                        icon: 'favorite',
+                        title: 'Max Heart Rate',
+                        value: 0,
+                        unit: 'BPM'
+                    }
+                };
+                var dynamics = {
+                    active: ['cadence', 'groundTime', 'vertOsc'],
+                    cadence: {
+                        icon: 'maps:directions-walk',
+                        title: 'Cadence',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'SPM'
+                    },
+                    groundTime: {
+                        icon: 'av:av-timer',
+                        title: 'Ground Time',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'MS'
+                    },
+                    vertOsc: {
+                        icon: 'communication:call-missed',
+                        title: 'Vert. Osc.',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'CM'
+                    }
+                };
+                var misc = {
+                    active: [],
+                    distance: {
+                        icon: 'communication:swap-calls',
+                        title: 'Distance',
+                        value: 0,
+                        unit: distanceUnit
+                    }
+                };
+
+                var milliseconds = this.data[end-1].date - this.data[begin].date;
+                var elapsedHMS = hmsTime(milliseconds);
+                var seconds = milliseconds / 1000;
+                time.totalTime.value = elapsedHMS;
+
+                for (var i = begin; i < end; i++) {
+                    var data = this.data[i];
+
+                    var timeSectionMSeconds = 1000;
+                    if (i !== end - 1) {
+                        timeSectionMSeconds = this.data[i+1].date - this.data[i].date;
+                    }
+
+                    /* Pace */
+                    if (data.pace > pace.maxPace.value) {
+                        pace.maxPace.value = data.pace;
+                    }
+
+                    /* Power */
+                    if (data.power > power.maxPower.value) {
+                        power.maxPower.value = data.power;
+                    }
+
+                    if (data.power > 0) {
+                        time.time.moving += timeSectionMSeconds;
+                    }
+                    time.time.elapsed += timeSectionMSeconds;
+
+                    // power.movingPower.sum += data.power;
+
+                    power.power.elapsed += data.power;
+
+                    if (data.power > 10) {
+                        power.power.moving += data.power;
+                        power.power.mTotal += 1;
+                    }
+
+                    if (data.power > 300) {
+                        power.timeInMaxZone.value += timeSectionMSeconds;
+                    }
+
+                    /* Heart rate */
+                    if (data.heartRate > heartRate.maxHR.value) {
+                        heartRate.maxHR.value = data.heartRate;
+                    }
+
+                    heartRate.heartRate.elapsed += data.heartRate;
+
+                    if (data.power > 10) {
+                        heartRate.heartRate.moving += data.heartRate;
+                        heartRate.heartRate.mTotal += 1;
+                    }
+
+                    dynamics.cadence.elapsed += data.cadence;
+                    if (data.power > 10) {
+                        dynamics.cadence.moving += data.cadence;
+                        dynamics.cadence.mTotal += 1;
+                    }
+
+                    if ('groundTime' in data) {
+                        dynamics.groundTime.elapsed += data.groundTime;
+                        if (data.power > 10) {
+                            dynamics.groundTime.moving += data.groundTime;
+                            dynamics.groundTime.mTotal += 1;
+                        }
+                    }
+                    if ('vertOsc' in data) {
+                        dynamics.vertOsc.elapsed += data.vertOsc;
+                        if (data.power > 10) {
+                            dynamics.vertOsc.moving += data.vertOsc;
+                            dynamics.vertOsc.mTotal += 1;
+                        }
+                    }
+                }
+
+                var elapsedMinutes = seconds / 60;
+                var movingMinutes = time.time.moving / 1000 / 60;
+                var elapsedDec, movingDec, maxPace;
+                if (user.data.units === 'feet') {
+                    elapsedDec = elapsedMinutes / exactDistance;
+                    movingDec = movingMinutes / exactDistance;
+                    maxPace = minutesPerMile(pace.maxPace.value, 'minutes');
                 } else {
-                    this.querySelector('[type="avg_hr"]').setAttribute('value', avgs.heartRate.stat());
+                    elapsedDec = elapsedMinutes / exactDistance * 0.621371;
+                    movingDec = movingMinutes / exactDistance * 0.621371;
+                    maxPace = minutesPerKM(pace.maxPace.value);
                 }
-                this.querySelector('[type="time"]').setAttribute('value', stats.timeHMS);
-                this.querySelector('[type="distance"]').setAttribute('value', stats.distance);
+                pace.pace.elapsed = formatPace(elapsedDec.toFixed(2));
+                pace.pace.moving = formatPace(movingDec.toFixed(2));
+                pace.maxPace.value = maxPace;
+
+                power.power.moving = (power.power.moving / power.power.mTotal).toFixed(1);
+                power.power.elapsed = (power.power.elapsed / total).toFixed(1);
+
+                heartRate.heartRate.moving = (heartRate.heartRate.moving / heartRate.heartRate.mTotal).toFixed(1);
+                heartRate.heartRate.elapsed = (heartRate.heartRate.elapsed / total).toFixed(1);
+
+                time.time.elapsed = hmsTime(time.time.elapsed);
+                time.time.moving = hmsTime(time.time.moving);
+
+                if (isNaN(distance)) {
+                    misc.distance.value = 'Not';
+                    misc.distance.unit = 'Available';
+                } else {
+                    misc.distance.value = distance;
+                    if (user.data.units !== 'feet') {
+                        misc.distance.value = (distance / 0.621371).toFixed(1);
+                    }
+                    misc.distance.unit = distanceUnit;
+                }
+
+                dynamics.cadence.moving = (dynamics.cadence.moving / dynamics.cadence.mTotal).toFixed(1);
+                dynamics.cadence.elapsed = (dynamics.cadence.elapsed / total).toFixed(1);
+
+                if (dynamics.groundTime.elapsed !== 0) {
+                    dynamics.groundTime.moving = (dynamics.groundTime.moving / dynamics.groundTime.mTotal).toFixed(1);
+                    dynamics.groundTime.elapsed = (dynamics.groundTime.elapsed / total).toFixed(1);
+                } else {
+                    delete dynamics.groundTime;
+                }
+
+                if (dynamics.vertOsc.elapsed !== 0) {
+                    dynamics.vertOsc.moving = (dynamics.vertOsc.moving / dynamics.vertOsc.mTotal).toFixed(1);
+                    dynamics.vertOsc.elapsed = (dynamics.vertOsc.elapsed / total).toFixed(1);
+                } else {
+                    delete dynamics.vertOsc;
+                }
+
+                delete heartRate.movingHR;
+                delete power.timeInMaxZone;
+                this.querySelector('[type="pace"]').setData(pace);
+                this.querySelector('[type="time"]').setData(time);
+                this.querySelector('[type="power"]').setData(power);
+                this.querySelector('[type="heartRate"]').setData(heartRate);
+                this.querySelector('[type="dynamics"]').setData(dynamics);
+                this.querySelector('[type="misc"]').setData(misc);
             },
-            fillChart: function () {
+            addPoint: function (pt) {
+                this.chart.dataProvider.push(pt);
+            },
+            refreshData: function () {
+                this.calcAvgs(0, this.chart.dataProvider.length - 1);
+                this.chart.validateData();
+            },
+            fillChart: function (valueAxes, graphs) {
                 this.chart = AmCharts.makeChart(this.$.chartdiv, {
                     'type': 'serial',
                     'theme': 'stryd',
                     'autoMarginOffset': 20,
-                    'valueAxes': [{
-                        'id': 'heartRate',
-                        'axisAlpha': 1,
-                        'position': 'left',
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#683a78',
-                        'dashLength': 1
-                    }, {
-                        'id': 'pace',
-                        'axisAlpha': 1,
-                        'position': 'right',
-                        'offset': 50,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#074a8c',
-                        'dashLength': 1
-                    }, {
-                        'id': 'cadence',
-                        'axisAlpha': 1,
-                        'position': 'left',
-                        'offset': 50,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#5ea7a1',
-                        'dashLength': 1
-                    }, {
-                        'id': 'power',
-                        'axisAlpha': 1,
-                        'position': 'right',
-                        'offset': 0,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#f7a017',
-                        'dashLength': 1
-                    }, {
-                        'id': 'elevation',
-                        'axisAlpha': 1,
-                        'position': 'right',
-                        'offset': 100,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#a06a81',
-                        'dashLength': 1
-                    }],
-                    'graphs': [{
-                        'id': 'heartRate',
-                        'valueAxis': 'heartRate',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'heartRate',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'heartRate',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] BPM'
-                    }, {
-                        'id': 'pace',
-                        'valueAxis': 'pace',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'pace',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'pace',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] Min/Mile'
-                    }, {
-                        'id': 'cadence',
-                        'valueAxis': 'cadence',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'cadence',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'cadence',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] SPM'
-                    }, {
-                        'id': 'power',
-                        'valueAxis': 'power',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'power',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'power',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] Watts',
-                    }, {
-                        'id': 'elevation',
-                        'valueAxis': 'elevation',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'elevation',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'elevation',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] Meters'
-                    }],
+                    'valueAxes': valueAxes,
+                    'graphs': graphs,
                     'chartScrollbar': {
                         'graph': 'power',
                         'autoGridCount': false,
@@ -550,12 +1115,14 @@
                     },
                     'dataProvider': this.chartData,
                     'pathToImages': 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
-                }, 100);
+                }, 0);
+
                 this.chart.addListener('init', function (e) {
                     this.removeLoading();
                     this.bindToggles();
                     this.calcAvgs(0, this.chartData.length);
                 }.bind(this));
+
                 this.chart.addListener('zoomed', function (e) {
                     this.calcAvgs(e.startIndex, e.endIndex + 1);
                 }.bind(this));

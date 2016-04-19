@@ -29,7 +29,7 @@ class Color {
 }
 
 /* Private methods */
-var initDB = function() {
+var initDB = function () {
     db = new Dexie('Logs');
     db.version(1).stores({
         log: '++id, data'
@@ -37,85 +37,107 @@ var initDB = function() {
     db.open();
 };
 
-function interpolate(start, end, steps, count) {
+var interpolate = function (start, end, steps, count) {
     var s = start,
         e = end,
         final = s + (((e - s) / steps) * count);
     return Math.floor(final);
-}
+};
 
-function componentToHex(c) {
+var componentToHex = function (c) {
     var hex = c.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
-}
+};
 
-function rgbToHex(r, g, b) {
+var rgbToHex = function (r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
+};
 
-var calcThreshold = function (powers) {
-    powers = JSON.parse(JSON.stringify(powers));
-    var sortedPower = powers.sort(function (a, b) {
-        return a - b;
-    });
-
-    var count = sortedPower.length;
-    var segment = parseInt(count / 4, 10);
-    var lowIQR = sortedPower[segment],
-        median = sortedPower[segment * 2],
-        highIQR = sortedPower[segment * 3];
-    var IQR = parseInt((highIQR - lowIQR) * 1.5, 10);
-    var thresholdHigh = median + IQR,
-        thresholdLow = median - IQR;
+var calcThreshold = function (nPowers) {
     var threshold = {
-        range: thresholdHigh - thresholdLow,
-        high: thresholdHigh,
-        low: thresholdLow
+        range: 1,
+        high: 1,
+        low: 0
     };
+    if (nPowers !== null) {
+        // We need to create a duplicate list, so the original list is not sorted
+        var powers = [];
+        for (var i = 0; i < nPowers.length; i++) {
+            powers.push(nPowers[i]);
+        }
+        var sortedPower = powers.sort(function (a, b) {
+            return a - b;
+        });
+
+        var count = sortedPower.length;
+        var segment = parseInt(count / 4, 10);
+        var lowIQR = sortedPower[segment],
+            median = sortedPower[segment * 2],
+            highIQR = sortedPower[segment * 3];
+        var IQR = parseInt((highIQR - lowIQR) * 1.5, 10);
+        var thresholdHigh = median + IQR,
+            thresholdLow = median - IQR;
+        threshold = {
+            range: thresholdHigh - thresholdLow,
+            high: thresholdHigh,
+            low: thresholdLow
+        };
+    }
     return threshold;
 };
 
 var workoutSave = function (workout, id) {
     db.log.put({
-        id: id,
+        id: String(id),
         data: workout
     });
 };
 
-var workoutFetchingAJAX = function (workout) {
-    console.log('Fetching new data');
+var workoutFetchingAJAX = function (workout, scope) {
     superagent
-        .get('/b/api/v1/activities/' + workout)
+        .get(`/b/api/v1/activities/${workout}`)
         .send()
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
+        .set('Authorization', `Bearer: ${token}`)
         .end(function(err, res) {
             if (res.ok) {
-                workoutProcessing(res.body, workout);
-                workoutSave(res.body, workout);
+                workoutProcessing(res.body, workout, scope);
             } else {
                 console.log('Error: cannot fetch workout');
             }
         });
 };
 
-var workoutFetching = function (workout) {
+var workoutFetching = function (workoutID, workoutUpdated, scope) {
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (!checkIndexedDB) {
-        workoutFetchingAJAX(workout);
+        workoutFetchingAJAX(workoutID);
     } else {
-        db.log.get(workout, function (log) {
+        db.log.get(String(workoutID), function (log) {
             if (log === undefined) {
-                workoutFetchingAJAX(workout);
+                workoutFetchingAJAX(workoutID, scope);
             } else {
-                console.log('Retrieving old data');
-                workoutProcessing(log.data, log.id);
+                var workoutUpdatedTS = new Date(workoutUpdated);
+                var logUpdatedTS = new Date(log.data.updated_time);
+                var getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
+                    (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
+                if (getExternal) {
+                    workoutFetchingAJAX(workoutID, scope);
+                } else {
+                    workoutProcessing(log.data, log.id, scope);
+                }
             }
         });
     }
 };
 
-var workoutProcessing = function (workout, id) {
+var workoutProcessing = function (workout, id, scope) {
+    workoutSave(workout, id);
+    if (workout.total_power_list === null) {
+        data.error = true;
+        postMessage(data);
+        return;
+    }
     var threshold = calcThreshold(workout.total_power_list);
 
     var avgs = {
@@ -126,27 +148,37 @@ var workoutProcessing = function (workout, id) {
 
     var maxPower = workout.max_power;
 
+    // Limit displayed records to prevent browser slugginess
     var steps = 1;
     if (workout.total_power_list.length > 800) {
         steps = parseInt(workout.total_power_list.length / 800);
     }
+
     var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
     var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
+
     var chartData = [], mapRunData = [];
     var hex, i;
-    var graphSegment = {}, entry = {};
+    var graphSegment = {};
+
+    var lastEntry = {};
+    var suuntoDrop = true;
+
     for (i = 0; i < workout.total_power_list.length; i = i + steps) {
         graphSegment = {};
-        entry = {};
-        /* Assemble Chart Data */
+        var entry = {};
+        /* Assemble chart data */
         if ('timestamp_list' in workout) {
             entry.date = setDate(workout.timestamp_list[i]);
         }
         if ('heart_rate_list' in workout) {
             entry.heartRate = workout.heart_rate_list[i];
+            if (entry.heartRate !== 0) {
+                suuntoDrop = false;
+            }
         }
-        if ('speed_list' in workout) {
-            entry.pace = minutesPerMile(workout.speed_list[i]);
+        if ('speed_list' in workout && workout.speed_list !== null) {
+            entry.pace = workout.speed_list[i];
         }
         if ('total_power_list' in workout) {
             entry.power = workout.total_power_list[i];
@@ -154,19 +186,47 @@ var workoutProcessing = function (workout, id) {
                 avgs.powerCount += 1;
                 avgs.power += entry.power;
             }
+            if (entry.power !== 0) {
+                suuntoDrop = false;
+            }
         }
         if ('cadence_list' in workout) {
             entry.cadence = workout.cadence_list[i];
+            if (entry.cadence !== 0) {
+                suuntoDrop = false;
+            }
         }
-        if ('elevation_list' in workout) {
+        if ('oscillation_list' in workout && workout.oscillation_list !== null) {
+            entry.vertOsc = workout.oscillation_list[i];
+        }
+        if ('ground_time_list' in workout && workout.ground_time_list !== null) {
+            entry.groundTime = workout.ground_time_list[i];
+        }
+        if ('elevation_list' in workout && workout.elevation_list !== null) {
             entry.elevation = Math.round(workout.elevation_list[i]);
+            if (entry.elevation !== 0) {
+                suuntoDrop = false;
+            }
         }
-        if ('distance_list' in workout) {
+        if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
         }
+
+        if (suuntoDrop && i !== 0) {
+            entry = lastEntry;
+        } else {
+            lastEntry = entry;
+        }
+        suuntoDrop = true;
+        
         chartData.push(entry);
-        /* Assemble Map Data */
-        if (i > 0) {
+        /* Assemble map data */
+        if (
+            i > 0 &&
+            'loc_list' in workout &&
+            workout.loc_list !== null &&
+            'power' in entry
+        ) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
@@ -204,12 +264,20 @@ var workoutProcessing = function (workout, id) {
 
     data.mapRunData = mapRunData;
     data.chartData = chartData;
+    data.chartDescription = {
+        description: workout.description,
+        id: workout.id,
+        user_id: workout.user_id
+    };
+    data.steps = steps;
     if (id === 'sample') {
         data.logs = [workout];
         data.type = 'sample';
     } else {
         data.type = 'data';
     }
+    data.workoutShared = workout;
+    data.scope = scope;
     postMessage(data);
 };
 
@@ -218,33 +286,12 @@ var logsProcessing = function (logs) {
     postMessage(data);
 };
 
-/* Public method */
-onmessage = function (event) {
-    initDB();
-
-    data = {};
-    token = event.data.token;
-    if (event.data.type === 'all') {
-        console.log('here1');
-        logsFetching();
-    } else if (event.data.type === 'admin') {
-        console.log('here2');
-        logsFetching(event.data.user);
-    } else if (event.data.type === 'workout') {
-        workoutFetching(event.data.id);
-    } else if (event.data.type === 'sample') {
-        workoutFetching('sample');
-    } else if (event.data.type === 'addLog') {
-        addLog(event.data.id);
-    }
-};
-
 var addLog = function (id) {
     superagent
-        .get('/b/api/v1/activities/' + id)
+        .get(`/b/api/v1/activities/${id}`)
         .send()
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
+        .set('Authorization', `Bearer: ${token}`)
         .end(function(err, res) {
             if (res.ok) {
                 workoutSave(res.body, id);
@@ -256,27 +303,43 @@ var addLog = function (id) {
         });
 };
 
-var logsFetching = function (user='') {
-    var link = '/b/api/v1/activities/summary?limit=20&sortby=Timestamp&order=desc';
-    if (user.length > 0) {
-        link = '/b/admin/users/' + user + '/activities/summary?limit=20&sortby=Timestamp&order=desc';
-    }
-    console.log(link);
+var suuntoProcessing = function () {
     superagent
-        .get(link)
-        .send()
+        .post('/b/internal/fetch/suunto')
+        .send({})
         .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer: ' + token)
-        .end(function(err, res) {
-            if (res.ok) {
-                if (res.body !== null) {
-                    console.log(res.body);
-                    logsProcessing(res.body);
-                } else {
-                    workoutFetching('sample');
+        .set('Authorization', `Bearer: ${token}`)
+        .end(function (err, res) {
+            if (res.ok && res.body.workouts !== null) {
+                for (var i = 0; i < res.body.workouts.length; i++) {
+                    var workoutID = res.body.workouts[i];
+                    addLog(workoutID);
                 }
-            } else {
-                console.log('Error: failure on grabLogs', err, res);
             }
         }.bind(this));
+};
+
+/* Public method */
+onmessage = function (event) {
+    initDB();
+
+    data = {};
+    token = event.data.token;
+
+    switch(event.data.type) {
+        case 'workout':
+            workoutFetching(event.data.id, event.data.updated_time, 'owned');
+            break;
+        case 'workout-view':
+            workoutFetching(event.data.id, event.data.updated_time, 'owned');
+            break;
+        case 'addLog':
+            addLog(event.data.id);
+            break;
+        case 'suuntoProcessing':
+            suuntoProcessing();
+            break;
+        default:
+            console.log('Error in onmessage/processor: unknown action');
+    }
 };

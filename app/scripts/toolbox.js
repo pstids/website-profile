@@ -31,26 +31,42 @@ var fillZero = function (n) {
 
 // Return pace in minutes per mile from meters per second
 var minutesPerMile = function (mps, opt) {
-    if (mps === 0) {
-        return 0;
+    if (mps === 0 || isNaN(mps)) {
+        return '--:--';
     }
     var mpm = parseFloat(26.8224 / mps).toFixed(2);
-    if (mpm > 40) {
-        mpm = 0;
-    }
     if (opt && opt === 'minutes') {
         var minutes = Math.floor(mpm);
         var secondPartial = ((mpm - minutes) * 60).toPrecision(2);
+        if (secondPartial.indexOf('.') !== -1) {
+            var parts = secondPartial.split('.');
+            secondPartial = '0' + parts[0];
+        }
         mpm = minutes + ':' + secondPartial;
     }
     return mpm;
 };
 
-var formatPace = function (pace) {
-    if (pace === 'Infinity') {
-        return null;
+var minutesPerKM = function (mps) {
+    if (mps === 0) {
+        return '--:--';
     }
+    var mpk = parseFloat(16.6666666 / mps).toFixed(2);
+    var minutes = Math.floor(mpk);
+    var secondPartial = ((mpk - minutes) * 60).toPrecision(2);
+    if (secondPartial.indexOf('.') !== -1) {
+        var parts = secondPartial.split('.');
+        secondPartial = '0' + parts[0];
+    }
+    mpk = minutes + ':' + secondPartial;
+    return mpk;
+};
+
+var formatPace = function (pace) {
     var paceFloat = parseFloat(pace);
+    if (pace === 'Infinity' || isNaN(pace) || paceFloat > 100 || paceFloat < 1) {
+        return '--:--';
+    }
     var floor = Math.floor(paceFloat);
     var seconds = ((paceFloat - floor) * 60).toFixed(0);
     var secondsFilled = fillZero(seconds);
@@ -60,7 +76,11 @@ var formatPace = function (pace) {
 // Return minutes per miles with unit
 var speedToPaceForBalloon = function (graphDataItem, graph) {
     var value = graphDataItem.values.value;
-    return minutesPerMile(value) + ' Min/Mile';
+    if (user.data.units === 'feet') {
+        return minutesPerMile(value, 'minutes') + ' Min/Mile';
+    } else {
+        return minutesPerKM(value) + ' Min/KM';
+    }
 };
 
 // Wrapper for minutesPerMile function
@@ -97,4 +117,23 @@ var meterToMile = function (m, precision) {
         return (m/1600).toFixed(precision);
     }
     return (m/1600).toFixed(1);
+};
+
+var meterToUserUnit = function (m) {
+    if (user.data.units === 'feet') {
+        var mi = meterToMile(m, 0);
+        return `${mi} mi`;
+    } else {
+        var km = meterToKM(m);
+        return `${km} km`;
+    }
+};
+
+var attribute = function(selector, parent) {
+  var eles = parent.querySelectorAll('[data-' + selector + ']');
+  var holder = {};
+  for (var i = 0; i < eles.length; i++) {
+    holder[eles[i].dataset[selector]] = eles[i];
+  }
+  return holder;
 };

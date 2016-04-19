@@ -6,62 +6,345 @@
         h2.subtitle {
             @apply(--subtitle);
         }
+        h3 {
+            font-size: 20px;
+            color: #FFFFFF;
+            font-weight: 700;
+            text-align: center
+        }
         p {
             color: white;
+            line-height: 28px;
         }
-        .crit {
+        paper-input input {
+            text-align: center !important;
+        }
+        .inactive {
+            border-color: rgb(96, 96, 96);
+            color: rgb(96, 96, 96);
+            background-color: rgb(36, 36, 36);
+            display: none;
+        }
+        .item {
+            margin-right: 40px;
+        }
+        hr {
+            margin: 30px 0;
+            color: #F5A214;
+            border: 1px solid #F5A214;
+        }
+
+        .zones {
             @apply(--layout-vertical);
         }
-        .crit .power {
-            font-size: 20px;
+        .zones zone-entry:nth-of-type(odd) {
+            background-color: rgba(20, 20, 20, 0.5);
         }
-        .crit .calcs {
-            @apply(--layout-horizontal);
+
+        .zones-titles {
+            margin-top: 50px;
         }
-        .crit .calcs div {
+        .zone {
             @apply(--layout-flex);
+            border-radius: 30px;
+            border: 1px solid white;
+            margin: 20px 0px 20px 20px;
+            padding: 20px;
+        }
+        .zone:first-child {
+            margin-left: 0px;
+        }
+        .zone.titles {
+            @apply(--layout-flex);
+        }
+
+        .entry paper-input[name] {
+            margin-left: 0;
+        }
+
+        .entry {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            margin-top: 20px;
+        }
+        .entry paper-input {
+            @apply(--layout-flex-2);
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .titles paper-input {
+            margin-top: 20px;
+        }
+        .to {
+            @apply(--layout-flex);
+            color: var(--accent-background-color);
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .units {
+            color: white;
+            margin-left: 14px;
+            margin-bottom: 8px;
+            width: 50px;
+        }
+
+        .faux-input {
+            @apply(--layout-vertical);
+            height: 46px;
+            width: 162px;
+            padding: 8px 0;
+        }
+        .faux-input label {
+            color: #C1BBAD;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: 'Roboto', 'Noto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 24px;
+        }
+        .faux-input span {
+            color: #FFFFFF;
+            font-family: 'Roboto', 'Noto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 16px;
+            padding: 0;
+            margin-top: 8px;
+        }
+        .auto {
+            display: none !important;
+        }
+        .automatic .auto {
+            display: flex !important;
+        }
+        .automatic .manual {
+            display: none !important;
+        }
+
+        .save {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            @apply(--layout-horizontal);
+            @apply(--layout-end-justified);
+            @apply(--layout-center);
+            cursor: pointer;
+            background-color: #262626;
+            padding: 0 0 0 30px;
+            border-radius: 40px;
+            border: 2px solid #F7A017;
+        }
+        .save p {
+            color: white;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+        .save-line {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(38, 38, 38, 0.4);
+            width: 100vw;
+            height: 100px;
+        }
+
+        #critTestContainer.hide, #critValuesContainer.hide {
+            max-height: 0;
+        }
+        #critTestContainer, #critValuesContainer {
+            max-height: 800px;
+            -webkit-transition: max-height 0.8s;
+            -moz-transition: max-height 0.8s;
+            transition: max-height 0.8s;
+            overflow: hidden;
+        }
+
+        .instructions {
+            padding: 20px;
+            border: 1px solid #FFFFFF;
+            margin-bottom: 20px;
+        }
+        .instructions h1 {
+            color: #FFFFFF;
+            font-size: 18px;
+            margin: 0;
+        }
+        .instructions p {
+            line-height: 18px;
+            padding: 0;
+            margin: 10px 0 0 0;
+            font-weight: 300;
+            font-size: 15px;
         }
     </style>
     <template>
-        <div class="crit">
-            <h1 class="title">Critical Power</h1>
-            <p>Critical power calculation. We will be providing additional information on this metric soon.</p>
-            <div class="calcs">
-                <div>
-                    <h2 class="subtitle">Three Minute Average Watts</h2>
-                    <paper-slider
-                        min="0"
-                        max="700"
-                        value="{{crit.three_minutes}}"
-                        editable="true"
-                        id="three_minutes">
-                    </paper-input>
+    <div data-zone="container">
+        <div class="layout vertical instructions">
+            <h1>Instructions</h1>
+            <p>1. Complete the <a href="http://club.stryd.com/t/a-protocol-for-establishing-critical-power-in-running/574">Stryd Critical Power Test</a> or your own critical power test.</p>
+            <p>2. Check 'Use 3-9 Minute Critical Power Test' box if you used the Stryd critical power test. Uncheck it if you used your own test.</p>
+            <p>3. Fill in your test results.</p>
+            <p>4. Click 'Calculate Zones on Jack Daniel's Method'. Manually adjust your zones as necessary. The zones may be too tight or narrow for your fitness. The power ranges will be clearer as you run more.</p>
+            <p>5. Save your information in the bottom right.</p>
+        </div>
+        <div class="layout horizontal justified">
+            <h1 class="title self-center">Critical Power & Pace</h1>
+            <button is="stryd-button" class="self-center self-end" style="margin-top: 0;" on-click="toggleTests">
+                <div class="layout horizontal">
+                    <span class="self-center" style="margin-right: 15px;">USE 3-9 MINUTE CRITICAL POWER TEST</span>
+                    <paper-checkbox id="critToggle" checked class="self-center"></paper-checkbox>
                 </div>
-                <div>
-                    <h2 class="subtitle">Nine Minute Average Watts</h2>
-                    <paper-slider
-                        min="0"
-                        max="600"
-                        value="{{crit.nine_minutes}}"
-                        editable="true"
-                        id="nine_minutes">
-                    </paper-input>
+            </button>
+        </div>
+        <div class="crit" id="critTestContainer">
+            <div class="layout vertical">
+                <div class="layout horizontal" style="margin-top: 10px;">
+                    <div class="layout horizontal item">
+                        <paper-input
+                            value="{{critPower.three}}"
+                            editable="true"
+                            type="text"
+                            placeholder="Watts"
+                            class="flex"
+                            label="THREE MIN AVG WATTS">
+                        </paper-input>
+                        <span class="units self-end">WATTS</span>
+                    </div>
+                    <div class="layout horizontal item">
+                        <paper-input
+                            value="{{critPace.three}}"
+                            editable="true"
+                            type="text"
+                            placeholder="Pace (i.e. 4:40)"
+                            label="THREE MIN AVG PACE"
+                            class="flex">
+                        </paper-input>
+                        <span class="units self-end">{{userLocal}}</span>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="subtitle">Critical Power</h2>
-                    <p class="power"><span>{{calcCrit(crit.three_minutes, crit.nine_minutes)}}</span> Watts</p>
+                <div class="layout horizontal" style="margin-top: 10px;">
+                    <div class="layout horizontal item">
+                        <paper-input
+                            value="{{critPower.nine}}"
+                            editable="true"
+                            type="text"
+                            placeholder="Watts"
+                            class="flex"
+                            label="NINE MIN AVG WATTS">
+                        </paper-input>
+                        <span class="units self-end">WATTS</span>
+                    </div>
+                    <div class="layout horizontal item">
+                        <paper-input
+                            value="{{critPace.nine}}"
+                            editable="true"
+                            type="text"
+                            placeholder="Pace (i.e. 5:40)"
+                            label="NINE MIN AVG PACE"
+                            class="flex">
+                        </paper-input>
+                        <span class="units self-end">{{userLocal}}</span>
+                    </div>
+                </div>
+                <div class="layout horizontal" style="margin-top: 10px; border-top: 2px solid #F5A214; padding-top: 30px; width: 540px;">
+                    <div class="layout horizontal item">
+                        <div class="faux-input">
+                            <label>CRITICAL POWER</label>
+                            <span>{{calcCritPower(critPower.three, critPower.nine)}}</span>
+                        </div>
+                        <span class="units self-end">WATTS</span>
+                    </div>
+                    <div class="layout horizontal item">
+                        <div class="faux-input">
+                            <label>CRITICAL PACE</label>
+                            <span>{{calcCritPace(critPace.three, critPace.nine)}}</span>
+                        </div>
+                        <span class="units self-end">{{userLocal}}</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <button is="stryd-button" on-click="saveCritPower">Save</button>
+        <div class="crit" id="critValuesContainer">
+            <div class="layout horizontal">
+                <div class="layout horizontal item">
+                    <paper-input
+                    value="{{critPower.value}}"
+                    type="text"
+                    placeholder="Power (i.e. 300)"
+                    label="CRITICAL POWER">
+                    </paper-input>
+                    <span class="self-end units">WATTS</span>
+                </div>
+                <div class="layout horizontal item">
+                    <paper-input
+                    value="{{critPace.value}}"
+                    type="text"
+                    placeholder="Pace (i.e. 5:40)"
+                    label="CRITICAL PACE">
+                    </paper-input>
+                    <span class="self-end units">{{userLocal}}</span>
+                </div>
+            </div>
+        </div>
+        <div data-zones="container">
+            <div class="layout horizontal justified">
+                <div class="zones-titles self-center">
+                    <h1 class="title">Power & Pace Zones</h1>
+                </div>
+                <button is="stryd-button" on-click="calculateZones" class="self-center self-end" style="margin-top: 0;">Calculate Zones on Jack Daniel's Method</button>
+            </div>
+            <div class="titles layout horizontal">
+                <div class="title flex-1">
+                    <h3>Zones</h3>
+                </div>
+                <div class="title flex-1">
+                    <h3>Power (WATTS)</h3>
+                </div>
+                <div class="title flex-1">
+                    <h3>Pace (<span>{{userLocal}}</span>)</h3>
+                </div>
+                <div style="width: 44px;"></div>
+            </div>
+            <div class="zones" id="zones" style="margin-bottom: 20px;">
+            </div>
+            <button is="stryd-button" class="self-center" on-click="addZone" style="margin: 0 0 20px 20px;">Add Zone</button>
+        </div>
+        <div class="save-line"></div>
+        <div class="save" on-click="saveZones">
+            <p>Save Training Information</p>
+            <paper-fab icon="inbox"></paper-fab>
+        </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
+        <paper-dialog id="autoCalc">
+            <h1>You are about to automatically calculate your zones. This will overwrite your current zones.</h1>
+            <div class="buttons">
+                <paper-button dialog-dismiss style="margin-right: 20px;">No</paper-button>
+                <paper-button dialog-confirm autofocus on-click="autoCalc">Yes</paper-button>
+            </div>
+        </paper-dialog>
+    </div>
     </template>
     <script>
         Polymer({
             is: 'settings-training',
             properties: {
-                crit: {
+                critPower: {
                     type: Object,
+                    notify: true
+                },
+                critPace: {
+                    type: Object,
+                    notify: true
+                },
+                userLocal: {
+                    type: String,
                     notify: true
                 }
             },
@@ -73,46 +356,278 @@
                     }).join('&');
             },
             ready: function () {
-                console.log('init');
-                if (!('critical_power' in user.data)) {
-                    console.log('refetch');
+                if (!jwt.hasToken) {
+                    return;
+                }
+                if (user.data.units === 'feet') {
+                    this.userLocal = 'MIN/MILE';
+                } else {
+                    this.userLocal = 'MIN/KM';
+                }
+                if (!('critical_pace' in user.data) || !('critical_power' in user.data)) {
                     user.fetchDetails(this.ready.bind(this));
-                } else  {
-                    this.crit = user.get('critical_power');
-                    this.$.three_minutes.addEventListener('value-change', function () {
-                        this.crit.three_minutes = this.$.three_minutes.value;
-                    }.bind(this));
-                    this.$.nine_minutes.addEventListener('value-change', function () {
-                        this.crit.nine_minutes = this.$.nine_minutes.value;
-                    }.bind(this));
+                }
+
+                this.critPower = {
+                    three: user.data.critical_power.three_minutes,
+                    nine: user.data.critical_power.nine_minutes,
+                    value: user.data.critical_power.value
+                };
+
+                this.set('critPower.value', this.critPower.value);
+
+                this.critPace = {
+                    nineDec: 0,
+                    threeDec: 0,
+                    three: user.data.critical_pace.three_minutes,
+                    nine: user.data.critical_pace.nine_minutes,
+                    value: user.data.critical_pace.value
+                };
+
+                var zones = user.get('zones');
+                if (zones) {
+                    for (var i = 0; i < zones.length; i++) {
+                        var zoneEntry = document.createElement('zone-entry');
+                        zoneEntry.import(zones[i]);
+                        this.$.zones.appendChild(zoneEntry);
+                    }
+                } else {
+                    var names = ['Easy/Long', 'Marathon', 'Threshold', 'Interval', 'Repetition'];
+                    this.addZone({
+                        name: names[0]
+                    });
+                    this.addZone({
+                        name: names[1]
+                    });
+                    this.addZone({
+                        name: names[2]
+                    });
+                    this.addZone({
+                        name: names[3]
+                    });
+                    this.addZone({
+                        name: names[4]
+                    });
+                }
+
+                var useTest = (localStorage.getItem('useTest') === 'true');
+                if (useTest === null) {
+                    this.useTest = true;
+                } else {
+                    this.useTest = useTest;
+                    this.$.critToggle.checked = this.useTest;
+                    if (!this.useTest) {
+                        this.$.critTestContainer.classList.add('hide');
+                    } else {
+                        this.$.critValuesContainer.classList.add('hide');
+                        this.calcCritPace(this.critPace.three, this.critPace.nine);
+                    }
                 }
             },
-            calcCrit: function (three, nine) {
-                var crit_power, scaled_nine, scaled_three;
-                scaled_nine = (nine*9);
-                scaled_three = (three*3);
-                crit_power = ((scaled_nine - scaled_three)/(6));
+            toggleTests: function () {
+                this.useTest = !this.useTest;
+                this.$.critTestContainer.classList.toggle('hide');
+                this.$.critValuesContainer.classList.toggle('hide');
+                this.$.critToggle.checked = this.useTest;
+                this.calcCritPower(this.critPower.three, this.critPower.nine);
+                this.calcCritPace(this.critPace.three, this.critPace.nine);
+            },
+            addZone: function (zone) {
+                var zoneEntry = document.createElement('zone-entry');
+                zoneEntry.import(zone);
+                this.$.zones.appendChild(zoneEntry);
+            },
+            clearZones: function () {
+                while (this.$.zones.hasChildNodes()) {
+                    this.$.zones.removeChild(this.$.zones.childNodes[0]);
+                }
+            },
+            automatic: function () {
+                this.$.autoCalc.open();
+            },
+            calcCritPower: function (three, nine) {
+                if (three === '' || nine === '') {
+                    this.$.toast.text = 'Fill in the critical power values.';
+                    this.$.toast.show();
+                    return '';
+                }
+                three = parseInt(three);
+                nine = parseInt(nine);
+                var scaled_nine = (nine*9);
+                var scaled_three = (three*3);
+                var crit_power = ((scaled_nine - scaled_three)/(6));
+                if (crit_power < 0) {
+                    crit_power = 0;
+                }
+                this.isCritPower = crit_power;
                 return crit_power;
             },
-            saveCritPower: function () {
-                var queryString = this.jsonToQueryString({
-                    crit_three_minutes: this.crit.three_minutes,
-                    crit_nine_minutes: this.crit.nine_minutes
-                });
+            calcCritPace: function (three, nine) {
+                if (three === '' || nine === '') {
+                    this.$.toast.text = 'Fill in the critical pace values.';
+                    this.$.toast.show();
+                    return '';
+                }
+
+                if (three.indexOf(':') === -1 || nine.indexOf(':') === -9) {
+                    this.$.toast.text = 'Use colon notation. i.e. 10:00, 5:15';
+                    this.$.toast.show();
+                    return '';
+                }
+
+                this.critPace.threeDec = this.paceToDec(three);
+                this.critPace.nineDec = this.paceToDec(nine);
+
+                var speedThree = this.paceToMPH(this.critPace.threeDec);
+                var speedNine = this.paceToMPH(this.critPace.nineDec);
+
+                var scaledThree = speedThree * 3;
+                var scaledNine = speedNine * 9;
+
+                var critSpeed = (scaledNine - scaledThree)/6;
+                if (critSpeed < 0) {
+                    critSpeed = 0;
+                }
+
+                var critPace = this.decToPace(this.paceToMPH(critSpeed));
+
+                this.critPace.value = critPace;
+                this.notifyPath('critPace.value', critPace);
+                return critPace;
+            },
+            saveZones: function () {
+                localStorage.setItem('useTest', this.useTest);
+                // var queryObj = {};
+                if (this.useTest) {
+                    this.critPower.value = this.isCritPower;
+                }
+
+
+                var updateParams = '?fields=critical_power,critical_pace,zones';
+                var zones = [];
+                for (var i = 0; i < this.$.zones.children.length; i++) {
+                    zones.push(this.$.zones.children[i].export());
+                }
+
+                // var queryString = this.jsonToQueryString(queryObj);
                 superagent
-                    .put('/b/api/v1/users/' + jwt.data.id + queryString)
-                    .send('{"empty":"empty"}')
+                    .put('/b/api/v1/users/' + jwt.data.id + updateParams)
+                    .send({
+                        critical_pace: {
+                            three_minutes: this.critPace.three,
+                            nine_minutes: this.critPace.nine,
+                            value: this.critPace.value
+                        },
+                        critical_power: {
+                            three_minutes: parseInt(this.critPower.three),
+                            nine_minutes: parseInt(this.critPower.nine),
+                            value: parseInt(this.critPower.value)
+                        },
+                        zones: zones
+                    })
                     .set('Accept', 'application/json')
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {
                         if (res.ok) {
-                            this.$.toast.text = 'Your critical power information is updated!';
+                            this.$.toast.text = 'Your training information is up-to-date!';
                             user.updateData(res.body);
                         } else {
-                            this.$.toast.text = 'Your information is not updated. Please try again.';
+                            this.$.toast.text = 'Your information has not been updated. Please try again.';
                         }
                         this.$.toast.show();
                     }.bind(this));
+            },
+            calculateZones: function () {
+                if (this.useTest) {
+                    this.critPower.value = this.isCritPower;
+                }
+
+                var paceDec = this.paceToDec(this.critPace.value);
+                if (isNaN(paceDec) || isNaN(this.critPower.value) || this.critPower.value === 0) {
+                    this.$.toast.text = 'Your critical power & pace values are incorrect. Please review.';
+                    this.$.toast.show();
+                    return;
+                }
+
+                var conv;
+                var mps;
+                if (user.data.units === 'feet') {
+                    conv = 26.8224;
+                    mps = conv / paceDec;
+                } else {
+                    conv = 16.6667;
+                    mps = conv / paceDec;
+                }
+
+                this.clearZones();
+
+                superagent
+                    .post('/b/api/v1/users/' + user.data.id + '/training-zone')
+                    .send({
+                        critical_speed: mps,
+                        critical_power: parseInt(this.critPower.value)
+                    })
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end((err, res) => {
+                        if (res.ok) {
+                            var zones = res.body.zones;
+                            var zone;
+                            for (var i = 0; i < zones.length; i++) {
+                                zone = zones[i];
+                                if (zone.power_low > 0) {
+                                    zones[i].power_high = parseInt(zones[i].power_high);
+                                    zones[i].power_low = parseInt(zones[i].power_low);
+                                    this.addZone(zones[i]);
+                                }
+                            }
+                        }
+                    });
+                this.$.toast.text = 'Zones are updated.';
+                this.$.toast.show();
+            },
+            paceToDec: function (pace) {
+                var parts = pace.split(':');
+                var secondFraction;
+
+                if (parts.length > 1) { 
+                    secondFraction = parseFloat(parseInt(parts[1]) / 60);
+                } else {
+                    secondFraction = 0;
+                }
+
+                var dec = parseFloat(parts[0]) + secondFraction;
+                return parseFloat(dec);
+            },
+            decToPace: function (dec) {
+                dec = parseFloat(dec);
+                var min = Math.floor(dec);
+                var part = dec - min;
+                var seconds = part * 60;
+                var stringSeconds = String(seconds.toFixed());
+                if (stringSeconds.length === 1) {
+                    stringSeconds = '0' + stringSeconds;
+                }
+                min = String(min);
+
+                if (isNaN(min)) {
+                    min = '--';
+                }
+                if (isNaN(stringSeconds)) {
+                    stringSeconds = '--';
+                }
+                if (min.length === 1) {
+                    min = '0' + min;
+                }
+                return min + ':' + stringSeconds;
+            },
+            paceToMPH: function (val) {
+                var mph;
+                if (user.data.units === 'feet') {
+                    mph = (60/val);
+                } else {
+                    mph = (37.2822715/val);
+                }
+                return mph;
             }
         });
     </script>

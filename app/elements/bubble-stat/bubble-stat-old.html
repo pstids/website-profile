@@ -1,0 +1,148 @@
+<dom-module id="bubble-stat">
+	<style>
+		:host {
+			box-shadow: 0px 100px 100px -95px #000000;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+		.bubble-border {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
+			position: relative;
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+		}
+		.bubble-wrap {
+			position: absolute;
+			z-index: 10;
+			width: 12vw;
+			height: 12vw;
+		}
+		.bubble {
+			width: 95%;
+			height: 95%;
+			border-radius: 50%;
+			background-color: var(--secondary-background-color);
+			position: relative;
+			@apply(--layout-vertical);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+			box-shadow: inset 0px 0px 6vw -3.33vw #000000;
+		}
+		.icon {
+			color: var(--primary-icon-color);
+			fill: var(--primary-icon-color);
+			width: 2.5vw;
+			height: 2.5vw;
+			margin-bottom: 1vw;
+		}
+		.title {
+			color: white;
+			line-height: 1vw;
+			text-transform: uppercase;
+			font-weight: 500;
+			font-size: 0.68vw;
+		}
+		.value {
+			color: white;
+			font-size: 2.5vw;
+			line-height: 3.3vw;
+			text-transform: uppercase;
+			font-weight: 800;
+		}
+		.unit {
+			color: white;
+			line-height: 1vw;
+			text-transform: uppercase;
+			font-weight: 500;
+			font-size: 0.68vw;
+		}
+		.bubble-pop {
+			position: absolute;
+			z-index: 1;
+			width: 120px;
+			height: 120px;
+			transform: scale(0.5);
+			transition: transform 1s;
+		}
+		.popped .bubble-pop:nth-child(1) {
+			transform: scale(1) translate(0, -140px);
+		}
+		.popped .bubble-pop:nth-child(2) {
+			transform: scale(1) translate(-120px, -105px);
+		}
+		.popped .bubble-pop:nth-child(3) {
+			transform: scale(1) translate(120px, -105px);
+		}
+	</style>
+	<template>
+		<div class="bubble-wrap">
+			<div class="bubble-border">
+				<div class="bubble">
+					<iron-icon icon="{{ob1.icon}}" class="icon"></iron-icon>
+					<span class="title">{{ob1.title}}</span>
+					<span class="value">{{ob1.value}}</span>
+					<span class="unit">{{ob1.unit}}</span>
+				</div>
+			</div>
+		</div>
+		<div class="pop-container" id="pop">
+			<div class="bubble-pop">
+				<div class="bubble-border">
+					<div class="bubble">
+						<iron-icon icon="{{obj2.icon}}" class="icon"></iron-icon>
+						<span class="title">{{obj2.title}}</span>
+						<span class="value">{{obj2.value}}</span>
+						<span class="unit">{{obj2.unit}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="bubble-pop">
+				<div class="bubble-border">
+					<div class="bubble">
+						<iron-icon icon="{{obj3.icon}}" class="icon"></iron-icon>
+						<span class="title">{{obj3.title}}</span>
+						<span class="value">{{obj3.value}}</span>
+						<span class="unit">{{obj3.unit}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="bubble-pop">
+				<div class="bubble-border">
+					<div class="bubble">
+						<iron-icon icon="{{obj4.icon}}" class="icon"></iron-icon>
+						<span class="title">{{obj4.title}}</span>
+						<span class="value">{{obj4.value}}</span>
+						<span class="unit">{{obj4.unit}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'bubble-stat',
+			listeners: {
+				'click': 'click'
+			},
+			click: function () {
+				console.log('That is what I call a click!');
+				this.$.pop.classList.toggle('popped');
+			},
+			setData: function (obj) {
+				for (var i = 0; i < obj.length; i++) {
+					var idx = i + 1;
+					this.notifyPath('obj' + idx + '.icon', obj[i].icon);
+					this.notifyPath('obj' + idx + '.title', obj[i].title);
+					this.notifyPath('obj' + idx + '.value', obj[i].value);
+					this.notifyPath('obj' + idx + '.unit', obj[i].unit);
+				}
+			},
+			ready: function () {
+			}
+		});
+	</script>
+</dom-module>

@@ -1,0 +1,108 @@
+body {
+  background: #262626;
+  font-family: "Roboto", Helvetica, Arial;
+  color: #333;
+
+  /* Sticky footer */
+  /*display: flex;
+  min-height: 100vh;
+  flex-direction: column;*/
+}
+
+.content {
+  /*flex: 1;*/
+  background-color: #262626;
+}
+
+map-stream {
+  flex: 6;
+  height: 100vh;
+}
+
+.map-parent {
+  height: 100vh;
+}
+
+.twitter-timeline {
+  flex: 1;
+  height: 100vh !important;
+}
+
+.parent {
+  flex: 1;
+  max-height: 100vh;
+}
+
+@media (max-width: 750px) {
+  .twitter-timeline {
+    display: none !important;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+workout-element {
+  flex: 1;
+}
+
+.fb {
+  background : #FFFFFF;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.partners {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  text-align: center;
+}
+
+.partners h1 {
+  font-size: 42px;
+}
+
+.partners .logos {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.partners img {
+  /*height: 150px;
+  width: 150px;*/
+  margin-right: 10px;
+}
+
+.charts {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 750px) {
+  .charts {
+    margin-top: 400px;
+  }
+}
+
+.charts .chart {
+  display: block;
+}
+
+.charts .chart h1, .charts .chart p {
+  color: white;
+  padding: 0 0 0 50px;
+  margin: 15px 0 0 0;
+  text-transform: uppercase;
+  color: #F5A214;
+}

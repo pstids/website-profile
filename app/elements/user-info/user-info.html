@@ -195,22 +195,22 @@
                         <div class="info">
                             <h1>Height (<span>{{heightUnit(userLocal.units)}}</span>)</h1>
                             <paper-input no-label-float type="text" maxlength="3"
-                                   placeholder="Height"
-                                   class="editable"
-                                   name="height"
-                                   id="height"
-                                   value="{{userLocal.height::input}}">
-
+                                placeholder="Height"
+                                class="editable"
+                                name="height"
+                                id="height"
+                                value="{{userLocal.height::input}}">
                             </paper-input>
                         </div>
                         <div class="info">
                             <h1>Weight (<span>{{weightUnit(userLocal.units)}}</span>)</h1>
                             <paper-input no-label-float type="text" maxlength="3"
-                                   placeholder="Weight"
-                                   class="editable"
-                                   name="weight"
-                                   id="weight"
-                                   value="{{userLocal.weight::input}}"></paper-input>
+                                placeholder="Weight"
+                                class="editable"
+                                name="weight"
+                                id="weight"
+                                value="{{userLocal.weight::input}}">
+                            </paper-input>
                         </div>
                         <div class="info"></div>
                     </div>
@@ -219,19 +219,21 @@
                             <h1>Location</h1>
                             <div id="location-input" class="justified-row">
                                 <paper-input
-                                        type="text"
-                                        placeholder="e.g. Boulder"
-                                        class="editable"
-                                        name="city"
-                                        value="{{userLocal.city::input}}"
-                                        label="City"></paper-input>
+                                    type="text"
+                                    placeholder="e.g. Boulder"
+                                    class="editable"
+                                    name="city"
+                                    value="{{userLocal.city::input}}"
+                                    label="City">
+                                </paper-input>
                                 <paper-input
-                                        type="text"
-                                        placeholder="e.g. Colorado"
-                                        class="editable"
-                                        name="state"
-                                        value="{{userLocal.state::input}}"
-                                        label="State"></paper-input>
+                                    type="text"
+                                    placeholder="e.g. Colorado"
+                                    class="editable"
+                                    name="state"
+                                    value="{{userLocal.state::input}}"
+                                    label="State">
+                                </paper-input>
                             </div>
                         </div>
                     </div>
@@ -269,7 +271,6 @@
     </template>
     <script src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
     <script>
-        /*global CryptoJS*/
         Polymer({
             is: 'user-info',
             properties: {
@@ -286,14 +287,16 @@
                         }).join('&');
             },
             attached: function () {
-                if (Object.keys(user.data).length === 0) {
-                    console.log('start fetching, ');
-                    user.fetchDetails(function () {
-                        this.setUserLocal();
-                    }.bind(this));
-                    return;
+                if (jwt.hasToken) {
+                    if (Object.keys(user.data).length === 0) {
+                        console.log('start fetching, ');
+                        user.fetchDetails(function () {
+                            this.setUserLocal();
+                        }.bind(this));
+                        return;
+                    }
+                    this.setUserLocal();
                 }
-                this.setUserLocal();
             },
             setUserLocal: function () {
                 var aboutStr = user.data.about_me;
@@ -310,7 +313,7 @@
                     state: user.data.state,
                     weight: user.data.weight,
                     name: user.data.user_name,
-                    profileImg: this.setProfileIMG(),
+                    profileImg: user.getImage(),
                     about_me: aboutStr,
                     units: user.data.units,
                     age: this.getAge(
@@ -321,31 +324,38 @@
                 };
             },
             saveDetails: function () {
-                var queryString = this.jsonToQueryString(this.userLocal);
+                // var queryString = this.jsonToQueryString(this.userLocal);
+                var updateParams = '?fields=gender,weight,height,units,city,state,country,about_me,birth';
+
                 superagent
-                        .put('/b/api/v1/users/' + jwt.data.id + queryString)
-                        .send('{"empty":"empty"}')
-                        .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function(err, res) {
-                            if (res.ok) {
-                                this.$.toast.text = 'Your information is updated!';
-                                user.updateData(res.body);
-                                this.attached();
-                            } else {
-                                this.$.toast.text = 'Your information is not updated. Please try again.';
-                            }
-                            this.$.toast.show();
-                        }.bind(this));
-            },
-            setProfileIMG: function () {
-                this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
-                if (user.data.profile_medium !== '') {
-                    return decodeURIComponent(user.data.profile_medium.replace('+', ' '));
-                } else {
-                    var gravHash = CryptoJS.MD5(user.data.email.toLowerCase());
-                    return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
-                }
+                    .put('/b/api/v1/users/' + jwt.data.id + updateParams)
+                    .send({
+                        gender: this.userLocal.gender,
+                        weight:  parseInt(this.userLocal.weight),
+                        height: parseInt(this.userLocal.height),
+                        units: this.userLocal.units,
+                        city: this.userLocal.city,
+                        state: this.userLocal.state,
+                        country: this.userLocal.country,
+                        about_me: this.userLocal.about_me,
+                        birth: {
+                            year: parseInt(this.userLocal.birth_year),
+                            month: parseInt(this.userLocal.birth_month),
+                            day: parseInt(this.userLocal.birth_day)
+                        }
+                    })
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.$.toast.text = 'Your information is updated!';
+                            user.updateData(res.body);
+                            this.attached();
+                        } else {
+                            this.$.toast.text = 'Your information is not updated. Please try again.';
+                        }
+                        this.$.toast.show();
+                    }.bind(this));
             },
             weightUnit: function (unit) {
                 if (unit === 'feet') {

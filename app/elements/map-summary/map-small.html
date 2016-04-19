@@ -1,0 +1,180 @@
+<dom-module id="map-small">
+    <style>
+        :host {
+            @apply(--layout-vertical);
+            border-right: 3px solid var(--primary-icon-color);
+            background-color: rgba(41, 41, 39, 0.9);
+            color: white;
+            padding: 10px;
+            width: 250px;
+        }
+        img {
+            width: 50px;
+            height: 50px;
+        }
+        section {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            @apply(--layout);
+        }
+        h2.subheader {
+            text-transform: uppercase;
+            color: #FFFFFF;
+            font-size: 12px;
+            margin: 0;
+        }
+        h1.header {
+            @apply(--header);
+        }
+        .seperator {
+            display: block;
+            margin: 5px 0;
+            height: 1px;
+            border-top: 1px solid #5B5B5B;
+        }
+        .summary {
+            background-color: rgba(41, 41, 39, 0.9); 
+            padding: 30px;
+            border-top-right-radius: 30px;
+            border-bottom-right-radius: 30px;
+            @apply(--layout-vertical);
+            @apply(--layout-end-justified);
+            @apply(--layout-flex-3);
+        }
+        ul.insights {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            @apply(--layout);
+            @apply(--layout-vertical);
+            color: #FFFFFF;
+            height: 460px;
+        }
+        li.insight {
+            @apply(--layout-flex);
+            @apply(--layout-horizontal);
+            margin: 10px 0;
+        }
+        .insight .info {
+            @apply(--layout-flex-9);
+            @apply(--layout-vertical);
+        }
+        .insight .icon {
+            @apply(--layout-flex);
+            @apply(--layout);
+            @apply(--layout-end-justified);
+            padding-right: 30px;
+            color: var(--primary-icon-color);
+            fill: var(--primary-icon-color);
+        }
+        .insight .icon iron-icon {
+            height: 50px;
+            width: 50px;
+        }
+        .insight .info .title {
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .insight .info .field {
+            font-size: 24px;
+        }
+        .flex-row {
+            @apply(--layout-horizontal);
+            margin-top: 10px;
+        }
+        .entry {
+            @apply(--layout-flex);
+            font-size: 18px;
+            line-height: 26px;
+        }
+        .power {
+            font-size: 40px;
+            line-height: 50px;
+            margin-left: 10px;
+        }
+    </style>
+    <template>
+        <div class="flex-row">
+            <img src="{{img}}">
+            <div class="power">
+                <iron-icon icon="image:flash-on"></iron-icon>
+                <span>{{d.watts}}</span>
+                W
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="entry">
+                <iron-icon icon="communication:swap-calls"></iron-icon>
+                <span>{{d.distance}}</span>
+                Mi
+            </div>
+            <div class="entry">
+                <iron-icon icon="image:timer"></iron-icon>
+                <span>{{d.time}}</span>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="entry">
+                <iron-icon icon="maps:directions-run"></iron-icon>
+                <span>{{d.cadence}}</span>
+                SPM
+            </div>
+            <div class="entry">
+                <iron-icon icon="favorite"></iron-icon>
+                <span>{{d.heart_rate}}</span>
+                BPM
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="entry">
+                <iron-icon icon="communication:call-missed"></iron-icon>
+                <span>{{d.vertical_osc}}</span>
+                CM
+            </div>
+            <div class="entry">
+                <iron-icon icon="av:av-timer"></iron-icon>
+                <span>{{d.ground_time}}</span>
+                MS
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'map-small',
+            ready: function () {
+                
+            },
+            addPoint: function (data) {
+                if (data === null || data === {}) {
+                    data = {
+                        distance: 0,
+                        time: 0,
+                        cadence: 0,
+                        heartrate: 0,
+                        total_p: 0,
+                        vertical_osc: 0,
+                        ground_time: 0
+                    };
+                }
+                if (data.distance === undefined) {
+                    data.distance = 0;
+                } else {
+                    // var push;
+                    // if (data.id === 'c59c6e91-8314-5e0f-470d-4f803baf8e64') {
+                    //     push = 2.6;
+                    // } else {
+                    //     push = 6;
+                    // }
+                    data.distance = data.distance * 0.621371;
+                }
+                this.notifyPath('d.distance', data.distance.toFixed(2));
+                this.notifyPath('d.time', data.time);
+                this.notifyPath('d.cadence', data.cadence);
+                this.notifyPath('d.heart_rate', data.heartrate);
+                this.notifyPath('d.watts', data.total_p);
+                this.notifyPath('d.vertical_osc', data.vertical_osc);
+                this.notifyPath('d.ground_time', data.ground_time);
+            }
+        });
+    </script>
+</dom-module>

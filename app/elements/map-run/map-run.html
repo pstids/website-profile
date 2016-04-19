@@ -12,13 +12,7 @@
         <!-- <map-summary></map-summary> -->
     </template>
     <script>
-        /*exported mapReady */
-        var mapReadyTrigger = false;
-        var mapReadyEvent = new CustomEvent('MapReady');
-        var mapReady = function () {
-            mapReadyTrigger = true;
-            window.dispatchEvent(mapReadyEvent);
-        };
+        /*global mapReadyTrigger*/
 
         Polymer({
             is: 'map-run',
@@ -30,6 +24,12 @@
                 this.mapObjs = [];
             },
             setData: function (data) {
+                if (data.length === 0) {
+                    this.classList.add('hidden');
+                    return;
+                } else {
+                    this.classList.remove('hidden');
+                }
                 this.data = data;
                 if (mapReadyTrigger) {
                     this.setMap();
@@ -150,6 +150,17 @@
                     }
                 });
                 this.mapObjs.push(stop);
+            },
+            exportCoordinates: function () {
+                var graphSegments = this.data;
+                var step = 1;
+                var obj = [];
+                for (var i = 0; i < graphSegments.length; i=i+step) {
+                    obj.push(graphSegments[i].location[0]);
+                }
+                var data = new Blob([JSON.stringify(obj)], {type: 'application/json'});
+                var textFile = window.URL.createObjectURL(data);
+                return textFile;
             }
         });
     </script>
