@@ -238,7 +238,7 @@
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {
                         if (res.ok) {
-                            if (res.body !== null) {
+                            if (res.body !== null && res.body.activities !== null) {
                                 this.switchMonthContext('TEST', obj.firstMonday);
                                 this.processActivities(res.body.activities);
                                 this.loadLast(loadLast, res.body.last_activity);
@@ -253,7 +253,8 @@
                     return;
                 }
                 var bubbles = document.querySelector('.bubbles');
-                document.querySelector('workout-element').setLoading();
+                var workout = document.querySelector('workout-element');
+                workout.setLoading();
                 page(`/run/${id}`);
                 window.scrollTo(0, bubbles.offsetTop);
             },
@@ -278,9 +279,6 @@
                     var activity = activities[i];
                     this.addActivity(activity);
                 }
-                // if (loadLast) {
-                //     this.activeDom[this.activeDom.length - 1].viewWorkout();
-                // }
             },
             switchMonthContext: function (monthName, firstMonday) {
                 this.dates = [];
