@@ -157,6 +157,14 @@
         bubble-stat {
             width: 12vw;
             height: 12vw;
+            --bubble-stat-wrap: {
+                width: 14vw;
+                height: 14vw;
+            };
+            --bubble-stat-border: {
+                width: 12vw;
+                height: 12vw;
+            };
         }
 
         .outer-spinner {
@@ -997,15 +1005,14 @@
                 var elapsedMinutes = seconds / 60;
                 var movingMinutes = time.time.moving / 1000 / 60;
                 var elapsedDec, movingDec, maxPace;
-                if (user.data.units === 'feet') {
-                    elapsedDec = elapsedMinutes / exactDistance;
-                    movingDec = movingMinutes / exactDistance;
-                    maxPace = minutesPerMile(pace.maxPace.value, 'minutes');
-                } else {
-                    elapsedDec = elapsedMinutes / exactDistance * 0.621371;
-                    movingDec = movingMinutes / exactDistance * 0.621371;
-                    maxPace = minutesPerKM(pace.maxPace.value);
+                var coeff = 1;
+                if (user.data.units === 'meters') {
+                    coeff = 0.621371;
                 }
+                elapsedDec = elapsedMinutes / exactDistance * coeff;
+                movingDec = movingMinutes / exactDistance * coeff;
+                maxPace = speedToPace(pace.maxPace.value, user.data.units);
+
                 pace.pace.elapsed = formatPace(elapsedDec.toFixed(2));
                 pace.pace.moving = formatPace(movingDec.toFixed(2));
                 pace.maxPace.value = maxPace;
