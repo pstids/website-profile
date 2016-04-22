@@ -29,39 +29,7 @@ var fillZero = function (n) {
     }
 };
 
-// Return pace in minutes per mile from meters per second
-var minutesPerMile = function (mps, opt) {
-    if (mps === 0 || isNaN(mps)) {
-        return '--:--';
-    }
-    var mpm = parseFloat(26.8224 / mps).toFixed(2);
-    if (opt && opt === 'minutes') {
-        var minutes = Math.floor(mpm);
-        var secondPartial = ((mpm - minutes) * 60).toPrecision(2);
-        if (secondPartial.indexOf('.') !== -1) {
-            var parts = secondPartial.split('.');
-            secondPartial = '0' + parts[0];
-        }
-        mpm = minutes + ':' + secondPartial;
-    }
-    return mpm;
-};
-
-var minutesPerKM = function (mps) {
-    if (mps === 0) {
-        return '--:--';
-    }
-    var mpk = parseFloat(16.6666666 / mps).toFixed(2);
-    var minutes = Math.floor(mpk);
-    var secondPartial = ((mpk - minutes) * 60).toPrecision(2);
-    if (secondPartial.indexOf('.') !== -1) {
-        var parts = secondPartial.split('.');
-        secondPartial = '0' + parts[0];
-    }
-    mpk = minutes + ':' + secondPartial;
-    return mpk;
-};
-
+// Decimal pace to readable pace
 var formatPace = function (pace) {
     var paceFloat = parseFloat(pace);
     if (pace === 'Infinity' || isNaN(pace) || paceFloat > 100 || paceFloat < 1) {
@@ -76,16 +44,16 @@ var formatPace = function (pace) {
 // Return minutes per miles with unit
 var speedToPaceForBalloon = function (graphDataItem, graph) {
     var value = graphDataItem.values.value;
+    var unitLabel = ' Min/KM';
     if (user.data.units === 'feet') {
-        return minutesPerMile(value, 'minutes') + ' Min/Mile';
-    } else {
-        return minutesPerKM(value) + ' Min/KM';
+        unitLabel = ' Min/Mile';
     }
+    return speedToPace(value, user.data.units) + unitLabel;
 };
 
-// Wrapper for minutesPerMile function
+// Wrapper for speedToPace function
 var speedToPaceForValueAxis = function (value, formattedValue, valueAxis) {
-    return minutesPerMile(value);
+    return speedToPaceInDecimal(value, user.data.units);
 };
 
 // Creates date object from milliseconds
@@ -127,6 +95,21 @@ var meterToUserUnit = function (m) {
         var km = meterToKM(m);
         return `${km} km`;
     }
+};
+
+var speedToPaceInDecimal = function (mps, unit) {
+    var dist = 1000;
+    if (unit === 'feet') {
+        dist = 1609.34;
+    }
+    return dist/mps/60;
+};
+
+var speedToPace = function (mps, unit) {
+    if (mps === 0 || isNaN(mps)) {
+        return '--:--';
+    }
+    return formatPace(speedToPaceInDecimal(mps, unit));
 };
 
 var attribute = function(selector, parent) {
