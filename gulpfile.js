@@ -61,6 +61,7 @@ gulp.task('jshint', function () {
         'speedToPaceInDecimal',
         'workoutProcessing',
         'workoutFetching',
+        'arraysEqual',
         'addLog',
         'logsProcessing',
         'logsFetching',
@@ -75,6 +76,7 @@ gulp.task('jshint', function () {
         'meterToMile',
         'speedToPaceForBalloon',
         'speedToPaceForValueAxis',
+        'durationToSec',
         'windowFocusEvent',
         'formatPace',
         'attribute',
@@ -155,7 +157,7 @@ gulp.task('copy', function () {
 
   var images = gulp.src(['app/images/mountain_outline.svg'])
     .pipe(gulp.dest('dist/images'));
-    
+
   var amcharts = gulp.src(['app/scripts/amcharts/**/*'])
     .pipe(gulp.dest('dist/scripts/amcharts'));
 

@@ -41,21 +41,6 @@ var formatPace = function (pace) {
     return floor + ':' + secondsFilled;
 };
 
-// Return minutes per miles with unit
-var speedToPaceForBalloon = function (graphDataItem, graph) {
-    var value = graphDataItem.values.value;
-    var unitLabel = ' Min/KM';
-    if (user.data.units === 'feet') {
-        unitLabel = ' Min/Mile';
-    }
-    return speedToPace(value, user.data.units) + unitLabel;
-};
-
-// Wrapper for speedToPace function
-var speedToPaceForValueAxis = function (value, formattedValue, valueAxis) {
-    return speedToPaceInDecimal(value, user.data.units);
-};
-
 // Creates date object from milliseconds
 var setDate = function (ms) {
     return new Date(ms * 1000);
@@ -97,6 +82,21 @@ var meterToUserUnit = function (m) {
     }
 };
 
+// Return minutes per miles with unit
+var speedToPaceForBalloon = function (graphDataItem, graph) {
+    var value = graphDataItem.values.value;
+    var unitLabel = ' Min/KM';
+    if (user.data.units === 'feet') {
+        unitLabel = ' Min/Mile';
+    }
+    return speedToPace(value, user.data.units) + unitLabel;
+};
+
+// Wrapper for speedToPace function
+var speedToPaceForValueAxis = function (value, formattedValue, valueAxis) {
+    return speedToPaceInDecimal(value, user.data.units);
+};
+
 var speedToPaceInDecimal = function (mps, unit) {
     var dist = 1000;
     if (unit === 'feet') {
@@ -112,11 +112,46 @@ var speedToPace = function (mps, unit) {
     return formatPace(speedToPaceInDecimal(mps, unit));
 };
 
-var attribute = function(selector, parent) {
+// Convert duration string to duration in seconds. Return -1 if input is invalid
+var durationToSec = function (paceStr) {
+    let items = paceStr.split(':');
+    if (items.length !== 2) {
+        return -1;
+    }
+    let minute = parseInt(items[0]);
+    let second = parseInt(items[1]);
+    if (isNaN(minute) || isNaN(second)) {
+        return -1;
+    }
+    return minute * 60 + second;
+};
+
+var attribute = function (selector, parent) {
   var eles = parent.querySelectorAll('[data-' + selector + ']');
   var holder = {};
   for (var i = 0; i < eles.length; i++) {
     holder[eles[i].dataset[selector]] = eles[i];
   }
   return holder;
+};
+
+var arraysEqual = function (a, b) {
+    if (a === b) {
+        return true;
+    }
+    if (a === null || b === null) {
+        return false;
+    }
+    if (a.length !== b.length) {
+        return false;
+    }
+
+    a.sort();
+    b.sort();
+    for (var i = 0; i < a.length; ++i) {
+        if (a[i] !== b[i]) {
+            return false;
+        }
+    }
+    return true;
 };

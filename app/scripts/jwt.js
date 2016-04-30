@@ -111,7 +111,7 @@ class User {
 	}
 
 	checkStorage() {
-		if (!this.storage) {
+		if (this.storage === null || this.storage === 'null') {
 			this.fetchDetails(true);
 		} else {
 			this.parseData();
@@ -119,8 +119,10 @@ class User {
 	}
 
 	updateData(data) {
-		this.data = data;
-		localStorage.setItem('user', JSON.stringify(data));
+		if (data !== null) {
+			this.data = data;
+			localStorage.setItem('user', JSON.stringify(data));
+		}
 	}
 
 	clearData() {
@@ -132,10 +134,10 @@ class User {
 	}
 
 	fetchDetails(callback) {
-        var that = this;
-        if (jwt.data.id === 0) {
-        	return;
-        }
+		var that = this;
+		if (jwt.data.id === 0) {
+			return;
+		}
 		superagent
 			.get('/b/api/v1/users/' + jwt.data.id)
 			.send()
