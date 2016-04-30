@@ -947,7 +947,7 @@
 
                     /* Power */
                     if (data.power > power.maxPower.value) {
-                        power.maxPower.value = data.power;
+                        power.maxPower.value = data.power.toFixed(0);
                     }
 
                     if (data.power > 0) {
