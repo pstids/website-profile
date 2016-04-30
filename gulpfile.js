@@ -77,6 +77,7 @@ gulp.task('jshint', function () {
         'speedToPaceForBalloon',
         'speedToPaceForValueAxis',
         'durationToSec',
+        'secToDuration',
         'windowFocusEvent',
         'formatPace',
         'attribute',

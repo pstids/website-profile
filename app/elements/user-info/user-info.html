@@ -126,9 +126,13 @@
             font-size: 1vw;
         }
 
+        #save-button {
+            @apply(--layout-vertical);
+            @apply(--layout-center);
+            margin-bottom: 5vh;
+        }
         button#save-pref {
             min-width: 20vw;
-            margin: 1vw auto;
         }
     </style>
     <template>
@@ -266,7 +270,9 @@
                 </div>
             </div>
         </section>
-        <button is="stryd-button" id="save-pref" on-click="saveDetails">Save</button>
+        <div id="save-button">
+            <button is="stryd-button" id="save-pref" on-click="saveDetails">Save</button>
+        </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
     <script src="//crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>

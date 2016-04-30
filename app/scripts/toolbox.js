@@ -36,8 +36,12 @@ var formatPace = function (pace) {
         return '--:--';
     }
     var floor = Math.floor(paceFloat);
-    var seconds = ((paceFloat - floor) * 60).toFixed(0);
-    var secondsFilled = fillZero(seconds);
+    var seconds = (paceFloat - floor) * 60;
+    if (seconds > 59) {
+        seconds = 0;
+        floor += 1;
+    }
+    var secondsFilled = fillZero(seconds.toFixed(0));
     return floor + ':' + secondsFilled;
 };
 
@@ -102,7 +106,7 @@ var speedToPaceInDecimal = function (mps, unit) {
     if (unit === 'feet') {
         dist = 1609.34;
     }
-    return dist/mps/60;
+    return (dist/mps/60).toFixed(1);
 };
 
 var speedToPace = function (mps, unit) {
@@ -124,6 +128,12 @@ var durationToSec = function (paceStr) {
         return -1;
     }
     return minute * 60 + second;
+};
+
+var secToDuration = function (sec) {
+    let minStr = fillZero((sec / 60).toFixed(0));
+    let secStr = fillZero((sec % 60).toFixed(0));
+    return minStr + ':' + secStr;
 };
 
 var attribute = function (selector, parent) {
