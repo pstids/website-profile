@@ -34,10 +34,10 @@
             width: 100%;
             top: 100%;
         }
-        :host:hover .half-items log-day {
+        :host:hover .half-items .is-child {
             display: block !important;
         }
-        .half-items log-day {
+        .half-items .is-child {
             z-index: 300;
             width: 100%;
             border-left: 1px solid #FFFFFF;
@@ -48,10 +48,10 @@
         .half-items .container {
             min-height: 70px;
         }
-        .half-items log-day .wattage {
+        .half-items .is-child .wattage {
             margin-top: 0;
         }
-        .half-items log-day:last-child {
+        .half-items .is-child:last-child {
             border-bottom: 1px solid #FFFFFF;
         }
         .half-items .other {
@@ -422,6 +422,7 @@
                 this.$.more.classList.remove('hidden');
 
                 node.style.display = 'none';
+                node.classList.add('is-child');
 
                 Polymer.dom(this.$.half).appendChild(node);
 
