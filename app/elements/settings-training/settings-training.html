@@ -765,6 +765,9 @@
                 // For now we only update 3/6 laps test result because it's the only test whose result
                 // could come from outside source
                 let result = info.cptest_result;
+                if (result === null || result === 'null' || result === undefined || result === 'undefined') {
+                    return;
+                }
                 let resultSize = result.length;
                 if (resultSize === 3) {
                     if ('2laps' === result[0].label && '3laps' === result[1].label && '6laps' === result[2].label) {
