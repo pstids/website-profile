@@ -1,5 +1,6 @@
 <dom-module id="workout-element">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
+    <link rel="import" href="../workout-element/workout-segment.html">
     <style>
         :host {
             position: relative;
@@ -20,29 +21,30 @@
         .chart {
             flex: none;
             width: 100%;
-            height: 60vh;
-            padding-bottom: 5vh;
         }
         #chartdiv {
             color: #ffffff;
-            min-width: 100%;
             height: 60vh;
+            width: 100%;
         }
         .toggle {
+            @apply(--layout-center);
             @apply(--layout-horizontal);
-            padding: 0.8vw 1.1vw;
-            border: 2px solid #FFFFFF;
-            border-radius: 6px;
-            margin: 0 0.5vw;
-            cursor: pointer;
+            @apply(--layout-justified);
             background-color: var(--primary-background-color);
-            text-transform: uppercase;
+            border: 2px solid #FFFFFF;
+            border-right: 0;
+            border-radius: 6px 0 0 6px;
             color: #FFFFFF;
+            cursor: pointer;
             font-size: 1vw;
             font-weight: 500;
-            @apply(--layout-center);
-            z-index: 5;
+            margin: 0.5vw 0 0 0;
+            padding: 0.8vw 1.1vw;
             position: relative;
+            text-transform: uppercase;
+            width: 104px;
+            z-index: 5;
         }
         .options {
             @apply(--layout-horizontal);
@@ -51,10 +53,10 @@
             flex: none;
         }
         .toggles {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
+            @apply(--layout-vertical);
+            @apply(--layout-end);
             @apply(--layout-flex);
-            @apply(--layout-end-justified);
+            width: 200px;
         }
         .toggles .heartRate[data-toggle="on"] {
             border-color: #683a78;
@@ -139,31 +141,29 @@
             height: 1.3vw;
             border-radius: 50%;
             border: 3px #FFFFFF solid;
-            margin-left: 1vw;
-            @apply(--layout-flex-auto);
             z-index: 2;
         }
         .toggle .type {
-            @apply(--layout-flex-auto);
             z-index: 2;
         }
         .bubbles {
             @apply(--layout-horizontal);
             @apply(--layout-around-justified);
-            padding: 4vw 4vw;
-            flex: none;
+            @apply(--layout-wrap);
+            padding: 1vw 1vw;
         }
 
         bubble-stat {
-            width: 12vw;
-            height: 12vw;
+            width: 11vw;
+            height: 11vw;
+            margin: 1vw;
             --bubble-stat-wrap: {
-                width: 14vw;
-                height: 14vw;
+                width: 11vw;
+                height: 11vw;
             };
             --bubble-stat-border: {
-                width: 12vw;
-                height: 12vw;
+                width: 11vw;
+                height: 11vw;
             };
         }
 
@@ -234,11 +234,12 @@
         }
 
         .dynamics {
-            border-radius: 6px;
+            border-radius: 6px 0 0 6px;
+            width: 104px;
         }
         .dynamics:hover {
             border-bottom: none;
-            border-radius: 6px 6px 0 0;
+            border-radius: 6px 0 0 0;
         }
         .dynamics .radios {
             visibility: hidden;
@@ -250,8 +251,9 @@
             top: 34px;
             padding: 0.8vw 1.1vw;
             border: 2px solid #FFFFFF;
-            border-top: none;
-            border-radius: 0 0 6px 6px;
+            border-top: 0;
+            border-right: 0;
+            border-radius: 0 0 0 6px;
             margin: 0;
             cursor: pointer;
             background-color: var(--primary-background-color);
@@ -268,6 +270,45 @@
             animation-delay: 2s;
             -webkit-animation-delay: 2s;
         }
+
+        .tp {
+            background-color: #3D3D3D;
+            margin: 10px 10px 0 0;
+            color: white;
+            overflow-y: scroll;
+            height: 28vw;
+        }
+        .tp .title {
+            border-bottom: 1px solid #F7A017;
+            margin: 0;
+            padding: 15px;
+        }
+        .tp p {
+            font-size: 16px;
+            line-height: 22px;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .segment {
+            background-image: url('../../images/hover.png');
+            background-size: cover;
+            background-clip: padding-box;
+            cursor: pointer;
+
+            color: white;
+
+            @apply(--layout-horizontal);
+        }
+        .segment .number {
+        
+        }
+        .segment .duration {
+
+        }
+        .segment .target {
+
+        }
     </style>
     <template>
         <section>
@@ -277,7 +318,7 @@
                     <div class="dot2"></div>
                 </div>
             </div>
-            <div class="layout horizontal end options">
+            <div class="layout horizontal end options" style="display: none;">
                 <h1 class="header">Statistics</h1>
                 <div class="toggles">
                     <div class="stat toggle" data-toggle="on" on-click="toggleMetrics" data-stat="elapsed">
@@ -290,31 +331,34 @@
                     </div>
                 </div>
             </div>
-            <div class="bubbles">
-                <bubble-stat type="pace"></bubble-stat>
-                <bubble-stat type="time"></bubble-stat>
-                <bubble-stat type="power"></bubble-stat>
-                <bubble-stat type="heartRate"></bubble-stat>
-                <bubble-stat type="dynamics"></bubble-stat>
-                <bubble-stat type="misc"></bubble-stat>
-            </div>
-            <div class="layout horizontal end options wrap">
-                <div class="layout vertical" style="flex: 0 375px;">
-                    <div class="layout horizontal end">
-                        <paper-textarea
-                            class="editable"
-                            label="Description"
-                            rows="1"
-                            max-rows="3"
-                            value="{{descriptionText}}"
-                            id="descriptionInput"
-                            style="flex: 0 275px;">
-                        </paper-textarea>
-                        <button is="stryd-button" id="descriptionButton" on-click=""style="margin-left: 10px;">Save</button> 
+            <div class="layout horizontal">
+                <div class="layout vertical flex">
+                    <div class="bubbles">
+                        <bubble-stat type="pace"></bubble-stat>
+                        <bubble-stat type="time"></bubble-stat>
+                        <bubble-stat type="power"></bubble-stat>
+                        <bubble-stat type="heartRate"></bubble-stat>
+                        <bubble-stat type="dynamics"></bubble-stat>
+                        <bubble-stat type="misc"></bubble-stat>
                     </div>
-                    <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
                 </div>
-                <div class="toggles" style="flex: 1;">
+                <div class="flex layout vertical">
+                    <div class="tp flex">
+                        <p>Long run of 40 minutes</p>
+                        <p>The goal of this workout is to build strength for the end of your race. You will be able to stay with the pack and overcome them at the end!</p>
+                        <workout-segment data-id="1"></workout-segment>
+                        <workout-segment data-id="2"></workout-segment>
+                        <workout-segment data-id="3"></workout-segment>
+                        <workout-segment data-id="4"></workout-segment>
+                        <workout-segment data-id="5"></workout-segment>
+                        <workout-segment data-id="6"></workout-segment>
+                    </div>
+                </div>
+            </div>
+            <div class="layout horizontal">
+                <div id="chartdiv">
+                </div>
+                <div class="toggles">
                     <div class="heartRate toggle"
                     data-toggle="on"
                     on-click="toggle"
@@ -354,9 +398,20 @@
                     </div>
                 </div>
             </div>
-            <div class="chart">
-                <div id="chartdiv">
+            <div class="layout vertical" style="padding-bottom: 5vh;">
+                <div class="layout horizontal center center-justified">
+                    <paper-textarea
+                        class="editable"
+                        label="Description"
+                        rows="1"
+                        max-rows="3"
+                        value="{{descriptionText}}"
+                        id="descriptionInput"
+                        style="flex: 0 70%;">
+                    </paper-textarea>
+                    <button is="stryd-button" id="descriptionButton" on-click="" style="margin-left: 10px;">Save</button> 
                 </div>
+                <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
             </div>
         </section>
     </template>
@@ -493,7 +548,7 @@
                             'id': 'pace',
                             'axisAlpha': 1,
                             'position': 'right',
-                            'offset': 50,
+                            'offset': 40,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#074a8c',
@@ -540,7 +595,7 @@
                             'id': 'cadence',
                             'axisAlpha': 1,
                             'position': 'left',
-                            'offset': 50,
+                            'offset': 40,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#5ea7a1',
@@ -585,7 +640,7 @@
                             'id': 'elevation',
                             'axisAlpha': 1,
                             'position': 'right',
-                            'offset': 120,
+                            'offset': 80,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#a06a81',
@@ -630,7 +685,7 @@
                             'id': 'groundTime',
                             'axisAlpha': 1,
                             'position': 'left',
-                            'offset': 100,
+                            'offset': 80,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#00ACEE',
@@ -675,7 +730,7 @@
                             'id': 'vertOsc',
                             'axisAlpha': 1,
                             'position': 'right',
-                            'offset': 100,
+                            'offset': 40,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#2BAF2B',
@@ -718,7 +773,9 @@
 
                 this.activity = activity;
                 this.descriptionText = activity.description;
-                if (jwt.hasToken && 'user_id' in this.activity && jwt.data.id === this.activity.user_id) {
+                if (jwt.hasToken &&
+                    'user_id' in this.activity &&
+                    jwt.data.id === this.activity.user_id) {
                     this.$.descriptionInput.classList.remove('hidden');
                     this.$.descriptionButton.classList.remove('hidden');
                     this.$.descriptionDisplay.classList.add('hidden');
@@ -750,11 +807,15 @@
                 this.$.spinner.classList.remove('show');
                 this.$.spinner.classList.add('hide');
                 this.$.spinner.classList.add('fade');
+                this.$.spinner.style.zIndex = -1;
+                console.log(this.$.spinner.zIndex);
             },
             setLoading: function () {
                 this.$.spinner.classList.add('show');
                 this.$.spinner.classList.remove('hide');
                 this.$.spinner.classList.remove('fade');
+                this.$.spinner.style.zIndex = 12;
+                console.log(this.$.spinner.zIndex);
             },
             toggleMetrics: function (e) {
                 var target = e.target;

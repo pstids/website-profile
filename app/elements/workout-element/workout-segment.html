@@ -1,0 +1,82 @@
+<dom-module id="workout-segment">
+	<style>
+		:host {
+			@apply(--layout-horizontal);
+			background-image: url('../../images/hover.png');
+			background-size: cover;
+			background-clip: padding-box;
+
+			color: white;
+			padding: 10px;
+		}
+		.insight {
+			@apply(--layout-horizontal);
+			@apply(--layout-flex);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+		}
+		.insight .info {
+			@apply(--layout-vertical);
+		}
+		.insight .title {
+			@apply(--layout-horizontal);
+			font-size: 1.5vw;
+            font-weight: 400;
+		}
+		.insight .field {
+			@apply(--layout-horizontal);
+            font-size: 2vw;
+            font-weight: 400;
+		}
+		.number {
+			background-color: #f7a017;
+			border-radius: 50px;
+			height: 50px;
+			width: 50px;
+			line-height: 50px;
+			font-size: 15px;
+			text-align: center;
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+		}
+
+		iron-icon {
+            width: 3vw;
+            height: auto;
+            padding-right: 20px;
+            color: var(--primary-icon-color);
+            fill: var(--primary-icon-color);
+		}
+	</style>
+	<template>
+		<div class="number">
+			#<span>{{id}}</span>
+		</div>
+		<div class="duration insight">
+			<iron-icon icon="image:timer"></iron-icon>
+			<div class="info">
+				<div class="title">Time</div>
+				<div class="field">
+					30 minutes
+				</div>
+			</div>
+		</div>
+		<div class="range insight">
+			<iron-icon icon="image:flash-on"></iron-icon>
+			<div class="info">
+				<div class="title">Easy Zone</div>
+				<div class="field">
+					230-260 watts
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'workout-segment',
+			ready: function () {
+
+			}
+		});
+	</script>
+</dom-module>
