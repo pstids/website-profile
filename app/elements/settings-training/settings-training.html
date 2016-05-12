@@ -730,6 +730,9 @@
                 // Fill the zones
                 this.clearZones();
                 let zones = info.training_zones;
+                if (zones === null || zones === undefined) {
+                    return;
+                }
                 let zone;
                 for (var i = 0; i < zones.length; i++) {
                     zone = zones[i];
