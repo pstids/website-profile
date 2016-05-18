@@ -1,0 +1,238 @@
+<dom-module id="segment-entry">
+    <template>
+        <style>
+            :host {
+                width: 100%;
+            }
+            #content {
+                width: 100%;
+            }
+            paper-input {
+                width: 3vw;
+            }
+            paper-input.with-unit-dropdown {
+                width: 10vw;
+            }
+            paper-input.with-unit {
+                width: 3vw;
+            }
+            paper-dropdown-menu {
+                width: 15vw;
+            }
+            paper-dropdown-menu#unit {
+                width: 5vw;
+                --paper-dropdown-menu-input: {
+                    border-bottom: none;
+                };
+                --paper-input-container-underline: {
+                    display: none;
+                };
+                --paper-input-container-underline-focus: {
+                    display: none;
+                };
+            }
+            .separator {
+                padding-left: 1vw;
+                padding-right: 1vw;
+            }
+            .colon {
+                @apply(--paper-font-caption);
+                font-weight: 900;
+            }
+            input[is="iron-input"] {
+                font: inherit;
+                font-size: 16px;
+                outline: none;
+                box-shadow: none;
+                border: none;
+                width: auto;
+                text-align: center;
+            }
+        </style>
+
+        <h3>Segment {{segmentNum}}</h3>
+        <div id="content" class="layout horizontal end around-justified">
+            <div class="flex-3 layout vertical center">
+                <paper-radio-group selected="{{durationType}}">
+                    <paper-radio-button name="time">Time</paper-radio-button>
+                    <paper-radio-button name="distance">Distance</paper-radio-button>
+                </paper-radio-group>
+                <iron-pages selected="{{durationType}}" attr-for-selected="type">
+                    <paper-input-container type="time" always-float-label attr-for-value="value">
+                        <label>Duration</label>
+                        <div style="display: inline-block;" class="layout horizontal">
+                            <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.hour}}">
+                            <span class="colon">:</span>
+                            <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.minute}}">
+                            <span class="colon">:</span>
+                            <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.second}}">
+                        </div>
+                    </paper-input-container>
+                    <div type="distance">
+                        <paper-input label="Distance" placeholder="e.g. 3" allowed-pattern="[0-9]" value="{{durationDistance}}" class="with-unit-dropdown">
+                            <paper-dropdown-menu suffix id="unit" label="Unit" no-animations no-label-float>
+                                <paper-menu class="dropdown-content" attr-for-selected="unit" selected="{{distanceUnitSelected}}">
+                                    <paper-item unit="mile">Miles</paper-item>
+                                    <paper-item unit="km">KM</paper-item>
+                                    <paper-item unit="meter">Meters</paper-item>
+                                </paper-menu>
+                            </paper-dropdown-menu>
+                        </paper-input>
+                    </div>
+                </iron-pages>
+            </div>
+            <div class="flex-4 layout vertical center">
+                <paper-radio-group selected="{{intensityType}}">
+                    <paper-radio-button name="zone">Zone</paper-radio-button>
+                    <paper-radio-button name="percentage">Percentage</paper-radio-button>
+                    <paper-radio-button name="pace">Pace</paper-radio-button>
+                </paper-radio-group>
+                <iron-pages attr-for-selected="type" selected="{{intensityType}}">
+                    <paper-dropdown-menu type="zone" label="" no-animations>
+                        <paper-menu class="dropdown-content" selected="{{zoneSelected}}">
+                            <paper-item>Zone 1 (Easy/recovery)</paper-item>
+                            <paper-item>Zone 2 (Tempo/marathon)</paper-item>
+                            <paper-item>Zone 3 (Threshold)</paper-item>
+                            <paper-item>Zone 4 (Interval)</paper-item>
+                            <paper-item>Zone 5 (Repetition)</paper-item>
+                        </paper-menu>
+                    </paper-dropdown-menu>
+                    <div class="layout horizontal end" type="percentage">
+                        <paper-input label="Low" placeholder="0" class="with-unit" allowed-pattern="[0-9]" value="{{intensityPercent.low}}">
+                            <div suffix>%</div>
+                        </paper-input>
+                        <p class="separator">TO</p>
+                        <paper-input label="High" placeholder="0" class="with-unit" allowed-pattern="[0-9]" value="{{intensityPercent.high}}">
+                            <div suffix>%</div>
+                        </paper-input>
+                    </div>
+                    <paper-dropdown-menu label="" no-animations type="pace">
+                        <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{paceSelected}}">
+                            <paper-item name="mile">Mile pace</paper-item>
+                            <paper-item name="5k">5K pace</paper-item>
+                            <paper-item name="10k">10K pace</paper-item>
+                            <paper-item name="tempo">Tempo pace</paper-item>
+                            <paper-item name="recovery">Recovery(Easy) pace</paper-item>
+                        </paper-menu>
+                    </paper-dropdown-menu>
+                </iron-pages>
+            </div>
+            <div class="flex-1">
+                <paper-input label="Repeat" value="{{repeatCount}}"></paper-input>
+            </div>
+            <div class="flex-1 layout vertical center">
+                <paper-input-container always-float-label attr-for-value="value">
+                    <label>Rest time</label>
+                    <div style="display: inline-block;" class="layout horizontal">
+                        <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{restTime.minute}}">
+                        <span class="colon">:</span>
+                        <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{restTime.second}}">
+                    </div>
+                </paper-input-container>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'segment-entry',
+            properties: {
+                durationTime: {
+                    type: Object,
+                    value: () => {
+                        return {hour: 0, minute: 0, second: 0};
+                    }
+                },
+                intensityPercent: {
+                    type: Object,
+                    value: () => {
+                        return {low: 0, high: 0};
+                    }
+                },
+                restTime: {
+                    type: Object,
+                    value: () => {
+                        return {minute: 0, second: 0};
+                    }
+                },
+                durationType: {
+                    type: String,
+                    value: 'time'
+                },
+                intensityType: {
+                    type: String,
+                    value: 'zone'
+                },
+                segmentNum: {
+                    type: Number,
+                    value: '0'
+                },
+                repeatCount: {
+                    type: Number,
+                    value: 1
+                },
+                zoneSelected: {
+                    type: Number,
+                    value: 1
+                },
+                paceSelected: {
+                    type: String,
+                    value: 'mile'
+                },
+                durationDistance: {
+                    type: Number,
+                    value: 0
+                },
+                distanceUnitSelected: {
+                    type: String,
+                    value: 'mile'
+                }
+            },
+            ready: function () {
+            },
+            data: function () {
+                let data = {
+                    description: '',
+                    duration_type: this.durationType,
+                    intensity_type: this.intensityType,
+                    duration: 0,
+                    low: parseInt(this.intensityPercent.low),
+                    high: parseInt(this.intensityPercent.high),
+                    zone: this.zoneSelected,
+                    pace: this.paceSelected,
+                    repeat: parseInt(this.repeatCount),
+                    rest_duration: 0
+                };
+                // Process duration
+                switch (this.durationType) {
+                    case 'time':
+                        data.duration =
+                            3600 * parseInt(this.durationTime.hour) +
+                            60 * parseInt(this.durationTime.minute) +
+                            parseInt(this.durationTime.second);
+                        break;
+                    case 'distance':
+                        let dis = parseInt(this.durationDistance);
+                        switch (this.distanceUnitSelected) {
+                            case 'mile':
+                                dis *= 1601;
+                                break;
+                            case 'km':
+                                dis *= 1000;
+                                break;
+                        }
+                        data.duration = dis;
+                        break;
+                }
+                // Process rest duration
+                if (this.repeatCount > 1) {
+                    console.log(this.restTime);
+                    data.rest_duration = 60 * parseInt(this.restTime.minute) + parseInt(this.restTime.second);
+                }
+                return data;
+            }
+        });
+
+    </script>
+
+</dom-module>

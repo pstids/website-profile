@@ -1,0 +1,125 @@
+<dom-module id="plan-card">
+    <template>
+        <style>
+            :host {
+                color: var(--paper-grey-100);
+            }
+            :host:hover {
+                cursor: pointer;
+            }
+            div#main {
+                width: 100%;
+                height: 100%;
+                -webkit-transition: -webkit-transform 0.5s;
+                transition: transform 0.5s;
+                -webkit-transition-timing-function: ease-in-out;
+                transition-timing-function: ease-in-out;
+            }
+            paper-card {
+                display: inline-block;
+                box-sizing: border-box;
+                border-radius: 2px;
+                text-align: center;
+                width: 100%;
+                height: 100%;
+            }
+            paper-card.full {
+                border: 1px solid #eeeeee;
+            }
+            paper-card.empty {
+                border: 1px dashed #888888;
+            }
+
+            .title {
+                @apply(--paper-font-body1);
+                font-weight: bold;
+                max-width: 100%;
+                padding-top: 5px;
+            }
+            .subtitle { @apply(--paper-font-caption); }
+            .subtitle iron-icon {
+                font-size: 14px;
+            }
+            .desc {
+                width: 100%;
+                padding: 2px;
+                @apply(--paper-font-caption);
+            }
+            #stat {
+                vertical-align: middle;
+            }
+            .text-light { color: var(--paper-grey-200); }
+            .small {
+                --iron-icon-height: 14px;
+                --iron-icon-width: 14px;
+            }
+            .big {
+                --iron-icon-height: 56px;
+                --iron-icon-width: 56px;
+            }
+            .grey {
+                --iron-icon-fill-color: var(--paper-grey-500);
+                --iron-icon-stroke-color: var(--paper-grey-500);
+            }
+        </style>
+
+        <div id="main" class="layout horizontal center">
+            <paper-card elevation="3" on-click="showDialog" class$="flex layout vertical {{cardStatus}}">
+                <div class="flex layout vertical center" id="content">
+                    <div class="title">{{title}}</div>
+                    <div class="subtitle text-light" id="stat">
+                        <iron-icon class="small" icon="image:flash-on"></iron-icon>
+                        <span>{{intensity}} (TSS)</span>
+                        <iron-icon class="small" icon="image:timer"></iron-icon>
+                        <span>{{duration}}</span>
+                    </div>
+                    <p class="desc flex">{{description}}</p>
+                </div>
+                <div id="add" class="flex layout vertical center center-justified">
+                    <iron-icon class="big grey" icon="icons:add-circle-outline"></iron-icon>
+                </div>
+            </paper-card>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'plan-card',
+            properties: {
+                trainingInfo: Object,
+                title: String,
+                duration: Number,
+                description: String,
+                week: Number,
+                intensity: Number,
+                day: Number,
+                cardStatus: String
+            },
+            ready: function () {
+                this.trainingInfo = {};
+                this.trainingInfoChanged({});
+            },
+            trainingInfoChanged: function (info) {
+                if (Object.keys(this.trainingInfo).length !== 0) {
+                    this.title = info.name;
+                    this.duration = info.duration;
+                    this.intensity = 70;
+                    this.description = info.description;
+                    this.$.add.style.display = 'none';
+                    this.$.content.style.display = 'inherit';
+                    this.cardStatus = 'full';
+                } else {
+                    this.$.add.style.display = 'inherit';
+                    this.$.content.style.display = 'none';
+                    this.cardStatus = 'empty';
+                }
+            },
+            showDialog: function () {
+                // Used to fill current information on to training-entry dialog
+                this.fire('card-tap', {'info': this.trainingInfo, 'week': this.week, 'day': this.day});
+            }
+        });
+
+    </script>
+
+</dom-module>

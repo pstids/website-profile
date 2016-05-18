@@ -1,0 +1,65 @@
+<dom-module id="plan-weekview">
+    <template>
+        <style>
+            :host {
+                /*background: #102828;*/
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                height: 10vw;
+            }
+            #header {
+                font-family: 'Roboto Slab', serif;
+                padding: 1vw;
+            }
+            #header #week-number {
+                font-size: 36px;
+                font-weight: bold;
+            }
+            plan-card {
+                width: 10vw;
+                height: 8vw;
+            }
+        </style>
+
+        <div id="header" class="layout vertical center">
+            <div id="week-label" class="flex-4">WEEK</div>
+            <div id="week-number" class="flex-6">{{weekNum}}</div>
+        </div>
+        <div id="content" class="flex layout horizontal center around-justified">
+            <plan-card day=0 week="{{weekNum}}"></plan-card>
+            <plan-card day=1 week="{{weekNum}}"></plan-card>
+            <plan-card day=2 week="{{weekNum}}"></plan-card>
+            <plan-card day=3 week="{{weekNum}}"></plan-card>
+            <plan-card day=4 week="{{weekNum}}"></plan-card>
+            <plan-card day=5 week="{{weekNum}}"></plan-card>
+            <plan-card day=6 week="{{weekNum}}"></plan-card>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'plan-weekview',
+            properties: {
+                weekNum: {
+                    type: Number,
+                }
+            },
+            ready: function () {
+            },
+            setCardData: function (day, info) {
+                let cardDiv = Polymer.dom(this.$.content).children;
+                cardDiv[day].trainingInfoChanged(info);
+            },
+            data: function () {
+                let cardDiv = Polymer.dom(this.$.content).children;
+                let infos = [];
+                for (let i = 0; i < cardDiv.length; i++) {
+                    let info = cardDiv[i].trainingInfo;
+                    if (Object.keys(info).length !== 0) {
+                        infos.push(info);
+                    }
+                }
+                return infos;
+            }
+        });
+    </script>
+</dom-module>

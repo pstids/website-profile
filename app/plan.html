@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Training Plan</title>
+    <!-- Place favicon.ico in the `app/` directory -->
+    <link rel="shortcut icon" href="images/favicon.png">
+
+    <!-- Chrome for Android theme color -->
+    <meta name="theme-color" content="#FF6900">
+
+    <!-- Web Application Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Tile color for Win8 -->
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Stryd">
+    <link rel="icon" sizes="192x192" href="images/favicon.png">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Stryd PowerStream">
+    <link rel="apple-touch-icon" href="images/favicon.png">
+
+    <!-- Tile icon for Win8 (144x144) -->
+    <meta name="msapplication-TileImage" content="images/favicon.png">
+
+    <!-- build:css styles/plan.css -->
+    <link rel="stylesheet" href="styles/plan.css">
+    <!-- endbuild-->
+
+    <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <!-- endbuild -->
+
+    <!-- will be replaced with elements/elements.vulcanized.html -->
+    <link rel="import" href="elements/elements.html">
+    <!-- endreplace-->
+
+    <link rel="import" href="/powercenter/styles/app-theme.html">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,700' rel='stylesheet' type='text/css'>
+</head>
+
+<body unresolved class="fullbleed">
+<!-- build:remove -->
+<span id="browser-sync-binding"></span>
+<!-- endbuild -->
+
+<template is="dom-bind" id="app">
+    <!-- Main Content -->
+    <div id="plan-header" class="layout vertical">
+        <h2 class="underline">Plan Info</h2>
+        <div class="layout horizontal end around-justified">
+            <paper-input id="title-input" label="Plan Title" placeholder="e.g. Endurance with threshold tempo"
+                         value="{{planTitle}}" maxlength="80">
+            </paper-input>
+            <paper-radio-group selected="{{planLevel}}">
+                <paper-radio-button name="beginner">Beginner</paper-radio-button>
+                <paper-radio-button name="intermediate">Intermediate</paper-radio-button>
+                <paper-radio-button name="advance">Advanced</paper-radio-button>
+                <paper-radio-button name="general">General</paper-radio-button>
+            </paper-radio-group>
+            <paper-dropdown-menu label="Goal Distance" no-animations>
+                <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}">
+                    <paper-item name="5k">5k</paper-item>
+                    <paper-item name="10k">10k</paper-item>
+                    <paper-item name="half marathon">Half Marathon</paper-item>
+                    <paper-item name="marathon">Marathon</paper-item>
+                    <paper-item name="25k">25k Ultra</paper-item>
+                    <paper-item name="50k">50k Ultra</paper-item>
+                    <paper-item name="100k">100k Ultra</paper-item>
+                    <paper-item name="50M">50 miles Ultra</paper-item>
+                    <paper-item name="half ironman">Half Ironman</paper-item>
+                    <paper-item name="ironman">Ironman</paper-item>
+                    <paper-item name="other">Other</paper-item>
+                </paper-menu>
+            </paper-dropdown-menu>
+            <paper-input id="duration-input" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
+                         value="{{weekNum}}" on-blur="onWeekInput">
+                <div suffix>Weeks</div>
+            </paper-input>
+        </div>
+    </div>
+    <div id="plan-content">
+        <h2 class="underline">Plan Schedule</h2>
+        <div id="weekviews"></div>
+    </div>
+    <training-entry id="dialog"></training-entry>
+    <!--<div id="plan-fab">-->
+        <!--<paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>-->
+    <!--</div>-->
+    <paper-toast duration="1300" text="" id="toast"></paper-toast>
+</template>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/superagent/1.2.0/superagent.min.js"></script>
+<script src="scripts/plan.js"></script>
+<script src="scripts/jwt.js"></script>
+<script src="scripts/toolbox.js"></script>
+</body>
+
+</html>

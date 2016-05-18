@@ -136,6 +136,14 @@ var secToDuration = function (sec) {
     return minStr + ':' + secStr;
 };
 
+var secToDurationFull = function (sec) {
+    let hrStr = fillZero((sec/3600).toFixed(0));
+    sec /= 3600;
+    let minStr = fillZero((sec / 60).toFixed(0));
+    let secStr = fillZero((sec % 60).toFixed(0));
+    return hrStr + ':' + minStr + ':' + secStr;
+};
+
 var attribute = function (selector, parent) {
   var eles = parent.querySelectorAll('[data-' + selector + ']');
   var holder = {};

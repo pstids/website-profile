@@ -1,0 +1,163 @@
+<dom-module id="training-entry">
+    <template>
+        <style>
+            :host {
+            }
+            paper-dialog#input {
+                min-width: 60vw;
+            }
+            #plan-meta paper-input {
+                min-width: 15vw;
+            }
+            #plan-meta paper-textarea {
+                width: 15vw;
+            }
+            paper-button {
+                color: var(--primary-color);
+                margin-top: 2vw;
+            }
+        </style>
+        <paper-dialog id="input" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+            <h2>{{weekday}}, Week {{week}}</h2>
+            <div id="plan-meta" class="layout horizontal around-justified">
+                <paper-input label="Title" placeholder="e.g. Endurance run"
+                             value="{{planName}}" maxlength="40" char-counter>
+                </paper-input>
+                <paper-textarea label="Objective" placeholder="Get ready to go the distance on race day with your week’s longest run."
+                             value="{{planObjective}}">
+                </paper-textarea>
+                <paper-dropdown-menu class="" label="Run Type" no-animations>
+                    <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}">
+                        <paper-item name="progression">Progression</paper-item>
+                        <paper-item name="fartlek">Fartlek</paper-item>
+                        <paper-item name="interval">Intervals</paper-item>
+                        <paper-item name="tempo">Tempo</paper-item>
+                        <paper-item name="hill">Hills</paper-item>
+                        <paper-item name="track">Track</paper-item>
+                    </paper-menu>
+                </paper-dropdown-menu>
+            </div>
+            <paper-dialog-scrollable>
+                <div id="segments" class="layout vertical center">
+                    <segment-entry segment-num=1></segment-entry>
+                </div>
+                <paper-button raised on-click="addSegment">ADD SEGMENT</paper-button>
+            </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button dialog-confirm autofocus on-click="saveInfo">Save</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+
+    <script>
+
+        Polymer({
+            is: 'training-entry',
+            properties: {
+                info: {
+                    type: Object,
+                    value: () => {
+                        return {};
+                    }
+                },
+                segmentCount: {
+                    type: Number,
+                    value: 1
+                },
+                runTypeSelected: {
+                    type: String,
+                    value: 'easy'
+                },
+                day: {
+                    type: Number,
+                    observer: '_dayChanged'
+                },
+                weekday: String,
+                week: Number,
+                planName: String,
+                planObjective: String,
+            },
+            ready: function () {
+                this.getWeekDay(this.day);
+            },
+            _dayChanged: function () {
+                this.getWeekDay();
+            },
+            getWeekDay: function () {
+                switch (this.day) {
+                    case 0:
+                        this.weekday = 'Monday';
+                        break;
+                    case 1:
+                        this.weekday = 'Tuesday';
+                        break;
+                    case 2:
+                        this.weekday = 'Wednesday';
+                        break;
+                    case 3:
+                        this.weekday = 'Thursday';
+                        break;
+                    case 4:
+                        this.weekday = 'Friday';
+                        break;
+                    case 5:
+                        this.weekday = 'Saturday';
+                        break;
+                    case 6:
+                        this.weekday = 'Sunday';
+                        break;
+                }
+            },
+            set: function(info, week, day) {
+                // Reset all info
+                this.runTypeSelected = 'progression';
+                this.planName = '';
+                this.planObjective = '';
+                this.segmentCount = 0;
+                let segmentNode = Polymer.dom(this.$.segments);
+                while (segmentNode.firstChild) {
+                    segmentNode.removeChild(segmentNode.firstChild);
+                }
+                this.addSegment();
+
+                this.week = week;
+                this.day = day;
+                this.info = info;
+                console.log('get card data', info);
+                if (Object.keys(this.info).length > 0) {
+                    this.planName = this.info.name;
+                    this.planObjective = this.info.description;
+                    this.runTypeSelected = this.info.type;
+                }
+            },
+            open: function () {
+                this.$.input.open();
+            },
+            addSegment: function () {
+                var segmentEntry = document.createElement('segment-entry');
+                this.segmentCount += 1;
+                segmentEntry.segmentNum = this.segmentCount;
+                Polymer.dom(this.$.segments).appendChild(segmentEntry);
+                this.$.input.notifyResize();
+            },
+            saveInfo: function () {
+                let segments = [];
+                let segmentCnt = Polymer.dom(this.$.segments).children.length;
+                for (var i = 0; i < segmentCnt; i++) {
+                    segments.push(Polymer.dom(this.$.segments).children[i].data());
+                }
+                this.info.name = this.planName;
+                this.info.description = this.planObjective;
+                this.info.type = this.runTypeSelected;
+                this.info.duration = 100;
+                this.info.day = (this.week - 1) * 7 + this.day;
+                this.info.segments = segments;
+
+                this.fire('training-input', this.info);
+            }
+        });
+
+    </script>
+
+</dom-module>
