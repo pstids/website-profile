@@ -64,7 +64,7 @@
         </style>
 
         <div id="main" class="layout horizontal center">
-            <paper-card elevation="3" on-click="showDialog" class$="flex layout vertical {{cardStatus}}">
+            <paper-card elevation="3" class$="flex layout vertical {{cardStatus}}">
                 <div class="flex layout vertical center" id="content">
                     <div class="title">{{title}}</div>
                     <div class="subtitle text-light" id="stat">
@@ -86,7 +86,7 @@
         Polymer({
             is: 'plan-card',
             properties: {
-                trainingInfo: Object,
+                trainingInfo: Object,   // Training info in internal format
                 title: String,
                 duration: Number,
                 description: String,
@@ -95,11 +95,16 @@
                 day: Number,
                 cardStatus: String
             },
+            listeners: {
+                'tap': 'showDialog'
+            },
             ready: function () {
                 this.trainingInfo = {};
                 this.trainingInfoChanged({});
             },
             trainingInfoChanged: function (info) {
+                this.trainingInfo = info;
+                console.log('card training input: ', info);
                 if (Object.keys(this.trainingInfo).length !== 0) {
                     this.title = info.name;
                     this.duration = info.duration;
@@ -115,6 +120,7 @@
                 }
             },
             showDialog: function () {
+                console.log('show dialog, card send training info: ', this.trainingInfo);
                 // Used to fill current information on to training-entry dialog
                 this.fire('card-tap', {'info': this.trainingInfo, 'week': this.week, 'day': this.day});
             }

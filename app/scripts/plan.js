@@ -46,7 +46,7 @@
         }
         let weekViewContainer = Polymer.dom(document).querySelector('#weekviews');
         weekViewContainer.children[selectWeek].setCardData(selectDay, info);
-        
+
         app.saveAll();
     });
 

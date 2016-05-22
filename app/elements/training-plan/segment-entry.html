@@ -165,7 +165,7 @@
                 },
                 segmentNum: {
                     type: Number,
-                    value: '0'
+                    value: 0
                 },
                 repeatCount: {
                     type: Number,
@@ -190,46 +190,51 @@
             },
             ready: function () {
             },
+            // return data in internal format
             data: function () {
-                let data = {
-                    description: '',
-                    duration_type: this.durationType,
-                    intensity_type: this.intensityType,
-                    duration: 0,
+                this.durationTime = {
+                    hour: parseInt(this.durationTime.hour),
+                    minute: parseInt(this.durationTime.minute),
+                    second: parseInt(this.durationTime.second)
+                };
+                this.restTime = {
+                    minute: parseInt(this.restTime.minute),
+                    second: parseInt(this.restTime.second)
+                };
+                this.intensityPercent = {
                     low: parseInt(this.intensityPercent.low),
                     high: parseInt(this.intensityPercent.high),
-                    zone: this.zoneSelected,
-                    pace: this.paceSelected,
-                    repeat: parseInt(this.repeatCount),
-                    rest_duration: 0
                 };
-                // Process duration
-                switch (this.durationType) {
-                    case 'time':
-                        data.duration =
-                            3600 * parseInt(this.durationTime.hour) +
-                            60 * parseInt(this.durationTime.minute) +
-                            parseInt(this.durationTime.second);
-                        break;
-                    case 'distance':
-                        let dis = parseInt(this.durationDistance);
-                        switch (this.distanceUnitSelected) {
-                            case 'mile':
-                                dis *= 1601;
-                                break;
-                            case 'km':
-                                dis *= 1000;
-                                break;
-                        }
-                        data.duration = dis;
-                        break;
-                }
-                // Process rest duration
-                if (this.repeatCount > 1) {
-                    console.log(this.restTime);
-                    data.rest_duration = 60 * parseInt(this.restTime.minute) + parseInt(this.restTime.second);
-                }
+                let data = {
+                    duration_time: this.durationTime,
+                    intensity_percent: this.intensityPercent,
+                    rest_time: this.restTime,
+                    duration_type: this.durationType,
+                    intensity_type: this.intensityType,
+                    segment_num: parseInt(this.segmentNum),
+                    repeat_count: parseInt(this.repeatCount),
+                    zone_selected: parseInt(this.zoneSelected),
+                    pace_selected: this.paceSelected,
+                    duration_distance:  parseInt(this.durationDistance),
+                    distance_unit_selected: this.distanceUnitSelected
+                };
                 return data;
+            },
+            setData: function (data) {
+                if (Object.keys(data).length <= 0) {
+                    return;
+                }
+                this.durationTime = data.duration_time;
+                this.intensityPercent = data.intensity_percent;
+                this.restTime = data.rest_time;
+                this.durationType = data.duration_type;
+                this.intensityType = data.intensity_type;
+                this.segmentNum = data.segment_num;
+                this.repeatCount = data.repeat_count;
+                this.zoneSelected = data.zone_selected;
+                this.paceSelected = data.pace_selected;
+                this.durationDistance = data.duration_distance;
+                this.distanceUnitSelected = data.distance_unit_selected;
             }
         });
 

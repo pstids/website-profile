@@ -37,15 +37,15 @@
                     </paper-menu>
                 </paper-dropdown-menu>
             </div>
-            <paper-dialog-scrollable>
+            <paper-dialog-scrollable id="scroll">
                 <div id="segments" class="layout vertical center">
                     <segment-entry segment-num=1></segment-entry>
                 </div>
-                <paper-button raised on-click="addSegment">ADD SEGMENT</paper-button>
+                <paper-button id="addButton" raised on-click="addSegmentHandler">ADD SEGMENT</paper-button>
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button dialog-dismiss>Cancel</paper-button>
-                <paper-button dialog-confirm autofocus on-click="saveInfo">Save</paper-button>
+                <paper-button dialog-confirm autofocus on-click="save">Save</paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -55,12 +55,6 @@
         Polymer({
             is: 'training-entry',
             properties: {
-                info: {
-                    type: Object,
-                    value: () => {
-                        return {};
-                    }
-                },
                 segmentCount: {
                     type: Number,
                     value: 1
@@ -109,7 +103,7 @@
                         break;
                 }
             },
-            set: function(info, week, day) {
+            set: function(internalData, week, day) {
                 // Reset all info
                 this.runTypeSelected = 'progression';
                 this.planName = '';
@@ -119,42 +113,44 @@
                 while (segmentNode.firstChild) {
                     segmentNode.removeChild(segmentNode.firstChild);
                 }
-                this.addSegment();
-
                 this.week = week;
                 this.day = day;
-                this.info = info;
-                console.log('get card data', info);
-                if (Object.keys(this.info).length > 0) {
-                    this.planName = this.info.name;
-                    this.planObjective = this.info.description;
-                    this.runTypeSelected = this.info.type;
+                if (Object.keys(internalData).length > 0) {
+                    this.planName = internalData.name;
+                    this.planObjective = internalData.description;
+                    this.runTypeSelected = internalData.type;
+                    for (let seg of internalData.segments) {
+                        this.addSegment(seg);
+                    }
                 }
             },
             open: function () {
                 this.$.input.open();
             },
-            addSegment: function () {
+            addSegmentHandler: function () {
+                this.addSegment({});
+            },
+            addSegment: function (segData) {
                 var segmentEntry = document.createElement('segment-entry');
                 this.segmentCount += 1;
                 segmentEntry.segmentNum = this.segmentCount;
+                segmentEntry.setData(segData);
                 Polymer.dom(this.$.segments).appendChild(segmentEntry);
-                this.$.input.notifyResize();
             },
-            saveInfo: function () {
+            save: function () {
                 let segments = [];
                 let segmentCnt = Polymer.dom(this.$.segments).children.length;
                 for (var i = 0; i < segmentCnt; i++) {
                     segments.push(Polymer.dom(this.$.segments).children[i].data());
                 }
-                this.info.name = this.planName;
-                this.info.description = this.planObjective;
-                this.info.type = this.runTypeSelected;
-                this.info.duration = 100;
-                this.info.day = (this.week - 1) * 7 + this.day;
-                this.info.segments = segments;
-
-                this.fire('training-input', this.info);
+                this.fire('training-input', {
+                    name: this.planName,
+                    description: this.planObjective,
+                    type: this.runTypeSelected,
+                    duration: 100,
+                    day: (this.week - 1) * 7 + this.day,
+                    segments: segments
+                });
             }
         });
 
