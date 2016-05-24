@@ -237,6 +237,19 @@ var toast = function (message) {
             }
         });
 
+        page('/plan', () => {
+            if (jwt.hasToken) {
+                app.route = 'plan';
+            } else {
+                page.redirect('/welcome');
+            }
+        });
+
+        page('/plan/:id', (data) => {
+            app.route = 'new-plan';
+            app.planID = data.params.id;
+        });
+
         page('/a/:name', (data) => {
             if (jwt.hasToken) {
                 console.log('user is ', data.params.name);

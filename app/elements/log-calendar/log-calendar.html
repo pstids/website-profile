@@ -170,10 +170,9 @@
 
                 this.assembleDOM();
                 if (jwt.hasToken) {
-                    var state;
-                    if (location.pathname.length > 20) {
-                        state = false;
-                    } else {
+                    let state = false;
+                    // Only auto load run activity when on the main PowerCenter page
+                    if (location.pathname === '/powercenter/') {
                         state = true;
                     }
                     this.fetchMonth(

@@ -109,3 +109,7 @@ paper-button {
   padding: 20px;
   width: 120px;
 }
+
+plan-list {
+    padding: 2vw 10vw;
+}

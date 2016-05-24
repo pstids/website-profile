@@ -104,7 +104,6 @@
             },
             trainingInfoChanged: function (info) {
                 this.trainingInfo = info;
-                console.log('card training input: ', info);
                 if (Object.keys(this.trainingInfo).length !== 0) {
                     this.title = info.name;
                     this.duration = info.duration;

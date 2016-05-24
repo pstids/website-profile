@@ -62,7 +62,7 @@
             @apply(--layout-flex);
             @apply(--layout-vertical);
             overflow: hidden;
-            
+
             cursor: pointer;
             background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
             background-size: cover;
@@ -214,7 +214,7 @@
 
         </div>
         <div class="half-items" id="half">
-            
+
         </div>
     </template>
     <script>
@@ -309,7 +309,7 @@
                         if (minutesStr.length === 1) {
                             minutesStr = '0' + minutesStr;
                         }
-                        
+
                         if (this.data.description.length > 40) {
                             tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
                         } else {

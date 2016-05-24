@@ -1,0 +1,267 @@
+<dom-module id="plan-entry">
+    <template>
+        <style>
+            :host {
+                background: #333333;
+                font-family: "Roboto", Helvetica, Arial;
+                color: #eee;
+            }
+
+            #plan-header {
+                margin: 1vw;
+            }
+
+            #plan-content {
+                margin: 1vw;
+                margin-bottom: 10vw;
+            }
+
+            h2 {
+                font-family: 'Roboto Slab', serif;
+            }
+
+            .underline {
+                border-bottom: 1px solid var(--primary-color);
+            }
+
+            plan-weekview {
+                margin-bottom: 10px;
+            }
+
+            paper-button {
+                margin-top: 3vw;
+                min-width: 10vw;
+                color: var(--primary-color);
+            }
+
+            paper-input#title-input {
+                min-width: 30vw;
+            }
+
+            paper-input#duration-input {
+                width: 5vw;
+            }
+            paper-dropdown-menu {
+                width: 10vw;
+            }
+        </style>
+        <!-- Main Content -->
+        <div id="plan-header" class="layout vertical">
+            <h2 class="underline">Plan Info</h2>
+            <div class="layout horizontal end around-justified">
+                <paper-input id="title-input" label="Plan Title" placeholder="e.g. Endurance with threshold tempo"
+                             value="{{planTitle}}" maxlength="80" required>
+                </paper-input>
+                <paper-radio-group selected="{{planLevel}}">
+                    <paper-radio-button name="beginner">Beginner</paper-radio-button>
+                    <paper-radio-button name="intermediate">Intermediate</paper-radio-button>
+                    <paper-radio-button name="advance">Advanced</paper-radio-button>
+                    <paper-radio-button name="general">General</paper-radio-button>
+                </paper-radio-group>
+                <paper-dropdown-menu label="Goal Distance" no-animations>
+                    <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}">
+                        <paper-item name="5k">5k</paper-item>
+                        <paper-item name="10k">10k</paper-item>
+                        <paper-item name="half marathon">Half Marathon</paper-item>
+                        <paper-item name="marathon">Marathon</paper-item>
+                        <paper-item name="25k">25k Ultra</paper-item>
+                        <paper-item name="50k">50k Ultra</paper-item>
+                        <paper-item name="100k">100k Ultra</paper-item>
+                        <paper-item name="50M">50 miles Ultra</paper-item>
+                        <paper-item name="half ironman">Half Ironman</paper-item>
+                        <paper-item name="ironman">Ironman</paper-item>
+                        <paper-item name="other">Other</paper-item>
+                    </paper-menu>
+                </paper-dropdown-menu>
+                <paper-input id="duration-input" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
+                             value="{{weekNum}}" on-blur="onWeekInput">
+                    <div suffix>Weeks</div>
+                </paper-input>
+            </div>
+        </div>
+        <div id="plan-content">
+            <h2 class="underline">Plan Schedule</h2>
+            <div id="weekviews"></div>
+        </div>
+        <training-entry id="dialog"></training-entry>
+        <!--<div id="plan-fab">-->
+        <!--<paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>-->
+        <!--</div>-->
+        <paper-toast duration="1300" text="" id="toast"></paper-toast>
+    </template>
+
+    <script>
+
+        Polymer({
+            is: 'plan-entry',
+            properties: {
+                planId: {
+                    type: Number,
+                    observer: '_planIDChanged'
+                },
+                selectWeek: {
+                    type: Number,
+                    value: 0
+                },
+                selectDay: {
+                    type: Number,
+                    value: 0
+                },
+                planTitle: {
+                    type: String,
+                    value: ''
+                },
+                planLevel: {
+                    type: String,
+                    value: 'intermediate'
+                },
+                planDistanceSelected: {
+                    type: String,
+                    value: '5k'
+                },
+                weekViewCnt: {
+                    type: Number,
+                    value: 0
+                },
+                weekNum: {
+                    type: Number,
+                    value: 4
+                },
+            },
+            ready: function () {
+                this.addEventListener('card-tap', function (e) {
+                    this.selectWeek = e.detail.week - 1;
+                    this.selectDay = e.detail.day;
+
+                    let dialog = document.querySelector('#dialog');
+                    let info = e.detail.info;
+                    dialog.set(info, e.detail.week, e.detail.day);  // Displayed week
+                    dialog.open();
+                });
+
+                this.addEventListener('training-input', function (e) {
+                    let info = e.detail;
+                    if (Object.keys(info).length === 0) {
+                        return;
+                    }
+                    this.$.weekviews.children[this.selectWeek].setCardData(this.selectDay, info);
+
+                    this.saveAll();
+                });
+            },
+
+            _planIDChanged: function () {
+                superagent
+                    .get('/b/api/v1/training/plan/'+this.planId)
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            switch (res.status) {
+                                case 200:
+                                    this._fillData(res.body);
+                                    break;
+                                case 204:
+                                    console.log('No plan with this id found');
+                                    this.updateWeekView(4, this.weekViewCnt);
+                                    break;
+                            }
+                        } else {
+                            this.$.toast.text = 'Can not load the training plan. Please try later.';
+                            this.$.toast.show();
+                        }
+                    }.bind(this));
+            },
+
+            _fillData: function (data) {
+                this.planTitle = data.name;
+                this.planLevel = data.level;
+                this.planDistanceSelected = data.distance_type;
+                this.weekNum = data.week_duration;
+                this.updateWeekView(data.week_duration, this.weekViewCnt);
+
+                if (Object.keys(data.workouts).length === 0) {
+                    return;
+                }
+                console.log(this.$.weekviews.children);
+                for (let workout of data.workouts) {
+                    let week = Math.floor(parseInt(workout.day) / 7);
+                    let relativeDay = parseInt(workout.day) % 7;
+                    this.$.weekviews.children[week].setCardData(relativeDay, workout);
+                }
+            },
+
+            updateWeekView: function (num, cnt) {
+                num = parseInt(num);
+                cnt = parseInt(cnt);
+                let weekViewContainer = this.$.weekviews;
+                if (num > cnt) {
+                    let gap = num - this.weekViewCnt;
+                    let views = [];
+                    let i = 0;
+                    for (i = 0; i < gap; i++) {
+                        let weekView = document.createElement('plan-weekview');
+                        weekView.weekNum = this.weekViewCnt + (i + 1);
+                        views.push(weekView);
+                    }
+                    let docFrag = document.createDocumentFragment();
+                    for(i = 0; i < views.length; i++) {
+                        docFrag.appendChild(views[i]);
+                    }
+                    weekViewContainer.appendChild(docFrag);
+                } else {
+                    let gap = cnt - num;
+                    let allChildren = weekViewContainer.childNodes;
+                    for (let i = 0; i < gap; i++) {
+                        weekViewContainer.removeChild(allChildren[this.weekViewCnt-i-1]);
+                    }
+                }
+                this.weekViewCnt = num;
+            },
+
+            onWeekInput: function() {
+                this.updateWeekView(this.weekNum, this.weekViewCnt);
+            },
+
+            saveAll: function() {
+                let weekViewContainer = this.$.weekviews;
+                let workouts = [];
+                for (let i = 0; i < weekViewContainer.children.length; i++) { let node = weekViewContainer.children[i];
+                    if (node.nodeName === 'TEMPLATE') {
+                        continue;
+                    }
+                    workouts = workouts.concat(node.data());
+                }
+                let days = [];
+                for (var w of workouts) {
+                    days.push(w.day);
+                }
+                let plan = {
+                    id: parseInt(this.planId),
+                    name: this.planTitle,
+                    week_duration: parseInt(this.weekNum),
+                    level: this.planLevel,
+                    workouts: workouts,
+                    distance_type: this.planDistanceSelected,
+                    days: days
+                };
+                console.log('save all workouts', plan);
+                superagent
+                    .post('/b/api/v1/training/plan')
+                    .send(plan)
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        if (res.ok) {
+                            this.$.toast.text = 'Your training plan is uploaded!';
+                        } else {
+                            this.$.toast.text = 'Your information has not been updated. Please try again.';
+                        }
+                        this.$.toast.show();
+                    }.bind(this));
+            }
+        });
+
+    </script>
+
+</dom-module>

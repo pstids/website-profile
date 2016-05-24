@@ -1,0 +1,69 @@
+<dom-module id="plan-list">
+    <template>
+        <style>
+            :host {
+            }
+            paper-button {
+                min-width: 10vw;
+                color: var(--primary-color);
+                margin-top: 2vw;
+            }
+            h2 {
+                color: white;
+            }
+            .underline {
+                border-bottom: 1px solid var(--primary-color);
+            }
+            #main {
+                padding: 2vw 15vw;
+            }
+        </style>
+        <div id="main">
+            <h2 class="underline">All Plans</h2>
+            <paper-listbox>
+                <template is="dom-repeat" items="{{plans}}">
+                    <div class="layout horizontal center">
+                        <div>{{index}}.</div>
+                        <paper-item class="flex"><a href="/powercenter/plan/{{item.id}}">{{item.name}}</a></paper-item>
+                    </div>
+                </template>
+            </paper-listbox>
+            <paper-button raised on-click="onAddPlan">Add plan</paper-button>
+            <paper-toast duration="1200" text="" id="toast"></paper-toast>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'plan-list',
+            properties: {
+                plans: {
+                    type: Array
+                }
+            },
+            ready: function () {
+                superagent
+                    .get('/b/api/v1/training/plan/all')
+                    .set('Accept', 'application/json')
+                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .end(function(err, res) {
+                        console.log('here in plan list', res);
+                        if (res.ok) {
+                            if (res.body !== null) { // Not empty
+                                this.plans = res.body;
+                            }
+                        } else {
+                            this.$.toast.text = 'Failed to fetch your training plans. Please try again later';
+                            this.$.toast.show();
+                        }
+                    }.bind(this));
+            },
+            onAddPlan: function () {
+                let ID = (new Date()).valueOf() + Math.ceil(Math.random() * 97);
+                page(`/plan/${ID}`);
+            }
+        });
+
+    </script>
+
+</dom-module>
