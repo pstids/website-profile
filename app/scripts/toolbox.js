@@ -70,10 +70,11 @@ var meterToKM = function (m) {
 
 // Converts meters to miles
 var meterToMile = function (m, precision) {
-    if (precision) {
-        return (m/1600).toFixed(precision);
+    // Never allow precision to be zero due to the rounding
+    if (precision === 0) {
+        precision = 1;
     }
-    return (m/1600).toFixed(1);
+    return (m / 1600).toFixed(precision);
 };
 
 var meterToUserUnit = function (m) {
@@ -131,16 +132,16 @@ var durationToSec = function (paceStr) {
 };
 
 var secToDuration = function (sec) {
-    let minStr = fillZero((sec / 60).toFixed(0));
-    let secStr = fillZero((sec % 60).toFixed(0));
+    var minStr = fillZero(Math.floor(sec / 60));
+    var secStr = fillZero((sec % 60).toFixed(0));
     return minStr + ':' + secStr;
 };
 
 var secToDurationFull = function (sec) {
-    let hrStr = fillZero((sec/3600).toFixed(0));
+    var hrStr = fillZero(Math.floor(sec / 3600));
     sec /= 3600;
-    let minStr = fillZero((sec / 60).toFixed(0));
-    let secStr = fillZero((sec % 60).toFixed(0));
+    var minStr = fillZero(Math.floor(sec / 60));
+    var secStr = fillZero(Math.floor(sec % 60).toFixed(0));
     return hrStr + ':' + minStr + ':' + secStr;
 };
 

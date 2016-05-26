@@ -471,11 +471,9 @@
 
                 // Get unit
                 if (user.data === null) {
-                    console.log('user data is null');
                     user.fetchDetails(this.ready.bind(this));
                     return;
                 }
-                console.log('user unit is ', user.data.units);
                 if (user.data.units === 'feet') {
                     this.paceUnit = 'MIN/MILE';
                 } else {
@@ -560,7 +558,7 @@
                 for (var i = 0; i < this.$.zones.children.length; i++) {
                     zones.push(this.$.zones.children[i].export(user.data.units));
                 }
-                console.log(zones);
+                console.log('zones are', zones);
 
                 superagent
                     .put('/b/api/v1/training/zone')
@@ -698,7 +696,7 @@
                     .send({'cptest_result':results})
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end((err, res) => {
-                        console.log(res, err);
+                        console.log('Training info: ', res, err);
                         if (res.ok) {
                             // Save locally since to sync with Server
                             localStorage.setItem(this.keyCPTest, JSON.stringify(
@@ -723,7 +721,6 @@
                 if (info === null || info === 'null' || info === undefined || info === 'undefined') {
                     return;
                 }
-                console.log(info);
                 if (!('training_zones' in info)) {
                     return;
                 }
