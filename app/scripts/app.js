@@ -224,7 +224,7 @@ var toast = function (message) {
                 token: jwt.token,
                 type: 'workout',
                 id: data.params.id,
-                updated_time: ''
+                updated_time: updatedTime
             });
         });
 
