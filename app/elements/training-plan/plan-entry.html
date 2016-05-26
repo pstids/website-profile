@@ -191,6 +191,16 @@
                 }
             },
 
+            clearData: function () {
+                this.planTitle = '';
+                this.planLevel = 'intermediate';
+                this.planDistanceSelected = '5k';
+                this.weekNum = 4;
+                // Re-generate weekviews
+                this.updateWeekView(0, this.weekViewCnt);
+                this.updateWeekView(this.weekNum, this.weekViewCnt);
+            },
+
             updateWeekView: function (num, cnt) {
                 num = parseInt(num);
                 cnt = parseInt(cnt);

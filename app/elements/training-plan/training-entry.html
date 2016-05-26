@@ -16,6 +16,9 @@
                 color: var(--primary-color);
                 margin-top: 2vw;
             }
+            paper-textarea {
+                max-height: 30vh;
+            }
         </style>
         <paper-dialog id="input" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>{{weekday}}, Week {{week}}</h2>
@@ -28,6 +31,7 @@
                 </paper-textarea>
                 <paper-dropdown-menu class="" label="Run Type" no-animations>
                     <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}">
+                        <paper-item name="recovery">Recovery</paper-item>
                         <paper-item name="progression">Progression</paper-item>
                         <paper-item name="fartlek">Fartlek</paper-item>
                         <paper-item name="interval">Intervals</paper-item>
@@ -41,7 +45,8 @@
                 <div id="segments" class="layout vertical center">
                     <segment-entry segment-num=1></segment-entry>
                 </div>
-                <paper-button id="addButton" raised on-click="addSegmentHandler">ADD SEGMENT</paper-button>
+                <paper-button raised on-click="addSegmentHandler">ADD SEGMENT</paper-button>
+                <paper-button raised on-click="removeSegmentHandler">REMOVE SEGMENT</paper-button>
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button dialog-dismiss>Cancel</paper-button>
@@ -130,12 +135,22 @@
             addSegmentHandler: function () {
                 this.addSegment({});
             },
+            removeSegmentHandler: function () {
+                let segments = Polymer.dom(this.$.segments);
+                if (segments.children.length <= 0) {
+                    return;
+                }
+                segments.removeChild(segments.lastChild);
+                this.segmentCount -= 1;
+            },
             addSegment: function (segData) {
                 var segmentEntry = document.createElement('segment-entry');
                 this.segmentCount += 1;
                 segmentEntry.segmentNum = this.segmentCount;
                 segmentEntry.setData(segData);
                 Polymer.dom(this.$.segments).appendChild(segmentEntry);
+
+                this.save();
             },
             save: function () {
                 let segments = [];

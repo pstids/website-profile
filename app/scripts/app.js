@@ -248,6 +248,7 @@ var toast = function (message) {
         page('/plan/:id', (data) => {
             app.route = 'new-plan';
             app.planID = data.params.id;
+            document.querySelector('#plan-entry').clearData();
         });
 
         page('/a/:name', (data) => {
