@@ -287,10 +287,21 @@
                     var column = this.dom[i];
                     for (var o = 0; o < column.length; o++) {
                         var day = column[o];
-                        day.clearWorkout();
-                        day.setData({
+
+                        var dayObj = {
                             day: moment(movingDay).format('DD')
-                        });
+                        };
+
+                        // Determine if there is planned training
+                        var dailyPlan = trainingPlan.getDay(
+                            movingDay.format('YYYYMMDD')
+                        );
+                        if (dailyPlan !== null) {
+                            dayObj.training = dailyPlan;
+                        }
+
+                        day.clearWorkout();
+                        day.setData(dayObj);
                         movingDay.add(1, 'days');
                     }
                     this.dates.push(moment(movingDay).subtract(1, 'days'));

@@ -85,7 +85,8 @@ gulp.task('jshint', function () {
         'formatPace',
         'attribute',
         'moment',
-        'addLog'
+        'addLog',
+        'trainingPlan'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

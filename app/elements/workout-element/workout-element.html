@@ -346,15 +346,15 @@
                     </div>
                 </div>
                 <div class="flex layout vertical">
-                    <div class="tp flex">
-                        <p>Long run of 40 minutes</p>
-                        <p>The goal of this workout is to build strength for the end of your race. You will be able to stay with the pack and overcome them at the end!</p>
-                        <workout-segment data-id="1"></workout-segment>
-                        <workout-segment data-id="2"></workout-segment>
-                        <workout-segment data-id="3"></workout-segment>
-                        <workout-segment data-id="4"></workout-segment>
-                        <workout-segment data-id="5"></workout-segment>
-                        <workout-segment data-id="6"></workout-segment>
+                    <div class="tp flex plan-toggle" data-tp="plan">
+                        <iron-icon on-click="toggleTP" icon="icons:picture-in-picture-alt"></iron-icon>
+                        <p>{{day_title}}</p>
+                        <p>{{day_description}}</p>
+                        <div id="segments"></div>
+                    </div>
+                    <div class="tp graph flex vertical plan-toggle" data-tp="graph">
+                        <iron-icon on-click="toggleTP" icon="icons:picture-in-picture-alt"></iron-icon>
+                        <div id="circlechart"></div>
                     </div>
                 </div>
             </div>

@@ -181,6 +181,9 @@
                         <paper-tooltip>Pin to Graph</paper-tooltip>
                     </div>
                 </div>
+                <div class="tp hidden" id="tpp">
+                    <iron-icon icon="icons:track-changes"></iron-icon>
+                </div>
                 <div class="numday">
                     {{day}}
                 </div>
@@ -293,7 +296,7 @@
                         }
                         target = target.parentNode;
                     }
-                }.bind(this));
+                });
 
                 var tooltip = document.querySelector('[data-tooltip]');
                 var tooltipDescription = tooltip.querySelector('#description');
@@ -328,13 +331,17 @@
                 this.day = data.day;
                 this.rgb = '#000000';
                 if ('power' in data) {
-                    this.$.options.classList.remove('hidden');
-                    this.$.container.style.cursor = 'pointer';
-                    if (this.$.container.style.backgroundImage !== 'url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png)') {
-                        this.$.container.style.backgroundImage = 'url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png)';
+                    if ('training' in data) {
+                        Polymer.dom(this.$.tpp).classList.remove('hidden');
+
+                    } else {
+                        Polymer.dom(this.$.tpp).classList.add('hidden');
                     }
 
-                    this.$.data.classList.remove('hidden');
+                    this.$.container.classList.add('hasWorkout');
+                    this.$.container.classList.remove('hasNoWorkout');
+                    this.$.container.classList.remove('hasPlanned');
+
                     this.unit = 'watts';
                     this.power = data.power.toFixed(0);
 
@@ -364,11 +371,18 @@
 
                     this.$.headera.style.backgroundColor = this.rgb;
                 } else {
-                    this.$.options.classList.add('hidden');
-                    this.$.container.style.cursor = 'auto';
-                    this.$.container.style.backgroundImage = 'none';
+                    if ('training' in data) {
+                        this.$.container.classList.remove('hasWorkout');
+                        this.$.container.classList.remove('hasNoWorkout');
+                        this.$.container.classList.add('hasPlanned');
+                        Polymer.dom(this.$.tpp).classList.remove('hidden');
+                    } else {
+                        this.$.container.classList.remove('hasWorkout');
+                        this.$.container.classList.add('hasNoWorkout');
+                        this.$.container.classList.remove('hasPlanned');
+                        Polymer.dom(this.$.tpp).classList.add('hidden');
+                    }
 
-                    this.$.data.classList.add('hidden');
                     this.unit = '';
                     this.power = '';
                     this.rgb = 'rgb(0, 0, 0)';

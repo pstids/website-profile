@@ -5,6 +5,8 @@
 /*global postMessage*/
 /*global Dexie:true*/
 /*global self*/
+/*global trainingPlan:true */
+/*global trainingDays:true */
 
 importScripts('/powercenter/scripts/superagent.js');
 importScripts('/powercenter/scripts/toolbox.js');
@@ -132,6 +134,44 @@ var workoutFetching = function (workoutID, workoutUpdated, scope) {
     }
 };
 
+var trainingPlan = {};
+var trainingDays = {};
+var trainingGraphDays = {};
+
+var getDateHash = function (timestamp) {
+    return moment.unix(timestamp).format('YYYYMMDD');
+};
+
+var processTrainingDay = function (day) {
+    var trainingArray = [];
+    for (var segment of day.segments) {
+        if (segment.duration_type === 'minutes') {
+            var seconds = segment.duration_length * 60;
+            for (var i = 0; i < seconds; i++) {
+                trainingArray.push(segment.low_range);
+            }
+        }
+    }
+
+    return trainingArray;
+};
+
+
+var populateTrainingDays = function () {
+    for (var key in trainingDays) {
+        trainingGraphDays[key] = processTrainingDay(trainingDays[key]);
+    }
+};
+
+var checkTrainingDay = function (timestamp) {
+    var dateHash = getDateHash(timestamp);
+    if (dateHash in trainingDays) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 var workoutProcessing = function (workout, id, scope) {
     workoutSave(workout, id);
     if (workout.total_power_list === null) {
@@ -212,6 +252,14 @@ var workoutProcessing = function (workout, id, scope) {
         if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
         }
+        if (checkTrainingDay(workout.timestamp)) {
+            var graphTraining = trainingGraphDays[getDateHash(workout.timestamp)];
+            if (i < graphTraining.length) {
+                entry.training = graphTraining[i];
+            } else {
+                entry.training = 0;
+            }
+        }
 
         if (suuntoDrop && i !== 0) {
             entry = lastEntry;
@@ -265,10 +313,12 @@ var workoutProcessing = function (workout, id, scope) {
 
     data.mapRunData = mapRunData;
     data.chartData = chartData;
+
     data.chartDescription = {
         description: workout.description,
         id: workout.id,
-        user_id: workout.user_id
+        user_id: workout.user_id,
+        start_time: workout.start_time
     };
     data.steps = steps;
     if (id === 'sample') {
@@ -377,6 +427,12 @@ onmessage = function (event) {
             break;
         case 'suuntoProcessing':
             suuntoProcessing();
+            break;
+        case 'setPlan':
+            trainingPlan = event.data.trainingPlan;
+            trainingDays = event.data.trainingDays;
+            populateTrainingDays();
+            // processTraining(event.data.trainingPlan, event.data.trainingDays);
             break;
         default:
             console.log('Error in onmessage/processor: unknown action');

@@ -1,6 +1,7 @@
 /*jshint -W079 */
 /*jshint unused: false*/
 /*global CryptoJS*/
+/*global processor*/
 
 class JWT {
 	constructor() {
@@ -165,3 +166,47 @@ class User {
 }
 
 var user = new User();
+
+class TrainingPlan {
+	constructor() {
+		this.plan = {};
+		this.days = {};
+		superagent
+			.get('http://www.mocky.io/v2/57355f7b130000981ccde03c')
+			.set('Accept', 'application/json')
+			.end((err, res) => {
+				if (res.ok && res.body !== null) {
+					console.log('received plan', res.body);
+					this.plan = res.body;
+					this.processPlan();
+				} else {
+					console.log('Error: failure to get training plan', err);
+				}
+			});
+	}
+
+	processPlan() {
+		for (var i = 0; i < this.plan.workouts.length; i++) {
+			var additionalDays = this.plan.days[i];
+			var targetDate = moment(this.plan.start_date)
+				.add(additionalDays, 'days');
+			var dateHash = targetDate.format('YYYYMMDD');
+			this.days[dateHash] = this.plan.workouts[i];
+		}
+		processor.postMessage({
+			type: 'setPlan',
+			trainingPlan: this.plan,
+			trainingDays: this.days
+		});
+	}
+
+	getDay(dateStr) {
+		if (dateStr in this.days) {
+			return this.days[dateStr];
+		} else {
+			return null;
+		}
+	}
+}
+
+var trainingPlan = new TrainingPlan();
