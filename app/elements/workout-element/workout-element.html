@@ -21,6 +21,7 @@
         .chart {
             flex: none;
             width: 100%;
+            position: relative;
         }
         #chartdiv {
             color: #ffffff;
@@ -56,72 +57,43 @@
             @apply(--layout-end);
             @apply(--layout-flex);
             width: 200px;
+            position: absolute;
+            right: 0;
         }
-        .toggles .heartRate[data-toggle="on"] {
-            border-color: #683a78;
+        .toggles .toggle {
+            display: none;
         }
-        .toggles .heartRate[data-toggle="on"] .circle {
-            border-color: #683a78;
-            box-shadow: 0px 0px 5px #683a78;
-            background-color: #683a78;
+        .toggles iron-icon {
+            top: 13px;
+            right: 13px;
+            padding: 10px;
+            border: 1px solid;
+            background-color: #1C1C1C;
+            border-radius: 6px;
+            color: white;
         }
-        .toggles .power[data-toggle="on"] {
-            border-color: #f7a017;
+        .toggles:hover .toggle {
+            display: block;
         }
-        .toggles .power[data-toggle="on"] .circle {
-            border-color: #f7a017;
-            box-shadow: 0px 0px 5px #f7a017;
-            background-color: #f7a017;
+        .toggles:hover iron-icon {
+            display: none;
         }
-        .toggles .cadence[data-toggle="on"] {
-            border-color: #5ea7a1;
+        [data-graph="power"] {
+            --paper-radio-button-checked-color: #f7a017;
+            --paper-radio-button-checked-ink-color: #f7a017;
         }
-        .toggles .cadence[data-toggle="on"] .circle {
-            border-color: #5ea7a1;
-            box-shadow: 0px 0px 5px #5ea7a1;
-            background-color: #5ea7a1;
+        [data-graph="heartRate"] {
+            --paper-radio-button-checked-color: #683a78;
+            --paper-radio-button-checked-ink-color: #683a78;
         }
-        .toggles .pace[data-toggle="on"] {
-            border-color: #074a8c;
+        [data-graph="pace"] {
+            --paper-radio-button-checked-color: #074a8c;
+            --paper-radio-button-checked-ink-color: #074a8c;
         }
-        .toggles .pace[data-toggle="on"] .circle {
-            border-color: #074a8c;
-            box-shadow: 0px 0px 5px #074a8c;
-            background-color: #074a8c;
+        [data-graph="elevation"] {
+            --paper-radio-button-checked-color: #a06a81;
+            --paper-radio-button-checked-ink-color: #a06a81;
         }
-        .toggles .elevation[data-toggle="on"] {
-            border-color: #a06a81;
-        }
-        .toggles .elevation[data-toggle="on"] .circle {
-            border-color: #a06a81;
-            box-shadow: 0px 0px 5px #a06a81;
-            background-color: #a06a81;
-        }
-        .toggles .groundTime[data-toggle="on"] {
-            border-color: #00ACEE;
-        }
-        .toggles .groundTime[data-toggle="on"] .circle {
-            border-color: #00ACEE;
-            box-shadow: 0px 0px 5px #00ACEE;
-            background-color: #00ACEE;
-        }
-        .toggles .vertOsc[data-toggle="on"] {
-            border-color: #2BAF2B;
-        }
-        .toggles .vertOsc[data-toggle="on"] .circle {
-            border-color: #2BAF2B;
-            box-shadow: 0px 0px 5px #2BAF2B;
-            background-color: #2BAF2B;
-        }
-        .toggles .stat[data-toggle="on"] {
-            border-color: #F7A016;
-        }
-        .toggles .stat[data-toggle="on"] .circle {
-            border-color: #F7A016;
-            box-shadow: 0px 0px 5px #F7A016;
-            background-color: #F7A016;
-        }
-
         [data-graph="cadence"] {
             --paper-radio-button-checked-color: #5ea7a1;
             --paper-radio-button-checked-ink-color: #5ea7a1;
@@ -144,13 +116,20 @@
         .toggle .type {
             z-index: 2;
         }
+        .toggle paper-radio-button {
+            padding-bottom: 15px;
+            padding-left: 10px;
+        }
+        .toggle paper-radio-button:first-child {
+            padding-top: 15px;
+        }
+
         .bubbles {
             @apply(--layout-horizontal);
             @apply(--layout-around-justified);
             @apply(--layout-wrap);
             padding: 1vw 1vw;
         }
-
         bubble-stat {
             width: 11vw;
             height: 11vw;
@@ -228,44 +207,6 @@
                 transform: scale(1.0);
                 -webkit-transform: scale(1.0);
             }
-        }
-
-        .dynamics {
-            border-radius: 6px 0 0 6px;
-            width: 104px;
-        }
-        .dynamics:hover {
-            border-bottom: none;
-            border-radius: 6px 0 0 0;
-        }
-        .dynamics .radios {
-            visibility: hidden;
-            transition: visibility 0.1s;
-            position: absolute;
-            @apply(--layout-vertical);
-            width: 103%;
-            left: -2px;
-            top: 34px;
-            padding: 0.8vw 1.1vw;
-            border: 2px solid #FFFFFF;
-            border-top: 0;
-            border-right: 0;
-            border-radius: 0 0 0 6px;
-            margin: 0;
-            cursor: pointer;
-            background-color: var(--primary-background-color);
-            box-sizing: border-box;
-        }
-        .dynamics .radios paper-radio-button {
-            padding-bottom: 15px;
-        }
-        .dynamics .radios paper-radio-button:last-child {
-            padding-bottom: 0px;
-        }
-        .dynamics:hover .radios {
-            visibility: visible;
-            animation-delay: 2s;
-            -webkit-animation-delay: 2s;
         }
 
         .tp {
@@ -359,45 +300,18 @@
                 </div>
             </div>
             <div class="layout horizontal">
-                <div id="chartdiv">
-                </div>
+                <div id="chartdiv"></div>
                 <div class="toggles">
-                    <div class="heartRate toggle"
-                    data-toggle="on"
-                    on-click="toggle"
-                    data-graph="heartRate">
-                        <div class="type">Heart Rate</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="power toggle"
-                    data-toggle="on"
-                    on-click="toggle"
-                    data-graph="power">
-                        <div class="type">Power</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="pace toggle"
-                    data-toggle="off"
-                    on-click="toggle"
-                    data-graph="pace">
-                        <div class="type">Pace</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="elevation toggle"
-                    data-toggle="off"
-                    on-click="toggle"
-                    data-graph="elevation">
-                        <div class="type">Elevation</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="toggle dynamics">
-                        <div class="type">Run Form</div>
-                        <iron-icon icon="icons:arrow-drop-down"></iron-icon>
-                        <div class="radios">
-                            <paper-radio-button on-click="toggle" data-graph="cadence">Cadence</paper-radio-button>
-                            <paper-radio-button on-click="toggle" data-graph="groundTime">Ground Time</paper-radio-button>
-                            <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
-                        </div>
+                    <iron-icon icon="icons:menu"></iron-icon>
+                    <div class="toggle">
+                        <paper-radio-button on-click="toggle" data-graph="power" checked="true">Power</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="heartRate" checked="true">Heart Rate</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="pace">Pace</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="elevation">Elevation</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="cadence">Cadence</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="groundTime">Ground Time</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="training">Training</paper-radio-button>
                     </div>
                 </div>
             </div>
@@ -486,16 +400,15 @@
                             'balloonText': '[[value]] BPM',
                             'lineColor': '#683a78'
                         },
-                        switch: function (state) {
-                            if (
-                                state === 'off' ||
+                        switch: (state) => {
+                            if (state === 'off' ||
                                 (state === 'flip' &&
-                                this.metrics.heartRate.toggle.dataset.toggle === 'on')
+                                this.metrics.heartRate.toggle.checked === false)
                             ) {
-                                this.metrics.heartRate.toggle.dataset.toggle = 'off';
+                                this.metrics.heartRate.toggle.checked = false;
                                 this.chart.hideGraph(this.metrics.heartRate.graph());
                             } else {
-                                this.metrics.heartRate.toggle.dataset.toggle = 'on';
+                                this.metrics.heartRate.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.heartRate.graph());
                             }
                         }
@@ -531,16 +444,15 @@
                             'balloonText': '[[value]] Watts',
                             'lineColor': '#f7a017'
                         },
-                        switch: function (state) {
-                            if (
-                                state === 'off' ||
+                        switch: (state) => {
+                            if (state === 'off' ||
                                 (state === 'flip' &&
-                                this.metrics.power.toggle.dataset.toggle === 'on')
+                                this.metrics.power.toggle.checked === false)
                             ) {
-                                this.metrics.power.toggle.dataset.toggle = 'off';
+                                this.metrics.power.toggle.checked = false;
                                 this.chart.hideGraph(this.metrics.power.graph());
                             } else {
-                                this.metrics.power.toggle.dataset.toggle = 'on';
+                                this.metrics.power.checked = true;
                                 this.chart.showGraph(this.metrics.power.graph());
                             }
                         }
@@ -578,16 +490,15 @@
                             'balloonText': '[[value]] Min/Mile',
                             'lineColor': '#074a8c',
                         },
-                        switch: function (state) {
-                            if (
-                                state === 'off' ||
+                        switch: (state) => {
+                            if (state === 'off' ||
                                 (state === 'flip' &&
-                                this.metrics.pace.toggle.dataset.toggle === 'on')
+                                this.metrics.pace.toggle.checked === false)
                             ) {
-                                this.metrics.pace.toggle.dataset.toggle = 'off';
+                                this.metrics.pace.toggle.checked = false;
                                 this.chart.hideGraph(this.metrics.pace.graph());
                             } else {
-                                this.metrics.pace.toggle.dataset.toggle = 'on';
+                                this.metrics.pace.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.pace.graph());
                             }
                         }
@@ -1156,54 +1067,72 @@
                 this.chart.validateData();
             },
             fillChart: function (valueAxes, graphs) {
-                this.chart = AmCharts.makeChart(this.$.chartdiv, {
-                    'type': 'serial',
-                    'theme': 'stryd',
-                    'autoMarginOffset': 20,
-                    'valueAxes': valueAxes,
-                    'graphs': graphs,
-                    'chartScrollbar': {
-                        'graph': 'power',
-                        'autoGridCount': false,
-                        'scrollbarHeight': 50,
-                        'offset':30,
-                        'backgroundAlpha': 0,
-                        'selectedBackgroundAlpha': 0.2,
-                        'selectedBackgroundColor': '#ababab',
-                        'graphFillAlpha': 0,
-                        'graphLineAlpha': 0.2,
-                        'selectedGraphFillAlpha': 0,
-                        'selectedGraphLineAlpha': 0.5,
-                        'oppositeAxis': false,
-                    },
-                    'chartCursor': {},
-                    'categoryField': 'date',
-                    'categoryAxis': {
-                        'parseDates': false,
-                        'minorGridEnabled': true,
-                        'axisAlpha': 0,
-                        'gridAlpha': 0,
-                        'gridCount': 0,
-                        'gridThickness': 0,
-                        /*jshint unused: false */
-                        categoryFunction: function (a, d, b) {
-                            var timeDiff = a.getTime() - this.startTime.getTime();
-                            return hmsTime(timeDiff);
-                        }.bind(this)
-                    },
-                    'export': {
-                        'enabled': true
-                    },
-                    'balloon': {
-                        'adjustBorderColor': true,
-                        'color': '#1e1e1e',
-                        'cornerRadius': 5,
-                        'borderThickness': 2,
-                        'fillColor': '#FFFFFF',
-                        'shadowAlpha': 0,
-                        'fontSize': 16,
-                        'verticalPadding': 4,
-                        'horizontalPadding': 8
+                this.chart = AmCharts.makeChart(
+                    this.$.chartdiv,
+                    {
+                        'type': 'serial',
+                        'theme': 'stryd',
+                        'autoMarginOffset': 20,
+                        'valueAxes': valueAxes,
+                        'graphs': graphs,
+                        'valueScrollbar':{
+                            'oppositeAxis': false,
+                            'offset': 50,
+                            'scrollbarHeight': 10
+                        },
+                        'guides': [
+                            {
+                                'fillAlpha': 0.50,
+                                'value': 50,
+                                'toValue': 200,
+                                'valueAxis': valueAxes[1]
+                            }
+                        ],
+                        'chartScrollbar': {
+                            'graph': 'power',
+                            'autoGridCount': false,
+                            'scrollbarHeight': 50,
+                            'offset':30,
+                            'backgroundAlpha': 0,
+                            'selectedBackgroundAlpha': 0.2,
+                            'selectedBackgroundColor': '#ababab',
+                            'graphFillAlpha': 0,
+                            'graphLineAlpha': 0.2,
+                            'selectedGraphFillAlpha': 0,
+                            'selectedGraphLineAlpha': 0.5,
+                            'oppositeAxis': false,
+                        },
+                        'chartCursor': {},
+                        'categoryField': 'date',
+                        'categoryAxis': {
+                            'parseDates': false,
+                            'minorGridEnabled': true,
+                            'axisAlpha': 0,
+                            'gridAlpha': 0,
+                            'gridCount': 0,
+                            'gridThickness': 0,
+                            /*jshint unused: false */
+                            categoryFunction: (a, d, b) => {
+                                var timeDiff = a.getTime() - this.startTime.getTime();
+                                return hmsTime(timeDiff);
+                            }
+                        },
+                        'export': {
+                            'enabled': true
+                        },
+                        'balloon': {
+                            'adjustBorderColor': true,
+                            'color': '#1e1e1e',
+                            'cornerRadius': 5,
+                            'borderThickness': 2,
+                            'fillColor': '#FFFFFF',
+                            'shadowAlpha': 0,
+                            'fontSize': 16,
+                            'verticalPadding': 4,
+                            'horizontalPadding': 8
+                        },
+                        'dataProvider': this.chartData,
+                        'pathToImages': 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
                     },
                     0
                 );
