@@ -149,7 +149,6 @@ class User {
 			.set('Authorization', `Bearer: ${jwt.token}`)
 			.end(function(err, res) {
 				if (res.ok) {
-					console.log(res.body);
 					localStorage.setItem('user', JSON.stringify(res.body));
 					if (callback) {
 						if (typeof callback === 'object') {
@@ -176,7 +175,6 @@ class TrainingPlan {
 			.set('Accept', 'application/json')
 			.end((err, res) => {
 				if (res.ok && res.body !== null) {
-					console.log('received plan', res.body);
 					this.plan = res.body;
 					this.processPlan();
 				} else {

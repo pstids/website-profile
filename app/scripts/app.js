@@ -178,7 +178,6 @@ var toast = function (message) {
                 logCalendar.addActivity(event.data.addLog);
             }
             if ('workoutShared' in event.data) {
-                console.log(event.data.workoutShared);
                 workoutShared.setData(event.data.workoutShared);
             }
         };
@@ -253,7 +252,6 @@ var toast = function (message) {
 
         page('/a/:name', (data) => {
             if (jwt.hasToken) {
-                console.log('user is ', data.params.name);
                 app.route = 'home';
                 logCalendar.setMode('admin', data.params.name);
                 this.displayedTime = moment();
