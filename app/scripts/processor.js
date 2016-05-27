@@ -9,6 +9,7 @@
 importScripts('/powercenter/scripts/superagent.js');
 importScripts('/powercenter/scripts/toolbox.js');
 importScripts('/powercenter/scripts/dexie.js');
+importScripts('/powercenter/scripts/moment.js');
 
 var data = {}, token, db;
 
