@@ -62,7 +62,6 @@
             @apply(--layout-flex);
             @apply(--layout-vertical);
             overflow: hidden;
-
             cursor: pointer;
             background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
             background-size: cover;
@@ -271,7 +270,7 @@
 
                 this.more = 'hover for more';
 
-                this.$.container.addEventListener('click', function (e) {
+                this.$.container.addEventListener('click', (e) => {
                     var found = false;
                     var target = e.target;
                     while (!found) {
@@ -372,23 +371,23 @@
                     this.$.data.classList.add('hidden');
                     this.unit = '';
                     this.power = '';
-                    this.rgb = `rgb(0, 0, 0)`;
+                    this.rgb = 'rgb(0, 0, 0)';
                     this.$.headera.style.backgroundColor = this.rgb;
                 }
             },
             fit: function () {
                 superagent
-                    .post('/b/api/v1/activities/' + this.data.id + '/fit')
+                    .post(`/b/api/v1/activities/${this.data.id}/fit`)
                     .send()
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
                         if (res.ok) {
                             document.querySelector('#dlFrame').src = res.body.url;
                         } else {
-                            console.log('get download link failed');
+                            console.log('Error: get download link failed', err);
                         }
-                    }.bind(this));
+                    });
             },
             viewWorkout: function () {
                 if (!('id' in this.data)) {
@@ -416,7 +415,6 @@
             },
             // add another workout to this day
             addChild: function (node) {
-                console.log('added child element');
                 this.classList.add('hasChild');
 
                 this.$.more.classList.remove('hidden');

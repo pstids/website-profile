@@ -48,7 +48,6 @@
         }
         .options {
             @apply(--layout-horizontal);
-            /*@apply(--layout-justified);*/
             padding: 1vw 3.3vw;
             flex: none;
         }
@@ -135,7 +134,6 @@
             --paper-radio-button-checked-color: #2BAF2B;
             --paper-radio-button-checked-ink-color: #2BAF2B;
         }
-
         .toggle .circle {
             width: 1.3vw;
             height: 1.3vw;
@@ -207,7 +205,6 @@
             -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
             animation: sk-bounce 2.0s infinite ease-in-out;
         }
-
         .spinner .dot2 {
             top: auto;
             bottom: 0;
@@ -321,11 +318,17 @@
             <div class="layout horizontal end options" style="display: none;">
                 <h1 class="header">Statistics</h1>
                 <div class="toggles">
-                    <div class="stat toggle" data-toggle="on" on-click="toggleMetrics" data-stat="elapsed">
+                    <div class="stat toggle"
+                    data-toggle="on"
+                    on-click="toggleMetrics"
+                    data-stat="elapsed">
                         <div class="type">Show Elapsed Statistics</div>
                         <div class="circle"></div>
                     </div>
-                    <div class="stat toggle" data-toggle="off" on-click="toggleMetrics" data-stat="moving">
+                    <div class="stat toggle"
+                    data-toggle="off"
+                    on-click="toggleMetrics"
+                    data-stat="moving">
                         <div class="type">Show Moving Statistics</div>
                         <div class="circle"></div>
                     </div>
@@ -436,25 +439,28 @@
             ready: function () {
                 this.activity = null;
                 this.descriptionText = '';
-                this.$.descriptionInput.addEventListener('blur', () => {
-                    if (this.activity !== null) {
-                        updateWorkout(
-                            this.activity.id,
-                            {
-                                description: this.descriptionText
-                            },
-                            null
-                        );
+                this.$.descriptionInput.addEventListener(
+                    'blur',
+                    () => {
+                        if (this.activity !== null) {
+                            updateWorkout(
+                                this.activity.id,
+                                {
+                                    description: this.descriptionText
+                                },
+                                null
+                            );
+                        }
                     }
-                });
+                );
 
                 AmCharts.handleLoad();
                 this.metrics = {
                     heartRate: {
                         toggle: this.querySelector('[data-graph="heartRate"]'),
-                        graph: function () {
+                        graph: () => {
                             return this.chart.getGraphById('heartRate');
-                        }.bind(this),
+                        },
                         axis: {
                             'id': 'heartRate',
                             'axisAlpha': 1,
@@ -492,13 +498,13 @@
                                 this.metrics.heartRate.toggle.dataset.toggle = 'on';
                                 this.chart.showGraph(this.metrics.heartRate.graph());
                             }
-                        }.bind(this)
+                        }
                     },
                     power: {
                         toggle: this.querySelector('[data-graph="power"]'),
-                        graph: function () {
+                        graph: () => {
                             return this.chart.getGraphById('power');
-                        }.bind(this),
+                        },
                         axis: {
                             'id': 'power',
                             'axisAlpha': 1,
@@ -537,13 +543,13 @@
                                 this.metrics.power.toggle.dataset.toggle = 'on';
                                 this.chart.showGraph(this.metrics.power.graph());
                             }
-                        }.bind(this)
+                        }
                     },
                     pace: {
                         toggle: this.querySelector('[data-graph="pace"]'),
-                        graph: function () {
+                        graph: () => {
                             return this.chart.getGraphById('pace');
-                        }.bind(this),
+                        },
                         axis: {
                             'id': 'pace',
                             'axisAlpha': 1,
@@ -584,13 +590,13 @@
                                 this.metrics.pace.toggle.dataset.toggle = 'on';
                                 this.chart.showGraph(this.metrics.pace.graph());
                             }
-                        }.bind(this)
+                        }
                     },
                     cadence : {
                         toggle: this.querySelector('[data-graph="cadence"]'),
-                        graph: function () {
+                        graph: () => {
                             return this.chart.getGraphById('cadence');
-                        }.bind(this),
+                        },
                         axis: {
                             'id': 'cadence',
                             'axisAlpha': 1,
@@ -617,9 +623,8 @@
                             'balloonText': '[[value]] SPM',
                             'lineColor': '#5ea7a1'
                         },
-                        switch: function (state) {
-                            if (
-                                state === 'off' ||
+                        switch: (state) => {
+                            if (state === 'off' ||
                                 (state === 'flip' &&
                                 this.metrics.cadence.toggle.checked === false)
                             ) {
@@ -629,13 +634,13 @@
                                 this.metrics.cadence.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.cadence.graph());
                             }
-                        }.bind(this)
+                        }
                     },
                     elevation: {
                         toggle: this.querySelector('[data-graph="elevation"]'),
-                        graph: function () {
+                        graph: () => {
                             return this.chart.getGraphById('elevation');
-                        }.bind(this),
+                        },
                         axis: {
                             'id': 'elevation',
                             'axisAlpha': 1,
@@ -662,25 +667,24 @@
                             'balloonText': '[[value]] Meters',
                             'lineColor': '#a06a81',
                         },
-                        switch: function (state) {
-                            if (
-                                state === 'off' ||
+                        switch: (state) => {
+                            if (state === 'off' ||
                                 (state === 'flip' &&
-                                this.metrics.elevation.toggle.dataset.toggle === 'on')
+                                this.metrics.elevation.toggle.checked === false)
                             ) {
-                                this.metrics.elevation.toggle.dataset.toggle = 'off';
+                                this.metrics.elevation.toggle.dataset.checked = false;
                                 this.chart.hideGraph(this.metrics.elevation.graph());
                             } else {
-                                this.metrics.elevation.toggle.dataset.toggle = 'on';
+                                this.metrics.elevation.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.elevation.graph());
                             }
-                        }.bind(this)
+                        }
                     },
                     groundTime: {
                         toggle: this.querySelector('[data-graph="groundTime"]'),
-                        graph: function () {
+                        graph: () => {
                             return this.chart.getGraphById('groundTime');
-                        }.bind(this),
+                        },
                         axis: {
                             'id': 'groundTime',
                             'axisAlpha': 1,
@@ -707,9 +711,8 @@
                             'balloonText': '[[value]] MS',
                             'lineColor': '#00ACEE',
                         },
-                        switch: function (state) {
-                            if (
-                                state === 'off' ||
+                        switch: (state) => {
+                            if (state === 'off' ||
                                 (state === 'flip' &&
                                 this.metrics.groundTime.toggle.checked === false)
                             ) {
@@ -719,13 +722,13 @@
                                 this.metrics.groundTime.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.groundTime.graph());
                             }
-                        }.bind(this)
+                        }
                     },
                     vertOsc: {
                         toggle: this.querySelector('[data-graph="vertOsc"]'),
-                        graph: function () {
+                        graph: () => {
                             return this.chart.getGraphById('vertOsc');
-                        }.bind(this),
+                        },
                         axis: {
                             'id': 'vertOsc',
                             'axisAlpha': 1,
@@ -752,9 +755,8 @@
                             'balloonText': '[[value]] CM',
                             'lineColor': '#2BAF2B'
                         },
-                        switch: function (state) {
-                            if (
-                                state === 'off' ||
+                        switch: (state) => {
+                            if (state === 'off' ||
                                 (state === 'flip' &&
                                 this.metrics.vertOsc.toggle.checked === false)
                             ) {
@@ -802,20 +804,43 @@
                 if ('chart' in this) {
                     this.bindToggles();
                 }
+
+                this.loadTraining();
+            },
+            loadTraining: function () {
+                var dateHash = moment.unix(this.activity.start_time).format('YYYYMMDD');
+                var trainingDay = trainingPlan.getDay(dateHash);
+                if (trainingDay !== null) {
+                    this.day_title = trainingDay.title;
+                    this.day_description = trainingDay.description;
+                    // Clear previous segments
+                    while (Polymer.dom(this.$.segments).firstChild) {
+                        Polymer.dom(
+                            this.$.segments
+                        ).removeChild(
+                            Polymer.dom(
+                                this.$.segments
+                            ).firstChild
+                        );
+                    }
+                    for (var segment of trainingDay.segments) {
+                        var segmentDom = document.createElement('workout-segment');
+                        segmentDom.setData(segment);
+                        Polymer.dom(this.$.segments).appendChild(segmentDom);
+                    }
+                }
             },
             removeLoading: function () {
                 this.$.spinner.classList.remove('show');
                 this.$.spinner.classList.add('hide');
                 this.$.spinner.classList.add('fade');
                 this.$.spinner.style.zIndex = -1;
-                console.log(this.$.spinner.zIndex);
             },
             setLoading: function () {
                 this.$.spinner.classList.add('show');
                 this.$.spinner.classList.remove('hide');
                 this.$.spinner.classList.remove('fade');
                 this.$.spinner.style.zIndex = 12;
-                console.log(this.$.spinner.zIndex);
             },
             toggleMetrics: function (e) {
                 var target = e.target;
@@ -830,8 +855,7 @@
                 target.dataset.toggle = 'on';
                 
                 var bubbles = this.querySelectorAll('bubble-stat');
-                for (var i = 0; i < bubbles.length; i++) {
-                    var bubble = bubbles[i];
+                for (var bubble of bubbles) {
                     bubble.setMode(opt);
                 }
             },
@@ -1181,19 +1205,18 @@
                         'verticalPadding': 4,
                         'horizontalPadding': 8
                     },
-                    'dataProvider': this.chartData,
-                    'pathToImages': 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
-                }, 0);
+                    0
+                );
 
-                this.chart.addListener('init', function (e) {
+                this.chart.addListener('init', (e) => {
                     this.removeLoading();
                     this.bindToggles();
                     this.calcAvgs(0, this.chartData.length);
-                }.bind(this));
+                });
 
-                this.chart.addListener('zoomed', function (e) {
+                this.chart.addListener('zoomed', (e) => {
                     this.calcAvgs(e.startIndex, e.endIndex + 1);
-                }.bind(this));
+                });
             }
         });
     </script>

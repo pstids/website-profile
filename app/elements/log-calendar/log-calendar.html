@@ -1,9 +1,9 @@
 <dom-module id="log-calendar">
     <style>
         :host {
+            @apply(--layout-vertical);
             font-family: "Stryd", sans-serif;
             background-color: var(--dark-background-color);
-            @apply(--layout-vertical);
             padding: 0 20px 20px 20px;
         }
         h1.header {
@@ -93,9 +93,9 @@
             font-size: 14px;
         }
         .entry .id {
-            height: 80px;
             @apply(--layout-center-justified);
             @apply(--layout-vertical);
+            height: 80px;
         }
         .entry .id .wattage {
             color: white;
@@ -107,12 +107,12 @@
             text-align: center;
             font-size: 20px;
         }
+
         button {
             margin-left: 20px;
         }
     </style>
     <template>
-        <!--<div class="seperator"></div>-->
         <div class="layout horizontal title">
             <div class="flex">
                 <h1 class="header">{{month}}</h1>
@@ -198,14 +198,12 @@
             },
             // Creates dom structure of 5 rows of 7 columns of log-day elements
             assembleDOM: function () {
-                var column = [];
+                var rowDom = [];
                 var calendarContainer = this.$.calendarContainer;
                 for (var i = 0; i < 5; i++) {
                     var row = document.createElement('div');
                     row.classList.add('row');
-                    row.classList.add('style-scope');
-                    row.classList.add('log-calendar');
-                    column = [];
+                    rowDom = [];
                     for (var o = 0; o < 7; o++) {
                         var node = document.createElement('log-day');
                         node.dataset.row = i;
@@ -214,10 +212,10 @@
                             day: 0
                         });
                         row.appendChild(node);
-                        column.push(node);
+                        rowDom.push(node);
                     }
-                    calendarContainer.appendChild(row);
-                    this.dom.push(column);
+                    Polymer.dom(calendarContainer).appendChild(row);
+                    this.dom.push(rowDom);
                 }
             },
             // Grabs array of activity data to populate calendar for month (int) and year (int)
@@ -267,7 +265,6 @@
                     month: monthInt,
                     year: year
                 });
-
                 var startOfMonth = month.startOf('month');
                 var indexFOM = startOfMonth.isoWeekday();
                 var firstMonday = startOfMonth.subtract(indexFOM - 1, 'days');
@@ -309,28 +306,30 @@
                             console.log('Out of range');
                             break;
                         }
+
+                        var dayObj = {
+                            day: activityMoment.format('DD'),
+                            power: activity.average_power,
+                            id: activity.id,
+                            updated_time: activity.updated_time,
+                            time: activity.moving_time,
+                            distance: activity.distance,
+                            description: activity.description
+                        };
+
+                        var dailyPlan = trainingPlan.getDay(
+                            activityMoment.format('YYYYMMDD')
+                        );
+                        if (dailyPlan !== null) {
+                            dayObj.training = dailyPlan;
+                        }
+
                         var calendarDay = this.dom[i][6+days];
                         if (!calendarDay.hasWorkout()) {
-                            calendarDay.setData({
-                                day: activityMoment.format('DD'),
-                                power: activity.average_power,
-                                id: activity.id,
-                                updated_time: activity.updated_time,
-                                time: activity.moving_time,
-                                distance: activity.distance,
-                                description: activity.description
-                            });
+                            calendarDay.setData(dayObj);
                         } else {
                             var newCalendarDay = document.createElement('log-day');
-                            newCalendarDay.setData({
-                                day: activityMoment.format('DD'),
-                                power: activity.average_power,
-                                id: activity.id,
-                                updated_time: activity.updated_time,
-                                time: activity.moving_time,
-                                distance: activity.distance,
-                                description: activity.description
-                            });
+                            newCalendarDay.setData(dayObj);
                             calendarDay.addChild(newCalendarDay);
                         }
                         this.activeDom.push(calendarDay);

@@ -142,10 +142,10 @@ class User {
 			return;
 		}
 		superagent
-			.get('/b/api/v1/users/' + jwt.data.id)
+			.get(`/b/api/v1/users/${jwt.data.id}`)
 			.send()
 			.set('Accept', 'application/json')
-			.set('Authorization', 'Bearer: ' + jwt.token)
+			.set('Authorization', `Bearer: ${jwt.token}`)
 			.end(function(err, res) {
 				if (res.ok) {
 					console.log(res.body);
