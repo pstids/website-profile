@@ -47,6 +47,7 @@ gulp.task('jshint', function () {
       '!app/scripts/external.js',
       '!app/scripts/superagent.js',
       '!app/scripts/dexie.js',
+      '!app/scripts/moment.js',
       '!app/scripts/amcharts/**/*',
       'app/elements/**/*.js',
       'app/elements/**/*.html'
@@ -119,6 +120,7 @@ gulp.task('js', function () {
         '!app/scripts/dropzone.js',
         '!app/scripts/superagent.js',
         '!app/scripts/dexie.js',
+        '!app/scripts/moment.js',
         '!app/scripts/amcharts/**/*',
     ])
     .pipe($.sourcemaps.init())
@@ -159,6 +161,7 @@ gulp.task('copy', function () {
     'app/scripts/toolbox.js',
     'app/scripts/dexie.js',
     'app/scripts/external.js'
+    'app/scripts/moment.js'
   ])
     .pipe(gulp.dest('dist/scripts'));
 
