@@ -2,30 +2,32 @@
 	<style>
 		:host {
 			@apply(--layout-horizontal);
-			background-image: url('../../images/hover.png');
-			background-size: cover;
-			background-clip: padding-box;
-
-			color: white;
+			border: 1px solid #4D4D4D;
+			border-bottom: 0;
+			border-left: 0;
+			background-color: #262626;
 			padding: 10px;
+		}
+		:host:last-child {
+			border-bottom: 1px solid #4D4D4D;
 		}
 		.insight {
 			@apply(--layout-horizontal);
 			@apply(--layout-flex);
 			@apply(--layout-center);
-			@apply(--layout-center-justified);
+			z-index: 1;
 		}
 		.insight .info {
 			@apply(--layout-vertical);
 		}
 		.insight .title {
 			@apply(--layout-horizontal);
-			font-size: 1.5vw;
+			font-size: 10px;
             font-weight: 400;
 		}
 		.insight .field {
 			@apply(--layout-horizontal);
-            font-size: 2vw;
+            font-size: 16px;
             font-weight: 400;
 		}
 		.number {
@@ -41,32 +43,32 @@
 		}
 
 		iron-icon {
-            width: 3vw;
-            height: auto;
-            padding-right: 20px;
-            color: var(--primary-icon-color);
-            fill: var(--primary-icon-color);
+			width: 30px;
+			height: auto;
+			padding-right: 5px;
+			color: var(--primary-icon-color);
+			fill: var(--primary-icon-color);
+		}
+		span {
+			white-space: pre;
 		}
 	</style>
 	<template>
-		<div class="number">
-			#<span>{{id}}</span>
-		</div>
 		<div class="duration insight">
 			<iron-icon icon="image:timer"></iron-icon>
 			<div class="info">
 				<div class="title">Time</div>
 				<div class="field">
-					30 minutes
+					<span>{{data.duration_length}}</span><span> </span><span>{{data.duration_type}}</span>
 				</div>
 			</div>
 		</div>
 		<div class="range insight">
 			<iron-icon icon="image:flash-on"></iron-icon>
 			<div class="info">
-				<div class="title">Easy Zone</div>
+				<div class="title">Zone</div>
 				<div class="field">
-					230-260 watts
+					<span>{{data.low_range}}</span><span> - </span><span>{{data.high_range}}</span><span> watts</span>
 				</div>
 			</div>
 		</div>
@@ -74,8 +76,14 @@
 	<script>
 		Polymer({
 			is: 'workout-segment',
+			properties: {
+				data: Object
+			},
 			ready: function () {
-
+				this.data = {};
+			},
+			setData: function (data) {
+				this.data = data;
 			}
 		});
 	</script>
