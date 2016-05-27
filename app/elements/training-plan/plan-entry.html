@@ -44,6 +44,11 @@
             paper-dropdown-menu {
                 width: 10vw;
             }
+            #plan-fab {
+                position: fixed;
+                bottom: 20px;
+                right: 10px;
+            }
         </style>
         <!-- Main Content -->
         <div id="plan-header" class="layout vertical">
@@ -84,9 +89,9 @@
             <div id="weekviews"></div>
         </div>
         <training-entry id="dialog"></training-entry>
-        <!--<div id="plan-fab">-->
-        <!--<paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>-->
-        <!--</div>-->
+        <div id="plan-fab">
+            <paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>
+        </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
 
@@ -248,7 +253,8 @@
             saveAll: function() {
                 let weekViewContainer = this.$.weekviews;
                 let workouts = [];
-                for (let i = 0; i < weekViewContainer.children.length; i++) { let node = weekViewContainer.children[i];
+                for (let i = 0; i < weekViewContainer.children.length; i++) {
+                    let node = weekViewContainer.children[i];
                     if (node.nodeName === 'TEMPLATE') {
                         continue;
                     }

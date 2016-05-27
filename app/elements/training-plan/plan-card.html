@@ -125,6 +125,7 @@
             trainingInfoChanged: function (info) {
                 this.trainingInfo = info;
                 if (Object.keys(this.trainingInfo).length !== 0) {
+                    this.trainingInfo.day = (this.week - 1) * 7 + this.day;
                     this.title = info.name;
                     this.duration = info.duration;
                     this.intensity = 70;
