@@ -52,7 +52,7 @@
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button dialog-dismiss>Cancel</paper-button>
-                <paper-button dialog-confirm autofocus on-click="save">Save</paper-button>
+                <paper-button dialog-confirm autofocus on-click="_save">Save</paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -152,9 +152,10 @@
                 segmentEntry.setData(segData);
                 Polymer.dom(this.$.segments).appendChild(segmentEntry);
 
-                this.save();
+                this._save();
             },
-            save: function () {
+            _save: function () {
+                console.log('here');
                 let segments = [];
                 let segmentCnt = Polymer.dom(this.$.segments).children.length;
                 for (var i = 0; i < segmentCnt; i++) {

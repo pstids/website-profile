@@ -3,6 +3,7 @@
         <style>
             :host {
                 color: var(--paper-grey-100);
+                position: relative;
             }
             :host:hover {
                 cursor: pointer;
@@ -38,7 +39,7 @@
             }
             .subtitle { @apply(--paper-font-caption); }
             .subtitle iron-icon {
-                font-size: 14px;
+                font-size: 12px;
             }
             .desc {
                 width: 100%;
@@ -61,11 +62,21 @@
                 --iron-icon-fill-color: var(--paper-grey-500);
                 --iron-icon-stroke-color: var(--paper-grey-500);
             }
+            #menu {
+                position: relative;
+            }
+            #menu paper-menu-button {
+                padding: 0;
+            }
+            #menu paper-icon-button {
+                width: 30px;
+                height: 30px;
+            }
         </style>
 
         <div id="main" class="layout horizontal center">
             <paper-card elevation="3" class$="flex layout vertical {{cardStatus}}">
-                <div class="flex layout vertical center" id="content">
+                <div class="flex-3 layout vertical center" id="content" on-tap="_showDialog">
                     <div class="title">{{title}}</div>
                     <div class="subtitle text-light" id="stat">
                         <iron-icon class="small" icon="image:flash-on"></iron-icon>
@@ -75,8 +86,17 @@
                     </div>
                     <p class="desc flex">{{description}}</p>
                 </div>
-                <div id="add" class="flex layout vertical center center-justified">
+                <div id="add" class="flex-3 layout vertical center center-justified" on-tap="_showDialog">
                     <iron-icon class="big grey" icon="icons:add-circle-outline"></iron-icon>
+                </div>
+                <div id="menu" class="flex-1" >
+                    <paper-menu-button vertical-align="bottom" horizontal-align="right">
+                        <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+                        <paper-menu class="dropdown-content">
+                            <paper-item on-click="_copy">Copy</paper-item>
+                            <paper-item on-click="_paste">Paste</paper-item>
+                        </paper-menu>
+                    </paper-menu-button>
                 </div>
             </paper-card>
         </div>
@@ -96,7 +116,7 @@
                 cardStatus: String
             },
             listeners: {
-                'tap': 'showDialog'
+//                'tap': 'showDialog'
             },
             ready: function () {
                 this.trainingInfo = {};
@@ -118,10 +138,16 @@
                     this.cardStatus = 'empty';
                 }
             },
-            showDialog: function () {
+            _showDialog: function () {
                 console.log('show dialog, card send training info: ', this.trainingInfo);
                 // Used to fill current information on to training-entry dialog
                 this.fire('card-tap', {'info': this.trainingInfo, 'week': this.week, 'day': this.day});
+            },
+            _copy: function () {
+                this.fire('card-copy', {'info': this.trainingInfo});
+            },
+            _paste: function () {
+                this.fire('card-paste', {'week': this.week, 'day': this.day});
             }
         });
 

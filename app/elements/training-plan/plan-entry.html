@@ -127,6 +127,9 @@
                     type: Number,
                     value: 4
                 },
+                copyData: {
+                    type: Object,
+                }
             },
             ready: function () {
                 this.addEventListener('card-tap', function (e) {
@@ -145,8 +148,17 @@
                         return;
                     }
                     this.$.weekviews.children[this.selectWeek].setCardData(this.selectDay, info);
-
                     this.saveAll();
+                });
+
+                this.addEventListener('card-copy', function (e) {
+                    this.copyData = e.detail.info;
+                });
+
+                this.addEventListener('card-paste', function (e) {
+                    this.selectWeek = e.detail.week - 1;
+                    this.selectDay = e.detail.day;
+                    this.$.weekviews.children[this.selectWeek].setCardData(this.selectDay, this.copyData);
                 });
             },
 
