@@ -293,6 +293,11 @@
             z-index: 50;
         }
 
+        #circlechart {
+            width: 100%;
+            height: 500px;
+            font-size: 11px;
+            color: white;
         }
     </style>
     <template>
@@ -382,6 +387,7 @@
 
     <script src="../../scripts/amcharts/amcharts.js"></script>
     <script src="../../scripts/amcharts/serial.js"></script>
+    <script src="../../scripts/amcharts/pie.js"></script>
     <script src="../../scripts/amcharts/themes/stryd.js"></script>
     <script>
         /*global AmCharts*/
@@ -397,7 +403,47 @@
 
         Polymer({
             is: 'workout-element',
+            properties: {
+                selected: {
+                    type: Number,
+                    notify: true
+                }
+            },
+            switchme: function () {
+                if (this.selected === 0) {
+                    this.selected = 1;
+                } else {
+                    this.selected = 0;
+                }
+            },
+            fillzones: function () {
+                var zoneData = [
+                    {
+                        'zone': 'Marathon',
+                        'seconds': 100
+                    },
+                    {
+                        'zone': 'Threshold',
+                        'seconds': 50
+                    },
+                    {
+                        'zone': 'Interval',
+                        'seconds': 25
+                    }
+                ];
+                AmCharts.makeChart(
+                    this.$.circlechart,
+                    {
+                        'type': 'pie',
+                        'theme': 'stryd',
+                        'dataProvider': zoneData,
+                        'valueField': 'seconds',
+                        'titleField': 'zone'
+                    }
+                );
+            },
             ready: function () {
+                this.selected = 0;
                 this.activity = null;
                 this.descriptionText = '';
                 this.$.descriptionInput.addEventListener(
@@ -416,6 +462,7 @@
                 );
 
                 AmCharts.handleLoad();
+                this.fillzones();
                 this.metrics = {
                     heartRate: {
                         toggle: this.querySelector('[data-graph="heartRate"]'),
