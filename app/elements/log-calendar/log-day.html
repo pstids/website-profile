@@ -28,6 +28,25 @@
             border: 1px solid #FFFFFF;
         }
 
+        .hasWorkout {
+            background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+            cursor: pointer;
+        }
+        .hasNoWorkout {
+            cursor: auto;
+            background-image: 'none';
+        }
+        .hasNoWorkout .data,
+        .hasNoWorkout .options,
+        .hasPlanned .data,
+        .hasPlanned .options {
+            display: none !important;
+        }
+        .hasPlanned {
+            cursor: pointer;
+            background-image: 'none';
+        }
+
         .half-items {
             @apply(--layout-vertical);
             position: absolute;
@@ -73,6 +92,7 @@
 
         .header {
             @apply(--layout-horizontal);
+            @apply(--layout-end-justified);
             height: 24px;
             padding: 0 3px;
             opacity: 0.6;
@@ -80,14 +100,18 @@
             flex: 0 1 24px;
         }
         .header .options {
-            @apply(--layout-flex-2);
+            @apply(--layout-flex-3);
             @apply(--layout-horizontal);
             opacity: 0;
             transition: 0.5s opacity;
         }
-
+        .header .tp {
+            text-align: right;
+            color: white;
+            line-height: 24px;
+            font-size: 14px;
+        }
         .header .numday {
-            @apply(--layout-flex);
             text-align: right;
             color: white;
             line-height: 24px;
@@ -115,6 +139,7 @@
 
         .other {
             height: 28px;
+            margin-bottom: 5px;
         }
         .distance, .time {
             height: 28px;
@@ -143,7 +168,7 @@
             width: 14px;
         }
 
-        .options iron-icon {
+        .options iron-icon, .header iron-icon {
             color: white;
             fill: white;
             margin: 5px 3px;
@@ -161,9 +186,9 @@
         }
     </style>
     <template>
-        <div class="container" id="container">
+        <div class="container hasNoWorkout" id="container">
             <div class="header" id="headera">
-                <div class="options" id="options">
+                <div class="options">
                     <div id="share">
                         <iron-icon icon="social:share"></iron-icon>
                         <paper-tooltip>Share Workout</paper-tooltip>
@@ -188,7 +213,7 @@
                     {{day}}
                 </div>
             </div>
-            <div class="layout vertical center-justified flex-auto" id="data">
+            <div class="layout vertical center-justified flex-auto data">
                 <div class="wattage">
                     <iron-icon icon="image:flash-on"></iron-icon>
                     <div class="value">
@@ -210,14 +235,9 @@
                     </div>
                 </div>
             </div>
-
             <div class="more hidden" id="more">{{more}}</div>
-
-
         </div>
-        <div class="half-items" id="half">
-
-        </div>
+        <div class="half-items" id="half"></div>
     </template>
     <script>
         /*global page*/
@@ -255,18 +275,6 @@
             attached: function () {
                 this.logOption = document.querySelector('log-options');
             },
-            clearWorkout: function () {
-                this.data = {};
-                this.sameDays = [];
-                this.classList.remove('hasChild');
-                this.classList.remove('active');
-
-                this.$.more.classList.add('hidden');
-                var logDays = this.querySelectorAll('log-day');
-                for (var i = 0; i < logDays.length; i++) {
-                    this.$.half.removeChild(logDays[i]);
-                }
-            },
             ready: function () {
                 this.sameDays = [];
                 this.data = {};
@@ -301,35 +309,75 @@
                 var tooltip = document.querySelector('[data-tooltip]');
                 var tooltipDescription = tooltip.querySelector('#description');
 
-                this.$.container.addEventListener('mouseenter', function () {
-                    if ('description' in this.data && this.data.description.length > 0) {
-                        tooltip.classList.remove('hidden');
-                        tooltip.style.borderColor = this.rgb;
+                this.$.container.addEventListener(
+                    'mouseenter',
+                    () => {
+                        if (
+                            'description' in this.data &&
+                            this.data.description.length > 0
+                        ) {
+                            tooltip.classList.remove('hidden');
+                            tooltip.style.borderColor = this.rgb;
 
-                        var duration = moment.duration(this.data.time, 'seconds');
-                        var minutesStr = duration.minutes().toString();
-                        if (minutesStr.length === 1) {
-                            minutesStr = '0' + minutesStr;
+                            var duration = moment.duration(this.data.time, 'seconds');
+                            var minutesStr = duration.minutes().toString();
+                            if (minutesStr.length === 1) {
+                                minutesStr = '0' + minutesStr;
+                            }
+                            
+                            if (this.data.description.length > 40) {
+                                tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
+                            } else {
+                                tooltipDescription.textContent = this.data.description;
+                            }
+                        } else if ('training' in this.data) {
+                            tooltip.classList.remove('hidden');
+                            tooltip.style.borderColor = this.rgb;
+
+                            tooltipDescription.textContent = this.data.training.description;
                         }
+<<<<<<< f72ad021d6ecb0ac8530d3e40fee7744fc9c0260
 
                         if (this.data.description.length > 40) {
                             tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
                         } else {
                             tooltipDescription.textContent = this.data.description;
-                        }
-                    }
-                }.bind(this), false);
+=======
+                    },
+                    false
+                );
 
-                this.$.container.addEventListener('mouseleave', function () {
-                    if ('description' in this.data) {
-                        tooltip.classList.add('hidden');
-                    }
-                }.bind(this), false);
+                this.$.container.addEventListener(
+                    'mouseleave',
+                    () => {
+                        if (
+                            'description' in this.data ||
+                            'training' in this.data   
+                        ) {
+                            tooltip.classList.add('hidden');
+>>>>>>> Improve function, script for training in log-day
+                        }
+                    },
+                    false
+                );
+            },
+            clearWorkout: function () {
+                this.data = {};
+                this.sameDays = [];
+                this.classList.remove('hasChild');
+                this.classList.remove('active');
+
+                this.$.more.classList.add('hidden');
+                
+                var logDays = this.querySelectorAll('log-day');
+                for (var logDay of logDays) {
+                    this.$.half.removeChild(logDay);
+                }
             },
             setData: function (data) {
                 this.data = data;
                 this.day = data.day;
-                this.rgb = '#000000';
+                this.rgb = 'rgb(0, 0, 0)';
                 if ('power' in data) {
                     if ('training' in data) {
                         Polymer.dom(this.$.tpp).classList.remove('hidden');
@@ -344,14 +392,12 @@
 
                     this.unit = 'watts';
                     this.power = data.power.toFixed(0);
-
-                    var distance = meterToUserUnit(this.data.distance);
-                    this.distance = distance;
+                    this.distance = meterToUserUnit(this.data.distance);
 
                     var duration = moment.duration(this.data.time, 'seconds');
                     var minutesStr = duration.minutes().toString();
                     if (minutesStr.length === 1) {
-                        minutesStr = '0' + minutesStr;
+                        minutesStr = `0${minutesStr}`;
                     }
                     this.time = `${duration.hours()}:${minutesStr}`;
 
