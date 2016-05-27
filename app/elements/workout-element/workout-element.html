@@ -771,7 +771,51 @@
                                 this.metrics.vertOsc.toggle.checked = true;
                                 this.chart.showGraph(this.metrics.vertOsc.graph());
                             }
-                        }.bind(this)
+                        }
+                    },
+                    training: {
+                        toggle: this.querySelector('[data-graph="training"]'),
+                        graph: () => {
+                            return this.chart.getGraphById('training');
+                        },
+                        axis: {
+                            'id': 'training',
+                            'axisAlpha': 1,
+                            'position': 'right',
+                            'offset': 40,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#2BAF2B',
+                            'dashLength': 1
+                        },
+                        info: {
+                            'id': 'training',
+                            'valueAxis': 'training',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'training',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'training',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] W',
+                            'lineColor': '#2BAF2B'
+                        },
+                        switch: (state) => {
+                            if (state === 'off' ||
+                                (state === 'flip' &&
+                                this.metrics.training.toggle.checked === false)
+                            ) {
+                                this.metrics.training.toggle.checked = false;
+                                this.chart.hideGraph(this.metrics.training.graph());
+                            } else {
+                                this.metrics.training.toggle.checked = true;
+                                this.chart.showGraph(this.metrics.training.graph());
+                            }
+                        }
                     }
                 };
             },
@@ -874,7 +918,7 @@
                 }
                 this.metrics.power.switch('on');
                 this.metrics.heartRate.switch('on');
-                var hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc'];
+                var hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc', 'training'];
                 for (key of this.availableMetrics) {
                     if (hiddenMetrics.indexOf(key) > -1) {
                         this.metrics[key].switch('off');
