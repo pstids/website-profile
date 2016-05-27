@@ -154,11 +154,12 @@
                     x = e.pageX;
                     y = e.pageY;
                 });
+                // Set the position of the hover box. If the right side of the box would cause a horizontal scroll bar, move the hover box to the left side of the cursor.
                 var setPosition = function () {
                     if (!tooltip.classList.contains('hidden')) {
                         var xPos;
-                        if ((window.innerWidth - x) < 150) {
-                            xPos = x - 150;
+                        if ((window.innerWidth - x) < 230) {
+                            xPos = x - 230;
                         } else {
                             xPos = x + 30;
                         }
