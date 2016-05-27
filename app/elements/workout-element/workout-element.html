@@ -210,10 +210,13 @@
         }
 
         .tp {
-            background-color: #3D3D3D;
+            border: 1px solid #4D4D4D;
+            border-bottom: 0;
+            background-color: #262626;
             margin: 10px 10px 0 0;
             color: white;
-            overflow-y: scroll;
+            overflow-y: auto;
+            overflow-x: hidden;
             height: 28vw;
         }
         .tp .title {
@@ -228,23 +231,67 @@
             margin: 0;
         }
 
-        .segment {
-            background-image: url('../../images/hover.png');
-            background-size: cover;
-            background-clip: padding-box;
-            cursor: pointer;
+        .pt-page-moveToLeft {
+            -webkit-animation: moveToLeft .6s ease both;
+            animation: moveToLeft .6s ease both;
+        }
 
+        .pt-page-moveFromLeft {
+            -webkit-animation: moveFromLeft .6s ease both;
+            animation: moveFromLeft .6s ease both;
+        }
+
+        .pt-page-moveToRight {
+            -webkit-animation: moveToRight .6s ease both;
+            animation: moveToRight .6s ease both;
+        }
+
+        .pt-page-moveFromRight {
+            -webkit-animation: moveFromRight .6s ease both;
+            animation: moveFromRight .6s ease both;
+        }
+        @-webkit-keyframes moveToLeft {
+            from { }
+            to { -webkit-transform: translateX(-100%); }
+        }
+        @keyframes moveToLeft {
+            from { }
+            to { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
+        }
+
+        @-webkit-keyframes moveFromLeft {
+            from { -webkit-transform: translateX(-100%); }
+        }
+        @keyframes moveFromLeft {
+            from { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
+        }
+
+        @-webkit-keyframes moveToRight { 
+            from { }
+            to { -webkit-transform: translateX(100%); }
+        }
+        @keyframes moveToRight { 
+            from { }
+            to { -webkit-transform: translateX(100%); transform: translateX(100%); }
+        }
+
+        @-webkit-keyframes moveFromRight {
+            from { -webkit-transform: translateX(100%); }
+        }
+        @keyframes moveFromRight {
+            from { -webkit-transform: translateX(100%); transform: translateX(100%); }
+        }
+
+        .plan-toggle {
+            position: relative;
+        }
+        .plan-toggle iron-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
             color: white;
-
-            @apply(--layout-horizontal);
+            z-index: 50;
         }
-        .segment .number {
-        
-        }
-        .segment .duration {
-
-        }
-        .segment .target {
 
         }
     </style>
