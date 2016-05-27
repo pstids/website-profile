@@ -37,11 +37,9 @@ class JWT {
 	}
 
 	checkRenewal() {
-		if ('exp' in this.data) {
-			if (this.data.exp < Date.now()) {
-				this.requestToken();
-			}
-		} else {
+		if ('exp' in this.data && this.data.exp < Date.now()) {
+			this.requestToken();
+		} else if (!('exp' in this.data)) {
 			this.requestToken();
 		}
 	}
