@@ -336,13 +336,11 @@
 
                             tooltipDescription.textContent = this.data.training.description;
                         }
-<<<<<<< f72ad021d6ecb0ac8530d3e40fee7744fc9c0260
-
                         if (this.data.description.length > 40) {
                             tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
                         } else {
                             tooltipDescription.textContent = this.data.description;
-=======
+                        }
                     },
                     false
                 );
@@ -355,7 +353,6 @@
                             'training' in this.data   
                         ) {
                             tooltip.classList.add('hidden');
->>>>>>> Improve function, script for training in log-day
                         }
                     },
                     false
