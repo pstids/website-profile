@@ -45,6 +45,12 @@
             },
             ready: function () {
             },
+            setReadOnly: function () {
+                let cardDiv = Polymer.dom(this.$.content).children;
+                for (let i = 0; i < cardDiv.length; i++) {
+                    cardDiv[i].readOnly = true;
+                }
+            },
             setCardData: function (day, info) {
                 let cardDiv = Polymer.dom(this.$.content).children;
                 cardDiv[day].trainingInfoChanged(info);

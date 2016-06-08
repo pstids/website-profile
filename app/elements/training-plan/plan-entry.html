@@ -34,36 +34,81 @@
                 color: var(--primary-color);
             }
 
-            paper-input#title-input {
+            paper-input#titleInput {
                 min-width: 30vw;
             }
 
-            paper-input#duration-input {
+            paper-input#durationInput {
                 width: 5vw;
             }
             paper-dropdown-menu {
                 width: 10vw;
             }
-            #plan-fab {
+            #planfab {
                 position: fixed;
                 bottom: 20px;
                 right: 10px;
+            }
+
+            #loading {
+                width: 100%;
+                height: 100%;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                position: fixed;
+            }
+            #overlay {
+                background-color: black;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                opacity:.8;
+                position: fixed;
+            }
+            paper-spinner-lite {
+                --paper-spinner-color: var(--primary-color);
+            }
+            paper-card#summary {
+                position: fixed;
+                display: none;
+                max-width: 50vw;
+                --paper-card-background-color: rgba(19, 19, 19, 0.9);
+                --paper-card-header-text: {
+                    color: var(--primary-color)
+                };
+                --paper-card-content: {
+                    color: #eee;
+                    font-size: 16px;
+                };
+            }
+            paper-card#summary #summary-type {
+            }
+            paper-card#summary #summary-desc {
+                padding-top: 3vh;
+                padding-bottom: 3vh;
+            }
+            paper-card#summary .summary-section {
+                padding-top: 1vh;
+                padding-bottom: 1vh;
             }
         </style>
         <!-- Main Content -->
         <div id="plan-header" class="layout vertical">
             <h2 class="underline">Plan Info</h2>
             <div class="layout horizontal end around-justified">
-                <paper-input id="title-input" label="Plan Title" placeholder="e.g. Endurance with threshold tempo"
+                <paper-input id="titleInput" label="Plan Title" placeholder="e.g. Endurance with threshold tempo"
                              value="{{planTitle}}" maxlength="80" required>
                 </paper-input>
-                <paper-radio-group selected="{{planLevel}}">
+                <paper-radio-group id="planLevel" selected="{{planLevel}}">
                     <paper-radio-button name="beginner">Beginner</paper-radio-button>
                     <paper-radio-button name="intermediate">Intermediate</paper-radio-button>
                     <paper-radio-button name="advance">Advanced</paper-radio-button>
                     <paper-radio-button name="general">General</paper-radio-button>
                 </paper-radio-group>
-                <paper-dropdown-menu label="Goal Distance" no-animations>
+                <paper-dropdown-menu id="goalDistance" label="Goal Distance" no-animations>
                     <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}">
                         <paper-item name="5k">5k</paper-item>
                         <paper-item name="10k">10k</paper-item>
@@ -78,7 +123,7 @@
                         <paper-item name="other">Other</paper-item>
                     </paper-menu>
                 </paper-dropdown-menu>
-                <paper-input id="duration-input" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
+                <paper-input id="durationInput" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
                              value="{{weekNum}}" on-blur="onWeekInput">
                     <div suffix>Weeks</div>
                 </paper-input>
@@ -89,10 +134,23 @@
             <div id="weekviews"></div>
         </div>
         <training-entry id="dialog"></training-entry>
-        <div id="plan-fab">
+        <div id="planfab">
             <paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>
         </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
+        <div id="loading" class="layout horizontal center center-justified">
+            <div id="overlay"></div>
+            <paper-spinner-lite active></paper-spinner-lite>
+        </div>
+        <paper-card id="summary" heading="{{summaryData.name}}">
+            <div class="card-content layout vertical">
+                <div id="summary-type"><b>Type: </b>{{summaryData.type}}</div>
+                <div id="summary-desc"><b>Description: </b>{{summaryData.description}}</div>
+                <template is="dom-repeat" items="{{summaryData.segments}}">
+                    <div class="summary-section">Segment <b>{{item.segment_num}}</b>: {{_extractSegmentSummary(item)}}</div>
+                </template>
+            </div>
+        </paper-card>
     </template>
 
     <script>
@@ -102,7 +160,7 @@
             properties: {
                 planId: {
                     type: Number,
-                    observer: '_planIDChanged'
+                    observer: '_fetchPlan'
                 },
                 selectWeek: {
                     type: Number,
@@ -134,9 +192,13 @@
                 },
                 copyData: {
                     type: Object,
+                },
+                summaryData: {
+                    type: Object,
                 }
             },
             ready: function () {
+                this.$.loading.hidden = true;
                 this.addEventListener('card-tap', function (e) {
                     this.selectWeek = e.detail.week - 1;
                     this.selectDay = e.detail.day;
@@ -145,6 +207,24 @@
                     let info = e.detail.info;
                     dialog.set(info, e.detail.week, e.detail.day);  // Displayed week
                     dialog.open();
+                });
+
+                this.addEventListener('card-show-summary', function (e) {
+                    let info = e.detail;
+                    this.$.summary.style.top = String(info.y)  + 'px';
+                    if (info.pos === 'left') {
+                        this.$.summary.style.left = null;
+                        this.$.summary.style.right = String(info.x + 20)  + 'px';
+                    } else {
+                        this.$.summary.style.left = String(info.x + 20)  + 'px';
+                        this.$.summary.style.right = null;
+                    }
+                    this.$.summary.style.display = 'inherit';
+                    this.summaryData = info.info;
+                });
+
+                this.addEventListener('card-hide-summary', function () {
+                    this.$.summary.style.display = 'none';
                 });
 
                 this.addEventListener('training-input', function (e) {
@@ -167,16 +247,29 @@
                 });
             },
 
-            _planIDChanged: function () {
+            _fetchPlan: function () {
+                if (this.planID === 'undefined') {
+                    return;
+                }
+                this.$.loading.hidden = false;
+                this.clearData();
+                console.log('fetch plan');
                 superagent
                     .get('/b/api/v1/training/plan/'+this.planId)
                     .set('Accept', 'application/json')
                     .set('Authorization', 'Bearer: ' + jwt.token)
                     .end(function(err, res) {
+                        this.$.loading.hidden = true;
                         if (res.ok) {
                             switch (res.status) {
                                 case 200:
-                                    this._fillData(res.body);
+                                    this._fillData(res.body.plan);
+                                    if (!(res.body.is_author)) {
+                                        this.$.planfab.style.display = 'none';
+                                        for (let i = 0; i < this.$.weekviews.children.length; i++) {
+                                            this.$.weekviews.children[i].setReadOnly();
+                                        }
+                                    }
                                     break;
                                 case 204:
                                     console.log('No plan with this id found');
@@ -208,7 +301,42 @@
                 }
             },
 
+            _extractSegmentSummary: function (segData) {
+                console.log(segData);
+                let msg = 'Run for ';
+                switch (segData.duration_type) {
+                    case 'time':
+                        msg += segData.duration_time.hour + ':' + segData.duration_time.minute + ':' + segData.duration_time.second;
+                        break;
+                    case 'distance':
+                        msg += segData.duration_distance + ' ' + segData.distance_unit_selected;
+                        break;
+                }
+                msg += ' ';
+                switch (segData.intensity_type) {
+                    case 'zone':
+                        msg += 'at zone ' + segData.zone_selected;
+                        break;
+                    case 'percentage':
+                        msg += 'between ' + segData.intensity_percent.low + '% - ' + segData.intensity_percent.high + '%';
+                        break;
+                    case 'pace':
+                        msg += 'at ' + segData.pace_selected + ' pace';
+                        break;
+                }
+                if (segData.repeat_count > 1) {
+                    msg += ', ';
+                    msg += 'repeat for ' + segData.repeat_count + ' times with ' +
+                        segData.rest_time.minute + ':' + segData.rest_time.second + ' easy/recovery run in between';
+                }
+                msg += '.\n\n';
+                msg += segData.description;
+                return msg;
+            },
+
             clearData: function () {
+                console.log('clear plan data');
+
                 this.planTitle = '';
                 this.planLevel = 'intermediate';
                 this.planDistanceSelected = '5k';

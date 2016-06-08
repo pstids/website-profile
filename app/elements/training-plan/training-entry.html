@@ -3,14 +3,17 @@
         <style>
             :host {
             }
-            paper-dialog#input {
-                min-width: 60vw;
+            paper-dialog#entry {
+                min-width: 70vw;
             }
             #plan-meta paper-input {
                 min-width: 15vw;
             }
             #plan-meta paper-textarea {
-                width: 15vw;
+                width: 30vw;
+            }
+            segment-entry {
+                margin-bottom: 5vh;
             }
             paper-button {
                 color: var(--primary-color);
@@ -20,11 +23,11 @@
                 max-height: 30vh;
             }
         </style>
-        <paper-dialog id="input" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+        <paper-dialog id="entry" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>{{weekday}}, Week {{week}}</h2>
             <div id="plan-meta" class="layout horizontal around-justified">
                 <paper-input label="Title" placeholder="e.g. Endurance run"
-                             value="{{planName}}" maxlength="40" char-counter>
+                             value="{{planName}}" maxlength="80" char-counter>
                 </paper-input>
                 <paper-textarea label="Objective" placeholder="Get ready to go the distance on race day with your week’s longest run."
                              value="{{planObjective}}" max-rows="3">
@@ -132,7 +135,7 @@
                 }
             },
             open: function () {
-                this.$.input.open();
+                this.$.entry.open();
             },
             addSegmentHandler: function () {
                 this.addSegment({});
