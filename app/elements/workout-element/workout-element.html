@@ -287,10 +287,14 @@
         }
         .plan-toggle iron-icon {
             position: absolute;
-            top: 0;
-            right: 0;
-            color: white;
             z-index: 50;
+            top: 13px;
+            right: 13px;
+            padding: 10px;
+            border: 1px solid #FFFFFF;
+            background-color: #1C1C1C;
+            border-radius: 6px;
+            color: white;
         }
 
         #circlechart {
@@ -346,7 +350,7 @@
                 </div>
                 <div class="flex layout vertical">
                     <div class="tp flex plan-toggle" data-tp="plan">
-                        <iron-icon on-click="toggleTP" icon="icons:picture-in-picture-alt"></iron-icon>
+                        <iron-icon on-click="toggleTP" icon="icons:arrow-back"></iron-icon>
                         <p>{{day_title}}</p>
                         <p>{{day_description}}</p>
                         <div id="segments">
@@ -355,7 +359,7 @@
                         </div>
                     </div>
                     <div class="tp graph flex vertical plan-toggle" data-tp="graph">
-                        <iron-icon on-click="toggleTP" icon="icons:picture-in-picture-alt"></iron-icon>
+                        <iron-icon on-click="toggleTP" icon="icons:arrow-forward"></iron-icon>
                         <div id="circlechart"></div>
                     </div>
                 </div>
