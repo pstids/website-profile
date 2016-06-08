@@ -81,8 +81,6 @@
             @apply(--layout-flex);
             @apply(--layout-vertical);
             overflow: hidden;
-            cursor: pointer;
-            background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
             background-size: cover;
             min-height: 100px;
         }
@@ -335,11 +333,6 @@
                             tooltip.style.borderColor = this.rgb;
 
                             tooltipDescription.textContent = this.data.training.description;
-                        }
-                        if (this.data.description.length > 40) {
-                            tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
-                        } else {
-                            tooltipDescription.textContent = this.data.description;
                         }
                     },
                     false
