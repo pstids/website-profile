@@ -96,44 +96,6 @@ var workoutSave = function (workout, id) {
     });
 };
 
-var workoutFetchingAJAX = function (workout, scope) {
-    superagent
-        .get(`/b/api/v1/activities/${workout}`)
-        .send()
-        .set('Accept', 'application/json')
-        .set('Authorization', `Bearer: ${token}`)
-        .end(function (err, res) {
-            if (res.ok) {
-                workoutProcessing(res.body, workout, scope);
-            } else {
-                console.log('Error: cannot fetch workout');
-            }
-        });
-};
-
-var workoutFetching = function (workoutID, workoutUpdated, scope) {
-    var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
-    if (!checkIndexedDB) {
-        workoutFetchingAJAX(workoutID);
-    } else {
-        db.log.get(String(workoutID), function (log) {
-            if (log === undefined) {
-                workoutFetchingAJAX(workoutID, scope);
-            } else {
-                var workoutUpdatedTS = new Date(workoutUpdated);
-                var logUpdatedTS = new Date(log.data.updated_time);
-                var getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
-                    (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
-                if (getExternal) {
-                    workoutFetchingAJAX(workoutID, scope);
-                } else {
-                    workoutProcessing(log.data, log.id, scope);
-                }
-            }
-        });
-    }
-};
-
 var trainingPlan = {};
 var trainingDays = {};
 var trainingGraphDays = {};
@@ -338,7 +300,7 @@ var workoutFetchingAJAX = function (workout, scope) {
         .send()
         .set('Accept', 'application/json')
         .set('Authorization', `Bearer: ${token}`)
-        .end(function(err, res) {
+        .end(function (err, res) {
             if (res.ok) {
                 workoutProcessing(res.body, workout, scope);
             } else {

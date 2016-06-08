@@ -97,11 +97,10 @@ class User {
 	getImage() {
 		this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
 		if ('profile_medium' in this.data && this.data.profile_medium !== '') {
-			return this.data.profile_medium;
-			// return decodeURIComponent(this.data.profile_medium.replace('+', ' '));
+			return decodeURIComponent(this.data.profile_medium.replace('+', ' '));
 		} else if ('email' in this.data && this.data.email !== '') {
 			var gravHash = CryptoJS.MD5(this.data.email.toLowerCase());
-			return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
+			return `http://www.gravatar.com/avatar/${gravHash}?d=${this.defaultURL}`;
 		} else {
 			return 'https://www.stryd.com/powercenter/images/favicon.png';
 		}
