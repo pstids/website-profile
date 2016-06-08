@@ -31,6 +31,12 @@
                     display: none;
                 };
             }
+            paper-textarea#note {
+                width: 80%;
+            }
+            paper-input-container#rest {
+                visibility: hidden;
+            }
             .separator {
                 padding-left: 1vw;
                 padding-right: 1vw;
@@ -38,6 +44,10 @@
             .colon {
                 @apply(--paper-font-caption);
                 font-weight: 900;
+            }
+            .underline {
+                border-bottom: 1px solid var(--primary-color);
+                padding-bottom: 5px;
             }
             input[is="iron-input"] {
                 font: inherit;
@@ -51,8 +61,8 @@
         </style>
 
         <h3>Segment {{segmentNum}}</h3>
-        <div id="content" class="layout horizontal end around-justified">
-            <div class="flex-3 layout vertical center">
+        <div id="content" class="layout horizontal start around-justified">
+            <div class="flex-3 layout vertical justified center">
                 <paper-radio-group selected="{{durationType}}">
                     <paper-radio-button name="time">Time</paper-radio-button>
                     <paper-radio-button name="distance">Distance</paper-radio-button>
@@ -81,7 +91,7 @@
                     </div>
                 </iron-pages>
             </div>
-            <div class="flex-4 layout vertical center">
+            <div class="flex-4 layout vertical justified center">
                 <paper-radio-group selected="{{intensityType}}">
                     <paper-radio-button name="zone">Zone</paper-radio-button>
                     <paper-radio-button name="percentage">Percentage</paper-radio-button>
@@ -119,11 +129,11 @@
                     </paper-dropdown-menu>
                 </iron-pages>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 layout vertical center">
                 <paper-input label="Repeat" value="{{repeatCount}}"></paper-input>
             </div>
             <div class="flex-1 layout vertical center">
-                <paper-input-container always-float-label attr-for-value="value">
+                <paper-input-container always-float-label attr-for-value="value" id="rest">
                     <label>Rest (m:s)</label>
                     <div style="display: inline-block;" class="layout horizontal">
                         <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{restTime.minute}}">
@@ -132,6 +142,9 @@
                     </div>
                 </paper-input-container>
             </div>
+        </div>
+        <div id="note" class="layout vertical center">
+            <paper-textarea id="note" label="Note" value="{{description}}" rows="1" max-rows="3"></paper-textarea>
         </div>
     </template>
 
@@ -171,7 +184,8 @@
                 },
                 repeatCount: {
                     type: Number,
-                    value: 1
+                    value: 1,
+                    observer: '_repeatCountChanged',
                 },
                 zoneSelected: {
                     type: Number,
@@ -188,6 +202,10 @@
                 distanceUnitSelected: {
                     type: String,
                     value: 'mile'
+                },
+                description: {
+                    type: String,
+                    value: ''
                 }
             },
             ready: function () {
@@ -208,16 +226,17 @@
                     high: parseInt(this.intensityPercent.high),
                 };
                 let data = {
+                    segment_num: parseInt(this.segmentNum),
+                    description: this.description,
                     duration_time: this.durationTime,
                     intensity_percent: this.intensityPercent,
                     rest_time: this.restTime,
                     duration_type: this.durationType,
                     intensity_type: this.intensityType,
-                    segment_num: parseInt(this.segmentNum),
                     repeat_count: parseInt(this.repeatCount),
                     zone_selected: parseInt(this.zoneSelected),
                     pace_selected: this.paceSelected,
-                    duration_distance:  parseInt(this.durationDistance),
+                    duration_distance:  parseFloat(this.durationDistance),
                     distance_unit_selected: this.distanceUnitSelected
                 };
                 return data;
@@ -226,17 +245,27 @@
                 if (Object.keys(data).length <= 0) {
                     return;
                 }
+                this.segmentNum = data.segment_num;
+                this.description = data.description;
                 this.durationTime = data.duration_time;
                 this.intensityPercent = data.intensity_percent;
                 this.restTime = data.rest_time;
                 this.durationType = data.duration_type;
                 this.intensityType = data.intensity_type;
-                this.segmentNum = data.segment_num;
                 this.repeatCount = data.repeat_count;
                 this.zoneSelected = data.zone_selected;
                 this.paceSelected = data.pace_selected;
                 this.durationDistance = data.duration_distance;
                 this.distanceUnitSelected = data.distance_unit_selected;
+            },
+            _repeatCountChanged: function (newV, oldV) {
+                if (oldV <= 1 && newV > 1) {
+                    this.$.rest.style.visibility = 'visible';
+                    return;
+                }
+                if (oldV > 1 && newV <= 1) {
+                    this.$.rest.style.visibility = 'hidden';
+                }
             }
         });
 

@@ -31,6 +31,10 @@
                 border: 1px dashed #888888;
             }
 
+            #content {
+                background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+                background-size: cover;
+            }
             .title {
                 @apply(--paper-font-body1);
                 font-weight: bold;
@@ -74,17 +78,17 @@
             }
         </style>
 
-        <div id="main" class="layout horizontal center">
+        <div id="main" class="layout horizontal center" on-mouseenter="_showSummary" on-mouseleave="_hideSummary">
             <paper-card elevation="3" class$="flex layout vertical {{cardStatus}}">
-                <div class="flex-3 layout vertical center" id="content" on-tap="_showDialog">
-                    <div class="title">{{title}}</div>
+                <div id="content" class="flex-3 layout vertical center" on-tap="_showDialog">
+                    <div class="title flex">{{title}}</div>
                     <div class="subtitle text-light" id="stat">
                         <iron-icon class="small" icon="image:flash-on"></iron-icon>
                         <span>{{intensity}} (TSS)</span>
                         <iron-icon class="small" icon="image:timer"></iron-icon>
                         <span>{{duration}}</span>
                     </div>
-                    <p class="desc flex">{{description}}</p>
+                    <!--<p class="desc flex">{{description}}</p>-->
                 </div>
                 <div id="add" class="flex-3 layout vertical center center-justified" on-tap="_showDialog">
                     <iron-icon class="big grey" icon="icons:add-circle-outline"></iron-icon>
@@ -95,6 +99,7 @@
                         <paper-menu class="dropdown-content">
                             <paper-item on-click="_copy">Copy</paper-item>
                             <paper-item on-click="_paste">Paste</paper-item>
+                            <paper-item on-click="_delete">Delete</paper-item>
                         </paper-menu>
                     </paper-menu-button>
                 </div>
@@ -109,11 +114,15 @@
                 trainingInfo: Object,   // Training info in internal format
                 title: String,
                 duration: Number,
-                description: String,
                 week: Number,
                 intensity: Number,
                 day: Number,
-                cardStatus: String
+                cardStatus: String,
+                readOnly: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_permissionChanged'
+                }
             },
             listeners: {
 //                'tap': 'showDialog'
@@ -129,26 +138,60 @@
                     this.title = info.name;
                     this.duration = info.duration;
                     this.intensity = 70;
-                    this.description = info.description;
                     this.$.add.style.display = 'none';
                     this.$.content.style.display = 'inherit';
                     this.cardStatus = 'full';
-                } else {
-                    this.$.add.style.display = 'inherit';
-                    this.$.content.style.display = 'none';
+                } else  {
                     this.cardStatus = 'empty';
+                    this.$.content.style.display = 'none';
+                    if (!this.readOnly) {
+                        this.$.add.style.display = 'inherit';
+                    }
                 }
             },
             _showDialog: function () {
-                console.log('show dialog, card send training info: ', this.trainingInfo);
+                if (this.readOnly) {
+                    return;
+                }
                 // Used to fill current information on to training-entry dialog
                 this.fire('card-tap', {'info': this.trainingInfo, 'week': this.week, 'day': this.day});
+            },
+            _showSummary: function (e) {
+                if (!this.readOnly || this.cardStatus === 'empty') {
+                    return;
+                }
+                let target = e.target || e.srcElement;
+                let rect = target.getBoundingClientRect();
+                let y = rect.top;
+                let pos = 'right';
+                let x = rect.right;
+                if (this.day > 3) {
+                    pos = 'left';
+                    // Relative to the right side of the screen, considering the zoom level
+                    x = document.body.clientWidth - rect.left;
+                }
+                this.fire('card-show-summary',
+                    {'info': this.trainingInfo, 'week': this.week, 'day': this.day, 'x': x, 'y': y, 'pos': pos});
+            },
+            _hideSummary: function () {
+                if (!this.readOnly) {
+                    return;
+                }
+                this.fire('card-hide-summary');
             },
             _copy: function () {
                 this.fire('card-copy', {'info': this.trainingInfo});
             },
             _paste: function () {
                 this.fire('card-paste', {'week': this.week, 'day': this.day});
+            },
+            _delete: function () {
+                this.trainingInfoChanged({});
+            },
+            _permissionChanged: function () {
+                if (this.readOnly) {
+                    this.$.menu.style.display = 'none';
+                }
             }
         });
 
