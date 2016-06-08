@@ -86,19 +86,19 @@ class User {
 	}
 
 	get(path) {
-		if (!(path in user.data) || user.data.path === null) {
-			user.data[path] = null;
+		if (!(path in this.data) || this.data.path === null) {
+			this.data[path] = null;
 			this.fetchDetails(true);
 		}
-		return user.data[path];
+		return this.data[path];
 	}
 
 	getImage() {
 		this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
-		if ('profile_medium' in user.data && user.data.profile_medium !== '') {
-			return decodeURIComponent(user.data.profile_medium.replace('+', ' '));
-		} else if ('email' in user.data && user.data.email !== '') {
-			var gravHash = CryptoJS.MD5(user.data.email.toLowerCase());
+		if ('profile_medium' in this.data && this.data.profile_medium !== '') {
+			return decodeURIComponent(this.data.profile_medium.replace('+', ' '));
+		} else if ('email' in this.data && this.data.email !== '') {
+			var gravHash = CryptoJS.MD5(this.data.email.toLowerCase());
 			return 'http://www.gravatar.com/avatar/' + gravHash + '?d=' + this.defaultURL;
 		} else {
 			return 'https://www.stryd.com/powercenter/images/favicon.png';

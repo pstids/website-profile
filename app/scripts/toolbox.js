@@ -87,21 +87,6 @@ var meterToUserUnit = function (m) {
     }
 };
 
-// Return minutes per miles with unit
-var speedToPaceForBalloon = function (graphDataItem, graph) {
-    var value = graphDataItem.values.value;
-    var unitLabel = ' Min/KM';
-    if (user.data.units === 'feet') {
-        unitLabel = ' Min/Mile';
-    }
-    return speedToPace(value, user.data.units) + unitLabel;
-};
-
-// Wrapper for speedToPace function
-var speedToPaceForValueAxis = function (value, formattedValue, valueAxis) {
-    return speedToPaceInDecimal(value, user.data.units);
-};
-
 var speedToPaceInDecimal = function (mps, unit) {
     var dist = 1000;
     if (unit === 'feet') {
@@ -115,6 +100,21 @@ var speedToPace = function (mps, unit) {
         return '--:--';
     }
     return formatPace(speedToPaceInDecimal(mps, unit));
+};
+
+// Return minutes per miles with unit
+var speedToPaceForBalloon = function (graphDataItem, graph) {
+    var value = graphDataItem.values.value;
+    var unitLabel = ' Min/KM';
+    if (user.data.units === 'feet') {
+        unitLabel = ' Min/Mile';
+    }
+    return speedToPace(value, user.data.units) + unitLabel;
+};
+
+// Wrapper for speedToPace function
+var speedToPaceForValueAxis = function (value, formattedValue, valueAxis) {
+    return speedToPaceInDecimal(value, user.data.units);
 };
 
 // Convert duration string to duration in seconds. Return -1 if input is invalid
