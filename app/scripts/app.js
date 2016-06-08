@@ -4,6 +4,13 @@
 /*global Dexie*/
 /*exported mapReadyTrigger, mapReadyEvent*/
 
+var mapReadyTrigger = false;
+var mapReadyEvent = new CustomEvent('MapReady');
+window.mapReady = function () {
+    mapReadyTrigger = true;
+    window.dispatchEvent(mapReadyEvent);
+};
+
 /*
 processor is a webworker than handles workout fetching.
 It requests the data from the API and operates on it

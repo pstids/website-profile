@@ -393,14 +393,6 @@
         /*global AmCharts*/
         /*jshint camelcase: false */
         /*global updateWorkout*/
-
-        var mapReadyTrigger = false;
-        var mapReadyEvent = new CustomEvent('MapReady');
-        window.mapReady = function () {
-            mapReadyTrigger = true;
-            window.dispatchEvent(mapReadyEvent);
-        };
-
         Polymer({
             is: 'workout-element',
             properties: {
@@ -936,17 +928,16 @@
             calcAvgs: function (begin, end) {
                 var total = end - begin;
 
-                var exactDistance = meterToMile(this.data[end-1].distance - this.data[begin].distance, 8);
-                var distance = meterToMile(this.data[end-1].distance - this.data[begin].distance, 1);
+                var distance = this.data[end-1].distance - this.data[begin].distance;
 
-                var paceUnit, distanceUnit;
+                var paceUnit = 'Min/KM';
+                var distanceUnit = 'KM';
                 if (user.data.units === 'feet') {
                     paceUnit = 'Min/Mi';
                     distanceUnit = 'Mi';
-                } else {
-                    paceUnit = 'Min/KM';
-                    distanceUnit = 'KM';
+                    distance = meterToMile(distance);
                 }
+
                 var pace = {
                     active: ['pace'],
                     pace: {
@@ -1089,8 +1080,6 @@
                     }
                     time.time.elapsed += timeSectionMSeconds;
 
-                    // power.movingPower.sum += data.power;
-
                     power.power.elapsed += data.power;
 
                     if (data.power > 10) {
@@ -1120,6 +1109,7 @@
                         dynamics.cadence.mTotal += 1;
                     }
 
+                    /* Ground time */
                     if ('groundTime' in data) {
                         dynamics.groundTime.elapsed += data.groundTime;
                         if (data.power > 10) {
@@ -1127,6 +1117,8 @@
                             dynamics.groundTime.mTotal += 1;
                         }
                     }
+
+                    /* Vertical oscillation */
                     if ('vertOsc' in data) {
                         dynamics.vertOsc.elapsed += data.vertOsc;
                         if (data.power > 10) {
@@ -1138,14 +1130,10 @@
 
                 var elapsedMinutes = seconds / 60;
                 var movingMinutes = time.time.moving / 1000 / 60;
-                var elapsedDec, movingDec, maxPace;
-                var coeff = 1;
-                if (user.data.units === 'meters') {
-                    coeff = 0.621371;
-                }
-                elapsedDec = elapsedMinutes / exactDistance * coeff;
-                movingDec = movingMinutes / exactDistance * coeff;
-                maxPace = speedToPace(pace.maxPace.value, user.data.units);
+
+                var elapsedDec = elapsedMinutes / distance;
+                var movingDec = movingMinutes / distance;
+                var maxPace = speedToPace(pace.maxPace.value, user.data.units);
 
                 pace.pace.elapsed = formatPace(elapsedDec.toFixed(2));
                 pace.pace.moving = formatPace(movingDec.toFixed(2));
@@ -1164,10 +1152,7 @@
                     misc.distance.value = 'Not';
                     misc.distance.unit = 'Available';
                 } else {
-                    misc.distance.value = distance;
-                    if (user.data.units !== 'feet') {
-                        misc.distance.value = (distance / 0.621371).toFixed(1);
-                    }
+                    misc.distance.value = meterToKM(distance);
                     misc.distance.unit = distanceUnit;
                 }
 

@@ -65,7 +65,7 @@ var hrTime = function (s) {
 
 // Converts meters to kilometers
 var meterToKM = function (m) {
-    return (m/1000).toFixed(1);
+    return (m / 1000).toFixed(1);
 };
 
 // Converts meters to miles
