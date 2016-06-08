@@ -52,14 +52,14 @@ class JWT {
 					token: this.token
 				})
 				.set('Accept', 'application/json')
-				.end(function(err, res) {
+				.end((err, res) => {
 					if (res.ok) {
 						localStorage.setItem('token', res.body.token);
 						this.constructor();
 					} else {
 						this.logout();
 					}
-				}.bind(this));
+				});
 		} else {
 			this.logout();
 		}
@@ -144,7 +144,7 @@ class User {
 			.send()
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
-			.end(function(err, res) {
+			.end((err, res) => {
 				if (res.ok) {
 					localStorage.setItem('user', JSON.stringify(res.body));
 					if (callback) {
