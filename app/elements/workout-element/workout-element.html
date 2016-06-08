@@ -299,6 +299,12 @@
             font-size: 11px;
             color: white;
         }
+
+        #segments {
+            @apply(--layout-wrap);
+            @apply(--layout-horizontal);
+            border-bottom: 1px solid #4D4D4D;
+        }
     </style>
     <template>
         <section>
@@ -343,7 +349,10 @@
                         <iron-icon on-click="toggleTP" icon="icons:picture-in-picture-alt"></iron-icon>
                         <p>{{day_title}}</p>
                         <p>{{day_description}}</p>
-                        <div id="segments"></div>
+                        <div id="segments">
+                            <div class="flex layout vertical" id="col1"></div>
+                            <div class="flex layout vertical" id="col2"></div>
+                        </div>
                     </div>
                     <div class="tp graph flex vertical plan-toggle" data-tp="graph">
                         <iron-icon on-click="toggleTP" icon="icons:picture-in-picture-alt"></iron-icon>
@@ -855,19 +864,35 @@
                     this.day_title = trainingDay.title;
                     this.day_description = trainingDay.description;
                     // Clear previous segments
-                    while (Polymer.dom(this.$.segments).firstChild) {
+                    while (Polymer.dom(this.$.col1).firstChild) {
                         Polymer.dom(
                             this.$.segments
                         ).removeChild(
                             Polymer.dom(
-                                this.$.segments
+                                this.$.col1
                             ).firstChild
                         );
                     }
+                    while (Polymer.dom(this.$.col2).firstChild) {
+                        Polymer.dom(
+                            this.$.segments
+                        ).removeChild(
+                            Polymer.dom(
+                                this.$.col2
+                            ).firstChild
+                        );
+                    }
+                    var segmentTotal = trainingDay.segments.length, i = 0;
                     for (var segment of trainingDay.segments) {
                         var segmentDom = document.createElement('workout-segment');
+                        segment.order = i + 1;
                         segmentDom.setData(segment);
-                        Polymer.dom(this.$.segments).appendChild(segmentDom);
+                        if (i < segmentTotal / 2) {
+                            Polymer.dom(this.$.col1).appendChild(segmentDom);
+                        } else {
+                            Polymer.dom(this.$.col2).appendChild(segmentDom);
+                        }
+                        i += 1;
                     }
                 }
             },

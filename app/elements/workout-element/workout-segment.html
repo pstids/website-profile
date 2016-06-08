@@ -7,9 +7,7 @@
 			border-left: 0;
 			background-color: #262626;
 			padding: 10px;
-		}
-		:host:last-child {
-			border-bottom: 1px solid #4D4D4D;
+			box-sizing: border-box;
 		}
 		.insight {
 			@apply(--layout-horizontal);
@@ -31,7 +29,7 @@
             font-weight: 400;
 		}
 		.number {
-			background-color: #f7a017;
+			border-color: #f7a017;
 			border-radius: 50px;
 			height: 50px;
 			width: 50px;
@@ -43,7 +41,7 @@
 		}
 
 		iron-icon {
-			width: 30px;
+			width: 20px;
 			height: auto;
 			padding-right: 5px;
 			color: var(--primary-icon-color);
@@ -54,6 +52,9 @@
 		}
 	</style>
 	<template>
+		<div>
+			<div class="number">{{data.order}}</div>
+		</div>
 		<div class="duration insight">
 			<iron-icon icon="image:timer"></iron-icon>
 			<div class="info">
