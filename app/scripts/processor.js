@@ -196,10 +196,10 @@ var workoutProcessing = function (workout, id, scope) {
                 suuntoDrop = false;
             }
         }
-        if ('oscillation_list' in workout && workout.oscillation_list !== null) {
+        if ('oscillation_list' in workout && workout.oscillation_list !== null && i < workout.oscillation_list.length) {
             entry.vertOsc = workout.oscillation_list[i];
         }
-        if ('ground_time_list' in workout && workout.ground_time_list !== null) {
+        if ('ground_time_list' in workout && workout.ground_time_list !== null && i < workout.ground_time_list.length) {
             entry.groundTime = workout.ground_time_list[i];
         }
         if ('elevation_list' in workout && workout.elevation_list !== null) {
