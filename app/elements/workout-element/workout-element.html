@@ -231,12 +231,27 @@
             margin: 0;
         }
 
-        .pt-page-moveToLeft {
+        .tps {
+            overflow: hidden;
+            position: relative;
+        }
+        .tp.plan {
+            position: absolute;
+            -webkit-transform: translateX(-100%);
+            transform: translateX(-100%);
+            width: 100%;
+        }
+        .tp.graph {
+            position: absolute;
+            width: 100%;
+        }
+
+        .moveToLeft {
             -webkit-animation: moveToLeft .6s ease both;
             animation: moveToLeft .6s ease both;
         }
 
-        .pt-page-moveToRight {
+        .moveToRight {
             -webkit-animation: moveToRight .6s ease both;
             animation: moveToRight .6s ease both;
         }
@@ -325,8 +340,8 @@
                         <bubble-stat type="misc"></bubble-stat>
                     </div>
                 </div>
-                <div class="flex layout vertical">
-                    <div class="tp flex plan-toggle" data-tp="plan">
+                <div class="flex layout vertical tps">
+                    <div class="tp plan flex plan-toggle" data-tp="plan" on-click="slide">
                         <iron-icon on-click="toggleTP" icon="icons:arrow-back"></iron-icon>
                         <p>{{day_title}}</p>
                         <p>{{day_description}}</p>
@@ -335,7 +350,7 @@
                             <div class="flex layout vertical" id="col2"></div>
                         </div>
                     </div>
-                    <div class="tp graph flex vertical plan-toggle" data-tp="graph">
+                    <div class="tp graph flex vertical plan-toggle" data-tp="graph" on-click="slide">
                         <iron-icon on-click="toggleTP" icon="icons:arrow-forward"></iron-icon>
                         <div id="circlechart"></div>
                     </div>
@@ -396,6 +411,15 @@
                     this.selected = 1;
                 } else {
                     this.selected = 0;
+                }
+            },
+            slide: function () {
+                if (this.querySelector('[data-tp="plan"]').classList.contains('moveToRight')) {
+                    this.querySelector('[data-tp="plan"]').classList.add('moveToRight');
+                    this.querySelector('[data-tp="graph"]').classList.add('moveToLeft');
+                } else {
+                    this.querySelector('[data-tp="plan"]').classList.add('moveToLeft');
+                    this.querySelector('[data-tp="graph"]').classList.add('moveToRight');
                 }
             },
             fillzones: function () {
