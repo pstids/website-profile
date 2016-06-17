@@ -234,8 +234,8 @@
                     .get(activityEndPoint)
                     .send()
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
                         if (res.ok) {
                             if (res.body !== null && res.body.activities !== null) {
                                 this.switchMonthContext('TEST', obj.firstMonday);
@@ -245,7 +245,7 @@
                         } else {
                             console.log('Error: failure on grabLogs', err, res);
                         }
-                    }.bind(this));
+                    });
             },
             loadLast: function (loadLast, id) {
                 if (!loadLast) {

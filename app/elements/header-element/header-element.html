@@ -334,7 +334,7 @@
             }
 
             if (active !== null) {
-                var anchor = this.querySelector('[data-route="' + active + '"]');
+                var anchor = this.querySelector(`[data-route=${active}]`);
                 anchor.parentElement.classList.add('active');
 
             }
@@ -345,8 +345,8 @@
                     .get('/b/api/v1/activities/weekly-stat')
                     .send()
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
                         if (res.ok) {
                             var incomingWeekly = res.body;
                             incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
@@ -363,7 +363,7 @@
                         } else {
                             console.log('failed to get weekly stat');
                         }
-                    }.bind(this));
+                    });
             }
         }
     });
