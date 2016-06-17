@@ -241,6 +241,9 @@
                                 this.switchMonthContext('TEST', obj.firstMonday);
                                 this.processActivities(res.body.activities);
                                 this.loadLast(loadLast, res.body.last_activity);
+                            } else {
+                                this.processActivities([]);
+                                page(`/run/4951793020698624`);
                             }
                         } else {
                             console.log('Error: failure on grabLogs', err, res);
