@@ -263,7 +263,7 @@
                     month: monthInt,
                     year: year
                 });
-                console.log('selectedMonth', month);
+
                 var startOfMonth = month.startOf('month');
                 var indexFOM = startOfMonth.isoWeekday();
                 var firstMonday = startOfMonth.subtract(indexFOM - 1, 'days');
@@ -317,7 +317,6 @@
                                 description: activity.description
                             });
                         } else {
-                            console.log('FOUND WORKOUT COLLISION');
                             var newCalendarDay = document.createElement('log-day');
                             newCalendarDay.setData({
                                 day: activityMoment.format('DD'),

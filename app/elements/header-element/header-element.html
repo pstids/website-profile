@@ -246,10 +246,6 @@
                 <div class="insights"
                     data-step="4"
                     data-intro="View your run statistics from this week.">
-                    <!--<div class="insights-header">-->
-                        <!--<div class="subtitle">THIS WEEK</div>-->
-                        <!--<div class="title">{{weekly.week_num}}</div>-->
-                    <!--</div>-->
                     <div class="insight">
                         <iron-icon icon="image:timer"></iron-icon>
                         <div class="info">
@@ -289,7 +285,6 @@
                         <div class="hello">Hello</div>
                         <div class="name">{{username}}</div>
                         <div class="logout">
-                            <span on-click="intro">Help?</span>
                             <span on-click="logout">Logout?</span>
                         </div>
                     </div>
@@ -303,7 +298,6 @@
                         <div class="hello">Hello</div>
                         <div class="name">Unregistered User</div>
                         <div class="logout">
-                            <span on-click="intro">Help?</span>
                             <a href="/signin">Signup?</a>
                         </div>
                     </div>
@@ -311,12 +305,10 @@
             </template>
         </header>
     </template>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
     <script>
         /*jshint camelcase: false*/
         /*global jwt*/
         /*global superagent*/
-        /*global introJs*/
     Polymer({
         is: 'header-element',
         properties: {
@@ -330,10 +322,6 @@
             this.user = user.getData();
             this.grabStats();
             this.profileImage = user.getImage();
-        },
-        intro: function () {
-            console.log('Called intro.');
-            introJs().start();
         },
         logout: function () {
             jwt.logout();

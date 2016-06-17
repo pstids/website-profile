@@ -275,7 +275,6 @@
         </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
     <script>
         Polymer({
             is: 'user-info',
@@ -285,20 +284,12 @@
                     notify: true
                 }
             },
-            jsonToQueryString: function (json) {
-                return '?' +
-                        Object.keys(json).map(function(key) {
-                            return encodeURIComponent(key) + '=' +
-                                    encodeURIComponent(json[key]);
-                        }).join('&');
-            },
             attached: function () {
                 if (jwt.hasToken) {
                     if (Object.keys(user.data).length === 0) {
-                        console.log('start fetching, ');
-                        user.fetchDetails(function () {
+                        user.fetchDetails(() => {
                             this.setUserLocal();
-                        }.bind(this));
+                        });
                         return;
                     }
                     this.setUserLocal();
