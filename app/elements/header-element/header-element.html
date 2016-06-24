@@ -216,26 +216,26 @@
             </div>
             <ul class="navigation">
                 <li>
-                    <a  data-route="home"
-                        href="/powercenter/"
-                        data-step="1"
-                        data-intro="View and analyze your recent runs.">
+                    <a data-route="home"
+                    href="/powercenter/"
+                    data-step="1"
+                    data-intro="View and analyze your recent runs.">
                         Dashboard
                     </a>
                 </li>
                 <li>
-                    <a  data-route="connect"
-                        href="/powercenter/connect"
-                        data-step="2"
-                        data-intro="Connect your other training platforms for easy synchronization.">
+                    <a data-route="connect"
+                    href="/powercenter/connect"
+                    data-step="2"
+                    data-intro="Connect your other training platforms for easy synchronization.">
                         Connect
                     </a>
                 </li>
                 <li>
-                    <a  data-route="settings"
-                        href="/powercenter/settings"
-                        data-step="3"
-                        data-intro="Configure your profile.">
+                    <a data-route="settings"
+                    href="/powercenter/settings"
+                    data-step="3"
+                    data-intro="Configure your profile.">
                         Settings
                     </a>
                 </li>
@@ -243,9 +243,7 @@
             <div class="space-taker"></div>
 
             <template is="dom-if" if="{{user.available}}">
-                <div class="insights"
-                    data-step="4"
-                    data-intro="View your run statistics from this week.">
+                <div class="insights">
                     <div class="insight">
                         <iron-icon icon="image:timer"></iron-icon>
                         <div class="info">
@@ -306,9 +304,9 @@
         </header>
     </template>
     <script>
-        /*jshint camelcase: false*/
-        /*global jwt*/
-        /*global superagent*/
+    /*jshint camelcase: false*/
+    /*global jwt*/
+    /*global superagent*/
     Polymer({
         is: 'header-element',
         properties: {
