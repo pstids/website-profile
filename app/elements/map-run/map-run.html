@@ -35,10 +35,10 @@
                     this.setMap();
                     this.setDataReady(data);
                 } else {
-                    window.addEventListener('MapReady', function() {
+                    window.addEventListener('MapReady', () => {
                         this.setMap();
                         this.setDataReady(this.data);
-                    }.bind(this));
+                    });
                 }
             },
             setMap: function () {

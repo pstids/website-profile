@@ -275,7 +275,6 @@
         </div>
         <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
     <script>
         Polymer({
             is: 'user-info',
@@ -285,20 +284,12 @@
                     notify: true
                 }
             },
-            jsonToQueryString: function (json) {
-                return '?' +
-                        Object.keys(json).map(function(key) {
-                            return encodeURIComponent(key) + '=' +
-                                    encodeURIComponent(json[key]);
-                        }).join('&');
-            },
             attached: function () {
                 if (jwt.hasToken) {
                     if (Object.keys(user.data).length === 0) {
-                        console.log('start fetching, ');
-                        user.fetchDetails(function () {
+                        user.fetchDetails(() => {
                             this.setUserLocal();
-                        }.bind(this));
+                        });
                         return;
                     }
                     this.setUserLocal();
@@ -330,11 +321,10 @@
                 };
             },
             saveDetails: function () {
-                // var queryString = this.jsonToQueryString(this.userLocal);
                 var updateParams = '?fields=gender,weight,height,units,city,state,country,about_me,birth';
 
                 superagent
-                    .put('/b/api/v1/users/' + jwt.data.id + updateParams)
+                    .put(`/b/api/v1/users/${jwt.data.id}${updateParams}`)
                     .send({
                         gender: this.userLocal.gender,
                         weight:  parseInt(this.userLocal.weight),
@@ -351,8 +341,8 @@
                         }
                     })
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
                         if (res.ok) {
                             this.$.toast.text = 'Your information is updated!';
                             user.updateData(res.body);
@@ -361,7 +351,7 @@
                             this.$.toast.text = 'Your information is not updated. Please try again.';
                         }
                         this.$.toast.show();
-                    }.bind(this));
+                    });
             },
             weightUnit: function (unit) {
                 if (unit === 'feet') {
@@ -391,7 +381,7 @@
                     var feet = totalInches / 12;
                     var fraction = feet - Math.floor(feet);
                     var inches = (12 * fraction).toFixed(0);
-                    return parseInt(feet) + '\'' + parseInt(inches) + '"';
+                    return `${parseInt(feet)}'${parseInt(inches)}"`;
                 } else {
                     return parseInt(value);
                 }

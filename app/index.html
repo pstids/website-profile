@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Stryd PowerCenter</title>
     <!-- Place favicon.ico in the `app/` directory -->
-    <link rel="shortcut icon" href="images/favicon.png">
+    <link rel="shortcut icon" href="/powercenter/images/favicon.png">
 
     <!-- Chrome for Android theme color -->
     <meta name="theme-color" content="#303F9F">
@@ -20,26 +20,24 @@
     <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Stryd">
-    <link rel="icon" sizes="192x192" href="images/favicon.png">
+    <link rel="icon" sizes="192x192" href="/powercenter/images/favicon.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
-    <link rel="apple-touch-icon" href="images/favicon.png">
+    <link rel="apple-touch-icon" href="/powercenter/images/favicon.png">
 
     <!-- Tile icon for Win8 (144x144) -->
-    <meta name="msapplication-TileImage" content="images/favicon.png">
+    <meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
 
-    <!-- build:css /powercenter/styles/main.css -->
+    <!-- <link rel="stylesheet" href="/powercenter/styles/app.css"> -->
     <link rel="stylesheet" href="/powercenter/styles/main.css">
-    <link rel="stylesheet" href="/powercenter/styles/introjs.css">
-    <!-- endbuild-->
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
+    <link rel="stylesheet" href="/powercenter/styles/dropzone.min.css">
+    
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,300" rel="stylesheet" type="text/css">
-    <link rel="import" href="/powercenter/styles/app-theme.html">
 
-    <script src="/powercenter/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js"></script>
 
     <!-- will be replaced with elements/elements.vulcanized.html -->
     <link rel="import" href="/powercenter/elements/elements.html">
@@ -63,7 +61,6 @@
                     <workout-shared id="workout-shared"></workout-shared>
                 </div>
                 <workout-element id="workout-element"></workout-element>
-                <log-book id="log-book" style="display: none !important; opacity: 0;"></log-book>
                 <log-calendar></log-calendar>
                 <div class="uploader"
                     data-step="9"
@@ -105,8 +102,6 @@
             </section>
 
             <section data-route="*">
-                <!-- <h1>How did you end up here? <a href="/powercenter/">Let's return to somewhere familar.</a></h1>
-                <img src="https://storage.googleapis.com/stryd_static_assets/stryd-fail.png" alt=""> -->
             </section>
         </iron-pages>
 
@@ -120,16 +115,7 @@
     <google-analytics code="UA-56986987-2"></google-analytics>
 </template>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/superagent/1.2.0/superagent.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/dexie/1.2.0/Dexie.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/intro.js/1.1.1/intro.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/page.js/1.6.4/page.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
-
-<script src="/powercenter/scripts/jwt.js"></script>
-<script src="/powercenter/scripts/toolbox.js"></script>
-<script src="/powercenter/scripts/app.js"></script>
+<script src="/powercenter/scripts/app.min.js"></script>
 
 </body>
 

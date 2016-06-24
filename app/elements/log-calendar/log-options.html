@@ -27,7 +27,6 @@
             is: 'log-options',
             attached: function () {
                 this.logCalendar = document.querySelector('log-calendar');
-                console.log('found log-caelndar');
             },
             ready: function () {
                 this.shareBox = this.querySelector('[data-shareURL]');
@@ -49,11 +48,11 @@
             handleDelete: function () {
                 if (this.deleteID !== null) {
                     superagent
-                        .del('/b/api/v1/activities/' + this.deleteID)
+                        .del(`/b/api/v1/activities/${this.deleteID}`)
                         .send()
                         .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function(err, res) {
+                        .set('Authorization', `Bearer: ${jwt.token}`)
+                        .end((err, res) => {
                             if (res.ok) {
                                 if (this.logCalendar !== null) {
                                     this.logCalendar.removeActivity(this.deleteID);
@@ -62,7 +61,7 @@
                             } else {
                                 console.log('failed to delete element');
                             }
-                        }.bind(this));
+                        });
                 }
                 this.$.dialogDelete.close();
             }
