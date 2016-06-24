@@ -31,13 +31,13 @@
     <!-- Tile icon for Win8 (144x144) -->
     <meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
 
-    <!-- build:css /powercenter/styles/main.css -->
+    <!-- <link rel="stylesheet" href="/powercenter/styles/app.css"> -->
     <link rel="stylesheet" href="/powercenter/styles/main.css">
-    <!-- endbuild-->
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css">
+    <link rel="stylesheet" href="/powercenter/styles/dropzone.min.css">
+    
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,300" rel="stylesheet" type="text/css">
 
-    <script src="/powercenter/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js"></script>
 
     <!-- will be replaced with elements/elements.vulcanized.html -->
     <link rel="import" href="/powercenter/elements/elements.html">
@@ -115,16 +115,7 @@
     <google-analytics code="UA-56986987-2"></google-analytics>
 </template>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/superagent/1.2.0/superagent.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/dexie/1.2.0/Dexie.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/page.js/1.6.4/page.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-
-<script src="/powercenter/scripts/jwt.js"></script>
-<script src="/powercenter/scripts/toolbox.js"></script>
-<script src="/powercenter/scripts/app.js"></script>
+<script src="/powercenter/scripts/app.min.js"></script>
 
 </body>
 

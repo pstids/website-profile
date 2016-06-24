@@ -13,6 +13,7 @@ var fs = require('fs');
 var glob = require('glob');
 var historyApiFallback = require('connect-history-api-fallback');
 var autoprefixer = require('gulp-autoprefixer');
+var concat = require('gulp-concat');
 
 var styleTask = function (stylesPath, srcs) {
   return gulp.src(srcs.map(function(src) {
@@ -43,6 +44,7 @@ gulp.task('jshint', function () {
   return gulp.src([
       'app/scripts/**/*.js',
       '!app/scripts/dropzone.js',
+      '!app/scripts/external.js',
       '!app/scripts/superagent.js',
       '!app/scripts/dexie.js',
       '!app/scripts/amcharts/**/*',
@@ -112,6 +114,7 @@ gulp.task('clear', function (done) {
 gulp.task('js', function () {
     return gulp.src([
         'app/**/*.{js,html}',
+        '!app/scripts/external.js',
         '!app/scripts/dropzone.js',
         '!app/scripts/superagent.js',
         '!app/scripts/dexie.js',
@@ -153,7 +156,8 @@ gulp.task('copy', function () {
     'app/scripts/processor.js',
     'app/scripts/superagent.js',
     'app/scripts/toolbox.js',
-    'app/scripts/dexie.js'
+    'app/scripts/dexie.js',
+    'app/scripts/external.js'
   ])
     .pipe(gulp.dest('dist/scripts'));
 
@@ -297,6 +301,27 @@ gulp.task('serve:dist', ['default'], function () {
   gulp.watch(['app/images/**/*'], reload);
 });
 
+// gulp.task('concat-styles', function () {
+//   return gulp.src([
+//       '/powercenter/styles/main.css',
+//       '/powercenter/styles/dropzone.min.css',
+//     ])
+//     .pipe(concat('app.css'))
+//     .pipe(gulp.dest('dist/styles'));
+// });
+
+gulp.task('concat', function () {
+
+  return gulp.src([
+      'app/scripts/external.js',
+      'dist/scripts/jwt.js',
+      'dist/scripts/toolbox.js',
+      'dist/scripts/app.js'
+    ])
+    .pipe(concat('app.min.js'))
+    .pipe(gulp.dest('dist/scripts'));
+});
+
 // Build Production Files, the Default Task
 gulp.task('default', ['clean'], function (cb) {
   runSequence(
@@ -305,6 +330,7 @@ gulp.task('default', ['clean'], function (cb) {
     ['elements', 'js'],
     ['images', 'fonts', 'html'],
     'vulcanize',
+    'concat',
     cb);
     // Note: add , 'precache' , after 'vulcanize', if your are going to use Service Worker
 });
