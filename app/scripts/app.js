@@ -244,7 +244,11 @@ var toast = function (message) {
         page('/plan/:id', (data) => {
             app.route = 'new-plan';
             app.planID = data.params.id;
-            //document.querySelector('#plan-entry').clearData();
+        });
+
+        page('/plan/:id/detail', (data) => {
+            app.route = 'plan-detail';
+            app.planID = data.params.id;
         });
 
         page('/a/:name', (data) => {
@@ -271,7 +275,7 @@ var toast = function (message) {
         page({
             hashbang: false
         });
-        
+
         var d = document.querySelector('#file');
         this.Dropzone = new Dropzone(d, {
             paramName: 'file', // The name that will be used to transfer the file

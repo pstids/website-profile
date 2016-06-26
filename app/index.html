@@ -34,7 +34,7 @@
     <!-- <link rel="stylesheet" href="/powercenter/styles/app.css"> -->
     <link rel="stylesheet" href="/powercenter/styles/main.css">
     <link rel="stylesheet" href="/powercenter/styles/dropzone.min.css">
-    
+
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,300" rel="stylesheet" type="text/css">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js"></script>
@@ -91,6 +91,18 @@
 
             <section data-route="new-plan">
                 <plan-entry id="plan-entry" plan-id="{{planID}}"></plan-entry>
+            </section>
+
+            <section data-route="plan-detail">
+                <plan-detailview id="plan-detailview" plan-id="{{planID}}"></plan-detailview>
+            </section>
+
+            <section data-route="welcome" class="welcome">
+                <h1>Welcome to the Stryd PowerCenter!</h1>
+                <p>Stryd is the world’s first wearable power meter for running. Power is the most direct measure of your training effort, running efficiency, and calorie use. Worn on the chest, Stryd provides real-time feedback via smartphone or sports watch, to guide improvement in your run form, efficiency, and pacing. Whether you’re out for a casual run or racing your next Ironman, Stryd will help you discover the best runner within you.</p>
+                <a href="/">Learn more</a>
+                <a href="/order">Buy Stryd</a>
+                <a href="/signin">Create a PowerCenter Account</a>
             </section>
 
             <section data-route="*">
