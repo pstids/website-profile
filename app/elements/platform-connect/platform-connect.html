@@ -4,7 +4,6 @@
             :host {
                 display: block;
             }
-
             h1.title {
                 @apply(--header);
             }
@@ -93,21 +92,6 @@
                     <button is="stryd-button" data-toggle="off" id="2peak" on-click="oauthConnect">Connect</button>
                 </div>
             </div>
-            <div class="authenticate">
-                <div>
-                    <a href="http://www.finalsurge.com">
-                        <img class="logo" src="/powercenter/images/logos/logo_finalsurge.png" width="150px" height="48px"/>
-                    </a>
-                    <button is="stryd-button">Coming Soon</button>
-                </div>
-                <div>
-                    <a href="http://www.selfloops.com">
-                        <img class="logo" src="/powercenter/images/logos/logo_selfloops.png" width="150px" height="48px"/>
-                    </a>
-                    <button is="stryd-button">Coming Soon</button>
-                </div>
-                <div style="width:150px;"></div>
-            </div>
         </div>
         <paper-toast duration="1300" text="Workouts fetched." data-suunto="alert"></paper-toast>
     </template>
@@ -116,199 +100,195 @@
         /*global jwt */
         /*jshint unused: false*/
         /*jshint camelcase: false */
-            Polymer({
-                is: 'platform-connect',
-                properties: {
-                },
-                ready: function() {
-                    this.update();
-                    this.suuntoAuth();
-                    document.addEventListener(
-                        'visibilitychange',
-                        this.suuntoCheck.bind(this),
-                        false
-                    );
-                    this.suuntoCheck();
-                },
-                notify: function (message) {
-                    this.suunto.alert.text = message;
-                    this.suunto.alert.show();
-                },
-                suuntoCheck: function (e) {
-                    if (document.visibilityState === 'visible' &&
-                        !this.suunto.confirm.classList.contains('hidden')) {
-                        superagent
-                            .post('/b/platform/auth/suunto/check')
-                            .send()
-                            .set('Accept', 'application/json')
-                            .set('Authorization', 'Bearer: ' + jwt.token)
-                            .end(function (err, res) {
-                                if (res.ok) {
-                                    if (res.body && res.body.status === 200) {
-                                        this.suunto.confirm.classList.add('hidden');
-                                        this.suunto.fetch.classList.remove('hidden');
-                                        this.suunto.disconnect.classList.remove('hidden');
-                                    }
-                                }
-                            }.bind(this));
-                    }
-                },
-                suuntoAuth: function (e) {
-                    this.suunto = {
-                        connect: this.querySelector('[data-suunto=\'connect\']'),
-                        email: this.querySelector('[data-suunto=\'email\']'),
-                        auth: this.querySelector('[data-suunto=\'auth\']'),
-                        authStep: this.querySelector('[data-suunto=\'authStep\']'),
-                        confirm: this.querySelector('[data-suunto=\'confirm\']'),
-                        fetch: this.querySelector('[data-suunto=\'fetch\']'),
-                        fetching: this.querySelector('[data-suunto=\'fetching\']'),
-                        alert: this.querySelector('[data-suunto=\'alert\']'),
-                        disconnect: this.querySelector('[data-suunto=\'disconnect\']')
-                    };
-                    this.suunto.fetch.addEventListener('click', function (e) {
-                        var target = e.target;
-                        this.suunto.fetch.classList.add('hidden');
-                        this.suunto.fetching.classList.remove('hidden');
-                        superagent
-                            .post('/b/internal/fetch/suunto')
-                            .send({})
-                            .set('Accept', 'application/json')
-                            .set('Authorization', 'Bearer: ' + jwt.token)
-                            .end(function (err, res) {
-                                if (res.ok) {
-                                    this.suunto.fetch.classList.remove('hidden');
-                                    this.suunto.fetching.classList.add('hidden');
-                                    this.notify(res.body.message);
-                                    if (res.body.workouts !== null) {
-                                        for (var i = 0; i < res.body.workouts.length; i++) {
-                                            var workoutID = res.body.workouts[i];
-                                            addLog(workoutID);
-                                        }
-                                    }
-                                } else {
-                                    this.notify(res.body.message);
-                                }
-                            }.bind(this));
-                    }.bind(this));
-                    this.suunto.connect.addEventListener('click', function (e) {
-                        this.suunto.connect.classList.add('hidden');
-                        this.suunto.authStep.classList.remove('hidden');
-                        this.suunto.disconnect.classList.remove('hidden');
-                    }.bind(this));
-                    this.suunto.auth.addEventListener('click', function (e) {
-                        superagent
-                            .post('/b/platform/auth/suunto')
-                            .send({
-                                email: this.suunto.email.value
-                            })
-                            .set('Accept', 'application/json')
-                            .set('Authorization', 'Bearer: ' + jwt.token)
-                            .end(function (err, res) {
-                                if (res.ok) {
-                                    this.suunto.authStep.classList.add('hidden');
-                                    this.suunto.confirm.classList.remove('hidden');
-                                    this.suunto.disconnect.classList.remove('hidden');
-                                } else {
-                                    this.notify(res.body.message);
-                                }
-                            }.bind(this));
-                    }.bind(this));
-                    this.suunto.disconnect.addEventListener('click', function (e) {
-                        this.oauthDisconnect('suunto', function () {
-                            this.suunto.confirm.classList.add('hidden');
-                            this.suunto.disconnect.classList.add('hidden');
-                            this.suunto.fetch.classList.add('hidden');
-                            this.suunto.authStep.classList.add('hidden');
-                            this.suunto.connect.classList.remove('hidden');
-                        }.bind(this));
-                    }.bind(this));
-                },
-                oauthDisconnect: function (platform, cb) {
+        Polymer({
+            is: 'platform-connect',
+            ready: function() {
+                this.update();
+                this.suuntoAuth();
+                document.addEventListener(
+                    'visibilitychange',
+                    this.suuntoCheck.bind(this),
+                    false
+                );
+                this.suuntoCheck();
+            },
+            notify: function (message) {
+                this.suunto.alert.text = message;
+                this.suunto.alert.show();
+            },
+            suuntoCheck: function (e) {
+                if (document.visibilityState === 'visible' &&
+                    !this.suunto.confirm.classList.contains('hidden')) {
                     superagent
-                        .del('/b/platform/oauth/' + platform)
+                        .post('/b/platform/auth/suunto/check')
                         .send()
                         .set('Accept', 'application/json')
-                        .set('Authorization', 'Bearer: ' + jwt.token)
-                        .end(function (err, res) {
-                            if (res) {
-                                cb();
+                        .set('Authorization', `Bearer: ${jwt.token}`)
+                        .end((err, res) => {
+                            if (res.ok) {
+                                if (res.body && res.body.status === 200) {
+                                    this.suunto.confirm.classList.add('hidden');
+                                    this.suunto.fetch.classList.remove('hidden');
+                                    this.suunto.disconnect.classList.remove('hidden');
+                                }
+                            }
+                        });
+                }
+            },
+            suuntoAuth: function (e) {
+                this.suunto = {
+                    connect: this.querySelector('[data-suunto=\'connect\']'),
+                    email: this.querySelector('[data-suunto=\'email\']'),
+                    auth: this.querySelector('[data-suunto=\'auth\']'),
+                    authStep: this.querySelector('[data-suunto=\'authStep\']'),
+                    confirm: this.querySelector('[data-suunto=\'confirm\']'),
+                    fetch: this.querySelector('[data-suunto=\'fetch\']'),
+                    fetching: this.querySelector('[data-suunto=\'fetching\']'),
+                    alert: this.querySelector('[data-suunto=\'alert\']'),
+                    disconnect: this.querySelector('[data-suunto=\'disconnect\']')
+                };
+                this.suunto.fetch.addEventListener('click', (e) => {
+                    var target = e.target;
+                    this.suunto.fetch.classList.add('hidden');
+                    this.suunto.fetching.classList.remove('hidden');
+                    superagent
+                        .post('/b/internal/fetch/suunto')
+                        .send({})
+                        .set('Accept', 'application/json')
+                        .set('Authorization', `Bearer: ${jwt.token}`)
+                        .end((err, res) => {
+                            if (res.ok) {
+                                this.suunto.fetch.classList.remove('hidden');
+                                this.suunto.fetching.classList.add('hidden');
+                                this.notify(res.body.message);
+                                if (res.body.workouts !== null) {
+                                    for (var i = 0; i < res.body.workouts.length; i++) {
+                                        var workoutID = res.body.workouts[i];
+                                        addLog(workoutID);
+                                    }
+                                }
+                            } else {
                                 this.notify(res.body.message);
                             }
-                        }.bind(this));
-                },
-                oauthConnect: function (e) {
-                    var platform = e.target.getAttribute('id');
-                    var ele = this.$[platform];
-                    if (this.$[platform].dataset.toggle === 'on') {
-                        this.oauthDisconnect(platform, function () {
-                            ele.dataset.toggle = 'off';
-                            ele.textContent = 'Connect';
-                        }.bind(this));
-                    } else {
-                        superagent
-                            .get('/b/platform/oauth/' + platform)
-                            .send()
-                            .set('Accept', 'application/json')
-                            .set('Authorization', 'Bearer: ' + jwt.token)
-                            .end(function (err, res) {
-                                if (res.ok) {
-                                    window.location = res.body.redirect_url;
-                                } else {
-                                    this.notify(res.body.message);
-                                }
-                            });
-                    }
-                },
-                update: function () {
-                    if (jwt.data.id) {
-                        superagent
-                            .get('/b/internal/platforms')
-                            .send()
-                            .set('Accept', 'application/json')
-                            .set('Authorization', 'Bearer: ' + jwt.token)
-                            .end(function(err, res) {
-                                if (res.ok) {
-                                    this.updateView(res.body);
-                                }
-                            }.bind(this));
-                    }
-                },
-                updateView: function (platforms) {
-                    var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak'], verifyPlatforms = ['suunto'];
-                    var platform, i;
-                    for (i = 0; i < platforms.length; i++) {
-                        platform = platforms[i];
-                        if (oauthPlatforms.indexOf(platform.platform) !== -1) {
-                            this.oauthPlatformsController(platform);
-                        } else if (verifyPlatforms.indexOf(platform.platform) !== -1) {
-                            this.verifyPlatformsController(platform);
+                        });
+                });
+                this.suunto.connect.addEventListener('click', (e) => {
+                    this.suunto.connect.classList.add('hidden');
+                    this.suunto.authStep.classList.remove('hidden');
+                    this.suunto.disconnect.classList.remove('hidden');
+                });
+                this.suunto.auth.addEventListener('click', (e) => {
+                    superagent
+                        .post('/b/platform/auth/suunto')
+                        .send({
+                            email: this.suunto.email.value
+                        })
+                        .set('Accept', 'application/json')
+                        .set('Authorization', `Bearer: ${jwt.token}`)
+                        .end((err, res) => {
+                            if (res.ok) {
+                                this.suunto.authStep.classList.add('hidden');
+                                this.suunto.confirm.classList.remove('hidden');
+                                this.suunto.disconnect.classList.remove('hidden');
+                            } else {
+                                this.notify(res.body.message);
+                            }
+                        });
+                });
+                this.suunto.disconnect.addEventListener('click', (e) => {
+                    this.oauthDisconnect('suunto', () => {
+                        this.suunto.confirm.classList.add('hidden');
+                        this.suunto.disconnect.classList.add('hidden');
+                        this.suunto.fetch.classList.add('hidden');
+                        this.suunto.authStep.classList.add('hidden');
+                        this.suunto.connect.classList.remove('hidden');
+                    });
+                });
+            },
+            oauthDisconnect: function (platform, cb) {
+                superagent
+                    .del(`/b/platform/oauth/${platform}`)
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        if (res) {
+                            cb();
+                            this.notify(res.body.message);
                         }
-
-                    }
-                },
-                oauthPlatformsController: function (platform) {
-                    if (platform.connected && platform.platform in this.$) {
-                        this.$[platform.platform].dataset.toggle = 'on';
-                        this.$[platform.platform].textContent = 'Disconnect';
-                    } else {
-                        this.$[platform.platform].dataset.toggle = 'off';
-                        this.$[platform.platform].textContent = 'Connect';
-                    }
-                },
-                verifyPlatformsController: function (platform) {
-                    if (platform.platform === 'suunto') {
-                        if (platform.status === 1) {
-                            this.suunto.connect.classList.add('hidden');
-                            this.suunto.confirm.classList.remove('hidden');
-                            this.suunto.disconnect.classList.remove('hidden');
-                        } else if (platform.status === 2) {
-                            this.suunto.connect.classList.add('hidden');
-                            this.suunto.fetch.classList.remove('hidden');
-                            this.suunto.disconnect.classList.remove('hidden');
-                        }
+                    });
+            },
+            oauthConnect: function (e) {
+                var platform = e.target.getAttribute('id');
+                var ele = this.$[platform];
+                if (this.$[platform].dataset.toggle === 'on') {
+                    this.oauthDisconnect(platform, () => {
+                        ele.dataset.toggle = 'off';
+                        ele.textContent = 'Connect';
+                    });
+                } else {
+                    superagent
+                        .get(`/b/platform/oauth/${platform}`)
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', `Bearer: ${jwt.token}`)
+                        .end((err, res) => {
+                            if (res.ok) {
+                                window.location = res.body.redirect_url;
+                            } else {
+                                this.notify(res.body.message);
+                            }
+                        });
+                }
+            },
+            update: function () {
+                if (jwt.data.id) {
+                    superagent
+                        .get('/b/internal/platforms')
+                        .send()
+                        .set('Accept', 'application/json')
+                        .set('Authorization', `Bearer: ${jwt.token}`)
+                        .end((err, res) => {
+                            if (res.ok) {
+                                this.updateView(res.body);
+                            }
+                        });
+                }
+            },
+            updateView: function (platforms) {
+                var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak'], verifyPlatforms = ['suunto'];
+                var platform, i;
+                for (i = 0; i < platforms.length; i++) {
+                    platform = platforms[i];
+                    if (oauthPlatforms.indexOf(platform.platform) !== -1) {
+                        this.oauthPlatformsController(platform);
+                    } else if (verifyPlatforms.indexOf(platform.platform) !== -1) {
+                        this.verifyPlatformsController(platform);
                     }
                 }
-            });
+            },
+            oauthPlatformsController: function (platform) {
+                if (platform.connected && platform.platform in this.$) {
+                    this.$[platform.platform].dataset.toggle = 'on';
+                    this.$[platform.platform].textContent = 'Disconnect';
+                } else {
+                    this.$[platform.platform].dataset.toggle = 'off';
+                    this.$[platform.platform].textContent = 'Connect';
+                }
+            },
+            verifyPlatformsController: function (platform) {
+                if (platform.platform === 'suunto') {
+                    if (platform.status === 1) {
+                        this.suunto.connect.classList.add('hidden');
+                        this.suunto.confirm.classList.remove('hidden');
+                        this.suunto.disconnect.classList.remove('hidden');
+                    } else if (platform.status === 2) {
+                        this.suunto.connect.classList.add('hidden');
+                        this.suunto.fetch.classList.remove('hidden');
+                        this.suunto.disconnect.classList.remove('hidden');
+                    }
+                }
+            }
+        });
     </script>
-
 </dom-module>

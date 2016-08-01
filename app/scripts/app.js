@@ -198,10 +198,6 @@ var toast = function (message) {
             }
         });
 
-        page('/welcome', () => {
-            document.location = '/signin';
-        });
-
         page('/connect', () => {
             if (jwt.hasToken) {
                 app.route = 'connect';
@@ -263,13 +259,12 @@ var toast = function (message) {
                     true
                 );
             } else {
-                page.redirect('/welcome');
+                document.location = '/signin';
             }
         });
 
         page('*', () => {
             document.location = '/signin';
-            app.route = '*';
         });
 
         // add #! before urls
