@@ -165,7 +165,7 @@ var workoutProcessing = function (workout, id, scope) {
             entry.groundTime = workout.ground_time_list[i];
         }
         if ('elevation_list' in workout && workout.elevation_list !== null) {
-            entry.elevation = workout.elevation_list[i];
+            entry.elevation = Math.round(workout.elevation_list[i] * 10) / 10;
             if (entry.elevation !== 0) {
                 suuntoDrop = false;
             }
