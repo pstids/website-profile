@@ -4,7 +4,8 @@
             :host {
             }
             paper-dialog#entry {
-                min-width: 70vw;
+                min-width: 75vw;
+                min-height: 50vh;
             }
             #plan-meta paper-input {
                 min-width: 15vw;
@@ -12,7 +13,11 @@
             #plan-meta paper-textarea {
                 width: 30vw;
             }
-            segment-entry {
+            #scroll {
+                padding-left: 2vw;
+                padding-right: 2vw;
+            }
+            block-entry {
                 margin-bottom: 5vh;
             }
             paper-button {
@@ -22,36 +27,46 @@
             paper-textarea {
                 max-height: 30vh;
             }
+            paper-dropdown-menu {
+                width: 8vw;
+            }
         </style>
         <paper-dialog id="entry" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
             <h2>{{weekday}}, Week {{week}}</h2>
             <div id="plan-meta" class="layout horizontal around-justified">
                 <paper-input label="Title" placeholder="e.g. Endurance run"
-                             value="{{planName}}" maxlength="80" char-counter>
+                             value="{{planTitle}}" maxlength="80" char-counter>
                 </paper-input>
                 <paper-textarea label="Objective" placeholder="Get ready to go the distance on race day with your week’s longest run."
-                             value="{{planObjective}}" max-rows="3">
+                             value="{{planDesc}}" max-rows="3">
                 </paper-textarea>
                 <paper-dropdown-menu class="" label="Run Type" no-animations>
                     <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}">
-                        <paper-item name="recovery">Recovery</paper-item>
-                        <paper-item name="progression">Progression</paper-item>
+                        <paper-item name="easy">Easy</paper-item>
+                        <paper-item name="long">Long</paper-item>
                         <paper-item name="fartlek">Fartlek</paper-item>
-                        <paper-item name="interval">Intervals</paper-item>
+                        <paper-item name="threshold">Threshold</paper-item>
+                        <paper-item name="interval">Interval</paper-item>
+                        <paper-item name="repetition">Repetition</paper-item>
                         <paper-item name="tempo">Tempo</paper-item>
-                        <paper-item name="hill">Hills</paper-item>
+                        <paper-item name="pace">Pace</paper-item>
+                        <paper-item name="race">Race</paper-item>
+                        <paper-item name="other">Other</paper-item>
+                    </paper-menu>
+                </paper-dropdown-menu>
+                <paper-dropdown-menu class="" label="Surface Type" no-animations>
+                    <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{surfaceSelected}}">
+                        <paper-item name="hill">Hill</paper-item>
                         <paper-item name="track">Track</paper-item>
-                        <paper-item name="halfmarathon">Half Marathon</paper-item>
-                        <paper-item name="marathon">Marathon</paper-item>
+                        <paper-item name="road">Road</paper-item>
+                        <paper-item name="trail">Trail</paper-item>
                     </paper-menu>
                 </paper-dropdown-menu>
             </div>
             <paper-dialog-scrollable id="scroll">
-                <div id="segments" class="layout vertical center">
-                    <segment-entry segment-num=1></segment-entry>
-                </div>
-                <paper-button raised on-click="addSegmentHandler">ADD SEGMENT</paper-button>
-                <paper-button raised on-click="removeSegmentHandler">REMOVE SEGMENT</paper-button>
+                <div id="blocks" class="layout vertical center"></div>
+                <paper-button raised on-click="_addBlockHandler">ADD BLOCK</paper-button>
+                <paper-button raised on-click="_removeBlockHandler">REMOVE BLOCK</paper-button>
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button dialog-dismiss>Cancel</paper-button>
@@ -65,27 +80,28 @@
         Polymer({
             is: 'training-entry',
             properties: {
-                segmentCount: {
+                blockCount: {
                     type: Number,
-                    value: 1
+                    value: 0
                 },
                 runTypeSelected: {
                     type: String,
                     value: 'easy'
                 },
-                day: {
+                surfaceSelected: {
+                    type: String,
+                    value: 'easy'
+                },
+                day: {  // Zero-based
                     type: Number,
-                    observer: '_dayChanged'
+                    observer: '_dayChangeHandler'
                 },
                 weekday: String,
                 week: Number,
-                planName: String,
-                planObjective: String,
+                planTitle: String,
+                planDesc: String,
             },
             ready: function () {
-                this.getWeekDay(this.day);
-            },
-            _dayChanged: function () {
                 this.getWeekDay();
             },
             getWeekDay: function () {
@@ -116,63 +132,72 @@
             set: function(internalData, week, day) {
                 // Reset all info
                 this.runTypeSelected = 'progression';
-                this.planName = '';
-                this.planObjective = '';
-                this.segmentCount = 0;
-                let segmentNode = Polymer.dom(this.$.segments);
-                while (segmentNode.firstChild) {
-                    segmentNode.removeChild(segmentNode.firstChild);
+                this.planTitle = '';
+                this.planDesc = '';
+                this.blockCount = 0;
+                let blockNode = Polymer.dom(this.$.blocks);
+                while (blockNode.firstChild) {
+                    blockNode.removeChild(blockNode.firstChild);
                 }
+
                 this.week = week;
                 this.day = day;
-                if (Object.keys(internalData).length > 0) {
-                    this.planName = internalData.name;
-                    this.planObjective = internalData.description;
-                    this.runTypeSelected = internalData.type;
-                    for (let seg of internalData.segments) {
-                        this.addSegment(seg);
-                    }
+                console.log('internal data: ', internalData);
+                if (Object.keys(internalData).length <= 0) {
+                    return;
+                }
+
+                this.planTitle = internalData.workout_title;
+                this.planDesc = internalData.workout_desc;
+                this.runTypeSelected = internalData.workout_type;
+                this.surfaceSelected = internalData.workout_surface;
+                for (let block of internalData.blocks) {
+                    this._addBlock(block);
                 }
             },
             open: function () {
                 this.$.entry.open();
             },
-            addSegmentHandler: function () {
-                this.addSegment({});
-            },
-            removeSegmentHandler: function () {
-                let segments = Polymer.dom(this.$.segments);
-                if (segments.children.length <= 0) {
-                    return;
-                }
-                segments.removeChild(segments.lastChild);
-                this.segmentCount -= 1;
-            },
-            addSegment: function (segData) {
-                var segmentEntry = document.createElement('segment-entry');
-                this.segmentCount += 1;
-                segmentEntry.segmentNum = this.segmentCount;
-                segmentEntry.setData(segData);
-                Polymer.dom(this.$.segments).appendChild(segmentEntry);
 
-                this._save();
+            _dayChangeHandler: function () {
+                this.getWeekDay();
             },
             _save: function () {
-                console.log('here');
-                let segments = [];
-                let segmentCnt = Polymer.dom(this.$.segments).children.length;
-                for (var i = 0; i < segmentCnt; i++) {
-                    segments.push(Polymer.dom(this.$.segments).children[i].data());
+                let blocks = [];
+                let blockContainer = Polymer.dom(this.$.blocks).children;
+                for (var i = 0; i < blockContainer.length; i++) {
+                    blocks.push(blockContainer[i].data());
                 }
                 this.fire('training-input', {
-                    name: this.planName,
-                    description: this.planObjective,
-                    type: this.runTypeSelected,
-                    duration: 100,
-                    day: (this.week - 1) * 7 + this.day,
-                    segments: segments
+                    workout_title: this.planTitle,
+                    workout_day: (this.week - 1) * 7 + this.day,
+                    workout_seq: 0,
+                    workout_desc: this.planDesc,
+                    workout_type: this.runTypeSelected,
+                    workout_duration: 100,  // TODO
+                    workout_surface: this.surfaceSelected,
+                    blocks: blocks
                 });
-            }
+            },
+            _addBlock: function (blockData) {
+                var blockEntry = document.createElement('block-entry');
+                this.blockCount += 1;
+                blockEntry.num = this.blockCount;
+                blockEntry.setData(blockData);
+                Polymer.dom(this.$.blocks).appendChild(blockEntry);
+                this._save();
+            },
+            _addBlockHandler: function () {
+                this._addBlock({});
+            },
+            _removeBlockHandler: function () {
+                let blocks = Polymer.dom(this.$.blocks);
+                if (blocks.children.length <= 0) {
+                    return;
+                }
+                blocks.removeChild(blocks.lastChild);
+                this.blockCount -= 1;
+            },
         });
 
     </script>

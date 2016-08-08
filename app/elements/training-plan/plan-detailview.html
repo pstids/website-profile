@@ -185,6 +185,9 @@
 
             _fillData: function (data) {
                 this.planTitle = data.name;
+                if (data.workouts === null) {
+                    return;
+                }
                 if (Object.keys(data.workouts).length === 0) {
                     return;
                 }
@@ -197,8 +200,8 @@
                     list.push(d);
                 }
                 for (let workout of data.workouts) {
-                    let week = Math.floor(parseInt(workout.day) / 7);
-                    let relativeDay = parseInt(workout.day) % 7;
+                    let week = Math.floor(parseInt(workout.workout_day) / 7);
+                    let relativeDay = parseInt(workout.workout_day) % 7;
                     list[week].week_content[relativeDay] = workout;
                 }
                 this.summaryData = list;

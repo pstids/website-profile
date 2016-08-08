@@ -1,0 +1,163 @@
+<dom-module id="block-entry">
+    <template>
+        <style>
+            :host {
+                width: 100%;
+            }
+            #title {
+                border-bottom: 0.5px gold dashed;
+            }
+            #content {
+                width: 100%;
+            }
+            #repeatcheck {
+                margin-right: 1vw;
+            }
+            #title h3 {
+                margin-right: 1vw;
+            }
+            paper-icon-button#fold {
+                width: 50px;
+                height: 50px;
+            }
+            paper-input {
+                width: 2vw;
+            }
+        </style>
+
+        <div id="title" class="layout horizontal center justified">
+            <div class="layout horizontal center">
+                <h3>Block {{num}}</h3>
+                <paper-icon-button id="fold" icon="arrow-drop-up" on-click="_blockFoldHandler"></paper-icon-button>
+            </div>
+            <div class="layout horizontal center around-justified">
+                <paper-checkbox id="repeatcheck" on-change="_repeatCheckHandler">Repeat?</paper-checkbox>
+                <div id="repeatcount">
+                    <paper-input no-label-float value="{{repeatCount}}"></paper-input>
+                </div>
+            </div>
+        </div>
+        <div id="content">
+            <iron-pages selected="{{contentSelected}}" attr-for-selected="type">
+                <div type="unfold">
+                    <div id="segments" class="layout vertical center">
+                        <segment-entry segment-num=1></segment-entry>
+                    </div>
+                    <paper-button raised on-click="_addSegmentHandler">ADD SEGMENT</paper-button>
+                    <paper-button raised on-click="_removeSegmentHandler">REMOVE SEGMENT</paper-button>
+                </div>
+                <div type="fold">
+                    Folded
+                </div>
+            </iron-pages>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'block-entry',
+            properties: {
+                num: {
+                    type: Number,
+                    value: 0
+                },
+                repeatCount: {
+                    type: Number,
+                    value: 1
+                },
+                segmentCount: {
+                    type: Number,
+                    value: 1
+                },
+                contentSelected: {
+                    type: String,
+                    value: 'unfold'
+                }
+            },
+            ready: function () {
+                this.segmentCount = 0;
+                let segmentNode = Polymer.dom(this.$.segments);
+                while (segmentNode.firstChild) {
+                    segmentNode.removeChild(segmentNode.firstChild);
+                }
+                this.$.repeatcount.style.visibility = 'hidden';
+            },
+            data: function () {
+                let segments = [];
+                let segmentsContainer = Polymer.dom(this.$.segments).children;
+                for (var i = 0; i < segmentsContainer.length; i++) {
+                    segments.push(segmentsContainer[i].data());
+                }
+                let data = {
+                    block_repeat: parseInt(this.repeatCount),
+                    block_duration: 100,    // TODO
+                    segments: segments,
+                };
+                return data;
+            },
+            setData: function (blockData) {
+                console.log('block data: ', blockData);
+                let segmentNode = Polymer.dom(this.$.segments);
+                while (segmentNode.firstChild) {
+                    segmentNode.removeChild(segmentNode.firstChild);
+                }
+                if (Object.keys(blockData).length <= 0) {
+                    return;
+                }
+
+                this.repeatCount = blockData.block_repeat;
+                if (this.repeatCount > 1) {
+                    this.$.repeatcheck.checked = true;
+                    this.$.repeatcount.style.visibility = 'visible';
+                }
+                this.segmentCount = blockData.segments.length;
+                if (this.segmentCount <= 0) {
+                    return;
+                }
+                for (let segment of blockData.segments) {
+                    this._addSegment(segment);
+                    this.segmentCount += 1;
+                }
+            },
+            _repeatCheckHandler: function () {
+                if (this.$.repeatcheck.checked) {
+                    this.$.repeatcount.style.visibility = 'visible';
+                } else {
+                    this.$.repeatcount.style.visibility = 'hidden';
+                }
+            },
+            _addSegment: function (segData) {
+                var segmentEntry = document.createElement('segment-entry');
+                this.segmentCount += 1;
+                segmentEntry.segmentNum = this.segmentCount;
+                segmentEntry.setData(segData);
+                Polymer.dom(this.$.segments).appendChild(segmentEntry);
+            },
+            _addSegmentHandler: function () {
+                this._addSegment({});
+            },
+            _removeSegmentHandler: function () {
+                let segments = Polymer.dom(this.$.segments);
+                if (segments.children.length <= 0) {
+                    return;
+                }
+                segments.removeChild(segments.lastChild);
+                this.segmentCount -= 1;
+            },
+            _blockFoldHandler: function () {
+                switch (this.$.fold.icon) {
+                    case 'arrow-drop-up':
+                        this.$.fold.icon = 'arrow-drop-down';
+                        this.contentSelected = 'fold';
+                        break;
+                    case 'arrow-drop-down':
+                        this.$.fold.icon = 'arrow-drop-up';
+                        this.contentSelected = 'unfold';
+                        break;
+                }
+            }
+        });
+
+    </script>
+
+</dom-module>

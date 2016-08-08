@@ -3,27 +3,49 @@
         <style>
             :host {
                 /*background: #102828;*/
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                height: 10vw;
+                height: 12vw;
             }
             #header {
                 font-family: 'Roboto Slab', serif;
-                padding: 1vw;
             }
             #header #week-number {
-                font-size: 36px;
+                padding-left: 0.5vw;
+                padding-right: 2vw;
                 font-weight: bold;
             }
+            #header #week-summary {
+                font-style: italic;
+            }
+            #header #week-summary paper-icon-button {
+                width: 35px;
+                height: 35px;
+            }
+            #header #week-summary #summaryinput {
+                padding-left: 1vw;
+                padding-right: 1vw;
+                min-width: 30vw;
+            }
+
             plan-card {
-                width: 10vw;
+                width: 11vw;
                 height: 8vw;
             }
         </style>
 
-        <div id="header" class="layout vertical center">
-            <div id="week-label" class="flex-4">WEEK</div>
-            <div id="week-number" class="flex-6">{{weekNum}}</div>
+        <div id="header" class="layout horizontal center">
+            <div id="week-label">WEEK</div>
+            <div id="week-number">{{weekNum}}</div>
+            <iron-pages id="week-summary" class="flex" selected="{{selectedSummary}}">
+                <div class="layout horizontal center">
+                    <p>Summary: {{weekSummary}}</p>
+                    <paper-icon-button icon="create" on-click="_editSummaryHandler"></paper-icon-button>
+                </div>
+                <div class="layout horizontal center">
+                    <p>Summary: </p>
+                    <paper-input id="summaryinput" value="{{weekSummary}}" char-counter maxlength="100"></paper-input>
+                    <paper-icon-button icon="done" on-click="_saveSummaryHandler"></paper-icon-button>
+                </div>
+            </iron-pages>
         </div>
         <div id="content" class="flex layout horizontal center around-justified">
             <plan-card day=0 week="{{weekNum}}"></plan-card>
@@ -39,9 +61,12 @@
         Polymer({
             is: 'plan-weekview',
             properties: {
-                weekNum: {
+                weekNum: Number,
+                weekSummary: String,
+                selectedSummary: {
                     type: Number,
-                }
+                    value: 0
+                },
             },
             ready: function () {
             },
@@ -55,16 +80,36 @@
                 let cardDiv = Polymer.dom(this.$.content).children;
                 cardDiv[day].trainingInfoChanged(info);
             },
-            data: function () {
+            setSummary: function (summary) {
+                this.weekSummary = summary;
+            },
+            data: function (planID) {
                 let cardDiv = Polymer.dom(this.$.content).children;
                 let infos = [];
+                let days = [];
                 for (let i = 0; i < cardDiv.length; i++) {
                     let info = cardDiv[i].trainingInfo;
                     if (Object.keys(info).length !== 0) {
+                        info.workout_id = `${planID}-${info.workout_day}-${info.workout_seq}`;
                         infos.push(info);
+                        days.push(info.workout_day);
                     }
                 }
-                return infos;
+                return {
+                    workouts: infos,
+                    weekInfo: {
+                        week_seq: this.weekNum-1,
+                        week_days: days,
+                        week_summary: this.weekSummary,
+                    }
+                };
+            },
+
+            _editSummaryHandler: function () {
+                this.selectedSummary = 1;
+            },
+            _saveSummaryHandler: function () {
+                this.selectedSummary = 0;
             },
         });
     </script>

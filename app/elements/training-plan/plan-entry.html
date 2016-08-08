@@ -11,6 +11,21 @@
                 margin: 1vw;
             }
 
+            .plan-header-content {
+                padding-left: 2vw;
+                padding-right: 2vw;
+            }
+
+            #plan-phase {
+                margin: 1vw;
+                margin-bottom: 5vw;
+            }
+            #plan-phase #phase-title {
+                margin-right: 2vw;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
             #plan-content {
                 margin: 1vw;
                 margin-bottom: 10vw;
@@ -94,11 +109,15 @@
                 padding-top: 1vh;
                 padding-bottom: 1vh;
             }
+            paper-textarea {
+                width: 100%;
+                max-height: 30vh;
+            }
         </style>
         <!-- Main Content -->
         <div id="plan-header" class="layout vertical">
             <h2 class="underline">Plan Info</h2>
-            <div class="layout horizontal end around-justified">
+            <div class="layout horizontal end justified plan-header-content">
                 <paper-input id="titleInput" label="Plan Title" placeholder="e.g. Endurance with threshold tempo"
                              value="{{planTitle}}" maxlength="80" required>
                 </paper-input>
@@ -128,9 +147,23 @@
                     <div suffix>Weeks</div>
                 </paper-input>
             </div>
+            <div class="layout horizontal end justified plan-header-content">
+                <paper-textarea label="Plan Description" placeholder="" value="{{planDesc}}" max-rows="2"
+                                char-counter maxlength="500">
+                </paper-textarea>
+            </div>
+        </div>
+        <div id="plan-phase">
+            <div class="underline layout horizontal center">
+                <h2 id="phase-title">Plan Phase</h2>
+                <paper-icon-button icon="add" on-click="_addPhaseHandler"></paper-icon-button>
+                <paper-icon-button icon="remove" on-click="_removePhaseHandler"></paper-icon-button>
+            </div>
+            <div id="phases" class="layout vertical center">
+            </div>
         </div>
         <div id="plan-content">
-            <h2 class="underline">Plan Schedule</h2>
+            <h2 class="underline">Weekly Schedule</h2>
             <div id="weekviews"></div>
         </div>
         <training-entry id="dialog"></training-entry>
@@ -174,6 +207,10 @@
                     type: String,
                     value: ''
                 },
+                planDesc: {
+                    type: String,
+                    value: ''
+                },
                 planLevel: {
                     type: String,
                     value: 'intermediate'
@@ -181,6 +218,10 @@
                 planDistanceSelected: {
                     type: String,
                     value: '5k'
+                },
+                phaseCount: {
+                    type: Number,
+                    value: 0
                 },
                 weekViewCnt: {
                     type: Number,
@@ -248,7 +289,7 @@
             },
 
             _fetchPlan: function () {
-                if (this.planID === 'undefined') {
+                if (this.planId === 'undefined') {
                     return;
                 }
                 this.$.loading.hidden = false;
@@ -284,20 +325,37 @@
             },
 
             _fillData: function (data) {
+                console.log('fill data: ', data);
                 this.planTitle = data.name;
+                this.planDesc = data.description;
                 this.planLevel = data.level;
                 this.planDistanceSelected = data.distance_type;
                 this.weekNum = data.week_duration;
+                if (data.phases !== null) {
+                    for (let phase of data.phases) {
+                        this._addPhase(phase);
+                    }
+                }
                 this.updateWeekView(data.week_duration, this.weekViewCnt);
 
-                if (Object.keys(data.workouts).length === 0) {
+                if (data.workouts === null) {
                     return;
                 }
-                console.log(this.$.weekviews.children);
                 for (let workout of data.workouts) {
-                    let week = Math.floor(parseInt(workout.day) / 7);
-                    let relativeDay = parseInt(workout.day) % 7;
+                    let week = Math.floor(parseInt(workout.workout_day) / 7);
+                    let relativeDay = parseInt(workout.workout_day) % 7;
+                    console.log(this.$.weekviews, week, relativeDay, workout);
                     this.$.weekviews.children[week].setCardData(relativeDay, workout);
+                }
+                if (data.weeks === null) {
+                    return;
+                }
+                let size = this.$.weekviews.children.length;
+                for (let i = 0; i < data.weeks.length; i++) {
+                    if (i >= size) {
+                        break;
+                    }
+                    this.$.weekviews.children[data.weeks[i].week_seq].setSummary(data.weeks[i].week_summary);
                 }
             },
 
@@ -324,20 +382,37 @@
                         msg += 'at ' + segData.pace_selected + ' pace';
                         break;
                 }
-                if (segData.repeat_count > 1) {
-                    msg += ', ';
-                    msg += 'repeat for ' + segData.repeat_count + ' times with ' +
-                        segData.rest_time.minute + ':' + segData.rest_time.second + ' easy/recovery run in between';
-                }
                 msg += '.\n\n';
                 msg += segData.description;
                 return msg;
+            },
+
+            _addPhase: function (phaseData) {
+                var phaseEntry = document.createElement('phase-entry');
+                this.phaseCount += 1;
+                phaseEntry.num = this.phaseCount;
+                phaseEntry.setData(phaseData);
+                Polymer.dom(this.$.phases).appendChild(phaseEntry);
+            },
+
+            _addPhaseHandler: function () {
+                this._addPhase({});
+            },
+
+            _removePhaseHandler: function () {
+                let phases = Polymer.dom(this.$.phases);
+                if (phases.children.length <= 0) {
+                    return;
+                }
+                phases.removeChild(phases.lastChild);
+                this.phaseCount -= 1;
             },
 
             clearData: function () {
                 console.log('clear plan data');
 
                 this.planTitle = '';
+                this.planDesc = '';
                 this.planLevel = 'intermediate';
                 this.planDistanceSelected = '5k';
                 this.weekNum = 4;
@@ -380,25 +455,40 @@
 
             saveAll: function() {
                 let weekViewContainer = this.$.weekviews;
+                let phaseContainer = this.$.phases;
+
                 let workouts = [];
+                let weeks = [];
                 for (let i = 0; i < weekViewContainer.children.length; i++) {
                     let node = weekViewContainer.children[i];
                     if (node.nodeName === 'TEMPLATE') {
                         continue;
                     }
-                    workouts = workouts.concat(node.data());
+                    let data = node.data(this.planId);     // Need plan ID to generate workout ID
+                    console.log('weekview data: ', data);
+                    workouts = workouts.concat(data.workouts);
+                    weeks.push(data.weekInfo);
                 }
                 let days = [];
                 for (var w of workouts) {
-                    days.push(w.day);
+                    days.push(parseInt(w.workout_day));
                 }
+                let phases = [];
+                for (let i = 0; i < phaseContainer.children.length; i++) {
+                    phases.push(phaseContainer.children[i].data());
+                }
+                console.log('save phase: ', phases);
+
                 let plan = {
-                    id: parseInt(this.planId),
+                    plan_id: parseInt(this.planId),
                     name: this.planTitle,
+                    description: this.planDesc,
                     week_duration: parseInt(this.weekNum),
                     level: this.planLevel,
                     workouts: workouts,
                     distance_type: this.planDistanceSelected,
+                    phases: phases,
+                    weeks: weeks,
                     days: days
                 };
                 console.log('save all workouts', plan);
