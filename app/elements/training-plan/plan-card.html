@@ -135,8 +135,8 @@
                 this.trainingInfo = JSON.parse(JSON.stringify(info));
                 if (Object.keys(this.trainingInfo).length !== 0) {
                     this.trainingInfo.workout_day = (this.week - 1) * 7 + this.day; // Zero-based
-                    this.title = info.name;
-                    this.duration = info.duration;
+                    this.title = info.workout_title;
+                    this.duration = info.workout_duration;
                     this.intensity = 70;
                     this.$.add.style.display = 'none';
                     this.$.content.style.display = 'inherit';

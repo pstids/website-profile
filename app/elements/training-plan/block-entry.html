@@ -67,7 +67,7 @@
                 },
                 segmentCount: {
                     type: Number,
-                    value: 1
+                    value: 0
                 },
                 contentSelected: {
                     type: String,
@@ -110,13 +110,11 @@
                     this.$.repeatcheck.checked = true;
                     this.$.repeatcount.style.visibility = 'visible';
                 }
-                this.segmentCount = blockData.segments.length;
-                if (this.segmentCount <= 0) {
+                if (blockData.segments.length <= 0) {
                     return;
                 }
                 for (let segment of blockData.segments) {
                     this._addSegment(segment);
-                    this.segmentCount += 1;
                 }
             },
             _repeatCheckHandler: function () {
