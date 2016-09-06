@@ -30,7 +30,9 @@ class JWT {
 	parseData() {
 		var blocks = this.token.split('.');
 		this.data = JSON.parse(atob(blocks[1].replace(/\s/g, '')));
-		// this.checkRenewal();
+		for (var key in this.data) {
+			this.data[key.toLowerCase()] = this.data[key];
+		}
 	}
 
 	checkRenewal() {
