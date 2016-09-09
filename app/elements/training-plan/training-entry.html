@@ -1,205 +1,217 @@
 <dom-module id="training-entry">
-    <template>
-        <style>
-            :host {
-            }
-            paper-dialog#entry {
-                min-width: 75vw;
-                min-height: 50vh;
-            }
-            #plan-meta paper-input {
-                min-width: 15vw;
-            }
-            #plan-meta paper-textarea {
-                width: 30vw;
-            }
-            #scroll {
-                padding-left: 2vw;
-                padding-right: 2vw;
-            }
-            block-entry {
-                margin-bottom: 5vh;
-            }
-            paper-button {
-                color: var(--primary-color);
-                margin-top: 2vw;
-            }
-            paper-textarea {
-                max-height: 30vh;
-            }
-            paper-dropdown-menu {
-                width: 8vw;
-            }
-        </style>
-        <paper-dialog id="entry" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-            <h2>{{weekday}}, Week {{week}}</h2>
-            <div id="plan-meta" class="layout horizontal around-justified">
-                <paper-input label="Title" placeholder="e.g. Endurance run"
-                             value="{{planTitle}}" maxlength="80" char-counter>
-                </paper-input>
-                <paper-textarea label="Objective" placeholder="Get ready to go the distance on race day with your week’s longest run."
-                             value="{{planDesc}}" max-rows="3">
-                </paper-textarea>
-                <paper-dropdown-menu class="" label="Run Type" no-animations>
-                    <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}">
-                        <paper-item name="easy">Easy</paper-item>
-                        <paper-item name="long">Long</paper-item>
-                        <paper-item name="fartlek">Fartlek</paper-item>
-                        <paper-item name="threshold">Threshold</paper-item>
-                        <paper-item name="interval">Interval</paper-item>
-                        <paper-item name="repetition">Repetition</paper-item>
-                        <paper-item name="tempo">Tempo</paper-item>
-                        <paper-item name="pace">Pace</paper-item>
-                        <paper-item name="race">Race</paper-item>
-                        <paper-item name="other">Other</paper-item>
-                    </paper-menu>
-                </paper-dropdown-menu>
-                <paper-dropdown-menu class="" label="Surface Type" no-animations>
-                    <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{surfaceSelected}}">
-                        <paper-item name="hill">Hill</paper-item>
-                        <paper-item name="track">Track</paper-item>
-                        <paper-item name="road">Road</paper-item>
-                        <paper-item name="trail">Trail</paper-item>
-                    </paper-menu>
-                </paper-dropdown-menu>
-            </div>
-            <paper-dialog-scrollable id="scroll">
-                <div id="blocks" class="layout vertical center"></div>
-                <paper-button raised on-click="_addBlockHandler">ADD BLOCK</paper-button>
-                <paper-button raised on-click="_removeBlockHandler">REMOVE BLOCK</paper-button>
-            </paper-dialog-scrollable>
-            <div class="buttons">
-                <paper-button dialog-dismiss>Cancel</paper-button>
-                <paper-button dialog-confirm autofocus on-click="_save">Save</paper-button>
-            </div>
-        </paper-dialog>
-    </template>
+  <template>
+    <style>
+      :host {
+      }
+      paper-dialog#entry {
+        min-width: 75vw;
+        min-height: 50vh;
+      }
+      #plan-meta paper-input {
+        min-width: 15vw;
+      }
+      #plan-meta paper-textarea {
+        width: 30vw;
+      }
+      #scroll {
+        padding-left: 2vw;
+        padding-right: 2vw;
+      }
+      block-entry {
+        margin-bottom: 5vh;
+      }
+      paper-button {
+        color: var(--primary-color);
+        margin-top: 2vw;
+      }
+      paper-textarea {
+        max-height: 30vh;
+      }
+      paper-dropdown-menu {
+        width: 8vw;
+      }
+    </style>
+    <paper-dialog id="entry" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+      <h2>{{weekday}}, Week {{week}}</h2>
+      <div id="plan-meta" class="layout horizontal around-justified">
+        <paper-input label="Title" placeholder="e.g. Endurance run"
+                     value="{{planTitle}}" maxlength="80" char-counter>
+        </paper-input>
+        <paper-textarea label="Objective" placeholder="Get ready to go the distance on race day with your week’s longest run."
+                        value="{{planObjective}}" max-rows="3">
+        </paper-textarea>
+        <paper-dropdown-menu class="" label="Run Type" no-animations>
+          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}">
+            <paper-item name="easy">Easy</paper-item>
+            <paper-item name="long">Long</paper-item>
+            <paper-item name="fartlek">Fartlek</paper-item>
+            <paper-item name="threshold">Threshold</paper-item>
+            <paper-item name="interval">Interval</paper-item>
+            <paper-item name="repetition">Repetition</paper-item>
+            <paper-item name="tempo">Tempo</paper-item>
+            <paper-item name="pace">Pace</paper-item>
+            <paper-item name="race">Race</paper-item>
+            <paper-item name="other">Other</paper-item>
+          </paper-menu>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu class="" label="Surface Type" no-animations>
+          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{surfaceSelected}}">
+            <paper-item name="hill">Hill</paper-item>
+            <paper-item name="track">Track</paper-item>
+            <paper-item name="road">Road</paper-item>
+            <paper-item name="trail">Trail</paper-item>
+          </paper-menu>
+        </paper-dropdown-menu>
+      </div>
+      <paper-dialog-scrollable id="scroll">
+        <iron-pages attr-for-selected="type" fallback-selection="normal" selected="[[runTypeSelected]]">
+          <div type="normal">
+            <div id="blocks" class="layout vertical center"></div>
+            <paper-button raised on-click="_addBlockHandler">ADD BLOCK</paper-button>
+            <paper-button raised on-click="_removeBlockHandler">REMOVE BLOCK</paper-button>
+          </div>
+          <div type="other">
+            <paper-textarea label="Description" placeholder="" value="{{planDesc}}" max-rows="10">
+            </paper-textarea>
+          </div>
+        </iron-pages>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus on-click="_save">Save</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
 
-    <script>
+  <script>
 
-        Polymer({
-            is: 'training-entry',
-            properties: {
-                blockCount: {
-                    type: Number,
-                    value: 0
-                },
-                runTypeSelected: {
-                    type: String,
-                    value: 'easy'
-                },
-                surfaceSelected: {
-                    type: String,
-                    value: 'easy'
-                },
-                day: {  // Zero-based
-                    type: Number,
-                    observer: '_dayChangeHandler'
-                },
-                weekday: String,
-                week: Number,
-                planTitle: String,
-                planDesc: String,
-            },
-            ready: function () {
-                this.getWeekDay();
-            },
-            getWeekDay: function () {
-                switch (this.day) {
-                    case 0:
-                        this.weekday = 'Monday';
-                        break;
-                    case 1:
-                        this.weekday = 'Tuesday';
-                        break;
-                    case 2:
-                        this.weekday = 'Wednesday';
-                        break;
-                    case 3:
-                        this.weekday = 'Thursday';
-                        break;
-                    case 4:
-                        this.weekday = 'Friday';
-                        break;
-                    case 5:
-                        this.weekday = 'Saturday';
-                        break;
-                    case 6:
-                        this.weekday = 'Sunday';
-                        break;
-                }
-            },
-            set: function(internalData, week, day) {
-                // Reset all info
-                this.runTypeSelected = 'progression';
-                this.planTitle = '';
-                this.planDesc = '';
-                this.blockCount = 0;
-                let blockNode = Polymer.dom(this.$.blocks);
-                while (blockNode.firstChild) {
-                    blockNode.removeChild(blockNode.firstChild);
-                }
+    Polymer({
+      is: 'training-entry',
+      properties: {
+        blockCount: {
+          type: Number,
+          value: 0
+        },
+        runTypeSelected: {
+          type: String,
+          value: 'easy'
+        },
+        surfaceSelected: {
+          type: String,
+          value: 'easy'
+        },
+        day: {  // Zero-based
+          type: Number,
+          observer: '_dayChangeHandler'
+        },
+        weekday: String,
+        week: Number,
+        planTitle: String,
+        planObjective: String,
+        planDesc: String,
+      },
+      ready: function () {
+        this.getWeekDay();
+      },
+      getWeekDay: function () {
+        switch (this.day) {
+          case 0:
+            this.weekday = 'Monday';
+            break;
+          case 1:
+            this.weekday = 'Tuesday';
+            break;
+          case 2:
+            this.weekday = 'Wednesday';
+            break;
+          case 3:
+            this.weekday = 'Thursday';
+            break;
+          case 4:
+            this.weekday = 'Friday';
+            break;
+          case 5:
+            this.weekday = 'Saturday';
+            break;
+          case 6:
+            this.weekday = 'Sunday';
+            break;
+        }
+      },
+      set: function(internalData, week, day) {
+        // Reset all info
+        this.runTypeSelected = 'easy';
+        this.planTitle = '';
+        this.planObjective = '';
+        this.planDesc = '';
+        this.blockCount = 0;
+        let blockNode = Polymer.dom(this.$.blocks);
+        while (blockNode.firstChild) {
+          blockNode.removeChild(blockNode.firstChild);
+        }
 
-                this.week = week;
-                this.day = day;
-                console.log('internal data: ', internalData);
-                if (Object.keys(internalData).length <= 0) {
-                    return;
-                }
+        this.week = week;
+        this.day = day;
+        console.log('internal data: ', internalData);
+        if (Object.keys(internalData).length <= 0) {
+          return;
+        }
 
-                this.planTitle = internalData.workout_title;
-                this.planDesc = internalData.workout_desc;
-                this.runTypeSelected = internalData.workout_type;
-                this.surfaceSelected = internalData.workout_surface;
-                for (let block of internalData.blocks) {
-                    this._addBlock(block);
-                }
-            },
-            open: function () {
-                this.$.entry.open();
-            },
+        this.planTitle = internalData.workout_title;
+        this.planObjective = internalData.workout_objective;
+        this.planDesc = internalData.workout_desc;
+        this.runTypeSelected = internalData.workout_type;
+        this.surfaceSelected = internalData.workout_surface;
+        for (let block of internalData.blocks) {
+          this._addBlock(block);
+        }
+      },
+      open: function () {
+        this.$.entry.open();
+      },
 
-            _dayChangeHandler: function () {
-                this.getWeekDay();
-            },
-            _save: function () {
-                let blocks = [];
-                let blockContainer = Polymer.dom(this.$.blocks).children;
-                for (var i = 0; i < blockContainer.length; i++) {
-                    blocks.push(blockContainer[i].data());
-                }
-                this.fire('training-input', {
-                    workout_title: this.planTitle,
-                    workout_day: (this.week - 1) * 7 + this.day,
-                    workout_seq: 0,
-                    workout_desc: this.planDesc,
-                    workout_type: this.runTypeSelected,
-                    workout_duration: 100,  // TODO
-                    workout_surface: this.surfaceSelected,
-                    blocks: blocks
-                });
-            },
-            _addBlock: function (blockData) {
-                var blockEntry = document.createElement('block-entry');
-                this.blockCount += 1;
-                blockEntry.num = this.blockCount;
-                blockEntry.setData(blockData);
-                Polymer.dom(this.$.blocks).appendChild(blockEntry);
-                this._save();
-            },
-            _addBlockHandler: function () {
-                this._addBlock({});
-            },
-            _removeBlockHandler: function () {
-                let blocks = Polymer.dom(this.$.blocks);
-                if (blocks.children.length <= 0) {
-                    return;
-                }
-                blocks.removeChild(blocks.lastChild);
-                this.blockCount -= 1;
-            },
+      _dayChangeHandler: function () {
+        this.getWeekDay();
+      },
+      _save: function () {
+        let blocks = [];
+        let blockContainer = Polymer.dom(this.$.blocks).children;
+        for (var i = 0; i < blockContainer.length; i++) {
+          blocks.push(blockContainer[i].data());
+        }
+        this.fire('training-input', {
+          workout_title: this.planTitle,
+          workout_day: (this.week - 1) * 7 + this.day,
+          workout_seq: 0,
+          workout_objective: this.planObjective,
+          workout_desc: this.planDesc,
+          workout_type: this.runTypeSelected,
+          workout_duration: 100,  // TODO
+          workout_surface: this.surfaceSelected,
+          blocks: blocks
         });
+      },
+      _addBlock: function (blockData) {
+        var blockEntry = document.createElement('block-entry');
+        this.blockCount += 1;
+        blockEntry.num = this.blockCount;
+        blockEntry.setData(blockData);
+        Polymer.dom(this.$.blocks).appendChild(blockEntry);
+        this._save();
+      },
+      _addBlockHandler: function () {
+        this._addBlock({});
+      },
+      _removeBlockHandler: function () {
+        let blocks = Polymer.dom(this.$.blocks);
+        if (blocks.children.length <= 0) {
+          return;
+        }
+        blocks.removeChild(blocks.lastChild);
+        this.blockCount -= 1;
+      },
+    });
 
-    </script>
+  </script>
 
 </dom-module>
