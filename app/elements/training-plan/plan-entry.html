@@ -1,513 +1,512 @@
 <dom-module id="plan-entry">
-    <template>
-        <style>
-            :host {
-                background: #333333;
-                font-family: "Roboto", Helvetica, Arial;
-                color: #eee;
-            }
+  <template>
+    <style>
+      :host {
+        background: #333333;
+        font-family: "Roboto", Helvetica, Arial;
+        color: #eee;
+      }
 
-            #plan-header {
-                margin: 1vw;
-            }
+      #plan-header {
+        margin: 1vw;
+      }
 
-            .plan-header-content {
-                padding-left: 2vw;
-                padding-right: 2vw;
-            }
+      .plan-header-content {
+        padding-left: 2vw;
+        padding-right: 2vw;
+      }
 
-            #plan-phase {
-                margin: 1vw;
-                margin-bottom: 5vw;
-            }
-            #plan-phase #phase-title {
-                margin-right: 2vw;
-                margin-top: 0;
-                margin-bottom: 0;
-            }
+      #plan-phase {
+        margin: 1vw;
+        margin-bottom: 5vw;
+      }
+      #plan-phase #phase-title {
+        margin-right: 2vw;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
 
-            #plan-content {
-                margin: 1vw;
-                margin-bottom: 10vw;
-            }
+      #plan-content {
+        margin: 1vw;
+        margin-bottom: 10vw;
+      }
 
-            h2 {
-                font-family: 'Roboto Slab', serif;
-            }
+      h2 {
+        font-family: 'Roboto Slab', serif;
+      }
 
-            .underline {
-                border-bottom: 1px solid var(--primary-color);
-            }
+      .underline {
+        border-bottom: 1px solid var(--primary-color);
+      }
 
-            plan-weekview {
-                margin-bottom: 10px;
-            }
+      plan-weekview {
+        margin-bottom: 10px;
+      }
 
-            paper-button {
-                margin-top: 3vw;
-                min-width: 10vw;
-                color: var(--primary-color);
-            }
+      paper-button {
+        margin-top: 3vw;
+        min-width: 10vw;
+        color: var(--primary-color);
+      }
 
-            paper-input#titleInput {
-                min-width: 30vw;
-            }
+      paper-input#titleInput {
+        min-width: 30vw;
+      }
 
-            paper-input#durationInput {
-                width: 5vw;
-            }
-            paper-dropdown-menu {
-                width: 10vw;
-            }
-            #planfab {
-                position: fixed;
-                bottom: 20px;
-                right: 10px;
-            }
+      paper-input#durationInput {
+        width: 5vw;
+      }
+      paper-dropdown-menu {
+        width: 10vw;
+      }
+      #planfab {
+        position: fixed;
+        bottom: 20px;
+        right: 10px;
+      }
 
-            #loading {
-                width: 100%;
-                height: 100%;
-                top: 0;
-                bottom: 0;
-                right: 0;
-                left: 0;
-                position: fixed;
-            }
-            #overlay {
-                background-color: black;
-                top: 0;
-                bottom: 0;
-                right: 0;
-                left: 0;
-                opacity:.8;
-                position: fixed;
-            }
-            paper-spinner-lite {
-                --paper-spinner-color: var(--primary-color);
-            }
-            paper-card#summary {
-                position: fixed;
-                display: none;
-                max-width: 50vw;
-                --paper-card-background-color: rgba(19, 19, 19, 0.9);
-                --paper-card-header-text: {
-                    color: var(--primary-color)
-                };
-                --paper-card-content: {
-                    color: #eee;
-                    font-size: 16px;
-                };
-            }
-            paper-card#summary #summary-type {
-            }
-            paper-card#summary #summary-desc {
-                padding-top: 3vh;
-                padding-bottom: 3vh;
-            }
-            paper-card#summary .summary-section {
-                padding-top: 1vh;
-                padding-bottom: 1vh;
-            }
-            paper-textarea {
-                width: 100%;
-                max-height: 30vh;
-            }
-        </style>
-        <!-- Main Content -->
-        <div id="plan-header" class="layout vertical">
-            <h2 class="underline">Plan Info</h2>
-            <div class="layout horizontal end justified plan-header-content">
-                <paper-input id="titleInput" label="Plan Title" placeholder="e.g. Endurance with threshold tempo"
-                             value="{{planTitle}}" maxlength="80" required>
-                </paper-input>
-                <paper-radio-group id="planLevel" selected="{{planLevel}}">
-                    <paper-radio-button name="beginner">Beginner</paper-radio-button>
-                    <paper-radio-button name="intermediate">Intermediate</paper-radio-button>
-                    <paper-radio-button name="advance">Advanced</paper-radio-button>
-                    <paper-radio-button name="general">General</paper-radio-button>
-                </paper-radio-group>
-                <paper-dropdown-menu id="goalDistance" label="Goal Distance" no-animations>
-                    <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}">
-                        <paper-item name="5k">5k</paper-item>
-                        <paper-item name="10k">10k</paper-item>
-                        <paper-item name="half marathon">Half Marathon</paper-item>
-                        <paper-item name="marathon">Marathon</paper-item>
-                        <paper-item name="25k">25k Ultra</paper-item>
-                        <paper-item name="50k">50k Ultra</paper-item>
-                        <paper-item name="100k">100k Ultra</paper-item>
-                        <paper-item name="50M">50 miles Ultra</paper-item>
-                        <paper-item name="half ironman">Half Ironman</paper-item>
-                        <paper-item name="ironman">Ironman</paper-item>
-                        <paper-item name="other">Other</paper-item>
-                    </paper-menu>
-                </paper-dropdown-menu>
-                <paper-input id="durationInput" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
-                             value="{{weekNum}}" on-blur="onWeekInput">
-                    <div suffix>Weeks</div>
-                </paper-input>
-            </div>
-            <div class="layout horizontal end justified plan-header-content">
-                <paper-textarea label="Plan Description" placeholder="" value="{{planDesc}}" max-rows="2"
-                                char-counter maxlength="500">
-                </paper-textarea>
-            </div>
-        </div>
-        <div id="plan-phase">
-            <div class="underline layout horizontal center">
-                <h2 id="phase-title">Plan Phase</h2>
-                <paper-icon-button icon="add" on-click="_addPhaseHandler"></paper-icon-button>
-                <paper-icon-button icon="remove" on-click="_removePhaseHandler"></paper-icon-button>
-            </div>
-            <div id="phases" class="layout vertical center">
-            </div>
-        </div>
-        <div id="plan-content">
-            <h2 class="underline">Weekly Schedule</h2>
-            <div id="weekviews"></div>
-        </div>
-        <training-entry id="dialog"></training-entry>
-        <div id="planfab">
-            <paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>
-        </div>
-        <paper-toast duration="1300" text="" id="toast"></paper-toast>
-        <div id="loading" class="layout horizontal center center-justified">
-            <div id="overlay"></div>
-            <paper-spinner-lite active></paper-spinner-lite>
-        </div>
-        <paper-card id="summary" heading="{{summaryData.name}}">
-            <div class="card-content layout vertical">
-                <div id="summary-type"><b>Type: </b>{{summaryData.type}}</div>
-                <div id="summary-desc"><b>Description: </b>{{summaryData.description}}</div>
-                <template is="dom-repeat" items="{{summaryData.segments}}">
-                    <div class="summary-section">Segment <b>{{item.segment_num}}</b>: {{_extractSegmentSummary(item)}}</div>
-                </template>
-            </div>
-        </paper-card>
-    </template>
+      #loading {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        position: fixed;
+      }
+      #overlay {
+        background-color: black;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        opacity:.8;
+        position: fixed;
+      }
+      paper-spinner-lite {
+        --paper-spinner-color: var(--primary-color);
+      }
+      paper-card#summary {
+        position: fixed;
+        display: none;
+        max-width: 50vw;
+        --paper-card-background-color: rgba(19, 19, 19, 0.9);
+        --paper-card-header-text: {
+          color: var(--primary-color)
+        };
+        --paper-card-content: {
+          color: #eee;
+          font-size: 16px;
+        };
+      }
+      paper-card#summary #summary-type {
+      }
+      paper-card#summary #summary-desc {
+        padding-top: 3vh;
+        padding-bottom: 3vh;
+      }
+      paper-card#summary .summary-section {
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+      }
+      paper-textarea {
+        width: 100%;
+        max-height: 30vh;
+      }
+    </style>
+    <!-- Main Content -->
+    <div id="plan-header" class="layout vertical">
+      <h2 class="underline">Plan Info</h2>
+      <div class="layout horizontal end justified plan-header-content">
+        <paper-input id="titleInput" label="Plan Title" placeholder="e.g. Endurance with threshold tempo"
+                     value="{{planTitle}}" maxlength="80" required>
+        </paper-input>
+        <paper-radio-group id="planLevel" selected="{{planLevel}}">
+          <paper-radio-button name="beginner">Beginner</paper-radio-button>
+          <paper-radio-button name="intermediate">Intermediate</paper-radio-button>
+          <paper-radio-button name="advance">Advanced</paper-radio-button>
+          <paper-radio-button name="general">General</paper-radio-button>
+        </paper-radio-group>
+        <paper-dropdown-menu id="goalDistance" label="Goal Distance" no-animations>
+          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}">
+            <paper-item name="5k">5k</paper-item>
+            <paper-item name="10k">10k</paper-item>
+            <paper-item name="half marathon">Half Marathon</paper-item>
+            <paper-item name="marathon">Marathon</paper-item>
+            <paper-item name="25k">25k Ultra</paper-item>
+            <paper-item name="50k">50k Ultra</paper-item>
+            <paper-item name="100k">100k Ultra</paper-item>
+            <paper-item name="50M">50 miles Ultra</paper-item>
+            <paper-item name="half ironman">Half Ironman</paper-item>
+            <paper-item name="ironman">Ironman</paper-item>
+            <paper-item name="other">Other</paper-item>
+          </paper-menu>
+        </paper-dropdown-menu>
+        <paper-input id="durationInput" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
+                     value="{{weekNum}}" on-blur="onWeekInput">
+          <div suffix>Weeks</div>
+        </paper-input>
+      </div>
+      <div class="layout horizontal end justified plan-header-content">
+        <paper-textarea label="Plan Description" placeholder="" value="{{planDesc}}" max-rows="2"
+                        char-counter maxlength="500">
+        </paper-textarea>
+      </div>
+    </div>
+    <div id="plan-phase">
+      <div class="underline layout horizontal center">
+        <h2 id="phase-title">Plan Phase</h2>
+        <paper-icon-button icon="add" on-click="_addPhaseHandler"></paper-icon-button>
+        <paper-icon-button icon="remove" on-click="_removePhaseHandler"></paper-icon-button>
+      </div>
+      <div id="phases" class="layout vertical center">
+      </div>
+    </div>
+    <div id="plan-content">
+      <h2 class="underline">Weekly Schedule</h2>
+      <div id="weekviews"></div>
+    </div>
+    <training-entry id="dialog"></training-entry>
+    <div id="planfab">
+      <paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>
+    </div>
+    <paper-toast duration="1300" text="" id="toast"></paper-toast>
+    <div id="loading" class="layout horizontal center center-justified">
+      <div id="overlay"></div>
+      <paper-spinner-lite active></paper-spinner-lite>
+    </div>
+    <paper-card id="summary" heading="{{summaryData.name}}">
+      <div class="card-content layout vertical">
+        <div id="summary-type"><b>Type: </b>{{summaryData.type}}</div>
+        <div id="summary-desc"><b>Description: </b>{{summaryData.description}}</div>
+        <template is="dom-repeat" items="{{summaryData.segments}}">
+          <div class="summary-section">Segment <b>{{item.segment_num}}</b>: {{_extractSegmentSummary(item)}}</div>
+        </template>
+      </div>
+    </paper-card>
+  </template>
 
-    <script>
+  <script>
 
-        Polymer({
-            is: 'plan-entry',
-            properties: {
-                planId: {
-                    type: Number,
-                    observer: '_fetchPlan'
-                },
-                selectWeek: {
-                    type: Number,
-                    value: 0
-                },
-                selectDay: {
-                    type: Number,
-                    value: 0
-                },
-                planTitle: {
-                    type: String,
-                    value: ''
-                },
-                planDesc: {
-                    type: String,
-                    value: ''
-                },
-                planLevel: {
-                    type: String,
-                    value: 'intermediate'
-                },
-                planDistanceSelected: {
-                    type: String,
-                    value: '5k'
-                },
-                phaseCount: {
-                    type: Number,
-                    value: 0
-                },
-                weekViewCnt: {
-                    type: Number,
-                    value: 0
-                },
-                weekNum: {
-                    type: Number,
-                    value: 4
-                },
-                copyData: {
-                    type: Object,
-                },
-                summaryData: {
-                    type: Object,
-                }
-            },
-            ready: function () {
-                this.$.loading.hidden = true;
-                this.addEventListener('card-tap', function (e) {
-                    this.selectWeek = e.detail.week - 1;
-                    this.selectDay = e.detail.day;
+    Polymer({
+      is: 'plan-entry',
+      properties: {
+        planId: {
+          type: Number,
+          observer: '_fetchPlan'
+        },
+        selectWeek: {
+          type: Number,
+          value: 0
+        },
+        selectDay: {
+          type: Number,
+          value: 0
+        },
+        planTitle: {
+          type: String,
+          value: ''
+        },
+        planDesc: {
+          type: String,
+          value: ''
+        },
+        planLevel: {
+          type: String,
+          value: 'intermediate'
+        },
+        planDistanceSelected: {
+          type: String,
+          value: '5k'
+        },
+        phaseCount: {
+          type: Number,
+          value: 0
+        },
+        weekViewCnt: {
+          type: Number,
+          value: 0
+        },
+        weekNum: {
+          type: Number,
+          value: 4
+        },
+        copyInfo: {
+          type: Object,
+        },
+        summaryData: {
+          type: Object,
+        }
+      },
+      ready: function () {
+        this.$.loading.hidden = true;
+        this.addEventListener('card-tap', function (e) {
+          this.selectWeek = e.detail.week - 1;
+          this.selectDay = e.detail.day;
 
-                    let dialog = document.querySelector('#dialog');
-                    let info = e.detail.info;
-                    dialog.set(info, e.detail.week, e.detail.day);  // Displayed week
-                    dialog.open();
-                });
-
-                this.addEventListener('card-show-summary', function (e) {
-                    let info = e.detail;
-                    this.$.summary.style.top = String(info.y)  + 'px';
-                    if (info.pos === 'left') {
-                        this.$.summary.style.left = null;
-                        this.$.summary.style.right = String(info.x + 20)  + 'px';
-                    } else {
-                        this.$.summary.style.left = String(info.x + 20)  + 'px';
-                        this.$.summary.style.right = null;
-                    }
-                    this.$.summary.style.display = 'inherit';
-                    this.summaryData = info.info;
-                });
-
-                this.addEventListener('card-hide-summary', function () {
-                    this.$.summary.style.display = 'none';
-                });
-
-                this.addEventListener('training-input', function (e) {
-                    let info = e.detail;
-                    if (Object.keys(info).length === 0) {
-                        return;
-                    }
-                    this.$.weekviews.children[this.selectWeek].setCardData(this.selectDay, info);
-                    this.saveAll();
-                });
-
-                this.addEventListener('card-copy', function (e) {
-                    this.copyData = e.detail.info;
-                });
-
-                this.addEventListener('card-paste', function (e) {
-                    this.selectWeek = e.detail.week - 1;
-                    this.selectDay = e.detail.day;
-                    this.$.weekviews.children[this.selectWeek].setCardData(this.selectDay, this.copyData);
-                });
-            },
-
-            _fetchPlan: function () {
-                if (this.planId === 'undefined') {
-                    return;
-                }
-                this.$.loading.hidden = false;
-                this.clearData();
-                console.log('fetch plan');
-                superagent
-                    .get('/b/api/v1/training/plan/'+this.planId)
-                    .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
-                        this.$.loading.hidden = true;
-                        if (res.ok) {
-                            switch (res.status) {
-                                case 200:
-                                    this._fillData(res.body.plan);
-                                    if (!(res.body.is_author)) {
-                                        this.$.planfab.style.display = 'none';
-                                        for (let i = 0; i < this.$.weekviews.children.length; i++) {
-                                            this.$.weekviews.children[i].setReadOnly();
-                                        }
-                                    }
-                                    break;
-                                case 204:
-                                    console.log('No plan with this id found');
-                                    this.updateWeekView(4, this.weekViewCnt);
-                                    break;
-                            }
-                        } else {
-                            this.$.toast.text = 'Can not load the training plan. Please try later.';
-                            this.$.toast.show();
-                        }
-                    }.bind(this));
-            },
-
-            _fillData: function (data) {
-                console.log('fill data: ', data);
-                this.planTitle = data.name;
-                this.planDesc = data.description;
-                this.planLevel = data.level;
-                this.planDistanceSelected = data.distance_type;
-                this.weekNum = data.week_duration;
-                if (data.phases !== null) {
-                    for (let phase of data.phases) {
-                        this._addPhase(phase);
-                    }
-                }
-                this.updateWeekView(data.week_duration, this.weekViewCnt);
-
-                if (data.workouts === null) {
-                    return;
-                }
-                for (let workout of data.workouts) {
-                    let week = Math.floor(parseInt(workout.workout_day) / 7);
-                    let relativeDay = parseInt(workout.workout_day) % 7;
-                    console.log(this.$.weekviews, week, relativeDay, workout);
-                    this.$.weekviews.children[week].setCardData(relativeDay, workout);
-                }
-                if (data.weeks === null) {
-                    return;
-                }
-                let size = this.$.weekviews.children.length;
-                for (let i = 0; i < data.weeks.length; i++) {
-                    if (i >= size) {
-                        break;
-                    }
-                    this.$.weekviews.children[data.weeks[i].week_seq].setSummary(data.weeks[i].week_summary);
-                }
-            },
-
-            _extractSegmentSummary: function (segData) {
-                console.log(segData);
-                let msg = 'Run for ';
-                switch (segData.duration_type) {
-                    case 'time':
-                        msg += segData.duration_time.hour + ':' + segData.duration_time.minute + ':' + segData.duration_time.second;
-                        break;
-                    case 'distance':
-                        msg += segData.duration_distance + ' ' + segData.distance_unit_selected;
-                        break;
-                }
-                msg += ' ';
-                switch (segData.intensity_type) {
-                    case 'zone':
-                        msg += 'at zone ' + segData.zone_selected;
-                        break;
-                    case 'percentage':
-                        msg += 'between ' + segData.intensity_percent.low + '% - ' + segData.intensity_percent.high + '%';
-                        break;
-                    case 'pace':
-                        msg += 'at ' + segData.pace_selected + ' pace';
-                        break;
-                }
-                msg += '.\n\n';
-                msg += segData.description;
-                return msg;
-            },
-
-            _addPhase: function (phaseData) {
-                var phaseEntry = document.createElement('phase-entry');
-                this.phaseCount += 1;
-                phaseEntry.num = this.phaseCount;
-                phaseEntry.setData(phaseData);
-                Polymer.dom(this.$.phases).appendChild(phaseEntry);
-            },
-
-            _addPhaseHandler: function () {
-                this._addPhase({});
-            },
-
-            _removePhaseHandler: function () {
-                let phases = Polymer.dom(this.$.phases);
-                if (phases.children.length <= 0) {
-                    return;
-                }
-                phases.removeChild(phases.lastChild);
-                this.phaseCount -= 1;
-            },
-
-            clearData: function () {
-                console.log('clear plan data');
-
-                this.planTitle = '';
-                this.planDesc = '';
-                this.planLevel = 'intermediate';
-                this.planDistanceSelected = '5k';
-                this.weekNum = 4;
-                // Re-generate weekviews
-                this.updateWeekView(0, this.weekViewCnt);
-                this.updateWeekView(this.weekNum, this.weekViewCnt);
-            },
-
-            updateWeekView: function (num, cnt) {
-                num = parseInt(num);
-                cnt = parseInt(cnt);
-                let weekViewContainer = this.$.weekviews;
-                if (num > cnt) {
-                    let gap = num - this.weekViewCnt;
-                    let views = [];
-                    let i = 0;
-                    for (i = 0; i < gap; i++) {
-                        let weekView = document.createElement('plan-weekview');
-                        weekView.weekNum = this.weekViewCnt + (i + 1);
-                        views.push(weekView);
-                    }
-                    let docFrag = document.createDocumentFragment();
-                    for(i = 0; i < views.length; i++) {
-                        docFrag.appendChild(views[i]);
-                    }
-                    weekViewContainer.appendChild(docFrag);
-                } else {
-                    let gap = cnt - num;
-                    let allChildren = weekViewContainer.childNodes;
-                    for (let i = 0; i < gap; i++) {
-                        weekViewContainer.removeChild(allChildren[this.weekViewCnt-i-1]);
-                    }
-                }
-                this.weekViewCnt = num;
-            },
-
-            onWeekInput: function() {
-                this.updateWeekView(this.weekNum, this.weekViewCnt);
-            },
-
-            saveAll: function() {
-                let weekViewContainer = this.$.weekviews;
-                let phaseContainer = this.$.phases;
-
-                let workouts = [];
-                let weeks = [];
-                for (let i = 0; i < weekViewContainer.children.length; i++) {
-                    let node = weekViewContainer.children[i];
-                    if (node.nodeName === 'TEMPLATE') {
-                        continue;
-                    }
-                    let data = node.data(this.planId);     // Need plan ID to generate workout ID
-                    console.log('weekview data: ', data);
-                    workouts = workouts.concat(data.workouts);
-                    weeks.push(data.weekInfo);
-                }
-                let days = [];
-                for (var w of workouts) {
-                    days.push(parseInt(w.workout_day));
-                }
-                let phases = [];
-                for (let i = 0; i < phaseContainer.children.length; i++) {
-                    phases.push(phaseContainer.children[i].data());
-                }
-                console.log('save phase: ', phases);
-
-                let plan = {
-                    plan_id: parseInt(this.planId),
-                    name: this.planTitle,
-                    description: this.planDesc,
-                    week_duration: parseInt(this.weekNum),
-                    level: this.planLevel,
-                    workouts: workouts,
-                    distance_type: this.planDistanceSelected,
-                    phases: phases,
-                    weeks: weeks,
-                    days: days
-                };
-                console.log('save all workouts', plan);
-                superagent
-                    .post('/b/api/v1/training/plan')
-                    .send(plan)
-                    .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
-                        if (res.ok) {
-                            this.$.toast.text = 'Your training plan is uploaded!';
-                        } else {
-                            this.$.toast.text = 'Your information has not been updated. Please try again.';
-                        }
-                        this.$.toast.show();
-                    }.bind(this));
-            }
+          let dialog = document.querySelector('#dialog');
+          let info = e.detail.info;
+          dialog.set(info, e.detail.week, e.detail.day, e.detail.seq);  // Displayed week, day and sequence
+          dialog.open();
         });
 
-    </script>
+        this.addEventListener('card-show-summary', function (e) {
+          let info = e.detail;
+          this.$.summary.style.top = String(info.y)  + 'px';
+          if (info.pos === 'left') {
+            this.$.summary.style.left = null;
+            this.$.summary.style.right = String(info.x + 20)  + 'px';
+          } else {
+            this.$.summary.style.left = String(info.x + 20)  + 'px';
+            this.$.summary.style.right = null;
+          }
+          this.$.summary.style.display = 'inherit';
+          this.summaryData = info.info;
+        });
+
+        this.addEventListener('card-hide-summary', function () {
+          this.$.summary.style.display = 'none';
+        });
+
+        this.addEventListener('training-input', function (e) {
+          let info = e.detail;
+          if (Object.keys(info).length === 0) {
+            return;
+          }
+          this.$.weekviews.children[this.selectWeek].addCardData(this.selectDay, info);
+          this.saveAll();
+        });
+
+        this.addEventListener('card-copy', function (e) {
+          this.copyInfo = e.detail.info;
+        });
+
+        this.addEventListener('card-paste', function (e) {
+          this.selectWeek = e.detail.week - 1;
+          this.selectDay = e.detail.day;
+          this.copyInfo.workout_seq = e.detail.seq;
+          this.$.weekviews.children[this.selectWeek].addCardData(this.selectDay, this.copyInfo);
+        });
+      },
+
+      _fetchPlan: function () {
+        if (this.planId === 'undefined') {
+          return;
+        }
+        this.$.loading.hidden = false;
+        this.clearData();
+        console.log('fetch plan');
+        superagent
+          .get('/b/api/v1/training/plan/'+this.planId)
+          .set('Accept', 'application/json')
+          .set('Authorization', 'Bearer: ' + jwt.token)
+          .end(function(err, res) {
+            this.$.loading.hidden = true;
+            if (res.ok) {
+              switch (res.status) {
+                case 200:
+                  this._fillData(res.body.plan);
+                  if (!(res.body.is_author)) {
+                    this.$.planfab.style.display = 'none';
+                    for (let i = 0; i < this.$.weekviews.children.length; i++) {
+                      this.$.weekviews.children[i].setReadOnly();
+                    }
+                  }
+                  break;
+                case 204:
+                  console.log('No plan with this id found');
+                  this.updateWeekView(4, this.weekViewCnt);
+                  break;
+              }
+            } else {
+              this.$.toast.text = 'Can not load the training plan. Please try later.';
+              this.$.toast.show();
+            }
+          }.bind(this));
+      },
+
+      _fillData: function (data) {
+        console.log('fill data: ', data);
+        this.planTitle = data.name;
+        this.planDesc = data.description;
+        this.planLevel = data.level;
+        this.planDistanceSelected = data.distance_type;
+        this.weekNum = data.week_duration;
+        if (data.phases !== null) {
+          for (let phase of data.phases) {
+            this._addPhase(phase);
+          }
+        }
+        this.updateWeekView(data.week_duration, this.weekViewCnt);
+
+        if (data.workouts === null) {
+          return;
+        }
+        for (let workout of data.workouts) {
+          let week = Math.floor(parseInt(workout.workout_day) / 7);
+          let relativeDay = parseInt(workout.workout_day) % 7;
+          console.log(this.$.weekviews, week, relativeDay, workout);
+          this.$.weekviews.children[week].addCardData(relativeDay, workout);
+        }
+        if (data.weeks === null) {
+          return;
+        }
+        let size = this.$.weekviews.children.length;
+        for (let i = 0; i < data.weeks.length; i++) {
+          if (i >= size) {
+            break;
+          }
+          this.$.weekviews.children[data.weeks[i].week_seq].setSummary(data.weeks[i].week_summary);
+        }
+      },
+
+      _extractSegmentSummary: function (segData) {
+        console.log(segData);
+        let msg = 'Run for ';
+        switch (segData.duration_type) {
+          case 'time':
+            msg += segData.duration_time.hour + ':' + segData.duration_time.minute + ':' + segData.duration_time.second;
+            break;
+          case 'distance':
+            msg += segData.duration_distance + ' ' + segData.distance_unit_selected;
+            break;
+        }
+        msg += ' ';
+        switch (segData.intensity_type) {
+          case 'zone':
+            msg += 'at zone ' + segData.zone_selected;
+            break;
+          case 'percentage':
+            msg += 'between ' + segData.intensity_percent.low + '% - ' + segData.intensity_percent.high + '%';
+            break;
+          case 'pace':
+            msg += 'at ' + segData.pace_selected + ' pace';
+            break;
+        }
+        msg += '.\n\n';
+        msg += segData.description;
+        return msg;
+      },
+
+      _addPhase: function (phaseData) {
+        var phaseEntry = document.createElement('phase-entry');
+        this.phaseCount += 1;
+        phaseEntry.num = this.phaseCount;
+        phaseEntry.setData(phaseData);
+        Polymer.dom(this.$.phases).appendChild(phaseEntry);
+      },
+
+      _addPhaseHandler: function () {
+        this._addPhase({});
+      },
+
+      _removePhaseHandler: function () {
+        let phases = Polymer.dom(this.$.phases);
+        if (phases.children.length <= 0) {
+          return;
+        }
+        phases.removeChild(phases.lastChild);
+        this.phaseCount -= 1;
+      },
+
+      clearData: function () {
+        console.log('clear plan data');
+
+        this.planTitle = '';
+        this.planDesc = '';
+        this.planLevel = 'intermediate';
+        this.planDistanceSelected = '5k';
+        this.weekNum = 4;
+        // Re-generate weekviews
+        this.updateWeekView(0, this.weekViewCnt);
+        this.updateWeekView(this.weekNum, this.weekViewCnt);
+      },
+
+      updateWeekView: function (num, cnt) {
+        num = parseInt(num);
+        cnt = parseInt(cnt);
+        let weekViewContainer = this.$.weekviews;
+        if (num > cnt) {
+          let gap = num - this.weekViewCnt;
+          let views = [];
+          let i = 0;
+          for (i = 0; i < gap; i++) {
+            let weekView = document.createElement('plan-weekview');
+            weekView.weekNum = this.weekViewCnt + (i + 1);
+            views.push(weekView);
+          }
+          let docFrag = document.createDocumentFragment();
+          for(i = 0; i < views.length; i++) {
+            docFrag.appendChild(views[i]);
+          }
+          weekViewContainer.appendChild(docFrag);
+        } else {
+          let gap = cnt - num;
+          let allChildren = weekViewContainer.childNodes;
+          for (let i = 0; i < gap; i++) {
+            weekViewContainer.removeChild(allChildren[this.weekViewCnt-i-1]);
+          }
+        }
+        this.weekViewCnt = num;
+      },
+
+      onWeekInput: function() {
+        this.updateWeekView(this.weekNum, this.weekViewCnt);
+      },
+
+      saveAll: function() {
+        let weekViewContainer = this.$.weekviews;
+        let phaseContainer = this.$.phases;
+
+        let workouts = [];
+        let weeks = [];
+        let days = [];
+        for (let i = 0; i < weekViewContainer.children.length; i++) {
+          let node = weekViewContainer.children[i];
+          if (node.nodeName === 'TEMPLATE') {
+            continue;
+          }
+          let data = node.data(this.planId);     // Need plan ID to generate workout ID
+          console.log('weekview data: ', data);
+          workouts = workouts.concat(data.workouts);
+          weeks.push(data.weekInfo);
+          days = days.concat(data.weekInfo.week_days);
+        }
+        let phases = [];
+        for (let i = 0; i < phaseContainer.children.length; i++) {
+          phases.push(phaseContainer.children[i].data());
+        }
+        console.log('save phase: ', phases);
+
+        let plan = {
+          plan_id: parseInt(this.planId),
+          name: this.planTitle,
+          description: this.planDesc,
+          week_duration: parseInt(this.weekNum),
+          level: this.planLevel,
+          workouts: workouts,
+          distance_type: this.planDistanceSelected,
+          phases: phases,
+          weeks: weeks,
+          days: days
+        };
+        console.log('save all workouts', plan);
+        superagent
+          .post('/b/api/v1/training/plan')
+          .send(plan)
+          .set('Accept', 'application/json')
+          .set('Authorization', 'Bearer: ' + jwt.token)
+          .end(function(err, res) {
+            if (res.ok) {
+              this.$.toast.text = 'Your training plan is uploaded!';
+            } else {
+              this.$.toast.text = 'Your information has not been updated. Please try again.';
+            }
+            this.$.toast.show();
+          }.bind(this));
+      }
+    });
+
+  </script>
 
 </dom-module>

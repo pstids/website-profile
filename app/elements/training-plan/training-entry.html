@@ -32,7 +32,7 @@
       }
     </style>
     <paper-dialog id="entry" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-      <h2>{{weekday}}, Week {{week}}</h2>
+      <h2>Workout {{seq}} on {{weekday}}, Week {{week}}</h2>
       <div id="plan-meta" class="layout horizontal around-justified">
         <paper-input label="Title" placeholder="e.g. Endurance run"
                      value="{{planTitle}}" maxlength="80" char-counter>
@@ -98,7 +98,7 @@
         },
         surfaceSelected: {
           type: String,
-          value: 'easy'
+          value: 'road'
         },
         day: {  // Zero-based
           type: Number,
@@ -106,6 +106,7 @@
         },
         weekday: String,
         week: Number,
+        seq: Number,
         planTitle: String,
         planObjective: String,
         planDesc: String,
@@ -138,7 +139,7 @@
             break;
         }
       },
-      set: function(internalData, week, day) {
+      set: function(internalData, week, day, seq) {
         // Reset all info
         this.runTypeSelected = 'easy';
         this.planTitle = '';
@@ -152,6 +153,7 @@
 
         this.week = week;
         this.day = day;
+        this.seq = seq;
         console.log('internal data: ', internalData);
         if (Object.keys(internalData).length <= 0) {
           return;
@@ -162,6 +164,7 @@
         this.planDesc = internalData.workout_desc;
         this.runTypeSelected = internalData.workout_type;
         this.surfaceSelected = internalData.workout_surface;
+        this.seq = internalData.workout_seq;
         for (let block of internalData.blocks) {
           this._addBlock(block);
         }
@@ -182,7 +185,7 @@
         this.fire('training-input', {
           workout_title: this.planTitle,
           workout_day: (this.week - 1) * 7 + this.day,
-          workout_seq: 0,
+          workout_seq: this.seq,
           workout_objective: this.planObjective,
           workout_desc: this.planDesc,
           workout_type: this.runTypeSelected,
