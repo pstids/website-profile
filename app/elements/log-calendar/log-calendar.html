@@ -199,19 +199,13 @@
             },
             // Creates dom structure of 5 rows of 7 columns of log-day elements
             assembleDOM: function () {
-                var rowDom = [];
                 var calendarContainer = this.$.calendarContainer;
                 for (var i = 0; i < 5; i++) {
                     var row = document.createElement('div');
                     row.classList.add('row');
-                    rowDom = [];
+                    var rowDom = [];
                     for (var o = 0; o < 7; o++) {
-                        var node = document.createElement('log-day');
-                        node.dataset.row = i;
-                        node.dataset.column = o;
-                        node.setData({
-                            day: 0
-                        });
+                        var node = document.createElement('log-container');
                         row.appendChild(node);
                         rowDom.push(node);
                     }
@@ -236,12 +230,11 @@
                     .set('Authorization', `Bearer: ${jwt.token}`)
                     .end((err, res) => {
                         if (res.ok) {
+                            this.switchMonthContext(obj.firstMonday);
                             if (res.body !== null && res.body.activities !== null) {
-                                this.switchMonthContext('TEST', obj.firstMonday);
                                 this.processActivities(res.body.activities);
                                 this.loadLast(loadLast, res.body.last_activity);
                             } else {
-                                this.switchMonthContext('TEST', obj.firstMonday);
                                 this.processActivities([]);
                                 this.loadLast(loadLast, res.body.last_activity);
                             }
@@ -276,23 +269,19 @@
                 };
             },
             processActivities: function (activities) {
-                for (var i = 0; i < activities.length; i++) {
-                    var activity = activities[i];
+                for (var activity of activities) {
                     this.addActivity(activity);
                 }
             },
-            switchMonthContext: function (monthName, firstMonday) {
+            switchMonthContext: function (firstMonday) {
                 this.dates = [];
                 var movingDay = moment(firstMonday);
-                for (var i = 0; i < this.dom.length; i++) {
-                    var column = this.dom[i];
-                    for (var o = 0; o < column.length; o++) {
-                        var day = column[o];
-
+                for (var row of this.dom) {
+                    var dateRow = [];
+                    for (var container of row) {
                         var dayObj = {
                             day: moment(movingDay).format('DD')
                         };
-
                         // Determine if there is planned training
                         var dailyPlan = trainingPlan.getDay(
                             movingDay.format('YYYYMMDD')
@@ -300,25 +289,31 @@
                         if (dailyPlan !== null) {
                             dayObj.training = dailyPlan;
                         }
-
-                        day.clearWorkout();
+                        // Clear container
+                        container.clear();
+                        // Create blank child
+                        var day = document.createElement('log-day');
+                        // Add day data
                         day.setData(dayObj);
+                        // Append to container
+                        container.addChild(day);
+                        // Append to day array
+                        dateRow.push(moment(movingDay));
+                        // Advance day
                         movingDay.add(1, 'days');
                     }
-                    this.dates.push(moment(movingDay).subtract(1, 'days'));
+                    this.dates.push(dateRow);
                 }
             },
             addActivity: function (activity) {
-                var activityMoment = moment.unix(activity.start_time).hour(0);
-                for (var i = 0; i < this.dates.length; i++) {
-                    var date = this.dates[i].hour(0);
-                    if (activityMoment.isSameOrBefore(date, 'day')) {
-                        var days = Math.floor(activityMoment.diff(date, 'days', true));
-                        if (i > 4 || days < -6) {
-                            console.log('Out of range');
-                            break;
-                        }
+                var activityMoment = moment
+                    .unix(activity.start_time);
 
+                for (var i = 0; i < this.dates.length; i++) {
+                for (var o = 0; o < this.dates[i].length; o++) {
+                    var startDate = this.dates[i][o];
+                    if (activityMoment.isSame(startDate, 'day')) {
+                        console.log('placed activity');
                         var dayObj = {
                             day: activityMoment.format('DD'),
                             power: activity.average_power,
@@ -328,36 +323,24 @@
                             distance: activity.distance,
                             description: activity.description
                         };
-
+                        // See if there is planned training
                         var dailyPlan = trainingPlan.getDay(
                             activityMoment.format('YYYYMMDD')
                         );
                         if (dailyPlan !== null) {
                             dayObj.training = dailyPlan;
                         }
-
-                        var calendarDay = this.dom[i][6+days];
-                        if (!calendarDay.hasWorkout()) {
-                            calendarDay.setData(dayObj);
-                        } else {
-                            var newCalendarDay = document.createElement('log-day');
-                            newCalendarDay.setData(dayObj);
-                            calendarDay.addChild(newCalendarDay);
-                        }
-                        this.activeDom.push(calendarDay);
-                        break;
+                        var container = this.dom[i][o];
+                        container.addDay(dayObj);
+                        return true;
                     }
+                }
                 }
             },
             removeActivity: function (id) {
-                for (var i = 0; i < this.activeDom.length; i++) {
-                    var activeEle = this.activeDom[i];
-                    if (activeEle.getID() === id) {
-                        var day = activeEle.getDay();
-                        activeEle.clearWorkout();
-                        activeEle.setData({
-                            day: day
-                        });
+                for (var activeContainer of this.activeDom) {
+                    if (activeContainer.hasID(id)) {
+                        activeContainer.removeActivity(id);
                         break;
                     }
                 }
@@ -370,7 +353,7 @@
                     false
                 );
                 this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-                var logDayActive = document.querySelector('log-day.active');
+                var logDayActive = document.querySelector('log-container.active');
                 if (logDayActive) {
                     logDayActive.classList.remove('active');
                 }
@@ -383,7 +366,7 @@
                     false
                 );
                 this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-                var logDayActive = document.querySelector('log-day.active');
+                var logDayActive = document.querySelector('log-container.active');
                 if (logDayActive) {
                     logDayActive.classList.remove('active');
                 }

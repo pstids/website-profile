@@ -160,7 +160,7 @@ gulp.task('copy', function () {
     'app/scripts/superagent.js',
     'app/scripts/toolbox.js',
     'app/scripts/dexie.js',
-    'app/scripts/external.js'
+    'app/scripts/external.js',
     'app/scripts/moment.js'
   ])
     .pipe(gulp.dest('dist/scripts'));

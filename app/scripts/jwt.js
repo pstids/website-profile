@@ -15,7 +15,6 @@ class JWT {
 
 	checkToken() {
 		if (!this.token) {
-			// location.pathname = '/signin';
 			this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
 			console.log('No token present!');
 		} else {
@@ -168,25 +167,25 @@ class TrainingPlan {
 		this.plan = {};
 		this.days = {};
 		superagent
-			.get('http://www.mocky.io/v2/57355f7b130000981ccde03c')
+			.get('http://www.mocky.io/v2/57ce5ce72d00000618b15946')
 			.set('Accept', 'application/json')
 			.end((err, res) => {
-				if (res.ok && res.body !== null) {
-					this.plan = res.body;
+				if (res !== undefined && res.ok && res.body !== null) {
+					this.plan = res.body.plan;
 					this.processPlan();
 				} else {
 					console.log('Error: failure to get training plan', err);
 				}
 			});
+		//.get('http://www.mocky.io/v2/57355f7b130000981ccde03c')
 	}
 
 	processPlan() {
-		for (var i = 0; i < this.plan.workouts.length; i++) {
-			var additionalDays = this.plan.days[i];
-			var targetDate = moment(this.plan.start_date)
-				.add(additionalDays, 'days');
+		for (var workout of this.plan.workouts) {
+			var addDays = workout.workout_day;
+			var targetDate = moment('2016-09-01').add(addDays, 'days');
 			var dateHash = targetDate.format('YYYYMMDD');
-			this.days[dateHash] = this.plan.workouts[i];
+			this.days[dateHash] = workout;
 		}
 		processor.postMessage({
 			type: 'setPlan',

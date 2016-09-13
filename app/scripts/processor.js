@@ -106,16 +106,21 @@ var getDateHash = function (timestamp) {
 
 var processTrainingDay = function (day) {
     var trainingArray = [];
-    for (var segment of day.segments) {
-        if (segment.duration_type === 'minutes') {
-            var seconds = segment.duration_length * 60;
-            for (var i = 0; i < seconds; i++) {
-                trainingArray.push(segment.low_range);
-            }
+    for (var i = 0; i < day.blocks.length; i++) {
+        var block = day.blocks[i];
+        for (var o = 0; o < block.segments.length; o++) {
+            var segment = block.segments[o];
+            console.log(segment);
         }
+        // if (segment.duration_type === 'minutes') {
+        //     var seconds = segment.duration_length * 60;
+        //     for (var i = 0; i < seconds; i++) {
+        //         trainingArray.push(segment.low_range);
+        //     }
+        // }
     }
-
-    return trainingArray;
+    return [];
+    //return trainingArray;
 };
 
 
@@ -394,7 +399,6 @@ onmessage = function (event) {
             trainingPlan = event.data.trainingPlan;
             trainingDays = event.data.trainingDays;
             populateTrainingDays();
-            // processTraining(event.data.trainingPlan, event.data.trainingDays);
             break;
         default:
             console.log('Error in onmessage/processor: unknown action');

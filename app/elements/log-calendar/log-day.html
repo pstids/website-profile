@@ -4,28 +4,9 @@
             @apply(--layout-flex);
             @apply(--layout-vertical);
             position: relative;
-            border-right: 1px solid #4d4d4d;
-            transition: 0.5s border;
-        }
-        :host:hover.hasChild {
-            border: 1px solid #FFFFFF;
-            border-bottom:none;
-            box-sizing: border-box;
-        }
-        :host:hover log-day {
-            display: block !important;
-        }
-        :host log-day:last-child {
-            border-bottom: 1px solid #FFFFFF;
         }
         :host:hover .header .options {
             opacity: 1;
-        }
-        :host:last-child {
-            border-right: 0;
-        }
-        :host.active {
-            border: 1px solid #FFFFFF;
         }
 
         .hasWorkout {
@@ -45,36 +26,6 @@
         .hasPlanned {
             cursor: pointer;
             background-image: 'none';
-        }
-
-        .half-items {
-            @apply(--layout-vertical);
-            position: absolute;
-            width: 100%;
-            top: 100%;
-        }
-        :host:hover .half-items .is-child {
-            display: block !important;
-        }
-        .half-items .is-child {
-            z-index: 300;
-            width: 100%;
-            border-left: 1px solid #FFFFFF;
-            border-right: 1px solid #FFFFFF;
-            left: -1px;
-            flex: 1;
-        }
-        .half-items .container {
-            min-height: 70px;
-        }
-        .half-items .is-child .wattage {
-            margin-top: 0;
-        }
-        .half-items .is-child:last-child {
-            border-bottom: 1px solid #FFFFFF;
-        }
-        .half-items .other {
-            display: none;
         }
 
         .container {
@@ -174,14 +125,6 @@
             height: 14px;
             cursor: pointer;
         }
-
-        .more {
-            font-size: 12px;
-            text-align: center;
-            background-color: #000000;
-            opacity: 0.6;
-            color: #FFFFFF;
-        }
     </style>
     <template>
         <div class="container hasNoWorkout" id="container">
@@ -233,261 +176,236 @@
                     </div>
                 </div>
             </div>
-            <div class="more hidden" id="more">{{more}}</div>
         </div>
-        <div class="half-items" id="half"></div>
     </template>
     <script>
-        /*global page*/
-        /*global updatedTime:true*/
-        class Color {
-            constructor(r, g, b) {
-                this.r = r;
-                this.g = g;
-                this.b = b;
-            }
-            getColors() {
-                return {
-                    r: this.r,
-                    g: this.g,
-                    b: this.b
-                };
-            }
+    /*global page*/
+    /*global updatedTime:true*/
+    class Color {
+        constructor(r, g, b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
         }
-        var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
-        var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
-        var interpolate = function (start, end, steps, count) {
-            var s = start,
-                e = end,
-                final = s + (((e - s) / steps) * count);
-            return Math.floor(final);
-        };
-        var threshold = {
-            range: 200,
-            high: 400,
-            low: 200
-        };
+        getColors() {
+            return {
+                r: this.r,
+                g: this.g,
+                b: this.b
+            };
+        }
+    }
+    var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
+    var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
+    var interpolate = function (start, end, steps, count) {
+        var s = start,
+            e = end,
+            final = s + (((e - s) / steps) * count);
+        return Math.floor(final);
+    };
+    var threshold = {
+        range: 200,
+        high: 400,
+        low: 200
+    };
 
-        Polymer({
-            is: 'log-day',
-            attached: function () {
-                this.logOption = document.querySelector('log-options');
-            },
-            ready: function () {
-                this.sameDays = [];
-                this.data = {};
+    Polymer({
+        is: 'log-day',
+        attached: function () {
+            this.logOption = document.querySelector('log-options');
+        },
+        ready: function () {
+            this.data = {
+                day: 0
+            };
 
-                this.more = 'hover for more';
-
-                this.$.container.addEventListener('click', (e) => {
-                    var found = false;
-                    var target = e.target;
-                    while (!found) {
-                        if (target === this.$.container) {
-                            this.viewWorkout();
-                            found = true;
-                        } else if (target.id === 'share') {
-                            if ('id' in this.data) {
-                                this.logOption.callShare(this.data.id);
-                            }
-                            found = true;
-                        } else if (target.id === 'fit') {
-                            this.fit();
-                            found = true;
-                        } else if (target.id === 'delete') {
-                            if ('id' in this.data) {
-                                this.logOption.callDelete(this.data.id);
-                            }
-                            found = true;
+            this.$.container.addEventListener('click', (e) => {
+                var found = false;
+                var target = e.target;
+                while (!found) {
+                    if (target === this.$.container) {
+                        this.viewWorkout();
+                        found = true;
+                    } else if (target.id === 'share') {
+                        if ('id' in this.data) {
+                            this.logOption.callShare(this.data.id);
                         }
-                        target = target.parentNode;
+                        found = true;
+                    } else if (target.id === 'fit') {
+                        this.fit();
+                        found = true;
+                    } else if (target.id === 'delete') {
+                        if ('id' in this.data) {
+                            this.logOption.callDelete(this.data.id);
+                        }
+                        found = true;
+                    }
+                    target = target.parentNode;
+                }
+            });
+            this.setData(this.data);
+        },
+        clearWorkout: function () {
+            this.data = {};
+            this.classList.remove('active');
+        },
+        setData: function (data) {
+            this.data = data;
+            this.day = data.day;
+            this.rgb = 'rgb(0, 0, 0)';
+            if ('power' in data) {
+                if ('training' in data) {
+                    Polymer.dom(this.$.tpp).classList.remove('hidden');
+                } else {
+                    Polymer.dom(this.$.tpp).classList.add('hidden');
+                }
+
+                this.$.container.classList.add('hasWorkout');
+                this.$.container.classList.remove('hasNoWorkout');
+                this.$.container.classList.remove('hasPlanned');
+
+                this.unit = 'watts';
+                this.power = data.power.toFixed(0);
+                this.distance = meterToUserUnit(this.data.distance);
+
+                var duration = moment.duration(this.data.time, 'seconds');
+                var minutesStr = duration.minutes().toString();
+                if (minutesStr.length === 1) {
+                    minutesStr = `0${minutesStr}`;
+                }
+                this.time = `${duration.hours()}:${minutesStr}`;
+
+                var relativePower;
+                if (data.power > threshold.high) {
+                    relativePower = threshold.range;
+                } else if (data.power < threshold.low) {
+                    relativePower = 0;
+                } else {
+                    relativePower = (data.power - threshold.low);
+                }
+
+                var r = interpolate(lowColors.r, highColors.r, threshold.range, relativePower);
+                var g = interpolate(lowColors.g, highColors.g, threshold.range, relativePower);
+                var b = interpolate(lowColors.b, highColors.b, threshold.range, relativePower);
+                this.rgb = `rgb(${r}, ${g}, ${b})`;
+
+                this.$.headera.style.backgroundColor = this.rgb;
+            } else {
+                if ('training' in data) {
+                    this.$.container.classList.remove('hasWorkout');
+                    this.$.container.classList.remove('hasNoWorkout');
+                    this.$.container.classList.add('hasPlanned');
+                    Polymer.dom(this.$.tpp).classList.remove('hidden');
+                } else {
+                    this.$.container.classList.remove('hasWorkout');
+                    this.$.container.classList.add('hasNoWorkout');
+                    this.$.container.classList.remove('hasPlanned');
+                    Polymer.dom(this.$.tpp).classList.add('hidden');
+                }
+
+                this.unit = '';
+                this.power = '';
+                this.rgb = 'rgb(0, 0, 0)';
+                this.$.headera.style.backgroundColor = this.rgb;
+            }
+        },
+        fit: function () {
+            superagent
+                .post(`/b/api/v1/activities/${this.data.id}/fit`)
+                .send()
+                .set('Accept', 'application/json')
+                .set('Authorization', `Bearer: ${jwt.token}`)
+                .end((err, res) => {
+                    if (res.ok) {
+                        document.querySelector('#dlFrame').src = res.body.url;
+                    } else {
+                        console.log('Error: get download link failed', err);
                     }
                 });
-
-                var tooltip = document.querySelector('[data-tooltip]');
-                var tooltipDescription = tooltip.querySelector('#description');
-
-                this.$.container.addEventListener(
-                    'mouseenter',
-                    () => {
-                        if (
-                            'description' in this.data &&
-                            this.data.description.length > 0
-                        ) {
-                            tooltip.classList.remove('hidden');
-                            tooltip.style.borderColor = this.rgb;
-
-                            var duration = moment.duration(this.data.time, 'seconds');
-                            var minutesStr = duration.minutes().toString();
-                            if (minutesStr.length === 1) {
-                                minutesStr = '0' + minutesStr;
-                            }
-                            
-                            if (this.data.description.length > 40) {
-                                tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
-                            } else {
-                                tooltipDescription.textContent = this.data.description;
-                            }
-                        } else if ('training' in this.data) {
-                            tooltip.classList.remove('hidden');
-                            tooltip.style.borderColor = this.rgb;
-
-                            tooltipDescription.textContent = this.data.training.description;
-                        }
-                    },
-                    false
-                );
-
-                this.$.container.addEventListener(
-                    'mouseleave',
-                    () => {
-                        if (
-                            'description' in this.data ||
-                            'training' in this.data   
-                        ) {
-                            tooltip.classList.add('hidden');
-                        }
-                    },
-                    false
-                );
-            },
-            clearWorkout: function () {
-                this.data = {};
-                this.sameDays = [];
-                this.classList.remove('hasChild');
-                this.classList.remove('active');
-
-                this.$.more.classList.add('hidden');
-                
-                var logDays = this.querySelectorAll('log-day');
-                for (var logDay of logDays) {
-                    this.$.half.removeChild(logDay);
-                }
-            },
-            setData: function (data) {
-                this.data = data;
-                this.day = data.day;
-                this.rgb = 'rgb(0, 0, 0)';
-                if ('power' in data) {
-                    if ('training' in data) {
-                        Polymer.dom(this.$.tpp).classList.remove('hidden');
-
-                    } else {
-                        Polymer.dom(this.$.tpp).classList.add('hidden');
-                    }
-
-                    this.$.container.classList.add('hasWorkout');
-                    this.$.container.classList.remove('hasNoWorkout');
-                    this.$.container.classList.remove('hasPlanned');
-
-                    this.unit = 'watts';
-                    this.power = data.power.toFixed(0);
-                    this.distance = meterToUserUnit(this.data.distance);
-
-                    var duration = moment.duration(this.data.time, 'seconds');
-                    var minutesStr = duration.minutes().toString();
-                    if (minutesStr.length === 1) {
-                        minutesStr = `0${minutesStr}`;
-                    }
-                    this.time = `${duration.hours()}:${minutesStr}`;
-
-                    var relativePower;
-                    if (data.power > threshold.high) {
-                        relativePower = threshold.range;
-                    } else if (data.power < threshold.low) {
-                        relativePower = 0;
-                    } else {
-                        relativePower = (data.power - threshold.low);
-                    }
-
-                    var r = interpolate(lowColors.r, highColors.r, threshold.range, relativePower);
-                    var g = interpolate(lowColors.g, highColors.g, threshold.range, relativePower);
-                    var b = interpolate(lowColors.b, highColors.b, threshold.range, relativePower);
-                    this.rgb = `rgb(${r}, ${g}, ${b})`;
-
-                    this.$.headera.style.backgroundColor = this.rgb;
-                } else {
-                    if ('training' in data) {
-                        this.$.container.classList.remove('hasWorkout');
-                        this.$.container.classList.remove('hasNoWorkout');
-                        this.$.container.classList.add('hasPlanned');
-                        Polymer.dom(this.$.tpp).classList.remove('hidden');
-                    } else {
-                        this.$.container.classList.remove('hasWorkout');
-                        this.$.container.classList.add('hasNoWorkout');
-                        this.$.container.classList.remove('hasPlanned');
-                        Polymer.dom(this.$.tpp).classList.add('hidden');
-                    }
-
-                    this.unit = '';
-                    this.power = '';
-                    this.rgb = 'rgb(0, 0, 0)';
-                    this.$.headera.style.backgroundColor = this.rgb;
-                }
-            },
-            fit: function () {
-                superagent
-                    .post(`/b/api/v1/activities/${this.data.id}/fit`)
-                    .send()
-                    .set('Accept', 'application/json')
-                    .set('Authorization', `Bearer: ${jwt.token}`)
-                    .end((err, res) => {
-                        if (res.ok) {
-                            document.querySelector('#dlFrame').src = res.body.url;
-                        } else {
-                            console.log('Error: get download link failed', err);
-                        }
-                    });
-            },
-            viewWorkout: function () {
-                if (!('id' in this.data)) {
-                    return;
-                }
-                var bubbles = document.querySelector('.bubbles');
-                // Set this element as the only active element
-                var logDayActive = document.querySelector('log-day.active');
-                if (logDayActive) {
-                    logDayActive.classList.remove('active');
-                }
-                this.classList.add('active');
-                updatedTime = this.data.updated_time;
-
-                document.querySelector('workout-element').setLoading();
-                page(`/run/${this.data.id}`);
-                window.scrollTo(0, bubbles.offsetTop);
-            },
-            // returns true or false whether a workout has been inserted already
-            hasWorkout: function () {
-                if ('power' in this.data) {
-                    return true;
-                }
-                return false;
-            },
-            // add another workout to this day
-            addChild: function (node) {
-                this.classList.add('hasChild');
-
-                this.$.more.classList.remove('hidden');
-
-                node.style.display = 'none';
-                node.classList.add('is-child');
-
-                Polymer.dom(this.$.half).appendChild(node);
-
-                this.sameDays.push(node);
-            },
-            getID: function () {
-                if ('id' in this.data) {
-                    return this.data.id;
-                }
-                return 0;
-            },
-            getDay: function () {
-                if ('day' in this.data) {
-                    return this.data.day;
-                }
-                return 0;
+        },
+        viewWorkout: function () {
+            if (!('id' in this.data)) {
+                return;
             }
-        });
+            var bubbles = document.querySelector('.bubbles');
+            // Set this element as the only active element
+            var logDayActive = document.querySelector('log-day.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+            this.classList.add('active');
+            updatedTime = this.data.updated_time;
+
+            document.querySelector('workout-element').setLoading();
+            page(`/run/${this.data.id}`);
+            window.scrollTo(0, bubbles.offsetTop);
+        },
+        // returns true or false whether a workout has been inserted already
+        hasWorkout: function () {
+            if ('power' in this.data) {
+                return true;
+            }
+            return false;
+        },
+        getID: function () {
+            if ('id' in this.data) {
+                return this.data.id;
+            }
+            return 0;
+        },
+        getDay: function () {
+            if ('day' in this.data) {
+                return this.data.day;
+            }
+            return 0;
+        }
+    });
+    // var tooltip = document.querySelector('[data-tooltip]');
+    // var tooltipDescription = tooltip.querySelector('#description');
+
+    // this.$.container.addEventListener(
+    //     'mouseenter',
+    //     () => {
+    //         if (
+    //             'description' in this.data &&
+    //             this.data.description.length > 0
+    //         ) {
+    //             tooltip.classList.remove('hidden');
+    //             tooltip.style.borderColor = this.rgb;
+
+    //             var duration = moment.duration(this.data.time, 'seconds');
+    //             var minutesStr = duration.minutes().toString();
+    //             if (minutesStr.length === 1) {
+    //                 minutesStr = '0' + minutesStr;
+    //             }
+                
+    //             if (this.data.description.length > 40) {
+    //                 tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
+    //             } else {
+    //                 tooltipDescription.textContent = this.data.description;
+    //             }
+    //         } else if ('training' in this.data) {
+    //             tooltip.classList.remove('hidden');
+    //             tooltip.style.borderColor = this.rgb;
+
+    //             tooltipDescription.textContent = this.data.training.description;
+    //         }
+    //     },
+    //     false
+    // );
+
+    // this.$.container.addEventListener(
+    //     'mouseleave',
+    //     () => {
+    //         if (
+    //             'description' in this.data ||
+    //             'training' in this.data   
+    //         ) {
+    //             tooltip.classList.add('hidden');
+    //         }
+    //     },
+    //     false
+    // );
     </script>
 </dom-module>
+
