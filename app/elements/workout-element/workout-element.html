@@ -732,6 +732,11 @@
                 this.steps = steps;
                 this.chartData = this.data;
                 this.startTime = this.data[0].date;
+                this.offsetTotal = this.startTime.getTimezoneOffset();
+                this.offsetMinutes = this.offsetTotal - (Math.floor(this.offsetTotal/60) * 60);
+                if (this.offsetMinutes > 0) {
+                    this.startTime = new Date(this.startTime.getTime() - this.offsetMinutes * 60000);
+                }
                 this.availableMetrics = [];
                 var valueAxes = [], graphs = [];
                 for (var key in this.data[0]) {
