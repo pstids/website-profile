@@ -28,7 +28,6 @@ class Color {
             b: this.b
         };
     }
-
 }
 
 /* Private methods */
@@ -104,21 +103,22 @@ var getDateHash = function (timestamp) {
     return moment.unix(timestamp).format('YYYYMMDD');
 };
 
-var processTrainingDay = function (day) {
-    var trainingArray = [];
-    for (var i = 0; i < day.blocks.length; i++) {
-        var block = day.blocks[i];
-        for (var o = 0; o < block.segments.length; o++) {
-            var segment = block.segments[o];
-            console.log(segment);
-        }
-        // if (segment.duration_type === 'minutes') {
-        //     var seconds = segment.duration_length * 60;
-        //     for (var i = 0; i < seconds; i++) {
-        //         trainingArray.push(segment.low_range);
-        //     }
-        // }
-    }
+var processTrainingDay = function () {
+    // day as parameter
+    //var trainingArray = [];
+    // for (var i = 0; i < day.blocks.length; i++) {
+    //     var block = day.blocks[i];
+    //     for (var o = 0; o < block.segments.length; o++) {
+    //         var segment = block.segments[o];
+    //         console.log(segment);
+    //     }
+    //     // if (segment.duration_type === 'minutes') {
+    //     //     var seconds = segment.duration_length * 60;
+    //     //     for (var i = 0; i < seconds; i++) {
+    //     //         trainingArray.push(segment.low_range);
+    //     //     }
+    //     // }
+    // }
     return [];
     //return trainingArray;
 };
@@ -194,6 +194,12 @@ var workoutProcessing = function (workout, id, scope) {
                 avgs.powerCount += 1;
                 avgs.power += entry.power;
             }
+            if (entry.power !== 0) {
+                suuntoDrop = false;
+            }
+        }
+        if ('form_power_list' in workout && workout.form_power_list !== null) {
+            entry.formPower = workout.form_power_list[i];
             if (entry.power !== 0) {
                 suuntoDrop = false;
             }

@@ -313,7 +313,6 @@
                 for (var o = 0; o < this.dates[i].length; o++) {
                     var startDate = this.dates[i][o];
                     if (activityMoment.isSame(startDate, 'day')) {
-                        console.log('placed activity');
                         var dayObj = {
                             day: activityMoment.format('DD'),
                             power: activity.average_power,
