@@ -74,7 +74,7 @@ var meterToMile = function (m, precision) {
     if (precision === 0) {
         precision = 1;
     }
-    return (m / 1600).toFixed(precision);
+    return (m / 1609.34).toFixed(precision);
 };
 
 var meterToUserUnit = function (m) {

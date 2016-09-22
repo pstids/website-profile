@@ -101,7 +101,7 @@ class User {
 			var gravHash = CryptoJS.MD5(this.data.email.toLowerCase());
 			return `http://www.gravatar.com/avatar/${gravHash}?d=${this.defaultURL}`;
 		} else {
-			return 'https://www.stryd.com/powercenter/images/favicon.png';
+			return this.defaultURL;
 		}
 	}
 
@@ -166,17 +166,17 @@ class TrainingPlan {
 	constructor() {
 		this.plan = {};
 		this.days = {};
-		superagent
-			.get('http://www.mocky.io/v2/57ce5ce72d00000618b15946')
-			.set('Accept', 'application/json')
-			.end((err, res) => {
-				if (res !== undefined && res.ok && res.body !== null) {
-					this.plan = res.body.plan;
-					this.processPlan();
-				} else {
-					console.log('Error: failure to get training plan', err);
-				}
-			});
+		// superagent
+		// 	.get('http://www.mocky.io/v2/57ce5ce72d00000618b15946')
+		// 	.set('Accept', 'application/json')
+		// 	.end((err, res) => {
+		// 		if (res !== undefined && res.ok && res.body !== null) {
+		// 			this.plan = res.body.plan;
+		// 			this.processPlan();
+		// 		} else {
+		// 			console.log('Error: failure to get training plan', err);
+		// 		}
+		// 	});
 		//.get('http://www.mocky.io/v2/57355f7b130000981ccde03c')
 	}
 

@@ -11,10 +11,18 @@
         :host:last-child {
             border-right: 0;
         }
+        :host:hover {
+			position: relative;
+        }
+        :host:hover #container {
+        	position: absolute;
+        	min-width: 100%;
+        }
 
         #container {
             @apply(--layout-flex);
             @apply(--layout-vertical);
+            display: block;
         }
         :host.active #container:hover {
         	z-index: 150;
@@ -106,10 +114,13 @@
 						} else {
 							var day = node.getDay();
 							node.clearWorkout();
-							day.setData({day: day});
+							node.setData({day: day});
 							return true;
 						}
 					}
+				}
+				if (Polymer.dom(this.$.container).children.length <= 1) {
+					this.$.more.classList.add('hidden');
 				}
 				return false;
 			}

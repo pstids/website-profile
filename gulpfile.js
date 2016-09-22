@@ -320,7 +320,8 @@ gulp.task('concat', function () {
       'app/scripts/external.js',
       'dist/scripts/jwt.js',
       'dist/scripts/toolbox.js',
-      'dist/scripts/app.js'
+      'dist/scripts/app.js',
+      'dist/scripts/amcharts/concatenated.js'
     ])
     .pipe(concat('app.min.js'))
     .pipe(gulp.dest('dist/scripts'));

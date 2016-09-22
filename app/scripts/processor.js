@@ -158,9 +158,9 @@ var workoutProcessing = function (workout, id, scope) {
 
     // Limit displayed records to prevent browser slugginess
     var steps = 1;
-    if (workout.total_power_list.length > 800) {
-        steps = parseInt(workout.total_power_list.length / 800);
-    }
+    // if (workout.total_power_list.length > 800) {
+    //     steps = parseInt(workout.total_power_list.length / 800);
+    // }
 
     var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
     var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
@@ -187,6 +187,9 @@ var workoutProcessing = function (workout, id, scope) {
         }
         if ('speed_list' in workout && workout.speed_list !== null) {
             entry.pace = workout.speed_list[i];
+        }
+        if ('speed_device_list' in workout && workout.speed_device_list !== null) {
+            entry.devicePace = workout.speed_device_list[i];
         }
         if ('total_power_list' in workout) {
             entry.power = workout.total_power_list[i];
@@ -221,6 +224,9 @@ var workoutProcessing = function (workout, id, scope) {
             if (entry.elevation !== 0) {
                 suuntoDrop = false;
             }
+        }
+        if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
+            entry.deviceElevation = Math.round(workout.elevation_device_list[i] * 10) / 10;
         }
         if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
@@ -311,7 +317,7 @@ var workoutFetchingAJAX = function (workout, scope) {
         .send()
         .set('Accept', 'application/json')
         .set('Authorization', `Bearer: ${token}`)
-        .end(function (err, res) {
+        .end((err, res) => {
             if (res.ok) {
                 workoutProcessing(res.body, workout, scope);
             } else {
@@ -325,7 +331,7 @@ var workoutFetching = function (workoutID, workoutUpdated, scope) {
     if (!checkIndexedDB) {
         workoutFetchingAJAX(workoutID);
     } else {
-        db.log.get(String(workoutID), function (log) {
+        db.log.get(String(workoutID), (log) => {
             if (log === undefined) {
                 workoutFetchingAJAX(workoutID, scope);
             } else {
@@ -351,14 +357,15 @@ var logsProcessing = function (logs) {
 var addLog = function (id) {
     superagent
         .get(`/b/api/v1/activities/${id}`)
-        .send()
+        .send({})
         .set('Accept', 'application/json')
         .set('Authorization', `Bearer: ${token}`)
-        .end(function (err, res) {
+        .end((err, res) => {
             if (res.ok) {
                 workoutSave(res.body, id);
                 data.addLog = res.body;
                 postMessage(data);
+                console.log('Success: Added workout');
             } else {
                 console.log('Error: Cannot fetch workout');
             }

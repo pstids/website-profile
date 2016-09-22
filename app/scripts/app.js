@@ -122,13 +122,12 @@ var toast = function (message) {
     }
 };
 
-(function(document) {
+(function (document) {
     'use strict';
 
     let app = document.querySelector('#app');
 
     var mapRunEle;
-    var logBook;
     var workoutElement;
     var header;
     var uploader;
@@ -144,7 +143,6 @@ var toast = function (message) {
         console.log('Stryd is ready to rock!');
 
         mapRunEle = document.querySelector('#map-run');
-        logBook = document.querySelector('#log-book');
         workoutElement = document.querySelector('#workout-element');
         workoutShared = document.querySelector('#workout-shared');
         uploader = document.querySelector('#uploader');
@@ -175,13 +173,9 @@ var toast = function (message) {
                     event.data.chartDescription
                 );
             }
-            if ('logs' in event.data) {
-                logBook.populateLogs(event.data.logs);
-            }
             if ('addLog' in event.data) {
                 var activityDate = moment.unix(event.data.addLog.start_time);
                 toast(`Workout from ${activityDate.format('MMMM Do YYYY')} uploaded!`);
-                logBook.addLog(event.data.addLog);
                 logCalendar.addActivity(event.data.addLog);
             }
             if ('workoutShared' in event.data) {
@@ -299,6 +293,7 @@ var toast = function (message) {
                 done();
             },
             success: function (file, message) {
+                console.log('Success: Added workout');
                 addLog(message.activity_id);
             },
             error: function (file, message) {

@@ -139,7 +139,6 @@
             is: 'log-calendar',
             ready: function () {
                 this.dom = [];
-                this.activeDom = [];
                 this.dates = [];
 
                 // Mode attributes
@@ -337,10 +336,12 @@
                 }
             },
             removeActivity: function (id) {
-                for (var activeContainer of this.activeDom) {
-                    if (activeContainer.hasID(id)) {
-                        activeContainer.removeActivity(id);
-                        break;
+                for (var row of this.dom) {
+                    for (var container of row) {
+                        if (container.hasID(id)) {
+                            container.removeID(id);
+                            break;
+                        }
                     }
                 }
             },
