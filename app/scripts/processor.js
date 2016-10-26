@@ -172,6 +172,8 @@ var workoutProcessing = function (workout, id, scope) {
     var lastEntry = {};
     var suuntoDrop = true;
 
+    var availableMetrics = [];
+
     for (i = 0; i < workout.total_power_list.length; i = i + steps) {
         graphSegment = {};
         var entry = {};
@@ -184,12 +186,21 @@ var workoutProcessing = function (workout, id, scope) {
             if (entry.heartRate !== 0) {
                 suuntoDrop = false;
             }
+            if (entry.heartRate !== 0 && availableMetrics.indexOf('heartRate') === -1) {
+                availableMetrics.push('heartRate');
+            }
         }
         if ('speed_list' in workout && workout.speed_list !== null) {
             entry.pace = workout.speed_list[i];
+            if (entry.pace !== 0 && availableMetrics.indexOf('pace') === -1) {
+                availableMetrics.push('pace');
+            }
         }
         if ('speed_device_list' in workout && workout.speed_device_list !== null) {
             entry.devicePace = workout.speed_device_list[i];
+            if (entry.devicePace !== 0 && availableMetrics.indexOf('devicePace') === -1) {
+                availableMetrics.push('devicePace');
+            }
         }
         if ('total_power_list' in workout) {
             entry.power = workout.total_power_list[i];
@@ -200,11 +211,17 @@ var workoutProcessing = function (workout, id, scope) {
             if (entry.power !== 0) {
                 suuntoDrop = false;
             }
+            if (entry.power !== 0 && availableMetrics.indexOf('power') === -1) {
+                availableMetrics.push('power');
+            }
         }
         if ('form_power_list' in workout && workout.form_power_list !== null) {
             entry.formPower = workout.form_power_list[i];
             if (entry.power !== 0) {
                 suuntoDrop = false;
+            }
+            if (entry.formPower !== 0 && availableMetrics.indexOf('formPower') === -1) {
+                availableMetrics.push('formPower');
             }
         }
         if ('cadence_list' in workout) {
@@ -212,21 +229,42 @@ var workoutProcessing = function (workout, id, scope) {
             if (entry.cadence !== 0) {
                 suuntoDrop = false;
             }
+            if (entry.cadence !== 0 && availableMetrics.indexOf('cadence') === -1) {
+                availableMetrics.push('cadence');
+            }
         }
         if ('oscillation_list' in workout && workout.oscillation_list !== null && i < workout.oscillation_list.length) {
             entry.vertOsc = workout.oscillation_list[i];
+            if (entry.vertOsc !== 0 && availableMetrics.indexOf('vertOsc') === -1) {
+                availableMetrics.push('vertOsc');
+            }
+        }
+        if ('leg_spring_list' in workout && workout.leg_spring_list !== null && i < workout.leg_spring_list.length) {
+            entry.legSpring = workout.leg_spring_list[i];
+            if (entry.legSpring !== 0 && availableMetrics.indexOf('legSpring') === -1) {
+                availableMetrics.push('legSpring');
+            }
         }
         if ('ground_time_list' in workout && workout.ground_time_list !== null && i < workout.ground_time_list.length) {
             entry.groundTime = workout.ground_time_list[i];
+            if (entry.groundTime !== 0 && availableMetrics.indexOf('groundTime') === -1) {
+                availableMetrics.push('groundTime');
+            }
         }
         if ('elevation_list' in workout && workout.elevation_list !== null) {
             entry.elevation = Math.round(workout.elevation_list[i] * 10) / 10;
             if (entry.elevation !== 0) {
                 suuntoDrop = false;
             }
+            if (entry.elevation !== 0 && availableMetrics.indexOf('elevation') === -1) {
+                availableMetrics.push('elevation');
+            }
         }
         if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
             entry.deviceElevation = Math.round(workout.elevation_device_list[i] * 10) / 10;
+            if (entry.deviceElevation !== 0 && availableMetrics.indexOf('deviceElevation') === -1) {
+                availableMetrics.push('deviceElevation');
+            }       
         }
         if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
@@ -308,6 +346,7 @@ var workoutProcessing = function (workout, id, scope) {
     }
     data.workoutShared = workout;
     data.scope = scope;
+    data.availableMetrics = availableMetrics;
     postMessage(data);
 };
 

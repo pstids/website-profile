@@ -87,7 +87,10 @@ gulp.task('jshint', function () {
         'attribute',
         'moment',
         'addLog',
-        'trainingPlan'
+        'trainingPlan',
+        'colorInterpolate',
+        'page',
+        'toast'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

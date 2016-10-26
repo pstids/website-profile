@@ -5,6 +5,9 @@
             @apply(--layout-vertical);
             position: relative;
         }
+        :host:hover .header {
+            opacity: 1;
+        }
         :host:hover .header .options {
             opacity: 1;
         }
@@ -36,9 +39,6 @@
             /*min-height: 100px;*/
             height: 100%;
         }
-        .container:hover .header {
-            opacity: 1;
-        }
 
         .header {
             @apply(--layout-horizontal);
@@ -55,13 +55,7 @@
             opacity: 0;
             transition: 0.5s opacity;
         }
-        .header .tp {
-            text-align: right;
-            color: white;
-            line-height: 24px;
-            font-size: 14px;
-        }
-        .header .numday {
+        .header .tp, .header .numday {
             text-align: right;
             color: white;
             line-height: 24px;
@@ -91,17 +85,24 @@
             height: 28px;
             margin-bottom: 5px;
         }
-        .distance, .time {
+        .stat {
             height: 28px;
             @apply(--layout-center-justified);
             @apply(--layout-center);
             @apply(--layout-horizontal);
         }
-        .distance .value, .time .value {
+        .stat .value {
             color: white;
             text-align: center;
             font-size: 14px;
             font-weight: 300;
+        }
+        .stat iron-icon {
+            margin-right: 5px;
+            color: var(--primary-icon-color);
+            fill: var(--primary-icon-color);
+            height: 14px;
+            width: 14px;
         }
 
         .wattage iron-icon {
@@ -110,15 +111,7 @@
             fill: var(--primary-icon-color);
         }
 
-        .distance iron-icon, .time iron-icon {
-            margin-right: 5px;
-            color: var(--primary-icon-color);
-            fill: var(--primary-icon-color);
-            height: 14px;
-            width: 14px;
-        }
-
-        .options iron-icon, .header iron-icon {
+        .header iron-icon {
             color: white;
             fill: white;
             margin: 5px 3px;
@@ -129,7 +122,7 @@
     </style>
     <template>
         <div class="container hasNoWorkout" id="container">
-            <div class="header" id="headera">
+            <div class="header" id="header">
                 <div class="options">
                     <div id="share">
                         <iron-icon icon="social:share"></iron-icon>
@@ -163,13 +156,13 @@
                     </div>
                 </div>
                 <div class="layout horizontal around-justified other">
-                    <div class="time">
+                    <div class="stat">
                         <iron-icon icon="image:timer"></iron-icon>
                         <div class="value">
                             {{time}}
                         </div>
                     </div>
-                    <div class="distance">
+                    <div class="stat">
                         <iron-icon icon="communication:swap-calls"></iron-icon>
                         <div class="value">
                             {{distance}}
@@ -180,38 +173,39 @@
         </div>
     </template>
     <script>
-    /*global page*/
     /*global updatedTime:true*/
-    class Color {
-        constructor(r, g, b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        }
-        getColors() {
-            return {
-                r: this.r,
-                g: this.g,
-                b: this.b
-            };
-        }
-    }
-    var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
-    var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
-    var interpolate = function (start, end, steps, count) {
-        var s = start,
-            e = end,
-            final = s + (((e - s) / steps) * count);
-        return Math.floor(final);
-    };
-    var threshold = {
-        range: 200,
-        high: 400,
-        low: 200
-    };
-
     Polymer({
         is: 'log-day',
+        listeners: {
+            'tap': 'eleTap'
+        },
+        eleTap: function (e) {
+            var target = e.target;
+            while (true) {
+                if (target === this.$.container) {
+                    this.viewWorkout();
+                    return;
+                } else if (target.id === 'share') {
+                    if ('id' in this.data) {
+                        this.logOption.callShare(this.data.id);
+                    }
+                    return;
+                } else if (target.id === 'fit') {
+                    this.fit();
+                    return;
+                } else if (target.id === 'delete') {
+                    if ('id' in this.data) {
+                        this.logOption.callDelete(this.data.id);
+                    }
+                    return;
+                }
+                if ('parentNode' in target && target.parentNode !== null) {
+                    target = target.parentNode;
+                } else {
+                    return;
+                }
+            }
+        },
         attached: function () {
             this.logOption = document.querySelector('log-options');
         },
@@ -219,31 +213,6 @@
             this.data = {
                 day: 0
             };
-
-            this.$.container.addEventListener('click', (e) => {
-                var found = false;
-                var target = e.target;
-                while (!found) {
-                    if (target === this.$.container) {
-                        this.viewWorkout();
-                        found = true;
-                    } else if (target.id === 'share') {
-                        if ('id' in this.data) {
-                            this.logOption.callShare(this.data.id);
-                        }
-                        found = true;
-                    } else if (target.id === 'fit') {
-                        this.fit();
-                        found = true;
-                    } else if (target.id === 'delete') {
-                        if ('id' in this.data) {
-                            this.logOption.callDelete(this.data.id);
-                        }
-                        found = true;
-                    }
-                    target = target.parentNode;
-                }
-            });
             this.setData(this.data);
         },
         clearWorkout: function () {
@@ -277,20 +246,17 @@
                 this.time = `${duration.hours()}:${minutesStr}`;
 
                 var relativePower;
-                if (data.power > threshold.high) {
-                    relativePower = threshold.range;
-                } else if (data.power < threshold.low) {
+                if (data.power > colorInterpolate.threshold.high) {
+                    relativePower = colorInterpolate.threshold.range;
+                } else if (data.power < colorInterpolate.threshold.low) {
                     relativePower = 0;
                 } else {
-                    relativePower = (data.power - threshold.low);
+                    relativePower = (data.power - colorInterpolate.threshold.low);
                 }
 
-                var r = interpolate(lowColors.r, highColors.r, threshold.range, relativePower);
-                var g = interpolate(lowColors.g, highColors.g, threshold.range, relativePower);
-                var b = interpolate(lowColors.b, highColors.b, threshold.range, relativePower);
-                this.rgb = `rgb(${r}, ${g}, ${b})`;
+                this.rgb = colorInterpolate.RGB(relativePower);
 
-                this.$.headera.style.backgroundColor = this.rgb;
+                this.$.header.style.backgroundColor = this.rgb;
             } else {
                 if ('training' in data) {
                     this.$.container.classList.remove('hasWorkout');
@@ -307,7 +273,7 @@
                 this.unit = '';
                 this.power = '';
                 this.rgb = 'rgb(0, 0, 0)';
-                this.$.headera.style.backgroundColor = this.rgb;
+                this.$.header.style.backgroundColor = this.rgb;
             }
         },
         fit: function () {

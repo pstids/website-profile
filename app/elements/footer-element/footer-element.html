@@ -13,25 +13,11 @@
         padding: 0 0.7vw 0 0;
         margin: 0;
     }
-    p {
-        color: var(--secondary-text-color);
-        font-size: 1vw;
-    }
-    a {
-        color: var(--secondary-text-color);
-        font-size: 1vw;
-        text-decoration: none;
-    }
-    .logo, .gc, .tc {
+    .gc {
         @apply(--layout);
         @apply(--layout-flex);
-        padding: 1vw;
-    }
-    .gc {
         @apply(--layout-center-justified);
-    }
-    .tc {
-        @apply(--layout-end-justified);
+        padding: 1vw;
     }
     .seperator {
         background-image: url('../../images/bottom-seperator-transparent.png');
@@ -42,14 +28,8 @@
   <template>
     <div class="seperator"></div>
     <footer>
-        <div class="logo">
-            <p>All Rights Reserved 2016.</p>
-        </div>
         <div class="gc">
             <h1>Stryd</h1>
-        </div>
-        <div class="tc">
-            <p><a href="/privacy">Privacy Policy</a></p>
         </div>
     </footer>
   </template>

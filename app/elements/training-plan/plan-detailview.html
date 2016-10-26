@@ -112,7 +112,6 @@
                 </template>
             </table>
         </div>
-        <paper-toast duration="1300" text="" id="toast"></paper-toast>
         <div id="loading" class="layout horizontal center center-justified">
             <div id="overlay"></div>
             <paper-spinner-lite active></paper-spinner-lite>
@@ -160,12 +159,11 @@
                     return;
                 }
                 this.$.loading.hidden = false;
-                console.log('fetch plan');
                 superagent
-                    .get('/b/api/v1/training/plan/'+this.planId)
+                    .get(`/b/api/v1/training/plan/${this.planId}`)
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
                         this.$.loading.hidden = true;
                         if (res.ok) {
                             switch (res.status) {
@@ -177,10 +175,9 @@
                                     break;
                             }
                         } else {
-                            this.$.toast.text = 'Can not load the training plan. Please try later.';
-                            this.$.toast.show();
+                            toast('Can not load the training plan. Please try later.');
                         }
-                    }.bind(this));
+                    });
             },
 
             _fillData: function (data) {

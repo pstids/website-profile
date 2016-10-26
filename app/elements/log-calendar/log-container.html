@@ -17,6 +17,19 @@
         :host:hover #container {
         	position: absolute;
         	min-width: 100%;
+
+        	z-index: 150;
+        }
+        :host.active:hover #container {
+        	border: 1px solid #FFFFFF;
+            /*border-bottom: none;*/
+            box-sizing: border-box;
+        }
+        :host:hover log-day {
+        	display: block;
+        }
+        :host:hover log-day:last-child {
+        	/*border-bottom: 1px solid #FFFFFF;*/
         }
 
         #container {
@@ -24,40 +37,25 @@
             @apply(--layout-vertical);
             display: block;
         }
-        :host.active #container:hover {
-        	z-index: 150;
-            border: 1px solid #FFFFFF;
-            border-bottom: none;
-            box-sizing: border-box;
-        }
 
-        #container log-day {
+        log-day {
 			display: none;
         }
-        #container log-day:first-child {
-			display: block;
-        }
-        :host:hover.active log-day:last-child {
-        	border-bottom: 1px solid #FFFFFF;
-        }
-        #container:hover log-day {
+        log-day:first-child {
 			display: block;
         }
 
-        .more {
+        #more {
             font-size: 12px;
             text-align: center;
             background-color: #000000;
             opacity: 0.6;
             color: #FFFFFF;
         }
-        :host:hover .more {
-        	display: none;
-        }
 	</style>
 	<template>
 		<div id="container"></div>
-		<div class="more hidden" id="more">hover for more</div>
+		<div class="hidden" id="more">hover for more</div>
 	</template>
 	<script>
 		Polymer({
@@ -83,7 +81,9 @@
 			},
 			addDay: function (dayObj) {
 				this.childCount++;
-				this.classList.add('active');
+				if ('power' in dayObj) {
+					this.classList.add('active');
+				}
 				if (this.childCount === 1) {
 					Polymer.dom(this.$.container).children[0].setData(dayObj);
 				} else {

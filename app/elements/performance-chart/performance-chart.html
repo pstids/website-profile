@@ -1,0 +1,207 @@
+<dom-module id="performance-chart">
+    <style>
+        #chartdiv {
+            color: #ffffff;
+            height: 60vh;
+            width: 100%;
+        }
+    </style>
+    <template>
+        <h1 class="title">Performance Chart</h1>
+        <div id="chartdiv"></div>
+    </template>
+    <script>
+        /*global AmCharts*/
+        /*jshint camelcase: false */
+        Polymer({
+            is: 'performance-chart',
+            ready: function () {
+                this.getData();
+                AmCharts.handleLoad();
+                this.mode = 'user';
+                this.user = '';
+            },
+            setMode: function (mode, user) {
+                this.mode = mode;
+                this.user = user;
+            },
+            getData: function () {
+                this.begDate = moment().subtract(60, 'days');
+                var srtDate = this.begDate.format('MM-DD-YYYY');
+                this.finDate = moment().add(2, 'days');
+                var endDate = this.finDate.format('MM-DD-YYYY');
+                var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+                if (this.mode === 'admin') {
+                    activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+                }
+                superagent
+                    .get(activityEndPoint)
+                    .set('Accept', 'application/json')
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        if (res.ok) {
+                            this.processData(res.body.activities);
+                        } else {
+                            console.log('Error: cannot get data');
+                        }
+                    });
+            },
+            processData: function (activities) {
+                var data = [];
+                if (activities === null) {
+                    return;
+                }
+                for (var activity of activities) {
+                    var day = {
+                        date: moment(activity.timestamp * 1000).format('YYYY-MM-DD'),
+                        efficiencyIndex: 0,
+                        legSpring: 0
+                    };
+                    day.efficiencyIndex = ((activity.average_speed * 60 / activity.average_power) * 100).toFixed(2);
+                    if (!isFinite(day.efficiencyIndex) || day.efficiencyIndex < 10) {
+                        delete day.efficiencyIndex;
+                    }
+                    day.legSpring = activity.average_leg_spring.toFixed(2);
+                    if (day.legSpring < 0.1) {
+                        delete day.legSpring;
+                    }
+                    data.push(day);
+                }
+                this.fillChart(data);
+            },
+            fillChart: function (data) {
+                this.chart = AmCharts.makeChart(
+                    this.$.chartdiv,
+                    {
+                        type: 'xy',
+                        theme: 'stryd',
+                        autoResize: true,
+                        autoMarginOffset: 20,
+                        //dataDateFormat: 'YYYY-MM-DD',
+                        // chartScrollbar: {
+                        //     autoGridCount: false,
+                        //     scrollbarHeight: 50,
+                        //     offset: 30,
+                        //     backgroundAlpha: 0,
+                        //     selectedBackgroundAlpha: 0.2,
+                        //     selectedBackgroundColor: '#ababab',
+                        //     graphFillAlpha: 0,
+                        //     graphLineAlpha: 0.2,
+                        //     selectedGraphFillAlpha: 0,
+                        //     selectedGraphLineAlpha: 0.5,
+                        //     oppositeAxis: false
+                        // },
+                        categoryField: 'date',
+                        categoryAxis: {
+                            parseDates: true,
+                            axisAlpha: 0,
+                            gridAlpha: 0,
+                            gridCount: 0,
+                            gridThickness: 0
+                            /*jshint unused: false */
+                            // categoryFunction: (a, d, b) => {
+                            //     return moment(a).format('MMM DD');
+                            // }
+                        },
+                        chartCursor: {},
+                        balloon: {
+                            adjustBorderColor: true,
+                            color: '#1e1e1e',
+                            cornerRadius: 5,
+                            borderThickness: 2,
+                            fillColor: '#FFFFFF',
+                            shadowAlpha: 0,
+                            fontSize: 16,
+                            verticalPadding: 4,
+                            horizontalPadding: 8
+                        },
+                        legend: {
+                            useGraphSettings: true,
+                            position: 'top'
+                        },
+                        dataProvider: data,
+                        pathToImages: 'https://www.stryd.com/powercenter/scripts/amcharts/images/',
+                        valueAxes: [{
+                            id: 'legSpring',
+                            axisAlpha: 1,
+                            // guides: [{
+                            //     fillAlpha: 0.1,
+                            //     fillColor: '#888888',
+                            //     lineAlpha: 0,
+                            //     toValue: 16,
+                            //     value: 10
+                            // }],
+                            axisColor: '#2BAF2B',
+                            position: 'left',
+                            tickLength: 0,
+                            title: 'Leg Spring Stiffness',
+                            autoGridCount: false
+                        },
+                        {
+                            id: 'efficiencyIndex',
+                            axisAlpha: 1,
+                            // guides: [{
+                            //     fillAlpha: 0.1,
+                            //     fillColor: '#888888',
+                            //     lineAlpha: 0,
+                            //     toValue: 16,
+                            //     value: 10
+                            // }],
+                            axisColor: '#2BAF2B',
+                            position: 'right',
+                            tickLength: 0,
+                            title: 'Efficiency Index',
+                            autoGridCount: false
+                        },
+                        {
+                            id: 'date',
+                            axisAlpha: 1,
+                            // guides: [{
+                            //     fillAlpha: 0.1,
+                            //     fillColor: '#888888',
+                            //     lineAlpha: 0,
+                            //     toValue: 16,
+                            //     value: 10
+                            // }],
+                            axisColor: '#E94F65',
+                            position: 'bottom',
+                            type: 'date',
+                            tickLength: 0,
+                            minimumDate: this.begDate.add(-1, 'days'),
+                            maximumDate: this.finDate.add(1, 'days')
+                        }],
+                        graphs: [{
+                            id: 'legSpring1',
+                            valueField: 'legSpring',
+                            balloonText: '[[value]] Leg Spring',
+                            bullet: 'round',
+                            valueAxis: 'legSpring',
+                            //dashLength: 3,
+                            lineAlpha: 0,
+                            //valueField: 'legSpring',
+                            //title: 'legSpring',
+                            xField: 'date',
+                            yField: 'legSpring',
+                            lineColor: '#2BAF2B'
+                        },
+                        {
+                            id: 'efficiencyIndex1',
+                            valueField: 'efficiencyIndex',
+                            balloonText: '[[value]] EI',
+                            bullet: 'round',
+                            valueAxis: 'efficiencyIndex',
+                            //dashLength: 3,
+                            lineAlpha: 0,
+                            //valueField: 'efficiencyIndex',
+                            //title: 'efficiencyIndex',
+                            xField: 'date',
+                            yField: 'efficiencyIndex',
+                            lineColor: '#E94F65'
+                        }],
+                    },
+                    0
+                );
+            }
+        });
+    </script>
+</dom-module>

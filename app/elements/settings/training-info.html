@@ -372,12 +372,6 @@
             </div>
         </div>
 
-        <!--<div class="save-line"></div>-->
-        <!--<div class="save" on-click="saveZones">-->
-            <!--<p>Save Training Information</p>-->
-            <!--<paper-fab icon="inbox"></paper-fab>-->
-        <!--</div>-->
-        <paper-toast duration="1300" text="" id="toast"></paper-toast>
         <paper-dialog id="invalid">
             <h1>Some of your test result input are wrong. Please double check, correct it and re-calculate.</h1>
             <div class="buttons">
@@ -510,24 +504,25 @@
                         .set('Accept', 'application/json')
                         .set('Authorization', `Bearer: ${jwt.token}`)
                         .end((err, res) => {
+                            var text;
                             if (res.ok) {
                                 switch (res.status) {
                                     case 200:
-                                        this.$.toast.text = 'Your training information is up-to-date!';
+                                        text = 'Your training information is up-to-date!';
                                         this.trainingInfo = res.body;
                                         localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
                                         this.parseTrainingInfo(this.trainingInfo);
                                         this.$.info.hidden = false;
                                         break;
                                     case 204:
-                                        this.$.toast.text = 'No training information found.';
+                                        text = 'No training information found.';
                                         this.$.info.hidden = true;
                                         break;
                                 }
                             } else {
-                                this.$.toast.text = 'Your information has not been updated. Please try again.';
+                                text = 'Your information has not been updated. Please try again.';
                             }
-                            this.$.toast.show();
+                            toast(text);
                         });
             },
 
@@ -564,17 +559,18 @@
                     .put('/b/api/v1/training/zone')
                     .send(zones)
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        var text;
                         if (res.ok) {
                             this.trainingInfo = res.body;
                             localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
-                            this.$.toast.text = 'Your training information is up-to-date!';
+                            text = 'Your training information is up-to-date!';
                         } else {
-                            this.$.toast.text = 'Your information has not been updated. Please try again.';
+                            text = 'Your information has not been updated. Please try again.';
                         }
-                        this.$.toast.show();
-                    }.bind(this));
+                        toast(text);
+                    });
             },
             calculateTrainingInfo: function () {
                 let results = [];
@@ -694,27 +690,25 @@
                 superagent
                     .post('/b/api/v1/training')
                     .send({'cptest_result':results})
-                    .set('Authorization', 'Bearer: ' + jwt.token)
+                    .set('Authorization', `Bearer: ${jwt.token}`)
                     .end((err, res) => {
-                        console.log('Training info: ', res, err);
+                        var text;
                         if (res.ok) {
                             // Save locally since to sync with Server
-                            localStorage.setItem(this.keyCPTest, JSON.stringify(
-                                    {
-                                        'lap': this.lapTestResult, 'minute': this.minuteTestResult,
-                                        'distance': this.distanceTestResult, 'custom': this.customTestResult
-                                    }
-
-                            ));
+                            localStorage.setItem(this.keyCPTest, JSON.stringify({
+                                    'lap': this.lapTestResult, 'minute': this.minuteTestResult,
+                                    'distance': this.distanceTestResult, 'custom': this.customTestResult
+                                })
+                            );
                             this.trainingInfo = res.body;
                             localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
                             this.parseTrainingInfo(this.trainingInfo);
-                            this.$.toast.text = 'Your training zones are updated.';
+                            text = 'Your training zones are updated.';
                             window.scroll(0, this.$.info.getBoundingClientRect().top);
                         } else {
-                            this.$.toast.text = 'Your information is not accepted by server. Please try again.';
+                            text = 'Your information is not accepted by server. Please try again.';
                         }
-                        this.$.toast.show();
+                        toast(text);
                     });
             },
             parseTrainingInfo: function (info) {

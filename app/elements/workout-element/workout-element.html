@@ -1,6 +1,4 @@
 <dom-module id="workout-element">
-    <link rel="import" href="../bubble-stat/bubble-stat.html">
-    <link rel="import" href="../workout-element/workout-segment.html">
     <style>
         :host {
             position: relative;
@@ -109,12 +107,12 @@
             --paper-radio-button-checked-ink-color: #AB5400;
         }
         [data-graph="devicePace"] {
-            --paper-radio-button-checked-color: #000040;
-            --paper-radio-button-checked-ink-color: #000040;
+            --paper-radio-button-checked-color: #B3B8BC;
+            --paper-radio-button-checked-ink-color: #B3B8BC;
         }
-        [data-graph="deviceElevation"] {
-            --paper-radio-button-checked-color: #3A041B;
-            --paper-radio-button-checked-ink-color: #3A041B;
+        [data-graph="legSpring"] {
+            --paper-radio-button-checked-color: #E94F65;
+            --paper-radio-button-checked-ink-color: #E94F65;
         }
         .toggle .circle {
             width: 1.3vw;
@@ -342,12 +340,12 @@
             <div class="layout horizontal">
                 <div class="layout vertical flex">
                     <div class="bubbles">
-                        <bubble-stat type="pace"></bubble-stat>
-                        <bubble-stat type="time"></bubble-stat>
-                        <bubble-stat type="power"></bubble-stat>
-                        <bubble-stat type="heartRate"></bubble-stat>
-                        <bubble-stat type="dynamics"></bubble-stat>
-                        <bubble-stat type="misc"></bubble-stat>
+                        <bubble-stat id="pace"></bubble-stat>
+                        <bubble-stat id="time"></bubble-stat>
+                        <bubble-stat id="power"></bubble-stat>
+                        <bubble-stat id="heartRate"></bubble-stat>
+                        <bubble-stat id="dynamics"></bubble-stat>
+                        <bubble-stat id="misc"></bubble-stat>
                     </div>
                 </div>
                 <div class="flex layout vertical tps hidden">
@@ -366,7 +364,7 @@
                     </div>
                 </div>
             </div>
-            <div class="layout horizontal" style="position: relative;">
+            <div class="layout horizontal" style="position: relative; width: 100%;">
                 <div id="chartdiv"></div>
                 <div class="toggles">
                     <iron-icon icon="icons:menu"></iron-icon>
@@ -378,9 +376,9 @@
                         <paper-radio-button on-click="toggle" data-graph="cadence">Cadence</paper-radio-button>
                         <paper-radio-button on-click="toggle" data-graph="groundTime">Ground Time</paper-radio-button>
                         <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
+                        <paper-radio-button on-click="toggle" data-graph="legSpring">Leg Spring Stiffness</paper-radio-button>
                         <paper-radio-button on-click="toggle" data-graph="formPower">Form Power</paper-radio-button>
                         <paper-radio-button on-click="toggle" data-graph="devicePace">Foot Pod Pace</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="deviceElevation">Foot Pod Elevation</paper-radio-button>
                     </div>
                 </div>
             </div>
@@ -407,17 +405,16 @@
         /*global updateWorkout*/
         Polymer({
             is: 'workout-element',
-            properties: {
-                selected: {
-                    type: Number,
-                    notify: true
-                }
-            },
-            switchme: function () {
-                if (this.selected === 0) {
-                    this.selected = 1;
+            switchMetric: function (metric, state) {
+                if (state === 'off' ||
+                    (state === 'flip' &&
+                    this.metrics[metric].toggle.checked === false)
+                ) {
+                    this.metrics[metric].toggle.checked = false;
+                    this.chart.hideGraph(this.metrics[metric].graph());
                 } else {
-                    this.selected = 0;
+                    this.metrics[metric].toggle.checked = true;
+                    this.chart.showGraph(this.metrics[metric].graph());
                 }
             },
             slide: function () {
@@ -429,34 +426,7 @@
                     this.querySelector('[data-tp="graph"]').classList.add('moveToRight');
                 }
             },
-            fillzones: function () {
-                var zoneData = [
-                    {
-                        'zone': 'Marathon',
-                        'seconds': 100
-                    },
-                    {
-                        'zone': 'Threshold',
-                        'seconds': 50
-                    },
-                    {
-                        'zone': 'Interval',
-                        'seconds': 25
-                    }
-                ];
-                AmCharts.makeChart(
-                    this.$.circlechart,
-                    {
-                        'type': 'pie',
-                        'theme': 'stryd',
-                        'dataProvider': zoneData,
-                        'valueField': 'seconds',
-                        'titleField': 'zone'
-                    }
-                );
-            },
             ready: function () {
-                this.selected = 0;
                 this.activity = null;
                 this.descriptionText = '';
                 this.$.descriptionInput.addEventListener(
@@ -506,18 +476,6 @@
                             'type': 'smoothedLine',
                             'balloonText': '[[value]] BPM',
                             'lineColor': '#683a78'
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.heartRate.toggle.checked === false)
-                            ) {
-                                this.metrics.heartRate.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.heartRate.graph());
-                            } else {
-                                this.metrics.heartRate.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.heartRate.graph());
-                            }
                         }
                     },
                     power: {
@@ -547,21 +505,9 @@
                             'title': 'power',
                             'useLineColorForBulletBorder': true,
                             'valueField': 'power',
-                            'type': 'smoothedLine',
+                            'type': 'line',
                             'balloonText': '[[value]] Watts',
                             'lineColor': '#f7a017'
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.power.toggle.checked === false)
-                            ) {
-                                this.metrics.power.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.power.graph());
-                            } else {
-                                this.metrics.power.checked = true;
-                                this.chart.showGraph(this.metrics.power.graph());
-                            }
                         }
                     },
                     formPower: {
@@ -572,7 +518,7 @@
                         axis: {
                             'id': 'formPower',
                             'axisAlpha': 1,
-                            'position': 'right',
+                            'position': 'left',
                             'offset': 0,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
@@ -581,7 +527,7 @@
                         },
                         info: {
                             'id': 'formPower',
-                            'valueAxis': 'power',
+                            'valueAxis': 'formPower',
                             'bullet': 'round',
                             'bulletBorderAlpha': 1,
                             'bulletColor': '#FFFFFF',
@@ -591,21 +537,9 @@
                             'title': 'formPower',
                             'useLineColorForBulletBorder': true,
                             'valueField': 'formPower',
-                            'type': 'smoothedLine',
+                            'type': 'line',
                             'balloonText': '[[value]] Watts',
                             'lineColor': '#DF7B0B'
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.formPower.toggle.checked === false)
-                            ) {
-                                this.metrics.formPower.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.formPower.graph());
-                            } else {
-                                this.metrics.formPower.checked = true;
-                                this.chart.showGraph(this.metrics.formPower.graph());
-                            }
                         }
                     },
                     pace: {
@@ -640,18 +574,6 @@
                             'balloonFunction': speedToPaceForBalloon,
                             'balloonText': '[[value]] Min/Mile',
                             'lineColor': '#074a8c',
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.pace.toggle.checked === false)
-                            ) {
-                                this.metrics.pace.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.pace.graph());
-                            } else {
-                                this.metrics.pace.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.pace.graph());
-                            }
                         }
                     },
                     devicePace: {
@@ -666,7 +588,7 @@
                             'offset': 40,
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
-                            'axisColor': '#000040',
+                            'axisColor': '#B3B8BC',
                             'dashLength': 1,
                             'labelFunction': speedToPaceForValueAxis
                         },
@@ -685,19 +607,7 @@
                             'type': 'smoothedLine',
                             'balloonFunction': speedToPaceForBalloon,
                             'balloonText': '[[value]] Min/Mile',
-                            'lineColor': '#000040',
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.devicePace.toggle.checked === false)
-                            ) {
-                                this.metrics.devicePace.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.devicePace.graph());
-                            } else {
-                                this.metrics.devicePace.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.devicePace.graph());
-                            }
+                            'lineColor': '#B3B8BC',
                         }
                     },
                     cadence : {
@@ -730,18 +640,6 @@
                             'type': 'smoothedLine',
                             'balloonText': '[[value]] SPM',
                             'lineColor': '#5ea7a1'
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.cadence.toggle.checked === false)
-                            ) {
-                                this.metrics.cadence.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.cadence.graph());
-                            } else {
-                                this.metrics.cadence.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.cadence.graph());
-                            }
                         }
                     },
                     elevation: {
@@ -774,62 +672,6 @@
                             'type': 'smoothedLine',
                             'balloonText': '[[value]] Meters',
                             'lineColor': '#a06a81',
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.elevation.toggle.checked === false)
-                            ) {
-                                this.metrics.elevation.toggle.dataset.checked = false;
-                                this.chart.hideGraph(this.metrics.elevation.graph());
-                            } else {
-                                this.metrics.elevation.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.elevation.graph());
-                            }
-                        }
-                    },
-                    deviceElevation: {
-                        toggle: this.querySelector('[data-graph="deviceElevation"]'),
-                        graph: () => {
-                            return this.chart.getGraphById('deviceElevation');
-                        },
-                        axis: {
-                            'id': 'deviceElevation',
-                            'axisAlpha': 1,
-                            'position': 'right',
-                            'offset': 80,
-                            'axisThickness': 2,
-                            'gridAlpha': 0.2,
-                            'axisColor': '#a06a81',
-                            'dashLength': 1
-                        },
-                        info: {
-                            'id': 'deviceElevation',
-                            'valueAxis': 'elevation',
-                            'bullet': 'round',
-                            'bulletBorderAlpha': 1,
-                            'bulletColor': '#FFFFFF',
-                            'bulletSize': 5,
-                            'hideBulletsCount': 50,
-                            'lineThickness': 2,
-                            'title': 'deviceElevation',
-                            'useLineColorForBulletBorder': true,
-                            'valueField': 'deviceElevation',
-                            'type': 'smoothedLine',
-                            'balloonText': '[[value]] Meters',
-                            'lineColor': '#a06a81',
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.deviceElevation.toggle.checked === false)
-                            ) {
-                                this.metrics.deviceElevation.toggle.dataset.checked = false;
-                                this.chart.hideGraph(this.metrics.deviceElevation.graph());
-                            } else {
-                                this.metrics.deviceElevation.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.deviceElevation.graph());
-                            }
                         }
                     },
                     groundTime: {
@@ -845,7 +687,8 @@
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#00ACEE',
-                            'dashLength': 1
+                            'dashLength': 1,
+                            'stackType': '3d'
                         },
                         info: {
                             'id': 'groundTime',
@@ -862,18 +705,6 @@
                             'type': 'smoothedLine',
                             'balloonText': '[[value]] MS',
                             'lineColor': '#00ACEE',
-                        },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.groundTime.toggle.checked === false)
-                            ) {
-                                this.metrics.groundTime.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.groundTime.graph());
-                            } else {
-                                this.metrics.groundTime.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.groundTime.graph());
-                            }
                         }
                     },
                     vertOsc: {
@@ -889,7 +720,8 @@
                             'axisThickness': 2,
                             'gridAlpha': 0.2,
                             'axisColor': '#2BAF2B',
-                            'dashLength': 1
+                            'dashLength': 1,
+                            'stackType': '3d'
                         },
                         info: {
                             'id': 'vertOsc',
@@ -906,67 +738,44 @@
                             'type': 'smoothedLine',
                             'balloonText': '[[value]] CM',
                             'lineColor': '#2BAF2B'
+                        }
+                    },
+                    legSpring: {
+                        toggle: this.querySelector('[data-graph="legSpring"]'),
+                        graph: () => {
+                            return this.chart.getGraphById('legSpring');
                         },
-                        switch: (state) => {
-                            if (state === 'off' ||
-                                (state === 'flip' &&
-                                this.metrics.vertOsc.toggle.checked === false)
-                            ) {
-                                this.metrics.vertOsc.toggle.checked = false;
-                                this.chart.hideGraph(this.metrics.vertOsc.graph());
-                            } else {
-                                this.metrics.vertOsc.toggle.checked = true;
-                                this.chart.showGraph(this.metrics.vertOsc.graph());
-                            }
+                        axis: {
+                            'id': 'legSpring',
+                            'axisAlpha': 1,
+                            'position': 'right',
+                            'offset': 40,
+                            'axisThickness': 2,
+                            'gridAlpha': 0.2,
+                            'axisColor': '#E94F65',
+                            'dashLength': 1,
+                            'stackType': '3d'
+                        },
+                        info: {
+                            'id': 'legSpring',
+                            'valueAxis': 'legSpring',
+                            'bullet': 'round',
+                            'bulletBorderAlpha': 1,
+                            'bulletColor': '#FFFFFF',
+                            'bulletSize': 5,
+                            'hideBulletsCount': 50,
+                            'lineThickness': 2,
+                            'title': 'legSpring',
+                            'useLineColorForBulletBorder': true,
+                            'valueField': 'legSpring',
+                            'type': 'smoothedLine',
+                            'balloonText': '[[value]] kN/m',
+                            'lineColor': '#E94F65'
                         }
                     }
-                    // training: {
-                    //     toggle: this.querySelector('[data-graph="training"]'),
-                    //     graph: () => {
-                    //         return this.chart.getGraphById('training');
-                    //     },
-                    //     axis: {
-                    //         'id': 'training',
-                    //         'axisAlpha': 1,
-                    //         'position': 'right',
-                    //         'offset': 40,
-                    //         'axisThickness': 2,
-                    //         'gridAlpha': 0.2,
-                    //         'axisColor': '#2BAF2B',
-                    //         'dashLength': 1
-                    //     },
-                    //     info: {
-                    //         'id': 'training',
-                    //         'valueAxis': 'training',
-                    //         'bullet': 'round',
-                    //         'bulletBorderAlpha': 1,
-                    //         'bulletColor': '#FFFFFF',
-                    //         'bulletSize': 5,
-                    //         'hideBulletsCount': 50,
-                    //         'lineThickness': 2,
-                    //         'title': 'training',
-                    //         'useLineColorForBulletBorder': true,
-                    //         'valueField': 'training',
-                    //         'type': 'smoothedLine',
-                    //         'balloonText': '[[value]] W',
-                    //         'lineColor': '#2BAF2B'
-                    //     },
-                    //     switch: (state) => {
-                    //         if (state === 'off' ||
-                    //             (state === 'flip' &&
-                    //             this.metrics.training.toggle.checked === false)
-                    //         ) {
-                    //             this.metrics.training.toggle.checked = false;
-                    //             this.chart.hideGraph(this.metrics.training.graph());
-                    //         } else {
-                    //             this.metrics.training.toggle.checked = true;
-                    //             this.chart.showGraph(this.metrics.training.graph());
-                    //         }
-                    //     }
-                    // }
                 };
             },
-            setChartData: function (data, steps, activity) {
+            setChartData: function (data, activity, activityMetrics) {
                 this.setLoading();
 
                 this.activity = activity;
@@ -984,23 +793,23 @@
                 }
 
                 this.data = data;
-                this.steps = steps;
-                this.chartData = this.data;
-                this.startTime = this.data[0].date;
                 this.availableMetrics = [];
-                var valueAxes = [], graphs = [];
-                for (var key in this.data[0]) {
-                    if (key in this.metrics) {
-                        this.availableMetrics.push(key);
-                        valueAxes.push(this.metrics[key].axis);
-                        graphs.push(this.metrics[key].info);
+                this.startTime = this.data[0].date;
+                for (var val of activityMetrics) {
+                    if (val in this.metrics) {
+                        this.availableMetrics.push(val);
                     }
                 }
+                var valueAxes = [], graphs = [];
+                for (val of this.availableMetrics) {
+                    valueAxes.push(this.metrics[val].axis);
+                    graphs.push(this.metrics[val].info);
+                }
+
                 this.fillChart(valueAxes, graphs);
                 if ('chart' in this) {
                     this.bindToggles();
                 }
-
                 //this.loadTraining();
             },
             loadTraining: function () {
@@ -1079,12 +888,17 @@
                         this.metrics[key].toggle.classList.remove('hidden');
                     }
                 }
-                this.metrics.power.switch('on');
-                this.metrics.heartRate.switch('on');
-                var hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc', 'formPower', 'deviceElevation', 'devicePace'];
+                var hiddenMetrics = [];
+                if (this.availableMetrics.indexOf('heartRate') > -1) {
+                    hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc', 'legSpring', 'formPower', 'devicePace'];
+                } else {
+                    hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc', 'legSpring', 'devicePace'];
+                }
                 for (key of this.availableMetrics) {
                     if (hiddenMetrics.indexOf(key) > -1) {
-                        this.metrics[key].switch('off');
+                        this.switchMetric(key, 'off');
+                    } else {
+                        this.switchMetric(key, 'on');
                     }
                 }
             },
@@ -1094,7 +908,7 @@
                     target = target.parentElement;
                 }
                 var graph = target.dataset.graph;
-                this.metrics[graph].switch('flip');
+                this.switchMetric(graph, 'flip');
             },
             calcAvgs: function (begin, end) {
                 var total = end - begin;
@@ -1219,6 +1033,25 @@
                         unit: 'CM'
                     }
                 };
+                var form = {
+                    active: ['formPower', 'legSpring'],
+                    formPower: {
+                        icon: 'places:hot-tub',
+                        title: 'Form Power',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'Watts'
+                    },
+                    legSpring: {
+                        icon: 'image:leak-add',
+                        title: 'Leg Spring',
+                        elapsed: 0,
+                        moving: 0,
+                        mTotal: 0,
+                        unit: 'kN/M'
+                    }
+                };
                 var misc = {
                     active: [],
                     distance: {
@@ -1243,51 +1076,54 @@
                     }
 
                     /* Pace */
-                    if (data.pace > pace.maxPace.value) {
-                        pace.maxPace.value = data.pace;
+                    if ('pace' in data) {
+                        if (data.pace > pace.maxPace.value) {
+                            pace.maxPace.value = data.pace;
+                        }
                     }
 
-                    /* Power */
-                    if (data.power > power.maxPower.value) {
-                        power.maxPower.value = data.power.toFixed(0);
+                    if ('power' in data) {
+                        if (data.power > power.maxPower.value) {
+                            power.maxPower.value = data.power.toFixed(0);
+                        }
+                        if (data.power > 0) {
+                            time.time.moving += timeSectionMSeconds;
+                        }
+                        power.power.elapsed += data.power;
+                        if (data.power > 10) {
+                            power.power.moving += data.power;
+                            power.power.mTotal += 1;
+                        }
+
+                        if (data.power > 300) {
+                            power.timeInMaxZone.value += timeSectionMSeconds;
+                        }
                     }
 
-                    if (data.power > 0) {
-                        time.time.moving += timeSectionMSeconds;
-                    }
                     time.time.elapsed += timeSectionMSeconds;
 
-                    power.power.elapsed += data.power;
+                    if ('heartRate' in data && 'power' in data) {
+                        if (data.heartRate > heartRate.maxHR.value) {
+                            heartRate.maxHR.value = data.heartRate;
+                        }
 
-                    if (data.power > 10) {
-                        power.power.moving += data.power;
-                        power.power.mTotal += 1;
+                        heartRate.heartRate.elapsed += data.heartRate;
+
+                        if (data.power > 10) {
+                            heartRate.heartRate.moving += data.heartRate;
+                            heartRate.heartRate.mTotal += 1;
+                        }
                     }
 
-                    if (data.power > 300) {
-                        power.timeInMaxZone.value += timeSectionMSeconds;
+                    if ('cadence' in data) {
+                        dynamics.cadence.elapsed += data.cadence;
+                        if (data.power > 10) {
+                            dynamics.cadence.moving += data.cadence;
+                            dynamics.cadence.mTotal += 1;
+                        }
                     }
 
-                    /* Heart rate */
-                    if (data.heartRate > heartRate.maxHR.value) {
-                        heartRate.maxHR.value = data.heartRate;
-                    }
-
-                    heartRate.heartRate.elapsed += data.heartRate;
-
-                    if (data.power > 10) {
-                        heartRate.heartRate.moving += data.heartRate;
-                        heartRate.heartRate.mTotal += 1;
-                    }
-
-                    dynamics.cadence.elapsed += data.cadence;
-                    if (data.power > 10) {
-                        dynamics.cadence.moving += data.cadence;
-                        dynamics.cadence.mTotal += 1;
-                    }
-
-                    /* Ground time */
-                    if ('groundTime' in data) {
+                    if ('groundTime' in data && 'power' in data) {
                         dynamics.groundTime.elapsed += data.groundTime;
                         if (data.power > 10) {
                             dynamics.groundTime.moving += data.groundTime;
@@ -1295,12 +1131,27 @@
                         }
                     }
 
-                    /* Vertical oscillation */
-                    if ('vertOsc' in data) {
+                    if ('vertOsc' in data && 'power' in data) {
                         dynamics.vertOsc.elapsed += data.vertOsc;
                         if (data.power > 10) {
                             dynamics.vertOsc.moving += data.vertOsc;
                             dynamics.vertOsc.mTotal += 1;
+                        }
+                    }
+
+                    if ('formPower' in data && 'power' in data) {
+                        form.formPower.elapsed += data.formPower;
+                        if (data.power > 10) {
+                            form.formPower.moving += data.formPower;
+                            form.formPower.mTotal += 1;
+                        }
+                    }
+
+                    if ('legSpring' in data && 'power' in data) {
+                        form.legSpring.elapsed += data.legSpring;
+                        if (data.power > 10) {
+                            form.legSpring.moving += data.legSpring;
+                            form.legSpring.mTotal += 1;
                         }
                     }
                 }
@@ -1312,15 +1163,15 @@
                 var movingDec = movingMinutes / distanceValue;
                 var maxPace = speedToPace(pace.maxPace.value, user.data.units);
 
-                pace.pace.elapsed = formatPace(elapsedDec.toFixed(2));
-                pace.pace.moving = formatPace(movingDec.toFixed(2));
+                pace.pace.elapsed = formatPace(elapsedDec);
+                pace.pace.moving = formatPace(movingDec);
                 pace.maxPace.value = maxPace;
 
-                power.power.moving = (power.power.moving / power.power.mTotal).toFixed(1);
-                power.power.elapsed = (power.power.elapsed / total).toFixed(1);
+                power.power.moving = (power.power.moving / power.power.mTotal).stat();
+                power.power.elapsed = (power.power.elapsed / total).stat();
 
-                heartRate.heartRate.moving = (heartRate.heartRate.moving / heartRate.heartRate.mTotal).toFixed(1);
-                heartRate.heartRate.elapsed = (heartRate.heartRate.elapsed / total).toFixed(1);
+                heartRate.heartRate.moving = (heartRate.heartRate.moving / heartRate.heartRate.mTotal).stat();
+                heartRate.heartRate.elapsed = (heartRate.heartRate.elapsed / total).stat();
 
                 time.time.elapsed = hmsTime(time.time.elapsed);
                 time.time.moving = hmsTime(time.time.moving);
@@ -1332,38 +1183,49 @@
                 misc.distance.value = distanceDisplay;
                 misc.distance.unit = distanceUnit;
 
-                dynamics.cadence.moving = (dynamics.cadence.moving / dynamics.cadence.mTotal).toFixed(1);
-                dynamics.cadence.elapsed = (dynamics.cadence.elapsed / total).toFixed(1);
+                dynamics.cadence.moving = (dynamics.cadence.moving / dynamics.cadence.mTotal).stat();
+                dynamics.cadence.elapsed = (dynamics.cadence.elapsed / total).stat();
 
                 if (dynamics.groundTime.elapsed !== 0) {
-                    dynamics.groundTime.moving = (dynamics.groundTime.moving / dynamics.groundTime.mTotal).toFixed(1);
-                    dynamics.groundTime.elapsed = (dynamics.groundTime.elapsed / total).toFixed(1);
+                    dynamics.groundTime.moving = (dynamics.groundTime.moving / dynamics.groundTime.mTotal).stat();
+                    dynamics.groundTime.elapsed = (dynamics.groundTime.elapsed / total).stat();
                 } else {
                     delete dynamics.groundTime;
                 }
 
                 if (dynamics.vertOsc.elapsed !== 0) {
-                    dynamics.vertOsc.moving = (dynamics.vertOsc.moving / dynamics.vertOsc.mTotal).toFixed(1);
-                    dynamics.vertOsc.elapsed = (dynamics.vertOsc.elapsed / total).toFixed(1);
+                    dynamics.vertOsc.moving = (dynamics.vertOsc.moving / dynamics.vertOsc.mTotal).stat();
+                    dynamics.vertOsc.elapsed = (dynamics.vertOsc.elapsed / total).stat();
                 } else {
                     delete dynamics.vertOsc;
                 }
 
+                if (form.formPower.elapsed !== 0) {
+                    form.formPower.moving = (form.formPower.moving / form.formPower.mTotal).stat();
+                    form.formPower.elapsed = (form.formPower.elapsed / total).stat();
+                } else {
+                    delete form.formPower;
+                }
+
+                if (form.legSpring.elapsed !== 0) {
+                    form.legSpring.moving = (form.legSpring.moving / form.legSpring.mTotal).stat();
+                    form.legSpring.elapsed = (form.legSpring.elapsed / total).stat();
+                } else {
+                    delete form.legSpring;
+                }
+
                 delete heartRate.movingHR;
                 delete power.timeInMaxZone;
-                this.querySelector('[type="pace"]').setData(pace);
-                this.querySelector('[type="time"]').setData(time);
-                this.querySelector('[type="power"]').setData(power);
-                this.querySelector('[type="heartRate"]').setData(heartRate);
-                this.querySelector('[type="dynamics"]').setData(dynamics);
-                this.querySelector('[type="misc"]').setData(misc);
-            },
-            addPoint: function (pt) {
-                this.chart.dataProvider.push(pt);
-            },
-            refreshData: function () {
-                this.calcAvgs(0, this.chart.dataProvider.length - 1);
-                this.chart.validateData();
+                this.$.pace.setData(pace);
+                this.$.time.setData(time);
+                this.$.power.setData(power);
+                if (this.availableMetrics.indexOf('heartRate') > -1) {
+                    this.$.heartRate.setData(heartRate);
+                } else {
+                    this.$.heartRate.setData(form);
+                }
+                this.$.dynamics.setData(dynamics);
+                this.$.misc.setData(misc);
             },
             fillChart: function (valueAxes, graphs) {
                 this.chart = AmCharts.makeChart(
@@ -1371,29 +1233,20 @@
                     {
                         'type': 'serial',
                         'theme': 'stryd',
+                        'autoResize': true,
                         'autoMarginOffset': 20,
                         'valueAxes': valueAxes,
                         'graphs': graphs,
-                        'autoResize': true,
-                        'processCount': 100,
                         'valueScrollbar':{
-                            'oppositeAxis': false,
+                            'oppositeAxis': true,
                             'offset': 50,
                             'scrollbarHeight': 10
                         },
-                        'guides': [
-                            {
-                                'fillAlpha': 0.50,
-                                'value': 50,
-                                'toValue': 200,
-                                'valueAxis': valueAxes[1]
-                            }
-                        ],
                         'chartScrollbar': {
                             'graph': 'power',
                             'autoGridCount': false,
                             'scrollbarHeight': 50,
-                            'offset':30,
+                            'offset': 30,
                             'backgroundAlpha': 0,
                             'selectedBackgroundAlpha': 0.2,
                             'selectedBackgroundColor': '#ababab',
@@ -1401,9 +1254,8 @@
                             'graphLineAlpha': 0.2,
                             'selectedGraphFillAlpha': 0,
                             'selectedGraphLineAlpha': 0.5,
-                            'oppositeAxis': false,
+                            'oppositeAxis': false
                         },
-                        'chartCursor': {},
                         'categoryField': 'date',
                         'categoryAxis': {
                             'parseDates': false,
@@ -1418,9 +1270,7 @@
                                 return hmsTime(timeDiff);
                             }
                         },
-                        'export': {
-                            'enabled': true
-                        },
+                        'chartCursor': {},
                         'balloon': {
                             'adjustBorderColor': true,
                             'color': '#1e1e1e',
@@ -1432,7 +1282,7 @@
                             'verticalPadding': 4,
                             'horizontalPadding': 8
                         },
-                        'dataProvider': this.chartData,
+                        'dataProvider': this.data,
                         'pathToImages': 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
                     },
                     0
@@ -1441,7 +1291,7 @@
                 this.chart.addListener('init', (e) => {
                     this.removeLoading();
                     this.bindToggles();
-                    this.calcAvgs(0, this.chartData.length);
+                    this.calcAvgs(0, this.data.length);
                 });
 
                 this.chart.addListener('zoomed', (e) => {

@@ -19,6 +19,9 @@ String.prototype.stat = function () {
     return shortened;
 };
 
+var metersPerMile = 1609.34;
+var metersPerKM = 1000;
+
 // Prepend 0 to single digit values
 var fillZero = function (n) {
     n = String(n);
@@ -65,7 +68,7 @@ var hrTime = function (s) {
 
 // Converts meters to kilometers
 var meterToKM = function (m) {
-    return (m / 1000).toFixed(1);
+    return (m / metersPerKM).toFixed(1);
 };
 
 // Converts meters to miles
@@ -74,7 +77,7 @@ var meterToMile = function (m, precision) {
     if (precision === 0) {
         precision = 1;
     }
-    return (m / 1609.34).toFixed(precision);
+    return (m / metersPerMile).toFixed(precision);
 };
 
 var meterToUserUnit = function (m) {
@@ -88,9 +91,9 @@ var meterToUserUnit = function (m) {
 };
 
 var speedToPaceInDecimal = function (mps, unit) {
-    var dist = 1000;
+    var dist = metersPerKM;
     if (unit === 'feet') {
-        dist = 1609.34;
+        dist = metersPerMile;
     }
     return (dist/mps/60).toFixed(1);
 };

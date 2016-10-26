@@ -147,26 +147,14 @@
 
                 this.displayedTime = moment();
                 this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-                var tooltip = document.querySelector('[data-tooltip]');
-                var x = 0, y = 0;
-                document.addEventListener('mousemove', function (e) {
-                    x = e.pageX;
-                    y = e.pageY;
-                });
+                // var tooltip = document.querySelector('[data-tooltip]');
+                // var x = 0, y = 0;
+                // document.addEventListener('mousemove', function (e) {
+                //     x = e.pageX;
+                //     y = e.pageY;
+                // });
                 // Set the position of the hover box. If the right side of the box would cause a horizontal scroll bar, move the hover box to the left side of the cursor.
-                var setPosition = function () {
-                    if (!tooltip.classList.contains('hidden')) {
-                        var xPos;
-                        if ((window.innerWidth - x) < 230) {
-                            xPos = x - 230;
-                        } else {
-                            xPos = x + 30;
-                        }
-                        tooltip.style.left = String(xPos) + 'px';
-                        tooltip.style.top = String(y + 30) + 'px';
-                    }
-                };
-                setInterval(setPosition, 20);
+                // setInterval(setPosition, 20);
 
                 this.assembleDOM();
                 if (jwt.hasToken) {
@@ -189,6 +177,18 @@
                         this.nextMonth();
                     }
                 });
+            },
+            setPosition: function () {
+                // if (!tooltip.classList.contains('hidden')) {
+                //     var xPos;
+                //     if ((window.innerWidth - x) < 230) {
+                //         xPos = x - 230;
+                //     } else {
+                //         xPos = x + 30;
+                //     }
+                //     tooltip.style.left = String(xPos) + 'px';
+                //     tooltip.style.top = String(y + 30) + 'px';
+                // }
             },
             // Mode is either user or admin
             // User is username for admin

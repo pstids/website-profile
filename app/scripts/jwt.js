@@ -96,7 +96,7 @@ class User {
 	getImage() {
 		this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
 		if ('profile_medium' in this.data && this.data.profile_medium !== '') {
-			return decodeURIComponent(this.data.profile_medium.replace('+', ' '));
+			return this.data.profile_medium;
 		} else if ('email' in this.data && this.data.email !== '') {
 			var gravHash = CryptoJS.MD5(this.data.email.toLowerCase());
 			return `http://www.gravatar.com/avatar/${gravHash}?d=${this.defaultURL}`;
@@ -204,3 +204,50 @@ class TrainingPlan {
 }
 
 var trainingPlan = new TrainingPlan();
+
+class ColorInterpolate {
+	constructor() {
+		this.lowColorRGB = {
+			r: 95,
+			g: 180,
+			b: 61
+		};
+		this.highColorRGB = {
+			r: 243,
+			g: 60,
+			b: 52
+		};
+		this.threshold = {
+	        range: 200,
+	        high: 400,
+	        low: 200
+	    };
+	}
+	interpolate(start, end, steps, count) {
+        var final = start + (((end - start) / steps) * count);
+        return Math.floor(final);
+	}
+	RGB(relativePower) {
+		var r = this.interpolate(
+			this.lowColorRGB.r,
+			this.highColorRGB.r,
+			this.threshold.range,
+			relativePower
+		);
+		var g = this.interpolate(
+			this.lowColorRGB.g,
+			this.highColorRGB.g,
+			this.threshold.range,
+			relativePower
+		);
+		var b = this.interpolate(
+			this.lowColorRGB.b,
+			this.highColorRGB.b,
+			this.threshold.range,
+			relativePower
+		);
+		return `rgb(${r}, ${g}, ${b})`;
+	}
+}
+
+var colorInterpolate = new ColorInterpolate();

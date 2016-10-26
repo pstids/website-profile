@@ -164,7 +164,6 @@
                 </iron-pages>
             </div>
         </div>
-        <paper-toast duration="1300" text="This feature is not ready." id="toast"></paper-toast>
     </template>
     <script>
         class StrydSetting {
@@ -176,7 +175,7 @@
                 this.route = 'profile';
             }
             notReady() {
-                this.$.toast.show();
+                toast('This feature is not ready yet.');
             }
             router (e) {
                 var target = e.target;
@@ -187,7 +186,7 @@
                 this.route = target.dataset.view;
             }
             toggle(active) {
-                var anchor = this.querySelector('[data-view=\'' + active + '\']');
+                var anchor = this.querySelector(`[data-view='${active}']`);
                 var current = this.querySelector('.active');
                 if (current) {
                     current.classList.remove('active');

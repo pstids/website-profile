@@ -170,7 +170,6 @@
         <div id="planfab">
             <paper-fab icon="save" title="Save" on-click="saveAll"></paper-fab>
         </div>
-        <paper-toast duration="1300" text="" id="toast"></paper-toast>
         <div id="loading" class="layout horizontal center center-justified">
             <div id="overlay"></div>
             <paper-spinner-lite active></paper-spinner-lite>
@@ -296,10 +295,10 @@
                 this.clearData();
                 console.log('fetch plan');
                 superagent
-                    .get('/b/api/v1/training/plan/'+this.planId)
+                    .get(`/b/api/v1/training/plan/${this.planId}`)
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
                         this.$.loading.hidden = true;
                         if (res.ok) {
                             switch (res.status) {
@@ -318,10 +317,9 @@
                                     break;
                             }
                         } else {
-                            this.$.toast.text = 'Can not load the training plan. Please try later.';
-                            this.$.toast.show();
+                            toast('Can not load the training plan. Please try later.');
                         }
-                    }.bind(this));
+                    });
             },
 
             _fillData: function (data) {
@@ -496,15 +494,16 @@
                     .post('/b/api/v1/training/plan')
                     .send(plan)
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        var text;
                         if (res.ok) {
-                            this.$.toast.text = 'Your training plan is uploaded!';
+                            text = 'Your training plan is uploaded!';
                         } else {
-                            this.$.toast.text = 'Your information has not been updated. Please try again.';
+                            text = 'Your information has not been updated. Please try again.';
                         }
-                        this.$.toast.show();
-                    }.bind(this));
+                        toast(text);
+                    });
             }
         });
 

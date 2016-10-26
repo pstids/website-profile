@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="description" content="">
@@ -33,9 +33,6 @@
 
     <!-- <link rel="stylesheet" href="/powercenter/styles/app.css"> -->
     <link rel="stylesheet" href="/powercenter/styles/main.css">
-    <link rel="stylesheet" href="/powercenter/styles/dropzone.min.css">
-
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,300" rel="stylesheet" type="text/css">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js"></script>
 
@@ -56,9 +53,12 @@
         <header-element></header-element>
         <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="home">
-                <div class="layout horizontal" style="display: relative">
+                <div class="layout horizontal" style="position: relative;" data-slide="1">
                     <map-run id="map-run" class="flex-4"></map-run>
                     <workout-shared id="workout-shared"></workout-shared>
+                </div>
+                <div class="layout horizontal" style="display: none;" data-slide="2">
+                    <performance-chart id="performance-chart"></performance-chart>
                 </div>
                 <workout-element id="workout-element"></workout-element>
                 <log-calendar></log-calendar>
@@ -97,27 +97,18 @@
                 <plan-detailview id="plan-detailview" plan-id="{{planID}}"></plan-detailview>
             </section>
 
-            <section data-route="welcome" class="welcome">
-                <h1>Welcome to the Stryd PowerCenter!</h1>
-                <p>Stryd is the world’s first wearable power meter for running. Power is the most direct measure of your training effort, running efficiency, and calorie use. Worn on the chest, Stryd provides real-time feedback via smartphone or sports watch, to guide improvement in your run form, efficiency, and pacing. Whether you’re out for a casual run or racing your next Ironman, Stryd will help you discover the best runner within you.</p>
-                <a href="/">Learn more</a>
-                <a href="/order">Buy Stryd</a>
-                <a href="/signin">Create a PowerCenter Account</a>
-            </section>
-
             <section data-route="*">
             </section>
         </iron-pages>
 
-        <log-options></log-options>
         <footer-element></footer-element>
-        <paper-toast duration="1000000" text="You are viewing sample data. Visit settings to associate your platform account." id="sample"></paper-toast>
-        <paper-toast id="toast" duration="5000" style="z-index: 9999;"></paper-toast>
-        <iframe id="dlFrame" style="display:none;">
     </div>
+    <log-options></log-options>
+    <paper-toast id="toast" duration="5000"></paper-toast>
     <google-analytics code="UA-56986987-2"></google-analytics>
+    <iframe id="dlFrame" class="hidden">
 </template>
-<script src="/powercenter/scripts/app.min.js"></script>
+<script async defer src="/powercenter/scripts/app.min.js"></script>
 <script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady'></script>
 </body>
 </html>

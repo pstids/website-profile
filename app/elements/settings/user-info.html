@@ -273,7 +273,6 @@
         <div id="save-button">
             <button is="stryd-button" id="save-pref" on-click="saveDetails">Save</button>
         </div>
-        <paper-toast duration="1300" text="" id="toast"></paper-toast>
     </template>
     <script>
         Polymer({
@@ -343,14 +342,15 @@
                     .set('Accept', 'application/json')
                     .set('Authorization', `Bearer: ${jwt.token}`)
                     .end((err, res) => {
+                        var text;
                         if (res.ok) {
-                            this.$.toast.text = 'Your information is updated!';
+                            text = 'Your information is updated!';
                             user.updateData(res.body);
                             this.attached();
                         } else {
-                            this.$.toast.text = 'Your information is not updated. Please try again.';
+                            text = 'Your information is not updated. Please try again.';
                         }
-                        this.$.toast.show();
+                        toast(text);
                     });
             },
             weightUnit: function (unit) {

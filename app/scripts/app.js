@@ -97,7 +97,7 @@ var updateWorkout = function (id, updates, cb) {
         .set('Authorization', `Bearer: ${jwt.token}`)
         .end(cb);
 
-    db.log.get(String(id), function (log) {
+    db.log.get(String(id), (log) => {
         if (log !== undefined) {
             for (var key in updates) {
                 log.data[key] = updates[key];
@@ -133,6 +133,7 @@ var toast = function (message) {
     var uploader;
     var workoutShared;
     var logCalendar;
+    var performanceChart;
 
     app.displayInstalledToast = function() {
         document.querySelector('#caching-complete').show();
@@ -147,6 +148,7 @@ var toast = function (message) {
         workoutShared = document.querySelector('#workout-shared');
         uploader = document.querySelector('#uploader');
         logCalendar = document.querySelector('log-calendar');
+        performanceChart = document.querySelector('performance-chart');
         toastEle = document.querySelector('#toast');
         header = document.querySelector('header-element');
 
@@ -169,8 +171,8 @@ var toast = function (message) {
             if ('chartData' in event.data) {
                 workoutElement.setChartData(
                     event.data.chartData,
-                    event.data.steps,
-                    event.data.chartDescription
+                    event.data.chartDescription,
+                    event.data.availableMetrics
                 );
             }
             if ('addLog' in event.data) {
@@ -193,6 +195,14 @@ var toast = function (message) {
                 app.route = 'home';
                 header.toggleActive('home');
                 suuntoProcessing();
+                logCalendar.setMode('user', '');
+                performanceChart.setMode('user', '');
+                var now = moment();
+                logCalendar.fetchMonth(
+                    now.month(),
+                    now.year(),
+                    true
+                );
             } else {
                 page.redirect('/welcome');
             }
@@ -255,10 +265,11 @@ var toast = function (message) {
             if (jwt.hasToken) {
                 app.route = 'home';
                 logCalendar.setMode('admin', data.params.name);
-                this.displayedTime = moment();
+                performanceChart.setMode('admin', data.params.name);
+                var now = moment();
                 logCalendar.fetchMonth(
-                    this.displayedTime.month(),
-                    this.displayedTime.year(),
+                    now.month(),
+                    now.year(),
                     true
                 );
             } else {

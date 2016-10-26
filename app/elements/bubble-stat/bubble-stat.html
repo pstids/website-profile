@@ -50,6 +50,7 @@
 			text-transform: uppercase;
 			font-weight: 500;
 			font-size: 0.68vw;
+			text-align: center;
 		}
 		.value {
 			color: white;
@@ -115,10 +116,7 @@
 				objc: Object
 			},
 			listeners: {
-				'click': 'click'
-			},
-			click: function () {
-				this.$.wrap.classList.toggle('popped');
+				'click': 'bubblePop'
 			},
 			setMode: function (opt) {
 				var activeKeys = this.objects.active;
@@ -129,21 +127,21 @@
 					if (opt === 'moving') {
 						title = active.title;
 						if (title !== 'Time') {
-							title = 'Average Moving ' + active.title;
+							title = `Average Moving ${active.title}`;
 						} else {
-							title = 'Moving ' + active.title;
+							title = `Moving ${active.title}`;
 						}
-						this.set('obj' + active.prop + '.title', title);
-						this.set('obj' + active.prop + '.value', active.moving);
+						this.set(`obj${active.prop}.title`, title);
+						this.set(`obj${active.prop}.value`, active.moving);
 					} else {
 						title = active.title;
 						if (title !== 'Time') {
-							title = 'Average Elapsed ' + active.title;
+							title = `Average Elapsed ${active.title}`;
 						} else {
-							title = 'Elapsed ' + active.title;
+							title = `Elapsed ${active.title}`;
 						}
-						this.set('obj' + active.prop + '.title', title);
-						this.set('obj' + active.prop + '.value', active.elapsed);
+						this.set(`obj${active.prop}.title`, title);
+						this.set(`obj${active.prop}.value`, active.elapsed);
 					}
 				}
 			},
@@ -159,22 +157,22 @@
 						var obj = this.objects[key];
 						var prop = props[i];
 						obj.prop = prop;
-						this.set('obj' + prop + '.icon', obj.icon);
-						this.set('obj' + prop + '.unit', obj.unit);
+						this.set(`obj${prop}.icon`, obj.icon);
+						this.set(`obj${prop}.unit`, obj.unit);
 						// Check if this is an object that can be toggled by elapsed/moving
 						if (activeKeys.indexOf(key) !== -1) {
-							this.set('obj' + prop + '.title', 'Average Elapsed ' + obj.title);
-							this.set('obj' + prop + '.value', obj.elapsed);
+							this.set(`obj${prop}.title`, `Average Elapsed ${obj.title}`);
+							this.set(`obj${prop}.value`, obj.elapsed);
 						} else {
-							this.set('obj' + prop + '.title', obj.title);
-							this.set('obj' + prop + '.value', obj.value);
+							this.set(`obj${prop}.title`, obj.title);
+							this.set(`obj${prop}.value`, obj.value);
 						}
 						i++;
 					}
 				}
 				// If there are less than three objects, hide the remaining bubbles.
 				for (; i < 3; i++) {
-					this.querySelector('[data-bubble="' + parseInt(i+1) + '"]').classList.add('hidden');
+					this.querySelector(`[data-bubble="${i+1}"]`).classList.add('hidden');
 				}
 			},
 			ready: function () {
@@ -182,15 +180,13 @@
 				this.objb = {};
 				this.objc = {};
 				this.objects = {};
-				this.addEventListener('click', this.bubblePop.bind(this));
 			},
 			bubblePop: function (e) {
 				var target = e.target;
-				var keepLooking = true;
-				while (!('bubble' in target.dataset) && keepLooking) {
+				while (!('bubble' in target.dataset)) {
 					target = target.parentNode;
 					if (this === target) {
-						keepLooking = false;
+						break;
 					}
 				}
 				var activeBubble = this.querySelector('[data-bubble].active');
@@ -198,6 +194,7 @@
 					activeBubble.classList.remove('active');
 				}
 				target.classList.add('active');
+				this.$.wrap.classList.toggle('popped');
 			}
 		});
 	</script>
