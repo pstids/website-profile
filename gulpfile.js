@@ -90,7 +90,8 @@ gulp.task('jshint', function () {
         'trainingPlan',
         'colorInterpolate',
         'page',
-        'toast'
+        'toast',
+        'Ps'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
@@ -317,14 +318,24 @@ gulp.task('serve:dist', ['default'], function () {
 //     .pipe(gulp.dest('dist/styles'));
 // });
 
-gulp.task('concat', function () {
+gulp.task('concat1', function () {
+  return gulp.src([
+      'app/scripts/superagent.js',
+      'app/scripts/toolbox.js',
+      'app/scripts/dexie.js',
+      'app/scripts/moment.js'
+    ])
+    .pipe(concat('processor.min.js'))
+    .pipe(gulp.dest('dist/scripts'));
+});
 
+gulp.task('concat2', function () {
   return gulp.src([
       'app/scripts/external.js',
-      'dist/scripts/jwt.js',
       'dist/scripts/toolbox.js',
+      'dist/scripts/amcharts/concatenated.js',
       'dist/scripts/app.js',
-      'dist/scripts/amcharts/concatenated.js'
+      'dist/scripts/jwt.js'
     ])
     .pipe(concat('app.min.js'))
     .pipe(gulp.dest('dist/scripts'));
@@ -338,8 +349,9 @@ gulp.task('default', ['clean'], function (cb) {
     ['elements', 'js'],
     ['images', 'fonts', 'html'],
     'vulcanize',
-    'concat',
-    cb);
+    ['concat1', 'concat2'],
+    cb
+  );
     // Note: add , 'precache' , after 'vulcanize', if your are going to use Service Worker
 });
 

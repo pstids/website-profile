@@ -9,7 +9,6 @@
         <div id="map"></div>
     </template>
     <script>
-        /*global mapReadyTrigger*/
         Polymer({
             is: 'map-run',
             ready: function () {
@@ -18,6 +17,15 @@
                     lng: 0
                 };
                 this.mapObjs = [];
+                this.data = null;
+                this.hasMap = false;
+                this.ready = false;
+            },
+            setReady: function () {
+                this.ready = true;
+                if (this.data !== null) {
+                    this.setMap();
+                } 
             },
             setData: function (data) {
                 if (data.length === 0) {
@@ -27,72 +35,76 @@
                     this.classList.remove('hidden');
                 }
                 this.data = data;
-                if (mapReadyTrigger) {
+                if (this.ready) {
                     this.setMap();
-                    this.setDataReady(this.data);
-                } else {
-                    window.addEventListener('MapReady', () => {
-                        this.setMap();
-                        this.setDataReady(this.data);
-                    });
                 }
             },
             setMap: function () {
-                this.strydDarkId = 'strydDarkStyle';
-                this.strydDarkStyle = new google.maps.StyledMapType([
-                    {
-                        featureType: 'All',
-                        elementType: 'All'
-                    },
-                    {
-                        featureType: 'All',
-                        elementType: 'All',
-                        stylers: [
-                            {lightness: -50},
-                            {hue: '#1f1f1f'},
-                            {saturation: -80},
-                            {weight: 1.3},
-                            {visibility: 'simplified'},
-                            {gamma: 0.63}
-                        ]
-                    },
-                    {
-                        elementType: 'labels.text',
-                        stylers: [
-                            {visibility: 'off'}
-                        ]
-                    }
-                ], {name: 'Power Map'});
-
-                this.map = new google.maps.Map(
-                    this.$.map,
-                    {
-                        center: {
-                            lat: 40.0274,
-                            lng: -105.2519
+                console.log('setMap');
+                if (!this.hasMap) {
+                    this.hasMap = true;
+                    this.strydDarkId = 'strydDarkStyle';
+                    this.strydDarkStyle = new google.maps.StyledMapType([
+                        {
+                            featureType: 'All',
+                            elementType: 'All'
                         },
-                        zoom: 14,
-                        panControl: false,
-                        zoomControl: true,
-                        scaleControl: false,
-                        scrollwheel: false,
-                        mapTypeControlOptions: {
-                            mapTypeIds: [google.maps.MapTypeId.SATELLITE, this.strydDarkId]
+                        {
+                            featureType: 'All',
+                            elementType: 'All',
+                            stylers: [
+                                {lightness: -50},
+                                {hue: '#1f1f1f'},
+                                {saturation: -80},
+                                {weight: 1.3},
+                                {visibility: 'simplified'},
+                                {gamma: 0.63}
+                            ]
+                        },
+                        {
+                            elementType: 'labels.text',
+                            stylers: [
+                                {visibility: 'off'}
+                            ]
                         }
-                    }
-                );
-                this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
-                this.map.setMapTypeId(this.strydDarkId);
+                    ], {name: 'Power Map'});
+
+                    this.map = new google.maps.Map(
+                        this.$.map,
+                        {
+                            center: {
+                                lat: 40.0274,
+                                lng: -105.2519
+                            },
+                            zoom: 14,
+                            panControl: false,
+                            zoomControl: true,
+                            scaleControl: false,
+                            scrollwheel: false,
+                            mapTypeControlOptions: {
+                                mapTypeIds: [google.maps.MapTypeId.SATELLITE, this.strydDarkId]
+                            }
+                        }
+                    );
+                    this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
+                    this.map.setMapTypeId(this.strydDarkId);
+                    this.setDataReady();
+                } else {
+                    this.setDataReady();
+                }
             },
-            setDataReady: function (graphSegments) {
+            setDataReady: function () {
+                if (this.data === null || this.data === undefined) {
+                    return;
+                }
                 var i, path, graphSegment;
                 for (i = 0; i < this.mapObjs.length; i++) {
                     this.mapObjs[i].setMap(null);
                 }
                 var bounds = new google.maps.LatLngBounds();
-                for (i = 0; i < graphSegments.length; i++) {
+                for (i = 0; i < this.data.length; i++) {
                     // Set segments on map
-                    graphSegment = graphSegments[i];
+                    graphSegment = this.data[i];
                     path = new google.maps.Polyline({
                         path: graphSegment.location,
                         geodesic: false,
@@ -109,8 +121,8 @@
                     );
                     bounds.extend(latLng);
                 }
-                this.center.lat = graphSegments[0].location[0].lat;
-                this.center.lng = graphSegments[0].location[0].lng;
+                this.center.lat = this.data[0].location[0].lat;
+                this.center.lng = this.data[0].location[0].lng;
                 this.map.fitBounds(bounds);
                 this.map.setCenter(bounds.getCenter());
                 // Start Marker
@@ -132,8 +144,8 @@
                 // End Marker
                 var stop = new google.maps.Marker({
                     position: {
-                        lat: graphSegments[graphSegments.length-1].location[1].lat,
-                        lng: graphSegments[graphSegments.length-1].location[1].lng
+                        lat: this.data[this.data.length-1].location[1].lat,
+                        lng: this.data[this.data.length-1].location[1].lng
                     },
                     map: this.map,
                     icon: {

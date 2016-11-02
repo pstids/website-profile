@@ -4,13 +4,6 @@
 /*global Dexie*/
 /*exported mapReadyTrigger, mapReadyEvent*/
 
-var mapReadyTrigger = false;
-var mapReadyEvent = new CustomEvent('MapReady');
-window.mapReady = function () {
-    mapReadyTrigger = true;
-    window.dispatchEvent(mapReadyEvent);
-};
-
 /*
 processor is a webworker than handles workout fetching.
 It requests the data from the API and operates on it
@@ -134,6 +127,7 @@ var toast = function (message) {
     var workoutShared;
     var logCalendar;
     var performanceChart;
+    var planView;
 
     app.displayInstalledToast = function() {
         document.querySelector('#caching-complete').show();
@@ -141,8 +135,6 @@ var toast = function (message) {
     // Listen for template bound event to know when bindings
     // have resolved and content has been stamped to the page
     app.addEventListener('dom-change', function() {
-        console.log('Stryd is ready to rock!');
-
         mapRunEle = document.querySelector('#map-run');
         workoutElement = document.querySelector('#workout-element');
         workoutShared = document.querySelector('#workout-shared');
@@ -151,6 +143,16 @@ var toast = function (message) {
         performanceChart = document.querySelector('performance-chart');
         toastEle = document.querySelector('#toast');
         header = document.querySelector('header-element');
+        planView = document.querySelector('plan-view');
+
+        window.mapReady = function () {
+            mapRunEle.setReady();
+        };
+        var wcPoly = document.createElement('script');
+        wcPoly.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady';
+        document.body.appendChild(wcPoly);
+
+        console.log('Stryd is ready to rock!');
 
         processor.onmessage = (event) => {
             if ('error' in event.data && event.data.error === true) {
@@ -174,6 +176,7 @@ var toast = function (message) {
                     event.data.chartDescription,
                     event.data.availableMetrics
                 );
+                planView.setStartTime(event.data.chartDescription.start_time);
             }
             if ('addLog' in event.data) {
                 var activityDate = moment.unix(event.data.addLog.start_time);
@@ -223,6 +226,11 @@ var toast = function (message) {
         });
 
         page('/run/:id', (data) => {
+            mapRunEle.classList.remove('hidden');
+            workoutShared.classList.remove('hidden');
+            workoutElement.classList.remove('hidden');
+            planView.chartToggle(false);
+
             header.toggleActive('home');
             app.params = data.params;
             app.route = 'home';
@@ -232,6 +240,24 @@ var toast = function (message) {
                 id: data.params.id,
                 updated_time: updatedTime
             });
+        });
+
+        page('/training/:hash', (data) => {
+            header.toggleActive('home');
+            app.params = data.params;
+            app.route = 'home';
+
+            mapRunEle.classList.add('hidden');
+            workoutShared.classList.add('hidden');
+            workoutElement.classList.add('hidden');
+            planView.setStartHash(data.params.hash);
+            planView.chartToggle(true);
+            // processor.postMessage({
+            //     token: jwt.token,
+            //     type: 'workout',
+            //     id: data.params.id,
+            //     updated_time: updatedTime
+            // });
         });
 
         page('/settings', () => {
@@ -300,17 +326,17 @@ var toast = function (message) {
             addRemoveLinks: true,
             dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
             dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
-            accept: function (file, done) {
+            accept: (file, done) => {
                 done();
             },
-            success: function (file, message) {
+            success: (file, message) => {
                 console.log('Success: Added workout');
                 addLog(message.activity_id);
             },
-            error: function (file, message) {
+            error: (file, message) => {
                 toast('Workout could not be uploaded');
             },
-            sending: function (file, xhr, formData) {
+            sending: (file, xhr, formData) => {
                 var uid = new Date().getUTCMilliseconds();
                 var fileMetaData = {
                     sizeInBytes: file.size,

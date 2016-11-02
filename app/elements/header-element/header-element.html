@@ -206,7 +206,23 @@
             .profile a:hover {
                 color: #F5A214;
             }
+            .training {
+                @apply(--layout);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                height: 30px;
+                color: white;
+                font-size: 20px;
+            }
+            .training div {
+                padding-left: 20px;
+            }
         </style>
+        <div class="training hidden" id="trainingPrompt">
+            <div>Would you like to start the 10K training plan?</div>
+            <div id="trainingYes">Yes</div>
+            <div id="trainingNo">No</div>
+        </div>
         <header>
             <div class="logo">
                 <a href="/">
@@ -320,6 +336,27 @@
             this.user = user.getData();
             this.grabStats();
             this.profileImage = user.getImage();
+
+            this.checkTraining();
+
+            this.$.trainingYes.addEventListener('click', () => {
+                localStorage.setItem(
+                    'training-selected',
+                    localStorage.getItem('training-plan')
+                );
+                localStorage.setItem(
+                    'training-started',
+                    moment().format('YYYY-MM-DD')
+                );
+                this.$.trainingPrompt.classList.add('hidden');
+                localStorage.removeItem('training-plan');
+                window.location.reload();
+            });
+
+            this.$.trainingNo.addEventListener('click', () => {
+                this.$.trainingPrompt.classList.add('hidden');
+                localStorage.removeItem('training-plan');
+            });
         },
         logout: function () {
             jwt.logout();
@@ -361,6 +398,14 @@
                             console.log('failed to get weekly stat');
                         }
                     });
+            }
+        },
+        checkTraining: function () {
+            var trainingPlanID = localStorage.getItem('training-plan');
+            if (trainingPlanID !== null && trainingPlanID !== undefined) {
+                this.$.trainingPrompt.classList.remove('hidden');
+            } else {
+                this.$.trainingPrompt.classList.add('hidden');
             }
         }
     });

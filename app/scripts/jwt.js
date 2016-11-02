@@ -162,10 +162,26 @@ class User {
 
 var user = new User();
 
+/*globals planEx*/
 class TrainingPlan {
 	constructor() {
 		this.plan = {};
 		this.days = {};
+		var trainingSelected = localStorage.getItem('training-selected');
+		if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
+			superagent
+				.get(`/b/api/v1/training/plan/${trainingSelected}`)
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res !== undefined && res.ok && res.body !== null) {
+						this.plan = res.body.plan;
+						this.processPlan();
+					} else {
+						console.log('Error: failure to get training plan', err);
+					}
+				});
+		}
 		// superagent
 		// 	.get('http://www.mocky.io/v2/57ce5ce72d00000618b15946')
 		// 	.set('Accept', 'application/json')
@@ -177,13 +193,18 @@ class TrainingPlan {
 		// 			console.log('Error: failure to get training plan', err);
 		// 		}
 		// 	});
+
+		// this.plan = planEx.plan;
+		// this.processPlan();
+
 		//.get('http://www.mocky.io/v2/57355f7b130000981ccde03c')
 	}
 
 	processPlan() {
 		for (var workout of this.plan.workouts) {
 			var addDays = workout.workout_day;
-			var targetDate = moment('2016-09-01').add(addDays, 'days');
+			var targetDateHash = localStorage.getItem('training-started');
+			var targetDate = moment(targetDateHash).add(addDays, 'days');
 			var dateHash = targetDate.format('YYYYMMDD');
 			this.days[dateHash] = workout;
 		}
@@ -218,14 +239,14 @@ class ColorInterpolate {
 			b: 52
 		};
 		this.threshold = {
-	        range: 200,
-	        high: 400,
-	        low: 200
-	    };
+			range: 200,
+			high: 400,
+			low: 200
+		};
 	}
 	interpolate(start, end, steps, count) {
-        var final = start + (((end - start) / steps) * count);
-        return Math.floor(final);
+		var final = start + (((end - start) / steps) * count);
+		return Math.floor(final);
 	}
 	RGB(relativePower) {
 		var r = this.interpolate(

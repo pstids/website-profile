@@ -135,242 +135,244 @@
         </div>
     </template>
     <script>
-        Polymer({
-            is: 'log-calendar',
-            ready: function () {
-                this.dom = [];
-                this.dates = [];
+    Polymer({
+        is: 'log-calendar',
+        ready: function () {
+            this.dom = [];
+            this.dates = [];
 
-                // Mode attributes
-                this.mode = 'user';
-                this.user = '';
+            // Mode attributes
+            this.mode = 'user';
+            this.user = '';
 
-                this.displayedTime = moment();
-                this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-                // var tooltip = document.querySelector('[data-tooltip]');
-                // var x = 0, y = 0;
-                // document.addEventListener('mousemove', function (e) {
-                //     x = e.pageX;
-                //     y = e.pageY;
-                // });
-                // Set the position of the hover box. If the right side of the box would cause a horizontal scroll bar, move the hover box to the left side of the cursor.
-                // setInterval(setPosition, 20);
+            this.displayedTime = moment();
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            // var tooltip = document.querySelector('[data-tooltip]');
+            // var x = 0, y = 0;
+            // document.addEventListener('mousemove', function (e) {
+            //     x = e.pageX;
+            //     y = e.pageY;
+            // });
+            // Set the position of the hover box. If the right side of the box would cause a horizontal scroll bar, move the hover box to the left side of the cursor.
+            // setInterval(setPosition, 20);
 
-                this.assembleDOM();
-                if (jwt.hasToken) {
-                    let state = false;
-                    // Only auto load run activity when on the main PowerCenter page
-                    if (location.pathname === '/powercenter/') {
-                        state = true;
-                    }
-                    this.fetchMonth(
-                        this.displayedTime.month(),
-                        this.displayedTime.year(),
-                        state
-                    );
+            this.assembleDOM();
+            if (jwt.hasToken) {
+                let state = false;
+                // Only auto load run activity when on the main PowerCenter page
+                if (location.pathname === '/powercenter/') {
+                    state = true;
                 }
+                this.fetchMonth(
+                    this.displayedTime.month(),
+                    this.displayedTime.year(),
+                    state
+                );
+            }
 
-                document.addEventListener('keyup', (e) => {
-                    if (e.code === 'ArrowLeft') {
-                        this.prevMonth();
-                    } else if (e.code === 'ArrowRight') {
-                        this.nextMonth();
-                    }
-                });
-            },
-            setPosition: function () {
-                // if (!tooltip.classList.contains('hidden')) {
-                //     var xPos;
-                //     if ((window.innerWidth - x) < 230) {
-                //         xPos = x - 230;
-                //     } else {
-                //         xPos = x + 30;
-                //     }
-                //     tooltip.style.left = String(xPos) + 'px';
-                //     tooltip.style.top = String(y + 30) + 'px';
-                // }
-            },
-            // Mode is either user or admin
-            // User is username for admin
-            setMode: function (mode, user) {
-                this.mode = mode;
-                this.user = user;
-            },
-            // Creates dom structure of 5 rows of 7 columns of log-day elements
-            assembleDOM: function () {
-                var calendarContainer = this.$.calendarContainer;
-                for (var i = 0; i < 5; i++) {
-                    var row = document.createElement('div');
-                    row.classList.add('row');
-                    var rowDom = [];
-                    for (var o = 0; o < 7; o++) {
-                        var node = document.createElement('log-container');
-                        row.appendChild(node);
-                        rowDom.push(node);
-                    }
-                    Polymer.dom(calendarContainer).appendChild(row);
-                    this.dom.push(rowDom);
+            document.addEventListener('keyup', (e) => {
+                if (e.code === 'ArrowLeft') {
+                    this.prevMonth();
+                } else if (e.code === 'ArrowRight') {
+                    this.nextMonth();
                 }
-            },
-            // Grabs array of activity data to populate calendar for month (int) and year (int)
-            fetchMonth: function (month, year, loadLast) {
-                var obj = this.dateRange(month, year);
+            });
+        },
+        setPosition: function () {
+            // if (!tooltip.classList.contains('hidden')) {
+            //     var xPos;
+            //     if ((window.innerWidth - x) < 230) {
+            //         xPos = x - 230;
+            //     } else {
+            //         xPos = x + 30;
+            //     }
+            //     tooltip.style.left = String(xPos) + 'px';
+            //     tooltip.style.top = String(y + 30) + 'px';
+            // }
+        },
+        // Mode is either user or admin
+        // User is username for admin
+        setMode: function (mode, user) {
+            this.mode = mode;
+            this.user = user;
+        },
+        // Creates dom structure of 5 rows of 7 columns of log-day elements
+        assembleDOM: function () {
+            var calendarContainer = this.$.calendarContainer;
+            for (var i = 0; i < 5; i++) {
+                var row = document.createElement('div');
+                row.classList.add('row');
+                var rowDom = [];
+                for (var o = 0; o < 7; o++) {
+                    var node = document.createElement('log-container');
+                    row.appendChild(node);
+                    rowDom.push(node);
+                }
+                Polymer.dom(calendarContainer).appendChild(row);
+                this.dom.push(rowDom);
+            }
+        },
+        // Grabs array of activity data to populate calendar for month (int) and year (int)
+        fetchMonth: function (month, year, loadLast) {
+            var obj = this.dateRange(month, year);
 
-                var srtDate = obj.firstMonday.format('MM-DD-YYYY');
-                var endDate = obj.lastSunday.format('MM-DD-YYYY');
-                var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-                if (this.mode === 'admin') {
-                    activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-                }
-                superagent
-                    .get(activityEndPoint)
-                    .send()
-                    .set('Accept', 'application/json')
-                    .set('Authorization', `Bearer: ${jwt.token}`)
-                    .end((err, res) => {
-                        if (res.ok) {
-                            this.switchMonthContext(obj.firstMonday);
-                            if (res.body !== null && res.body.activities !== null) {
-                                this.processActivities(res.body.activities);
-                                this.loadLast(loadLast, res.body.last_activity);
-                            } else {
-                                this.processActivities([]);
-                                this.loadLast(loadLast, res.body.last_activity);
-                            }
+            var srtDate = obj.firstMonday.format('MM-DD-YYYY');
+            var endDate = obj.lastSunday.format('MM-DD-YYYY');
+            var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+            if (this.mode === 'admin') {
+                activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+            }
+            superagent
+                .get(activityEndPoint)
+                .send()
+                .set('Accept', 'application/json')
+                .set('Authorization', `Bearer: ${jwt.token}`)
+                .end((err, res) => {
+                    if (res.ok) {
+                        this.switchMonthContext(obj.firstMonday);
+                        if (res.body !== null && res.body.activities !== null) {
+                            this.processActivities(res.body.activities);
+                            this.loadLast(loadLast, res.body.last_activity);
                         } else {
-                            console.log('Error: failure on grabLogs', err, res);
+                            this.processActivities([]);
+                            this.loadLast(loadLast, res.body.last_activity);
                         }
-                    });
-            },
-            loadLast: function (loadLast, id) {
-                if (!loadLast) {
-                    return;
-                }
-                var bubbles = document.querySelector('.bubbles');
-                var workout = document.querySelector('workout-element');
-                workout.setLoading();
-                page(`/run/${id}`);
-                window.scrollTo(0, bubbles.offsetTop);
-            },
-            // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
-            dateRange: function (monthInt, year) {
-                var month = moment({
-                    month: monthInt,
-                    year: year
+                    } else {
+                        console.log('Error: failure on grabLogs', err, res);
+                    }
                 });
-                var startOfMonth = month.startOf('month');
-                var indexFOM = startOfMonth.isoWeekday();
-                var firstMonday = startOfMonth.subtract(indexFOM - 1, 'days');
-                var lastSunday = moment(firstMonday).add(35, 'days');
-                return {
-                    firstMonday: firstMonday,
-                    lastSunday: lastSunday
-                };
-            },
-            processActivities: function (activities) {
-                for (var activity of activities) {
-                    this.addActivity(activity);
-                }
-            },
-            switchMonthContext: function (firstMonday) {
-                this.dates = [];
-                var movingDay = moment(firstMonday);
-                for (var row of this.dom) {
-                    var dateRow = [];
-                    for (var container of row) {
-                        var dayObj = {
-                            day: moment(movingDay).format('DD')
-                        };
-                        // Determine if there is planned training
-                        var dailyPlan = trainingPlan.getDay(
-                            movingDay.format('YYYYMMDD')
-                        );
-                        if (dailyPlan !== null) {
-                            dayObj.training = dailyPlan;
-                        }
-                        // Clear container
-                        container.clear();
-                        // Create blank child
-                        var day = document.createElement('log-day');
-                        // Add day data
-                        day.setData(dayObj);
-                        // Append to container
-                        container.addChild(day);
-                        // Append to day array
-                        dateRow.push(moment(movingDay));
-                        // Advance day
-                        movingDay.add(1, 'days');
+        },
+        loadLast: function (loadLast, id) {
+            if (!loadLast) {
+                return;
+            }
+            var bubbles = document.querySelector('.bubbles');
+            var workout = document.querySelector('workout-element');
+            workout.setLoading();
+            page(`/run/${id}`);
+            window.scrollTo(0, bubbles.offsetTop);
+        },
+        // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
+        dateRange: function (monthInt, year) {
+            var month = moment({
+                month: monthInt,
+                year: year
+            });
+            var startOfMonth = month.startOf('month');
+            var indexFOM = startOfMonth.isoWeekday();
+            var firstMonday = startOfMonth.subtract(indexFOM - 1, 'days');
+            var lastSunday = moment(firstMonday).add(35, 'days');
+            return {
+                firstMonday: firstMonday,
+                lastSunday: lastSunday
+            };
+        },
+        processActivities: function (activities) {
+            for (var activity of activities) {
+                this.addActivity(activity);
+            }
+        },
+        switchMonthContext: function (firstMonday) {
+            this.dates = [];
+            var movingDay = moment(firstMonday);
+            for (var row of this.dom) {
+                var dateRow = [];
+                for (var container of row) {
+                    var dayObj = {
+                        day: moment(movingDay).format('DD'),
+                        hash: movingDay.format('YYYYMMDD')
+                    };
+                    // Determine if there is planned training
+                    var dailyPlan = trainingPlan.getDay(
+                        movingDay.format('YYYYMMDD')
+                    );
+                    if (dailyPlan !== null) {
+                        dayObj.training = dailyPlan;
                     }
-                    this.dates.push(dateRow);
+                    // Clear container
+                    container.clear();
+                    // Create blank child
+                    var day = document.createElement('log-day');
+                    // Add day data
+                    day.setData(dayObj);
+                    // Append to container
+                    container.addChild(day);
+                    // Append to day array
+                    dateRow.push(moment(movingDay));
+                    // Advance day
+                    movingDay.add(1, 'days');
                 }
-            },
-            addActivity: function (activity) {
-                var activityMoment = moment
-                    .unix(activity.start_time);
+                this.dates.push(dateRow);
+            }
+        },
+        addActivity: function (activity) {
+            var activityMoment = moment
+                .unix(activity.start_time);
 
-                for (var i = 0; i < this.dates.length; i++) {
-                for (var o = 0; o < this.dates[i].length; o++) {
-                    var startDate = this.dates[i][o];
-                    if (activityMoment.isSame(startDate, 'day')) {
-                        var dayObj = {
-                            day: activityMoment.format('DD'),
-                            power: activity.average_power,
-                            id: activity.id,
-                            updated_time: activity.updated_time,
-                            time: activity.moving_time,
-                            distance: activity.distance,
-                            description: activity.description
-                        };
-                        // See if there is planned training
-                        var dailyPlan = trainingPlan.getDay(
-                            activityMoment.format('YYYYMMDD')
-                        );
-                        if (dailyPlan !== null) {
-                            dayObj.training = dailyPlan;
-                        }
-                        var container = this.dom[i][o];
-                        container.addDay(dayObj);
-                        return true;
+            for (var i = 0; i < this.dates.length; i++) {
+            for (var o = 0; o < this.dates[i].length; o++) {
+                var startDate = this.dates[i][o];
+                if (activityMoment.isSame(startDate, 'day')) {
+                    var dayObj = {
+                        day: activityMoment.format('DD'),
+                        power: activity.average_power,
+                        id: activity.id,
+                        updated_time: activity.updated_time,
+                        time: activity.moving_time,
+                        distance: activity.distance,
+                        description: activity.description,
+                        hash: activityMoment.format('YYYYMMDD')
+                    };
+                    // See if there is planned training
+                    var dailyPlan = trainingPlan.getDay(
+                        activityMoment.format('YYYYMMDD')
+                    );
+                    if (dailyPlan !== null) {
+                        dayObj.training = dailyPlan;
                     }
-                }
-                }
-            },
-            removeActivity: function (id) {
-                for (var row of this.dom) {
-                    for (var container of row) {
-                        if (container.hasID(id)) {
-                            container.removeID(id);
-                            break;
-                        }
-                    }
-                }
-            },
-            nextMonth: function () {
-                this.displayedTime.add(1, 'months');
-                this.fetchMonth(
-                    this.displayedTime.month(),
-                    this.displayedTime.year(),
-                    false
-                );
-                this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-                var logDayActive = document.querySelector('log-container.active');
-                if (logDayActive) {
-                    logDayActive.classList.remove('active');
-                }
-            },
-            prevMonth: function () {
-                this.displayedTime.subtract(1, 'months');
-                this.fetchMonth(
-                    this.displayedTime.month(),
-                    this.displayedTime.year(),
-                    false
-                );
-                this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-                var logDayActive = document.querySelector('log-container.active');
-                if (logDayActive) {
-                    logDayActive.classList.remove('active');
+                    var container = this.dom[i][o];
+                    container.addDay(dayObj);
+                    return true;
                 }
             }
-        });
+            }
+        },
+        removeActivity: function (id) {
+            for (var row of this.dom) {
+                for (var container of row) {
+                    if (container.hasID(id)) {
+                        container.removeID(id);
+                        break;
+                    }
+                }
+            }
+        },
+        nextMonth: function () {
+            this.displayedTime.add(1, 'months');
+            this.fetchMonth(
+                this.displayedTime.month(),
+                this.displayedTime.year(),
+                false
+            );
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            var logDayActive = document.querySelector('log-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+        },
+        prevMonth: function () {
+            this.displayedTime.subtract(1, 'months');
+            this.fetchMonth(
+                this.displayedTime.month(),
+                this.displayedTime.year(),
+                false
+            );
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            var logDayActive = document.querySelector('log-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+        }
+    });
     </script>
 </dom-module>

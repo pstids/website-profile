@@ -8,27 +8,66 @@
 /*global trainingPlan:true */
 /*global trainingDays:true */
 
-importScripts('/powercenter/scripts/superagent.js');
-importScripts('/powercenter/scripts/toolbox.js');
-importScripts('/powercenter/scripts/dexie.js');
-importScripts('/powercenter/scripts/moment.js');
+importScripts('/powercenter/scripts/processor.min.js');
 
 var data = {}, token, db;
 
-class Color {
-    constructor(r, g, b) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-    }
-    getColors() {
-        return {
-            r: this.r,
-            g: this.g,
-            b: this.b
+class ColorInterpolate {
+    constructor() {
+        this.lowColorRGB = {
+            r: 95,
+            g: 180,
+            b: 61
+        };
+        this.highColorRGB = {
+            r: 243,
+            g: 60,
+            b: 52
         };
     }
+    interpolate(start, end, steps, count) {
+        var final = start + (((end - start) / steps) * count);
+        return Math.floor(final);
+    }
+    componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    }
+    rgbToHex(r, g, b) {
+        return '#' + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+    }
+    getRGB(relativePower, thresholdRange) {
+        var r = this.interpolate(
+            this.lowColorRGB.r,
+            this.highColorRGB.r,
+            thresholdRange,
+            relativePower
+        );
+        var g = this.interpolate(
+            this.lowColorRGB.g,
+            this.highColorRGB.g,
+            thresholdRange,
+            relativePower
+        );
+        var b = this.interpolate(
+            this.lowColorRGB.b,
+            this.highColorRGB.b,
+            thresholdRange,
+            relativePower
+        );
+        return [r, g, b];
+    }
+    HEX(relativePower, thresholdRange) {
+        var rgb = this.getRGB(relativePower, thresholdRange);
+        return this.rgbToHex(rgb[0], rgb[1], rgb[2]);
+    }
+    RGB(relativePower, thresholdRange) {
+        var rgb = this.getRGB(relativePower, thresholdRange);
+        return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+    }
 }
+
+var colorInterpolate = new ColorInterpolate();
 
 /* Private methods */
 var initDB = function () {
@@ -37,22 +76,6 @@ var initDB = function () {
         log: '++id, data'
     });
     db.open();
-};
-
-var interpolate = function (start, end, steps, count) {
-    var s = start,
-        e = end,
-        final = s + (((e - s) / steps) * count);
-    return Math.floor(final);
-};
-
-var componentToHex = function (c) {
-    var hex = c.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-};
-
-var rgbToHex = function (r, g, b) {
-    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 };
 
 var calcThreshold = function (nPowers) {
@@ -103,24 +126,22 @@ var getDateHash = function (timestamp) {
     return moment.unix(timestamp).format('YYYYMMDD');
 };
 
-var processTrainingDay = function () {
-    // day as parameter
-    //var trainingArray = [];
-    // for (var i = 0; i < day.blocks.length; i++) {
-    //     var block = day.blocks[i];
-    //     for (var o = 0; o < block.segments.length; o++) {
-    //         var segment = block.segments[o];
-    //         console.log(segment);
-    //     }
-    //     // if (segment.duration_type === 'minutes') {
-    //     //     var seconds = segment.duration_length * 60;
-    //     //     for (var i = 0; i < seconds; i++) {
-    //     //         trainingArray.push(segment.low_range);
-    //     //     }
-    //     // }
-    // }
-    return [];
-    //return trainingArray;
+var processTrainingDay = function (day) {
+    //day as parameter
+    var trainingArray = [];
+    for (var i = 0; i < day.blocks.length; i++) {
+        var block = day.blocks[i];
+        for (var o = 0; o < block.segments.length; o++) {
+            var segment = block.segments[o];
+            if (segment.duration_type === 'minutes') {
+                var seconds = segment.duration_length * 60;
+                for (var p = 0; p < seconds; p++) {
+                    trainingArray.push(segment.low_range);
+                }
+            }
+        }
+    }
+    return trainingArray;
 };
 
 
@@ -158,12 +179,12 @@ var workoutProcessing = function (workout, id, scope) {
 
     // Limit displayed records to prevent browser slugginess
     var steps = 1;
-    // if (workout.total_power_list.length > 800) {
-    //     steps = parseInt(workout.total_power_list.length / 800);
-    // }
-
-    var lowColorRGB = new Color(95, 180, 61), highColorRGB = new Color(243, 60, 52);
-    var lowColors = lowColorRGB.getColors(), highColors = highColorRGB.getColors();
+    if (workout.total_power_list.length > 800) {
+        steps = parseInt(workout.total_power_list.length / 800);
+    }
+    if (steps < 1) {
+        steps = 1;
+    }
 
     var chartData = [], mapRunData = [];
     var hex, i;
@@ -174,7 +195,7 @@ var workoutProcessing = function (workout, id, scope) {
 
     var availableMetrics = [];
 
-    for (i = 0; i < workout.total_power_list.length; i = i + steps) {
+    for (i = 0; i < workout.total_power_list.length; i += steps) {
         graphSegment = {};
         var entry = {};
         /* Assemble chart data */
@@ -269,14 +290,14 @@ var workoutProcessing = function (workout, id, scope) {
         if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
         }
-        if (checkTrainingDay(workout.timestamp)) {
-            var graphTraining = trainingGraphDays[getDateHash(workout.timestamp)];
-            if (i < graphTraining.length) {
-                entry.training = graphTraining[i];
-            } else {
-                entry.training = 0;
-            }
-        }
+        // if (checkTrainingDay(workout.timestamp)) {
+        //     var graphTraining = trainingGraphDays[getDateHash(workout.timestamp)];
+        //     if (i < graphTraining.length) {
+        //         entry.training = graphTraining[i];
+        //     } else {
+        //         entry.training = 0;
+        //     }
+        // }
 
         if (suuntoDrop && i !== 0) {
             entry = lastEntry;
@@ -304,11 +325,7 @@ var workoutProcessing = function (workout, id, scope) {
             } else {
                 relativePower = entry.power - threshold.low;
             }
-            hex = rgbToHex(
-                interpolate(lowColors.r, highColors.r, threshold.range, relativePower),
-                interpolate(lowColors.g, highColors.g, threshold.range, relativePower),
-                interpolate(lowColors.b, highColors.b, threshold.range, relativePower)
-            );
+            hex = colorInterpolate.HEX(relativePower, threshold.range);
             graphSegment = {
                 hex: hex,
                 location: [

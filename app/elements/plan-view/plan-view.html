@@ -1,0 +1,282 @@
+<dom-module id="plan-view">
+    <style>
+        :host {
+            border: 1px solid #4D4D4D;
+            height: 65vh;
+        }
+        #chart {
+            color: #ffffff;
+            height: 60vh;
+            width: 50%;
+            padding-bottom: 5vh;
+        }
+        h1.header {
+            @apply(--header);
+            padding-top: 14px;
+            padding-left: 14px;
+        }
+        .tp {
+            background-color: #262626;
+            color: white;
+            height: 65vh;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+        .tp p {
+            font-size: 16px;
+            line-height: 22px;
+            padding: 16px;
+            margin: 0;
+        }
+        #segments {
+            @apply(--layout-wrap);
+            @apply(--layout-horizontal);
+        }
+        .repeat {
+            background-color: #1C1C1C;
+            width: 50px;
+            font-size: 24px;
+            text-align: center;
+            @apply(--layout);
+            @apply(--layout-center-justified);
+            @apply(--layout-center);
+        }
+        .block {
+            border-top: 1px solid #FFFFFF;
+        }
+    </style>
+    <template>
+        <div class="layout horizontal center-justified">
+            <div id="chart"></div>
+            <div class="tp plan flex plan-toggle" data-tp="plan" on-click="slide" id="tpplan">
+                <h1 class="header">Training</h1>
+                <p>{{day_title}}</p>
+                <p>{{day_description}}</p>
+                <div id="segments"></div>
+            </div>
+        </div>
+    </template>
+    <script>
+    Polymer({
+        is: 'plan-view',
+        ready: function () {
+            this.dateHash = '';
+            Ps.initialize(this.$.tpplan);
+        },
+        setStartTime: function (start_time) {
+            this.dateHash = moment.unix(start_time).format('YYYYMMDD');
+            this.loadTraining();
+            this.processOverview();
+        },
+        setStartHash: function (dateHash) {
+            this.dateHash = dateHash;
+            this.loadTraining();
+            this.processOverview();
+        },
+        loadTraining: function () {
+            var trainingDay = trainingPlan.getDay(this.dateHash);
+            if (trainingDay !== null) {
+                this.classList.remove('hidden');
+                this.day_title = trainingDay.workout_title;
+                this.day_description = trainingDay.workout_desc;
+                // Clear previous segments
+                while (Polymer.dom(this.$.segments).firstChild) {
+                    Polymer.dom(
+                        this.$.segments
+                    ).removeChild(
+                        Polymer.dom(
+                            this.$.segments
+                        ).firstChild
+                    );
+                }
+                //var i = 0;
+                for (var block of trainingDay.blocks) {
+                    var horizontalDiv = document.createElement('div');
+                    Polymer.dom(horizontalDiv).classList.add('layout', 'horizontal', 'block');
+                    var repeatIndicator = document.createElement('div');
+                    Polymer.dom(repeatIndicator).classList.add('repeat');
+                    repeatIndicator.textContent = `${block.block_repeat}x`;
+                    Polymer.dom(horizontalDiv).appendChild(repeatIndicator);
+                    var verticalDiv = document.createElement('div');
+                    Polymer.dom(verticalDiv).classList.add('layout', 'vertical');
+                    for (var segment of block.segments) {
+                        var segmentDom = document.createElement('plan-segment');
+                        segmentDom.setData(segment);
+                        Polymer.dom(verticalDiv).appendChild(segmentDom);
+                    }
+                    Polymer.dom(horizontalDiv).appendChild(verticalDiv);
+                    Polymer.dom(this.$.segments).appendChild(horizontalDiv);
+                }
+            } else {
+                this.classList.add('hidden');
+            }
+        },
+        processOverview: function () {
+            this.chartData = [];
+            var workout = trainingPlan.getDay(this.dateHash);
+            if (workout === null) {
+                return;
+            }
+            var blocks = workout.blocks;
+            var iter = 0;
+            for (var i = 0; i < blocks.length; i++) {
+                var block = blocks[i];
+                if (i > 0) {
+                    iter++;
+                    this.chartData.push({
+                        iter: iter,
+                        z1: 0
+                    });
+                }
+                for (var p = 0; p < block.block_repeat; p++) {
+                    for (var o = 0; o < block.segments.length; o++) {
+                        var segment = block.segments[o];
+                        var magnitude = 0;
+                        if (segment.duration_type === 'distance') {
+                            if (segment.distance_unit_selected === 'meter') {
+                                magnitude = segment.duration_distance / 100;
+                            } else if (segment.distance_unit_selected === 'mile') {
+                                magnitude = segment.duration_distance * 3;
+                            }
+                        } else if (segment.duration_type === 'time') {
+                            if (segment.duration_time.hour !== 0) {
+                                magnitude = segment.duration_time.hour * 5 + segment.duration_time.minute / 12;
+                            } else if (segment.duration_time.minute) {
+                                magnitude = segment.duration_time.minute * 2;
+                            } else {
+                                magnitude = segment.duration_time.second / 10;
+                            }
+                        }
+                        var zone = 0;
+                        if (segment.zone_selected === 0) {
+                            if (segment.segment_desc.includes('recover') || segment.segment_desc.includes('walk')) {
+                                zone = 0;
+                            } else {
+                                zone = 1;
+                            }
+                        } else {
+                            zone = segment.zone_selected+1;
+                        }
+                        for (var q = 0; q < magnitude; q++) {
+                            iter++;
+                            this.chartData.push({
+                                iter: iter,
+                                z1: zone,
+                                desc: segment.segment_desc
+                            });
+                        }
+                    }
+                }
+            }
+            this.loadOverview();
+        },
+        chartToggle: function (toggle) {
+            if (toggle) {
+                this.$.chart.classList.remove('hidden');
+                this.style.height = '65vh';
+            } else {
+                this.$.chart.classList.add('hidden');
+                this.style.height = '100%';
+            }
+        },
+        /*global AmCharts*/
+        loadOverview: function () {
+            AmCharts.makeChart(this.$.chart, {
+                type: 'serial',
+                theme: 'stryd',
+                marginRight: 40,
+                marginLeft: 40,
+                marginBottom: 40,
+                autoMarginOffset: 40,
+                dataDateFormat: 'YYYY-MM-DD',
+                valueAxes: [{
+                    stackType: 'regular',
+                    gridAlpha: 1,
+                    position: 'left',
+                    title: 'ZONE',
+                    balloon: {
+                        enabled: false
+                    },
+                    maximum: 5,
+                    minimum: 0,
+                    integersOnly: true,
+                    labelFrequency: 1
+                }],
+                balloon: {
+                    borderThickness: 1,
+                    shadowAlpha: 0,
+                    enabled: false,
+                    fillAlpha: 1
+                },
+                graphs: [{
+                    id: 'z1',
+                    fillAlphas: 1,
+                    title: 'Power',
+                    valueField: 'z1',
+                    balloonFunction: (e) => {
+                        var a = parseInt(e.category);
+                        for (var i = 0; i < this.chartData.length; i++) {
+                            var segment = this.chartData[i];
+                            if (a === segment.iter) {
+                                return segment.desc;
+                            }
+                        }
+                        return '';
+                    },
+                    ballon: {
+                        enabled: true
+                    },
+                    lineColor: '#FFBC2E',
+                    type: 'step'
+                }],
+                plotAreaBorderAlpha: 0,
+                chartCursor: {
+                    valueLineEnabled: false,
+                    valueLineBalloonEnabled: false,
+                    cursorAlpha: 1,
+                    zoomable: false,
+                    valueZoomable: true,
+                    valueLineAlpha: 0,
+                    categoryBalloonEnabled: true,
+                    oneBalloonOnly: true,
+                    cursorPosition: 'mouse',
+                    fontSize: 16,
+                    categoryBalloonFunction: (a) => {
+                        for (var i = 0; i < this.chartData.length; i++) {
+                            var segment = this.chartData[i];
+                            if (parseInt(a) === segment.iter) {
+                                return segment.desc;
+                            }
+                        }
+                        return '';
+                    }
+                },
+                legend: {
+                    equalWidths: false,
+                    periodValueText: 'zone',
+                    position: 'top',
+                    valueAlign: 'center',
+                    valueWidth: 100,
+                    valueText: 'Zone [[value]]',
+                    spacing: 0,
+                    align: 'center'
+                },
+                categoryField: 'iter',
+                categoryAxis: {
+                    axisAlpha: 0,
+                    parseDates: false,
+                    dashLength: 1,
+                    minorGridEnabled: false,
+                    startOnAxis: true,
+                    axisColor: '#DADADA',
+                    fontSize: 0
+                    //guides: plan_guides
+                },
+                dataProvider: this.chartData
+            });
+        }
+    });
+    </script>
+</dom-module>
+

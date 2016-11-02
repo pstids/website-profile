@@ -4,6 +4,7 @@
             @apply(--layout-flex);
             @apply(--layout-vertical);
             position: relative;
+            height: 100%;
         }
         :host:hover .header {
             opacity: 1;
@@ -11,35 +12,43 @@
         :host:hover .header .options {
             opacity: 1;
         }
-
-        .hasWorkout {
-            background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
-            cursor: pointer;
-        }
-        .hasNoWorkout {
-            cursor: auto;
-            background-image: 'none';
-        }
-        .hasNoWorkout .data,
-        .hasNoWorkout .options,
-        .hasPlanned .data,
-        .hasPlanned .options {
-            display: none !important;
-        }
-        .hasPlanned {
-            cursor: pointer;
-            background-image: 'none';
-        }
-
         .container {
             @apply(--layout-flex);
             @apply(--layout-vertical);
             overflow: hidden;
             background-size: cover;
-            /*min-height: 100px;*/
             height: 100%;
+            cursor: auto;
+            background-image: 'none';
         }
-
+        .container.has-workout {
+            background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+            cursor: pointer;
+        }
+        .container.has-planned {
+            cursor: pointer;
+        }
+        .workout-display {
+            display: none;
+        }
+        .has-workout .workout-display {
+            @apply(--layout);
+        }
+        .plan-display {
+            display: none;
+        }
+        .plan-type {
+            display: none;
+        }
+        .has-planned .plan-display {
+            @apply(--layout);
+        }
+        .has-planned .plan-type {
+            @apply(--layout);
+        }
+        .has-workout.has-planned .plan-type {
+            display: none;
+        }
         .header {
             @apply(--layout-horizontal);
             @apply(--layout-end-justified);
@@ -49,7 +58,7 @@
             transition: 0.5s opacity;
             flex: 0 1 24px;
         }
-        .header .options {
+        .has-workout .options {
             @apply(--layout-flex-3);
             @apply(--layout-horizontal);
             opacity: 0;
@@ -61,7 +70,6 @@
             line-height: 24px;
             font-size: 14px;
         }
-
         .wattage {
             margin-top: 20px;
             @apply(--layout-center-justified);
@@ -80,7 +88,31 @@
             text-align: center;
             font-size: 20px;
         }
-
+        .plan-type {
+            height: 100%;
+        }
+        .workout {
+            @apply(--layout);
+            @apply(--layout-vertical);
+        }
+        .workout .workout-type {
+            color: white;
+            text-align: center;
+            font-size: 25px;
+            text-transform: capitalize;
+        }
+        .workout .workout-on {
+            color: var(--accent-background-color);
+            text-align: center;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+        .workout .workout-surface {
+            color: white;
+            text-align: center;
+            font-size: 25px;
+            text-transform: capitalize;
+        }
         .other {
             height: 28px;
             margin-bottom: 5px;
@@ -104,13 +136,11 @@
             height: 14px;
             width: 14px;
         }
-
         .wattage iron-icon {
             margin-right: 5px;
             color: var(--primary-icon-color);
             fill: var(--primary-icon-color);
         }
-
         .header iron-icon {
             color: white;
             fill: white;
@@ -121,9 +151,9 @@
         }
     </style>
     <template>
-        <div class="container hasNoWorkout" id="container">
+        <div class="container" id="container">
             <div class="header" id="header">
-                <div class="options">
+                <div class="options workout-display">
                     <div id="share">
                         <iron-icon icon="social:share"></iron-icon>
                         <paper-tooltip>Share Workout</paper-tooltip>
@@ -141,14 +171,14 @@
                         <paper-tooltip>Pin to Graph</paper-tooltip>
                     </div>
                 </div>
-                <div class="tp hidden" id="tpp">
-                    <iron-icon icon="icons:track-changes"></iron-icon>
+                <div class="tp plan-display">
+                    <iron-icon icon="notification:event-note"></iron-icon>
                 </div>
                 <div class="numday">
                     {{day}}
                 </div>
             </div>
-            <div class="layout vertical center-justified flex-auto data">
+            <div class="layout vertical around-justified data workout-display">
                 <div class="wattage">
                     <iron-icon icon="image:flash-on"></iron-icon>
                     <div class="value">
@@ -168,6 +198,13 @@
                             {{distance}}
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="layout vertical around-justified plan-type">
+                <div class="workout">
+                    <div class="workout-type">{{workout_type}}</div>
+                    <div class="workout-on">{{workout_on}}</div>
+                    <div class="workout-surface">{{workout_surface}}</div>
                 </div>
             </div>
         </div>
@@ -224,15 +261,7 @@
             this.day = data.day;
             this.rgb = 'rgb(0, 0, 0)';
             if ('power' in data) {
-                if ('training' in data) {
-                    Polymer.dom(this.$.tpp).classList.remove('hidden');
-                } else {
-                    Polymer.dom(this.$.tpp).classList.add('hidden');
-                }
-
-                this.$.container.classList.add('hasWorkout');
-                this.$.container.classList.remove('hasNoWorkout');
-                this.$.container.classList.remove('hasPlanned');
+                this.$.container.classList.add('has-workout');
 
                 this.unit = 'watts';
                 this.power = data.power.toFixed(0);
@@ -259,20 +288,29 @@
                 this.$.header.style.backgroundColor = this.rgb;
             } else {
                 if ('training' in data) {
-                    this.$.container.classList.remove('hasWorkout');
-                    this.$.container.classList.remove('hasNoWorkout');
-                    this.$.container.classList.add('hasPlanned');
-                    Polymer.dom(this.$.tpp).classList.remove('hidden');
+                    this.$.container.classList.add('has-planned');
+                    this.rgb = 'rgb(0, 0, 0)';
+                    this.unit = '';
+                    if (data.training.blocks.length === 0) {
+                        this.workout_type = 'rest day';
+                        this.workout_on = '';
+                        this.workout_surface = '';
+                    } else {
+                        this.workout_type = `${data.training.workout_type} run`;
+                        this.workout_on = 'on the';
+                        var surface = data.training.workout_surface;
+                        if (surface === 'easy') {
+                            surface = 'trail';
+                        }
+                        this.workout_surface = surface;
+                    }
                 } else {
-                    this.$.container.classList.remove('hasWorkout');
-                    this.$.container.classList.add('hasNoWorkout');
-                    this.$.container.classList.remove('hasPlanned');
-                    Polymer.dom(this.$.tpp).classList.add('hidden');
+                    this.$.container.classList.remove('has-workout');
+                    this.$.container.classList.remove('has-planned');
+                    this.rgb = 'rgb(0, 0, 0)';
+                    this.unit = '';
                 }
-
-                this.unit = '';
                 this.power = '';
-                this.rgb = 'rgb(0, 0, 0)';
                 this.$.header.style.backgroundColor = this.rgb;
             }
         },
@@ -291,21 +329,28 @@
                 });
         },
         viewWorkout: function () {
-            if (!('id' in this.data)) {
-                return;
+            if (
+                ('id' in this.data) ||
+                (
+                    ('training' in this.data) &&
+                    ('hash' in this.data)
+                )
+            ) {
+                var bubbles = document.querySelector('.bubbles');
+                var logDayActive = document.querySelector('log-day.active');
+                if (logDayActive) {
+                    logDayActive.classList.remove('active');
+                }
+                this.classList.add('active');
+                if ('id' in this.data) {
+                    updatedTime = this.data.updated_time;
+                    document.querySelector('workout-element').setLoading();
+                    page(`/run/${this.data.id}`);
+                } else {
+                    page(`/training/${this.data.hash}`);
+                }
+                window.scrollTo(0, bubbles.offsetTop);
             }
-            var bubbles = document.querySelector('.bubbles');
-            // Set this element as the only active element
-            var logDayActive = document.querySelector('log-day.active');
-            if (logDayActive) {
-                logDayActive.classList.remove('active');
-            }
-            this.classList.add('active');
-            updatedTime = this.data.updated_time;
-
-            document.querySelector('workout-element').setLoading();
-            page(`/run/${this.data.id}`);
-            window.scrollTo(0, bubbles.offsetTop);
         },
         // returns true or false whether a workout has been inserted already
         hasWorkout: function () {

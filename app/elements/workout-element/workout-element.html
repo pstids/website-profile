@@ -1,13 +1,11 @@
 <dom-module id="workout-element">
     <style>
         :host {
-            position: relative;
             display: block;
-        }
-        section {
             @apply(--layout);
             @apply(--layout-vertical);
             background-color: var(--primary-background-color);
+            position: relative;
         }
         h1.header {
             @apply(--header);
@@ -15,7 +13,6 @@
         h2.subtitle {
             @apply(--subtitle);
         }
-
         .chart {
             flex: none;
             width: 100%;
@@ -74,6 +71,33 @@
         .toggles:hover iron-icon {
             display: none;
         }
+        .stat-toggles {
+            @apply(--layout-horizontal);
+            @apply(--layout-end);
+            @apply(--layout-flex);
+            position: absolute;
+            top: 13px;
+            right: 13px;
+        }
+        .stat-toggle {
+            @apply(--layout-center);
+            @apply(--layout-justified);
+            @apply(--layout-horizontal);
+            background-color: var(--primary-background-color);
+            border: 2px solid #FFFFFF;
+            border-radius: 6px;
+            color: #FFFFFF;
+            cursor: pointer;
+            font-size: 1vw;
+            font-weight: 500;
+            margin: 0.5vw 1vw 0 0;
+            padding: 0.8vw 1.1vw;
+            position: relative;
+            text-transform: uppercase;
+            /*width: 104px;*/
+            z-index: 5;
+            width: 200px;
+        }
         [data-graph="power"] {
             --paper-radio-button-checked-color: #f7a017;
             --paper-radio-button-checked-ink-color: #f7a017;
@@ -114,7 +138,7 @@
             --paper-radio-button-checked-color: #E94F65;
             --paper-radio-button-checked-ink-color: #E94F65;
         }
-        .toggle .circle {
+        .toggle .circle, .stat-toggle .circle {
             width: 1.3vw;
             height: 1.3vw;
             border-radius: 50%;
@@ -139,16 +163,16 @@
             padding: 1vw 1vw;
         }
         bubble-stat {
-            width: 11vw;
-            height: 11vw;
+            width: 10vw;
+            height: 10vw;
             margin: 1vw;
             --bubble-stat-wrap: {
-                width: 11vw;
-                height: 11vw;
+                width: 10vw;
+                height: 10vw;
             };
             --bubble-stat-border: {
-                width: 11vw;
-                height: 11vw;
+                width: 10vw;
+                height: 10vw;
             };
         }
 
@@ -206,7 +230,6 @@
             0%, 100% { -webkit-transform: scale(0.0) }
             50% { -webkit-transform: scale(1.0) }
         }
-
         @keyframes sk-bounce {
             0%, 100% { 
                 transform: scale(0.0);
@@ -216,188 +239,78 @@
                 -webkit-transform: scale(1.0);
             }
         }
-
-        .tp {
-            border: 1px solid #4D4D4D;
-            border-bottom: 0;
-            background-color: #262626;
-            margin: 10px 10px 0 0;
-            color: white;
-            overflow-y: auto;
-            overflow-x: hidden;
-            height: 28vw;
-        }
-        .tp .title {
-            border-bottom: 1px solid #F7A017;
-            margin: 0;
-            padding: 15px;
-        }
-        .tp p {
-            font-size: 16px;
-            line-height: 22px;
-            padding: 16px;
-            margin: 0;
-        }
-
-        .tps {
-            overflow: hidden;
-            position: relative;
-        }
-        .tp.plan {
-            position: absolute;
-            -webkit-transform: translateX(-100%);
-            transform: translateX(-100%);
-            width: 100%;
-        }
-        .tp.graph {
-            position: absolute;
-            width: 100%;
-        }
-
-        .moveToLeft {
-            -webkit-animation: moveToLeft .6s ease both;
-            animation: moveToLeft .6s ease both;
-        }
-
-        .moveToRight {
-            -webkit-animation: moveToRight .6s ease both;
-            animation: moveToRight .6s ease both;
-        }
-
-        @-webkit-keyframes moveToLeft {
-            from { }
-            to { -webkit-transform: translateX(-100%); }
-        }
-        @keyframes moveToLeft {
-            from { }
-            to { -webkit-transform: translateX(-100%); transform: translateX(-100%); }
-        }
-
-        @-webkit-keyframes moveToRight { 
-            from { }
-            to { -webkit-transform: translateX(100%); }
-        }
-        @keyframes moveToRight { 
-            from { }
-            to { -webkit-transform: translateX(100%); transform: translateX(100%); }
-        }
-
-        .plan-toggle {
-            position: relative;
-        }
-        .plan-toggle iron-icon {
-            position: absolute;
-            z-index: 50;
-            top: 13px;
-            right: 13px;
-            padding: 10px;
-            border: 1px solid #FFFFFF;
-            background-color: #1C1C1C;
-            border-radius: 6px;
-            color: white;
-        }
-
-        #circlechart {
-            width: 100%;
-            height: 500px;
-            font-size: 11px;
-            color: white;
-        }
-
-        #segments {
-            @apply(--layout-wrap);
-            @apply(--layout-horizontal);
-            border-bottom: 1px solid #4D4D4D;
-        }
     </style>
     <template>
-        <section>
-            <div class="outer-spinner" id="spinner">
-                <div class="spinner">
-                    <div class="dot1"></div>
-                    <div class="dot2"></div>
+        <div class="outer-spinner" id="spinner">
+            <div class="spinner">
+                <div class="dot1"></div>
+                <div class="dot2"></div>
+            </div>
+        </div>
+        <div class="layout horizontal end options">
+            <h1 class="header">Statistics</h1>
+            <div class="stat-toggles hidden">
+                <div class="stat-toggle"
+                data-toggle="on"
+                on-click="toggleMetrics"
+                data-stat="elapsed">
+                    <div class="type">Elapsed Statistics</div>
+                    <div class="circle"></div>
+                </div>
+                <div class="stat-toggle"
+                data-toggle="off"
+                on-click="toggleMetrics"
+                data-stat="moving">
+                    <div class="type">Moving Statistics</div>
+                    <div class="circle"></div>
                 </div>
             </div>
-            <div class="layout horizontal end options hidden">
-                <h1 class="header">Statistics</h1>
-                <div class="toggles">
-                    <div class="stat toggle"
-                    data-toggle="on"
-                    on-click="toggleMetrics"
-                    data-stat="elapsed">
-                        <div class="type">Show Elapsed Statistics</div>
-                        <div class="circle"></div>
-                    </div>
-                    <div class="stat toggle"
-                    data-toggle="off"
-                    on-click="toggleMetrics"
-                    data-stat="moving">
-                        <div class="type">Show Moving Statistics</div>
-                        <div class="circle"></div>
-                    </div>
+        </div>
+        <div class="layout horizontal">
+            <div class="layout vertical flex">
+                <div class="bubbles">
+                    <bubble-stat id="pace"></bubble-stat>
+                    <bubble-stat id="time"></bubble-stat>
+                    <bubble-stat id="power"></bubble-stat>
+                    <bubble-stat id="heartRate"></bubble-stat>
+                    <bubble-stat id="dynamics"></bubble-stat>
+                    <bubble-stat id="misc"></bubble-stat>
                 </div>
             </div>
-            <div class="layout horizontal">
-                <div class="layout vertical flex">
-                    <div class="bubbles">
-                        <bubble-stat id="pace"></bubble-stat>
-                        <bubble-stat id="time"></bubble-stat>
-                        <bubble-stat id="power"></bubble-stat>
-                        <bubble-stat id="heartRate"></bubble-stat>
-                        <bubble-stat id="dynamics"></bubble-stat>
-                        <bubble-stat id="misc"></bubble-stat>
-                    </div>
-                </div>
-                <div class="flex layout vertical tps hidden">
-                    <div class="tp plan flex plan-toggle" data-tp="plan" on-click="slide">
-                        <iron-icon on-click="toggleTP" icon="icons:arrow-back"></iron-icon>
-                        <p>{{day_title}}</p>
-                        <p>{{day_description}}</p>
-                        <div id="segments">
-                            <div class="flex layout vertical" id="col1"></div>
-                            <div class="flex layout vertical" id="col2"></div>
-                        </div>
-                    </div>
-                    <div class="tp graph flex vertical plan-toggle" data-tp="graph" on-click="slide">
-                        <iron-icon on-click="toggleTP" icon="icons:arrow-forward"></iron-icon>
-                        <div id="circlechart"></div>
-                    </div>
+        </div>
+        <div class="layout horizontal" style="position: relative; width: 100%;">
+            <div id="chartdiv"></div>
+            <div class="toggles">
+                <iron-icon icon="icons:menu"></iron-icon>
+                <div class="toggle">
+                    <paper-radio-button on-click="toggle" data-graph="power" checked="true">Power</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="heartRate" checked="true">Heart Rate</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="pace">Pace</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="elevation">Elevation</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="cadence">Cadence</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="groundTime">Ground Time</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="legSpring">Leg Spring Stiffness</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="formPower">Form Power</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="devicePace">Foot Pod Pace</paper-radio-button>
                 </div>
             </div>
-            <div class="layout horizontal" style="position: relative; width: 100%;">
-                <div id="chartdiv"></div>
-                <div class="toggles">
-                    <iron-icon icon="icons:menu"></iron-icon>
-                    <div class="toggle">
-                        <paper-radio-button on-click="toggle" data-graph="power" checked="true">Power</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="heartRate" checked="true">Heart Rate</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="pace">Pace</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="elevation">Elevation</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="cadence">Cadence</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="groundTime">Ground Time</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="legSpring">Leg Spring Stiffness</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="formPower">Form Power</paper-radio-button>
-                        <paper-radio-button on-click="toggle" data-graph="devicePace">Foot Pod Pace</paper-radio-button>
-                    </div>
-                </div>
+        </div>
+        <div class="layout vertical" style="padding-bottom: 5vh;">
+            <div class="layout horizontal center center-justified">
+                <paper-textarea
+                    class="editable"
+                    label="Description"
+                    rows="1"
+                    max-rows="3"
+                    value="{{descriptionText}}"
+                    id="descriptionInput"
+                    style="flex: 0 70%;">
+                </paper-textarea>
+                <button is="stryd-button" id="descriptionButton" on-click="" style="margin-left: 10px;">Save</button> 
             </div>
-            <div class="layout vertical" style="padding-bottom: 5vh;">
-                <div class="layout horizontal center center-justified">
-                    <paper-textarea
-                        class="editable"
-                        label="Description"
-                        rows="1"
-                        max-rows="3"
-                        value="{{descriptionText}}"
-                        id="descriptionInput"
-                        style="flex: 0 70%;">
-                    </paper-textarea>
-                    <button is="stryd-button" id="descriptionButton" on-click="" style="margin-left: 10px;">Save</button> 
-                </div>
-                <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
-            </div>
-        </section>
+            <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
+        </div>
     </template>
     <script>
         /*global AmCharts*/
@@ -415,15 +328,6 @@
                 } else {
                     this.metrics[metric].toggle.checked = true;
                     this.chart.showGraph(this.metrics[metric].graph());
-                }
-            },
-            slide: function () {
-                if (this.querySelector('[data-tp="plan"]').classList.contains('moveToRight')) {
-                    this.querySelector('[data-tp="plan"]').classList.add('moveToRight');
-                    this.querySelector('[data-tp="graph"]').classList.add('moveToLeft');
-                } else {
-                    this.querySelector('[data-tp="plan"]').classList.add('moveToLeft');
-                    this.querySelector('[data-tp="graph"]').classList.add('moveToRight');
                 }
             },
             ready: function () {
@@ -809,46 +713,6 @@
                 this.fillChart(valueAxes, graphs);
                 if ('chart' in this) {
                     this.bindToggles();
-                }
-                //this.loadTraining();
-            },
-            loadTraining: function () {
-                var dateHash = moment.unix(this.activity.start_time).format('YYYYMMDD');
-                var trainingDay = trainingPlan.getDay(dateHash);
-                if (trainingDay !== null) {
-                    this.day_title = trainingDay.title;
-                    this.day_description = trainingDay.description;
-                    // Clear previous segments
-                    while (Polymer.dom(this.$.col1).firstChild) {
-                        Polymer.dom(
-                            this.$.segments
-                        ).removeChild(
-                            Polymer.dom(
-                                this.$.col1
-                            ).firstChild
-                        );
-                    }
-                    while (Polymer.dom(this.$.col2).firstChild) {
-                        Polymer.dom(
-                            this.$.segments
-                        ).removeChild(
-                            Polymer.dom(
-                                this.$.col2
-                            ).firstChild
-                        );
-                    }
-                    var segmentTotal = trainingDay.segments.length, i = 0;
-                    for (var segment of trainingDay.segments) {
-                        var segmentDom = document.createElement('workout-segment');
-                        segment.order = i + 1;
-                        segmentDom.setData(segment);
-                        if (i < segmentTotal / 2) {
-                            Polymer.dom(this.$.col1).appendChild(segmentDom);
-                        } else {
-                            Polymer.dom(this.$.col2).appendChild(segmentDom);
-                        }
-                        i += 1;
-                    }
                 }
             },
             removeLoading: function () {

@@ -11,12 +11,30 @@ String.prototype.stat = function () {
     var parts = String(this).split('.');
     var shortened = '';
     if (parts.length > 1) {
-    // shortened =  parts[0] + '.' + parts[1].substring(0, 2);
-    shortened =  parts[0];
+        // shortened =  parts[0] + '.' + parts[1].substring(0, 2);
+        shortened =  parts[0];
     } else {
-    shortened =  parts[0];
+        shortened =  parts[0];
     }
     return shortened;
+};
+
+String.prototype.fill = function () {
+    var x = String(this);
+    if (x.length === 1) {
+        return '0' + x;
+    } else {
+        return x;
+    }
+};
+
+Number.prototype.fill = function () {
+    var x = String(this);
+    if (x.length === 1) {
+        return '0' + x;
+    } else {
+        return x;
+    }
 };
 
 var metersPerMile = 1609.34;

@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#303F9F">
 
     <!-- Web Application Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <!-- link rel="manifest" href="manifest.json"> -->
 
     <!-- Tile color for Win8 -->
     <meta name="msapplication-TileColor" content="#3372DF">
@@ -33,8 +33,17 @@
 
     <!-- <link rel="stylesheet" href="/powercenter/styles/app.css"> -->
     <link rel="stylesheet" href="/powercenter/styles/main.css">
+    <script>
+    var webComponentsSupported = ('registerElement' in document
+      && 'import' in document.createElement('link')
+      && 'content' in document.createElement('template'));
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js"></script>
+    if (!webComponentsSupported) {
+      var wcPoly = document.createElement('script');
+      wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
+      document.head.appendChild(wcPoly);
+    }
+    </script>
 
     <!-- will be replaced with elements/elements.vulcanized.html -->
     <link rel="import" href="/powercenter/elements/elements.html">
@@ -42,9 +51,6 @@
 </head>
 
 <body unresolved class="fullbleed layout vertical">
-<div class="tooltip hidden" data-tooltip>
-    <div class="description" id="description">Description</div>
-</div>
 <span id="browser-sync-binding"></span>
 
 <template is="dom-bind" id="app">
@@ -53,14 +59,17 @@
         <header-element></header-element>
         <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="home">
-                <div class="layout horizontal" style="position: relative;" data-slide="1">
-                    <map-run id="map-run" class="flex-4"></map-run>
+                <div class="layout horizontal flex-4" style="position: relative;" data-slide="1">
+                    <map-run id="map-run" class="flex"></map-run>
                     <workout-shared id="workout-shared"></workout-shared>
                 </div>
                 <div class="layout horizontal" style="display: none;" data-slide="2">
                     <performance-chart id="performance-chart"></performance-chart>
                 </div>
-                <workout-element id="workout-element"></workout-element>
+                <div class="layout horizontal max-width">
+                    <workout-element id="workout-element" class="flex-4"></workout-element>
+                    <plan-view class="flex"></plan-view>
+                </div>
                 <log-calendar></log-calendar>
                 <div class="uploader"
                     data-step="9"
@@ -76,9 +85,7 @@
             </section>
 
             <section data-route="connect">
-                <div class="connect">
-                    <platform-connect></platform-connect>
-                </div>
+                <platform-connect></platform-connect>
             </section>
 
             <section data-route="settings">
@@ -106,9 +113,11 @@
     <log-options></log-options>
     <paper-toast id="toast" duration="5000"></paper-toast>
     <google-analytics code="UA-56986987-2"></google-analytics>
+    <div class="tooltip hidden" data-tooltip>
+        <div class="description" id="description">Description</div>
+    </div>
     <iframe id="dlFrame" class="hidden">
 </template>
-<script async defer src="/powercenter/scripts/app.min.js"></script>
-<script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady'></script>
+<script src="/powercenter/scripts/app.min.js"></script>
 </body>
 </html>
