@@ -236,8 +236,8 @@ var workoutProcessing = function (workout, id, scope) {
                 availableMetrics.push('power');
             }
         }
-        if ('form_power_list' in workout && workout.form_power_list !== null) {
-            entry.formPower = workout.form_power_list[i];
+        if ('vertical_power_list' in workout && workout.vertical_power_list !== null) {
+            entry.formPower = workout.vertical_power_list[i];
             if (entry.power !== 0) {
                 suuntoDrop = false;
             }

@@ -352,7 +352,7 @@
                 window.scrollTo(0, bubbles.offsetTop);
             }
         },
-        // returns true or false whether a workout has been inserted already
+        // returns bool based on if workout has been inserted
         hasWorkout: function () {
             if ('power' in this.data) {
                 return true;
@@ -372,52 +372,6 @@
             return 0;
         }
     });
-    // var tooltip = document.querySelector('[data-tooltip]');
-    // var tooltipDescription = tooltip.querySelector('#description');
-
-    // this.$.container.addEventListener(
-    //     'mouseenter',
-    //     () => {
-    //         if (
-    //             'description' in this.data &&
-    //             this.data.description.length > 0
-    //         ) {
-    //             tooltip.classList.remove('hidden');
-    //             tooltip.style.borderColor = this.rgb;
-
-    //             var duration = moment.duration(this.data.time, 'seconds');
-    //             var minutesStr = duration.minutes().toString();
-    //             if (minutesStr.length === 1) {
-    //                 minutesStr = '0' + minutesStr;
-    //             }
-                
-    //             if (this.data.description.length > 40) {
-    //                 tooltipDescription.textContent = this.data.description.substring(0, 40) + '...';
-    //             } else {
-    //                 tooltipDescription.textContent = this.data.description;
-    //             }
-    //         } else if ('training' in this.data) {
-    //             tooltip.classList.remove('hidden');
-    //             tooltip.style.borderColor = this.rgb;
-
-    //             tooltipDescription.textContent = this.data.training.description;
-    //         }
-    //     },
-    //     false
-    // );
-
-    // this.$.container.addEventListener(
-    //     'mouseleave',
-    //     () => {
-    //         if (
-    //             'description' in this.data ||
-    //             'training' in this.data   
-    //         ) {
-    //             tooltip.classList.add('hidden');
-    //         }
-    //     },
-    //     false
-    // );
     </script>
 </dom-module>
 

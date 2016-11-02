@@ -162,7 +162,6 @@ class User {
 
 var user = new User();
 
-/*globals planEx*/
 class TrainingPlan {
 	constructor() {
 		this.plan = {};
@@ -182,22 +181,6 @@ class TrainingPlan {
 					}
 				});
 		}
-		// superagent
-		// 	.get('http://www.mocky.io/v2/57ce5ce72d00000618b15946')
-		// 	.set('Accept', 'application/json')
-		// 	.end((err, res) => {
-		// 		if (res !== undefined && res.ok && res.body !== null) {
-		// 			this.plan = res.body.plan;
-		// 			this.processPlan();
-		// 		} else {
-		// 			console.log('Error: failure to get training plan', err);
-		// 		}
-		// 	});
-
-		// this.plan = planEx.plan;
-		// this.processPlan();
-
-		//.get('http://www.mocky.io/v2/57355f7b130000981ccde03c')
 	}
 
 	processPlan() {
