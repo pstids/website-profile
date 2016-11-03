@@ -188,8 +188,6 @@ var toast = function (message) {
             }
         };
 
-        // We use Page.js for routing. This is a Micro
-        // client-side router inspired by the Express router
         // More info: https://visionmedia.github.io/page.js/
         page.base('/powercenter');
 
@@ -250,14 +248,8 @@ var toast = function (message) {
             mapRunEle.classList.add('hidden');
             workoutShared.classList.add('hidden');
             workoutElement.classList.add('hidden');
-            planView.setStartHash(data.params.hash);
             planView.chartToggle(true);
-            // processor.postMessage({
-            //     token: jwt.token,
-            //     type: 'workout',
-            //     id: data.params.id,
-            //     updated_time: updatedTime
-            // });
+            planView.setStartHash(data.params.hash);
         });
 
         page('/settings', () => {

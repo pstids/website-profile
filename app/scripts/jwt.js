@@ -168,18 +168,32 @@ class TrainingPlan {
 		this.days = {};
 		var trainingSelected = localStorage.getItem('training-selected');
 		if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
-			superagent
-				.get(`/b/api/v1/training/plan/${trainingSelected}`)
-				.set('Accept', 'application/json')
-				.set('Authorization', `Bearer: ${jwt.token}`)
-				.end((err, res) => {
-					if (res !== undefined && res.ok && res.body !== null) {
-						this.plan = res.body.plan;
-						this.processPlan();
-					} else {
-						console.log('Error: failure to get training plan', err);
-					}
-				});
+			if (window.location.hostname === 'stryd.dev') {
+				superagent
+					.get('/powercenter/scripts/plan.json')
+					.set('Accept', 'application/json')
+					.end((err, res) => {
+						if (res !== undefined && res.ok && res.body !== null) {
+							this.plan = res.body.plan;
+							this.processPlan();
+						} else {
+							console.log('Error: failure to get training plan', err);
+						}
+					});
+			} else {
+				superagent
+					.get(`/b/api/v1/training/plan/${trainingSelected}`)
+					.set('Accept', 'application/json')
+					.set('Authorization', `Bearer: ${jwt.token}`)
+					.end((err, res) => {
+						if (res !== undefined && res.ok && res.body !== null) {
+							this.plan = res.body.plan;
+							this.processPlan();
+						} else {
+							console.log('Error: failure to get training plan', err);
+						}
+					});
+			}
 		}
 	}
 

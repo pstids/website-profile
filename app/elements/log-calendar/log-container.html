@@ -11,24 +11,22 @@
 		:host:last-child {
 			border-right: 0;
 		}
-		:host:hover {
-			position: relative;
-		}
 		:host:hover #container {
 			position: absolute;
 			min-width: 100%;
 			z-index: 150;
 		}
-		:host.active:hover #container {
-			border: 1px solid #FFFFFF;
-			/*border-bottom: none;*/
-			box-sizing: border-box;
-		}
+
 		:host:hover log-day {
 			display: block;
+			border-left: 1px solid #FFFFFF;
+			border-right: 1px solid #FFFFFF;
+		}
+		:host:hover log-day:first-child {
+			border-top: 1px solid #FFFFFF;
 		}
 		:host:hover log-day:last-child {
-			/*border-bottom: 1px solid #FFFFFF;*/
+			border-bottom: 1px solid #FFFFFF;
 		}
 
 		#container {

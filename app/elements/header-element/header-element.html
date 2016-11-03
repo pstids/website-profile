@@ -218,11 +218,6 @@
                 padding-left: 20px;
             }
         </style>
-        <div class="training hidden" id="trainingPrompt">
-            <div>Would you like to start the 10K training plan?</div>
-            <div id="trainingYes">Yes</div>
-            <div id="trainingNo">No</div>
-        </div>
         <header>
             <div class="logo">
                 <a href="/">
@@ -318,6 +313,13 @@
                 </div>
             </template>
         </header>
+        <paper-dialog id="dialogTraining">
+            <h1>Would you like to start the 10K training plan?</h1>
+            <div class="buttons">
+                <paper-button dialog-dismiss on-click="trainingNo">No</paper-button>
+                <paper-button autofocus on-click="trainingYes">Yes</paper-button>
+            </div>
+        </paper-dialog>
     </template>
     <script>
     /*jshint camelcase: false*/
@@ -338,25 +340,6 @@
             this.profileImage = user.getImage();
 
             this.checkTraining();
-
-            this.$.trainingYes.addEventListener('click', () => {
-                localStorage.setItem(
-                    'training-selected',
-                    localStorage.getItem('training-plan')
-                );
-                localStorage.setItem(
-                    'training-started',
-                    moment().format('YYYY-MM-DD')
-                );
-                this.$.trainingPrompt.classList.add('hidden');
-                localStorage.removeItem('training-plan');
-                window.location.reload();
-            });
-
-            this.$.trainingNo.addEventListener('click', () => {
-                this.$.trainingPrompt.classList.add('hidden');
-                localStorage.removeItem('training-plan');
-            });
         },
         logout: function () {
             jwt.logout();
@@ -403,10 +386,23 @@
         checkTraining: function () {
             var trainingPlanID = localStorage.getItem('training-plan');
             if (trainingPlanID !== null && trainingPlanID !== undefined) {
-                this.$.trainingPrompt.classList.remove('hidden');
-            } else {
-                this.$.trainingPrompt.classList.add('hidden');
+                this.$.dialogTraining.open();
             }
+        },
+        trainingNo: function () {
+            localStorage.removeItem('training-plan');
+        },
+        trainingYes: function () {
+            localStorage.setItem(
+                'training-selected',
+                localStorage.getItem('training-plan')
+            );
+            localStorage.setItem(
+                'training-started',
+                moment().format('YYYY-MM-DD')
+            );
+            localStorage.removeItem('training-plan');
+            window.location.reload();
         }
     });
     </script>

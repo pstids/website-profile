@@ -8,3 +8,4 @@ app/example.html
 transfer.sh
 .DS_STORE
 app/scripts/plan-ex.js
+app/scripts/plan.json

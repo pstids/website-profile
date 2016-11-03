@@ -119,7 +119,7 @@ gulp.task('clear', function (done) {
 
 gulp.task('js', function () {
     return gulp.src([
-        'app/**/*.{js,html}',
+        'app/**/*.{js,html,json}',
         '!app/scripts/external.js',
         '!app/scripts/dropzone.js',
         '!app/scripts/superagent.js',
