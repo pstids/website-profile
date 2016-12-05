@@ -4,12 +4,9 @@
 			box-shadow: 0px 100px 100px -95px #000000;
 			border-radius: 50%;
 			cursor: pointer;
-		}
-		.bubble-wrap {
-			width: 100%;
-			height: 100%;
-			position: absolute;
 			z-index: 10;
+			width: 12vw;
+			height: 12vw;
 			@apply(--bubble-stat-wrap);
 		}
 		.bubble-border {
@@ -66,13 +63,16 @@
 			font-weight: 500;
 			font-size: 0.68vw;
 		}
-		.popped .bubble-border:nth-child(1) {
+		:host.popped {
+			z-index: 100;
+		}
+		:host.popped .bubble-border:nth-child(1) {
 			transform: translate(0, 0px);
 		}
-		.popped .bubble-border:nth-child(2) {
+		:host.popped .bubble-border:nth-child(2) {
 			transform: translate(0, -12vw);
 		}
-		.popped .bubble-border:nth-child(3) {
+		:host.popped .bubble-border:nth-child(3) {
 			transform: translate(0, 12vw);
 		}
 		.active {
@@ -80,30 +80,28 @@
 		}
 	</style>
 	<template>
-		<div class="bubble-wrap" id="wrap">
-			<div class="bubble-border active" data-bubble="1">
-				<div class="bubble">
-					<iron-icon icon="{{obja.icon}}" class="icon"></iron-icon>
-					<span class="title">{{obja.title}}</span>
-					<span class="value">{{obja.value}}</span>
-					<span class="unit">{{obja.unit}}</span>
-				</div>
+		<div class="bubble-border active" data-bubble="1">
+			<div class="bubble">
+				<iron-icon icon="{{obja.icon}}" class="icon"></iron-icon>
+				<span class="title">{{obja.title}}</span>
+				<span class="value">{{obja.value}}</span>
+				<span class="unit">{{obja.unit}}</span>
 			</div>
-			<div class="bubble-border" data-bubble="2">
-				<div class="bubble">
-					<iron-icon icon="{{objb.icon}}" class="icon"></iron-icon>
-					<span class="title">{{objb.title}}</span>
-					<span class="value">{{objb.value}}</span>
-					<span class="unit">{{objb.unit}}</span>
-				</div>
+		</div>
+		<div class="bubble-border" data-bubble="2">
+			<div class="bubble">
+				<iron-icon icon="{{objb.icon}}" class="icon"></iron-icon>
+				<span class="title">{{objb.title}}</span>
+				<span class="value">{{objb.value}}</span>
+				<span class="unit">{{objb.unit}}</span>
 			</div>
-			<div class="bubble-border" data-bubble="3">
-				<div class="bubble">
-					<iron-icon icon="{{objc.icon}}" class="icon"></iron-icon>
-					<span class="title">{{objc.title}}</span>
-					<span class="value">{{objc.value}}</span>
-					<span class="unit">{{objc.unit}}</span>
-				</div>
+		</div>
+		<div class="bubble-border" data-bubble="3">
+			<div class="bubble">
+				<iron-icon icon="{{objc.icon}}" class="icon"></iron-icon>
+				<span class="title">{{objc.title}}</span>
+				<span class="value">{{objc.value}}</span>
+				<span class="unit">{{objc.unit}}</span>
 			</div>
 		</div>
 	</template>
@@ -170,6 +168,9 @@
 						i++;
 					}
 				}
+				if (i === 0) {
+					this.classList.add('hidden');
+				}
 				// If there are less than three objects, hide the remaining bubbles.
 				for (; i < 3; i++) {
 					this.querySelector(`[data-bubble="${i+1}"]`).classList.add('hidden');
@@ -194,7 +195,7 @@
 					activeBubble.classList.remove('active');
 				}
 				target.classList.add('active');
-				this.$.wrap.classList.toggle('popped');
+				this.classList.toggle('popped');
 			}
 		});
 	</script>

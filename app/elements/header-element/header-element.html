@@ -314,10 +314,15 @@
             </template>
         </header>
         <paper-dialog id="dialogTraining">
-            <h1>Would you like to start the 10K training plan?</h1>
+            <h1>Would you like to start the {{plan_name}} training plan?</h1>
+            <div>
+                <paper-radio-group selected="next_monday">
+                    <paper-radio-button name="next_monday">{{plan_next_monday}}</paper-radio-button>
+                </paper-radio-group>
+            </div>
             <div class="buttons">
-                <paper-button dialog-dismiss on-click="trainingNo">No</paper-button>
-                <paper-button autofocus on-click="trainingYes">Yes</paper-button>
+                <paper-button dialog-dismiss on-click="trainingNo">Leave Plan</paper-button>
+                <paper-button autofocus on-click="trainingYes">Start Plan</paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -386,7 +391,35 @@
         checkTraining: function () {
             var trainingPlanID = localStorage.getItem('training-plan');
             if (trainingPlanID !== null && trainingPlanID !== undefined) {
-                this.$.dialogTraining.open();
+                if (
+                    moment().day(1).format('MMDD') === moment().format('MMDD')
+                ) {
+                    this.plan_next_monday = moment().day(1).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
+                } else {
+                    this.plan_next_monday = moment().day(1+7).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
+                }
+                localStorage.setItem(
+                    'training-started',
+                    moment().day(1+7).format('YYYYMMDD')
+                );
+                if (window.location.hostname === 'www.stryd.com') {
+                    superagent
+                        .get(`/b/api/v1/training/plan/${trainingPlanID}`)
+                        .set('Accept', 'application/json')
+                        .set('Authorization', `Bearer: ${jwt.token}`)
+                        .end((err, res) => {
+                            if (res !== undefined && res.ok && res.body !== null) {
+                                this.plan = res.body.plan;
+                                this.plan_name = this.plan.name;
+                                this.$.dialogTraining.open();
+                            } else {
+                                console.log('Error: failure to get training plan', err);
+                            }
+                        });
+                } else {
+                    this.plan_name = 'Testing Plan';
+                    this.$.dialogTraining.open();
+                }
             }
         },
         trainingNo: function () {
@@ -396,10 +429,6 @@
             localStorage.setItem(
                 'training-selected',
                 localStorage.getItem('training-plan')
-            );
-            localStorage.setItem(
-                'training-started',
-                moment().format('YYYY-MM-DD')
             );
             localStorage.removeItem('training-plan');
             window.location.reload();
