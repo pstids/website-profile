@@ -31,12 +31,13 @@
     <!-- Tile icon for Win8 (144x144) -->
     <meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
 
-    <!-- <link rel="stylesheet" href="/powercenter/styles/app.css"> -->
     <link rel="stylesheet" href="/powercenter/styles/main.css">
     <script>
-    var webComponentsSupported = ('registerElement' in document
-      && 'import' in document.createElement('link')
-      && 'content' in document.createElement('template'));
+    var webComponentsSupported = (
+        'registerElement' in document
+        && 'import' in document.createElement('link')
+        && 'content' in document.createElement('template')
+    );
 
     if (!webComponentsSupported) {
       var wcPoly = document.createElement('script');
@@ -58,18 +59,8 @@
     <div class="content">
         <header-element></header-element>
         <iron-pages attr-for-selected="data-route" selected="{{route}}">
-            <section data-route="home">
-                <div class="layout horizontal flex-4" style="position: relative;" data-slide="1">
-                    <map-run id="map-run" class="flex"></map-run>
-                    <workout-shared id="workout-shared"></workout-shared>
-                </div>
-                <div class="layout horizontal" style="display: none;" data-slide="2">
-                    <performance-chart id="performance-chart"></performance-chart>
-                </div>
-                <div class="layout horizontal max-width">
-                    <workout-element id="workout-element" class="flex-4"></workout-element>
-                    <plan-view class="flex"></plan-view>
-                </div>
+            <section data-route="profile">
+                <performance-management></performance-management>
                 <log-calendar></log-calendar>
                 <div class="uploader"
                     data-step="9"
@@ -81,6 +72,20 @@
                             <span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
                         </div>
                     </form>
+                </div>
+            </section>
+
+            <section data-route="home">
+                <div class="layout horizontal flex-4" style="position: relative;" data-slide="1">
+                    <map-run id="map-run" class="flex"></map-run>
+                    <workout-shared id="workout-shared"></workout-shared>
+                </div>
+                <div class="layout horizontal" style="display: none;" data-slide="2">
+                    <performance-chart id="performance-chart"></performance-chart>
+                </div>
+                <div class="layout horizontal max-width">
+                    <workout-element id="workout-element" class="flex-4"></workout-element>
+                    <plan-view class="flex"></plan-view>
                 </div>
             </section>
 
@@ -118,6 +123,8 @@
     </div>
     <iframe id="dlFrame" class="hidden">
 </template>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="//labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="/powercenter/scripts/app.min.js"></script>
 </body>
 </html>

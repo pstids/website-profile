@@ -91,7 +91,8 @@ gulp.task('jshint', function () {
         'colorInterpolate',
         'page',
         'toast',
-        'Ps'
+        'Ps',
+        'd3'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

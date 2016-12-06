@@ -209,6 +209,11 @@ var toast = function (message) {
             }
         });
 
+        page('/profile', () => {
+            app.route = 'profile';
+            header.toggleActive('profile');
+        });
+
         page('/connect', () => {
             if (jwt.hasToken) {
                 app.route = 'connect';
