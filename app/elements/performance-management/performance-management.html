@@ -78,20 +78,30 @@
 		.stat-toggle .type {
 			padding-left: 10px;
 		}
-		[data-toggle="on"].stat-toggle .circle {
+		[data-toggle="on"][data-stat="stress"] .circle {
 			background-color: #F7A017;
 			border-color: #F7A017;
-			-webkit-box-shadow: 0px 0px 20px 0px rgba(247,161,23,1);
-			-moz-box-shadow: 0px 0px 20px 0px rgba(247,161,23,1);
-			box-shadow: 0px 0px 20px 0px rgba(247,161,23,1);
+			-webkit-box-shadow: 0px 0px 20px 0px #F7A017;
+			-moz-box-shadow: 0px 0px 20px 0px #F7A017;
+			box-shadow: 0px 0px 20px 0px #F7A017;
+		}
+		[data-toggle="on"][data-stat="distance"] .circle {
+			background-color: #084784;
+			border-color: #084784;
+			-webkit-box-shadow: 0px 0px 20px 0px #084784;
+			-moz-box-shadow: 0px 0px 20px 0px #084784;
+			box-shadow: 0px 0px 20px 0px #084784;
+		}
+		[data-toggle="on"][data-stat="zones"] .circle {
+			background-color: #5ea7a1;
+			border-color: #5ea7a1;
+			-webkit-box-shadow: 0px 0px 20px 0px #5ea7a1;
+			-moz-box-shadow: 0px 0px 20px 0px #5ea7a1;
+			box-shadow: 0px 0px 20px 0px #5ea7a1;
 		}
 	</style>
 	<template>
 		<div id="demo">
-			<div id="buttons">
-				<button id="weekly-stress">View Weekly</button>
-				<button id="zone-break">Toggle Time In Zones Overlay</button>
-			</div>
 			<div class="layout horizontal title">
 				<div class="flex">
 					<h1 class="header">Stryd Stress Analysis</h1>
@@ -99,7 +109,6 @@
 				<div class="flex layout horizontal end-justified">
 					<div class="stat-toggle"
 					data-toggle="on"
-					data-stat="elapsed"
 					data-stat="stress"
 					id="view_stress">
 						<div class="circle"></div>
@@ -107,15 +116,13 @@
 					</div>
 					<div class="stat-toggle"
 					data-toggle="off"
-					data-stat="elapsed"
 					data-stat="distance"
 					id="view_dist">
 						<div class="circle"></div>
 						<div class="type">Distance</div>
 					</div>
-					<div class="stat-toggle"
+					<div class="stat-toggle hidden"
 					data-toggle="off"
-					data-stat="elapsed"
 					data-stat="time"
 					id="view_time">
 						<div class="circle"></div>
@@ -123,7 +130,6 @@
 					</div>
 					<div class="stat-toggle"
 					data-toggle="off"
-					data-stat="elapsed"
 					data-stat="zones"
 					id="view_zones">
 						<div class="circle"></div>
@@ -131,26 +137,21 @@
 					</div>
 				</div>
 			</div>
-			<svg id="svg"></svg>
+			<svg id="stress"></svg>
+			<svg id="management"></svg>
 		</div>
 	</template>
 	<script>
 	Polymer({
 		is: 'performance-management',
 		ready: function () {
-			this.mode = 0;
-			this.max = 0;
-
 			this.width = 860;
 			this.height = 400;
 
 			this.zBars = 0;
-			this.gInd = 0;
-			this.gZones = 0;
 			this.gMode = 0;
 			this.gCmd = 0;
-			this.gMax = 0;
-			this.toggledOn = 0;
+			this.max = 0;
 
 			this.weekDays = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
 			this.weekNames = ['09/25', '10/02', '10/09', '10/16', '10/23', '10/30', '11/06', '11/13', '11/20', '11/27', '12/04'];
@@ -164,13 +165,9 @@
 			return this.weekNames[idx];
 		},
 		fillInit: function () {
-			this.graph = d3.select('#svg')
+			this.graph = d3.select('#stress')
 				.attr('width', this.width + 100)
 				.attr('height', this.height + 100);
-
-			// this.graph.append('svg:rect')
-			// 	.attr('stroke', '#000')
-			// 	.attr('fill', 'none');
 
 			this.graph.append('svg:g')
 				.attr('id', 'barchart')
@@ -186,16 +183,13 @@
 					}
 					this.fillBars(this.gMode, 'weeks');
 					this.gCmd = 0;
-					d3.select('#weekly-stress')
-						.style('opacity', 0.5);
 					if (this.gMode === 2) {
 						d3.select('#zone-break')
 							.style('opacity', 1);
 						d3.select('#zone-break')
 							.on('click', this.zFun.bind(this));
 					}
-				})
-				.style('opacity', 0.5);
+				});
 
 			d3.select('#view_stress')
 				.on('click', this.sFun.bind(this));
@@ -206,15 +200,12 @@
 			d3.select('#view_time')
 				.on('click', this.tFun.bind(this));
 
-			d3.select('#zone-break')
-				.on('click', null)
-				.style('opacity', 0.5);
+			d3.select('#view_zones')
+				.on('click', this.zFun.bind(this));
 
 			this.fillBars(0, 'weeks');
 		},
 		fillBars: function (key, time) {
-			this.mode = key;
-
 			var cmd;
 			if (time === 'weeks') {
 				cmd = 1;
@@ -225,17 +216,17 @@
 			var data = [];
 			var mColor = '';
 			var msg2 = '';
-			if (this.mode === 0) {
+			if (key === 0) {
 				data = this.getTimeType('stress', time);
 				mColor = '#f7a017';
 				msg2 = 'Stress';
 				this.max = d3.max(data) + 10;
-			} else if (this.mode === 1) {
+			} else if (key === 1) {
 				data = this.getTimeType('distance', time);
 				mColor = '#084784';
 				msg2 = 'Distance (km)';
 				this.max = d3.max(data) + 1;
-			} else if (this.mode === 2) {
+			} else if (key === 2) {
 				data = this.getTimeType('elapsed_time', time);
 				mColor = '#5ea7a1';
 				msg2 = 'Time (hr)';
@@ -285,11 +276,11 @@
 				.html((d) => {
 					d = parseInt(d);
 					var msg = '';
-					if (this.mode === 0) {
+					if (key === 0) {
 						msg = `<div class="float-tag">Stress</div><div class="float-value">${d} RSS</div>`;
-					} else if (this.mode === 1) {
+					} else if (key === 1) {
 						msg = `<div class="float-tag">Distance</div><div class="float-value">${d} KM</div>`;
-					} else if (this.mode === 2) {
+					} else if (key === 2) {
 						msg = `<div class="float-tag">Time</div><div class="float-value">${d} HR</div>`;
 					}
 					if (!cmd) {
@@ -301,9 +292,6 @@
 				});
 
 			var vis = d3.select('#barchart');
-			if (this.gZones) {
-				this.gZones = 0;
-			}
 			vis.call(tip);
 
 			d3.selectAll('.axis').remove();
@@ -391,7 +379,6 @@
 				bars.on('click', (d, i) => {
 					console.log(d, i);
 					this.gCmd = 1;
-					this.gInd = i;
 					this.fillBars(this.gMode, 'days');
 				})
 				.on('mouseover', tip.show)
@@ -405,6 +392,8 @@
 			}
 		},
 		sFun: function () {
+			var vis = d3.select('#barchart');
+			vis.selectAll('.stack').remove();
 			if (this.gCmd) {
 				this.fillBars(0, 'days');
 			} else {
@@ -412,35 +401,39 @@
 					.style('opacity', 1);
 				this.fillBars(0, 'weeks');
 			}
+			document.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
 			d3.select('#view_stress')
-				.on('click', null);
+				.on('click', null)
+				.attr('data-toggle', 'on');
 			d3.select('#view_dist')
 				.on('click', this.dFun.bind(this));
 			d3.select('#view_time')
 				.on('click', this.tFun.bind(this));
-			d3.select('#zone-break')
-				.on('click', null);
+			d3.select('#view_zones')
+				.on('click', this.zFun.bind(this));
 		},
 		tFun: function () {
+			var vis = d3.select('#barchart');
+			vis.selectAll('.stack').remove();
 			if (this.gCmd) {
 				this.fillBars(2, 'days');
 			} else {
 				this.fillBars(2, 'weeks');
 			}
+			document.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
 			d3.select('#view_stress')
-				.style('opacity', 1)
 				.on('click', this.sFun.bind(this));
 			d3.select('#view_dist')
-				.style('opacity', 1)
 				.on('click', this.dFun.bind(this));
 			d3.select('#view_time')
-				.style('opacity', 0.5)
-				.on('click', null);
-			d3.select('#zone-break')
-				.style('opacity', 1)
+				.on('click', null)
+				.attr('data-toggle', 'on');
+			d3.select('#view_zones')
 				.on('click', this.zFun.bind(this));
 		},
 		dFun: function () {
+			var vis = d3.select('#barchart');
+			vis.selectAll('.stack').remove();
 			if (this.gCmd) {
 				this.fillBars(1, 'days');
 			} else {
@@ -448,66 +441,41 @@
 					.style('opacity', 1);
 				this.fillBars(1, 'weeks');
 			}
+			document.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
 			d3.select('#view_stress')
-				.style('opacity', 1)
 				.on('click', this.sFun.bind(this));
 			d3.select('#view_dist')
-				.style('opacity', 0.5)
-				.on('click', null);
+				.on('click', null)
+				.attr('data-toggle', 'on');
 			d3.select('#view_time')
-				.style('opacity', 1)
 				.on('click', this.tFun.bind(this));
-			d3.select('#zone-break')
-				.style('opacity', 0.5)
-				.on('click', null);
+			d3.select('#view_zones')
+				.on('click', this.zFun.bind(this));
 		},
 		zFun: function () {
-			this.toggledOn = !this.toggledOn;
-			if (!this.toggledOn) {
-				var vis = d3.select('#barchart');
-				vis.selectAll('.bar').attr('opacity',1);
-				vis.selectAll('.stack').remove();
+			var vis = d3.select('#barchart');
+			vis.selectAll('.bar').attr('opacity',1);
+			vis.selectAll('.stack').remove();
 
-				d3.select('#view_stress')
-					.on('click', this.sFun.bind(this));
-				d3.select('#view_dist')
-					.on('click', this.dFun.bind(this));
-				d3.select('#view_time')
-					.on('click', null);
-				d3.select('#zone-break')
-					.on('click', this.zFun.bind(this));
+			if (!this.gCmd) {
+				this.zillBars('weeks');
+				//console.log('zillBars');
+				this.zBars = 0;
 			} else {
-				if (!this.gCmd) {
-					// this.zillBars(
-					// 	weekly_total_time_in_zones,
-					// 	2
-					// );
-					console.log('zillBars');
-					this.zBars = 0;
-				} else {
-					this.fillBars(2, 'days');
-					// this.zillBars(
-					// 	daily_total_time_in_zones[this.gInd],
-					// 	1
-					// );
-					console.log('zillBars');
-					this.zBars = 1;
-				}
-
-				d3.select('#view_stress')
-					.style('opacity', 0.5)
-					.on('click', null);
-				d3.select('#view_dist')
-					.style('opacity', 0.5)
-					.on('click', null);
-				d3.select('#view_time')
-					.style('opacity', 0.5)
-					.on('click', null);
-
-				d3.select('#zone-break')
-					.style('opacity', 1)
-					.on('click', this.zFun.bind(this));
+				//this.fillBars(2, 'days');
+				this.zillBars('days');
+				console.log('zillBars');
+				this.zBars = 1;
 			}
+
+			document.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+			d3.select('#view_stress')
+				.on('click', this.sFun.bind(this));
+			d3.select('#view_dist')
+				.on('click', this.dFun.bind(this));
+			d3.select('#view_zones')
+				.on('click', this.zFun.bind(this))
+				.attr('data-toggle', 'on');
 		},
 		grabData: function () {
 			var srtDate = '09-01-2016';
@@ -559,6 +527,7 @@
 				}
 				result.push(subResult);
 			}
+			idx = 1;
 			console.log('days', result, idx);
 			return result[idx];
 		},
@@ -579,7 +548,50 @@
 			}
 			return result;
 		},
+		getZoneDayType: function (idx) {
+			this.timeRange = 10;
+			var movingDay = moment().subtract(10, 'weeks');
+			var result = [];
+			for (var i = 0; i < this.timeRange; i++) {
+				var subResult = 0;
+				for (var o = 0; o < 7; o++) {
+					var hash = movingDay.format('YYYYMMDD');
+					if (hash in this.days) {
+						subResult.push(this.getData(hash, 'zones'));
+					} else {
+						subResult.push([0, 0, 0, 0, 0]);
+					}
+					movingDay.add(1, 'day');
+				}
+				result.push(subResult);
+			}
+			console.log('zoneDays', result, idx);
+			return result[idx];
+		},
+		getZoneWeekType: function () {
+			this.timeRange = 10;
+			var movingDay = moment().subtract(10, 'weeks');
+			var result = [];
+			for (var i = 0; i < this.timeRange; i++) {
+				var subResult = [0, 0, 0, 0, 0];
+				for (var o = 0; o < 7; o++) {
+					var hash = movingDay.format('YYYYMMDD');
+					if (hash in this.days) {
+						var tiz = this.getData(hash, 'zones');
+						for (var p = 0; p < 5; p++) {
+							subResult[p] += tiz[p]/3600;
+						}
+					}
+					movingDay.add(1, 'day');
+				}
+				result.push(subResult);
+			}
+			return result;
+		},
 		getData: function (hash, dataType) {
+			if (dataType === 'zones') {
+				dataType = 'seconds_in_zones';
+			}
 			var value = this.days[hash][dataType];
 			if (dataType === 'stress') {
 				return value;
@@ -587,39 +599,127 @@
 				return value / 1000; //km
 			} else if (dataType === 'elapsed_time') {
 				return value / 3600;
+			} else if (dataType === 'seconds_in_zones') {
+				if (value === null) {
+					return [0, 0, 0, 0, 0];
+				}
+				return value;
 			}
 		},
-		zillBars: function (data, cmd) {
-			this.gZones = 1;
+		zillBars: function (time) {
+			d3.select('#barchart')
+				.selectAll('*')
+				.remove();
 
-			var xData = ['A', 'B', 'C', 'D', 'E'];
+			var data;
+			if (time === 'days') {
+				data = this.getZoneDayType(1);
+			} else {
+				data = this.getZoneWeekType();
+			}
+
+			var msg2 = 'Time (hr)';
+			this.max = 7.25;
+
+			var xData = [0, 1, 2, 3, 4];
 			
 			var x = d3.scale.ordinal()
 				.domain(d3.range(data.length))
 				.range([0, this.width])
-				.rangeBands([0, this.width], 0.28);
+				.rangeBands([0, this.width], 0.3);
 
 			var y = d3.scale.linear()
-				.domain([0, this.gMax])
+				.domain([0, this.max])
 				.range([this.height, 0]);
 
-			var color = d3.scale.category20c();
+			var mColors = ['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f'];
 
-			// var xAxis = d3.svg.axis()
-			// 	.scale(x)
-			// 	.tickSize(0)
-			// 	.orient('bottom')
-			// 	.innerTickSize(0)
-			// 	.outerTickSize(0);
+			var xAxis = d3.svg.axis()
+				.scale(x)
+				.tickSize(0)
+				.orient('bottom')
+				.innerTickSize(0)
+				.outerTickSize(0);
+
+			var yAxis = d3.svg.axis()
+				.scale(y)
+				.tickSize(1)
+				.tickPadding(10)
+				.tickFormat(d3.format('.0f'))
+				.orient('left')
+				.innerTickSize(-this.width)
+				.outerTickSize(0);
+
+			d3.selectAll('.d3-tip')
+				.remove();
+
+			var tooltip = d3.tip()
+				.attr('class', 'd3-tip')
+				.offset([-10, 0])
+				.html((d) => {
+					d = parseInt(d);
+					var msg = `<div class="float-tag">Stress</div><div class="float-value">${d} RSS</div>`;
+					if (false) {
+						var id = '1';
+						return `${msg}<a href="https://www.stryd.com/powercenter/run/${id}" target="_blank"><span style="color:rgb(236,176,31)">Click for run</span>`;
+					} else {
+						return msg;
+					}
+				});
 
 			var vis = d3.select('#barchart');
-			vis.selectAll('.bar').attr('opacity',0);
 
-			var dataIntermediate = xData.map((c) => {
+			vis.call(tooltip);
+
+			d3.selectAll('.axis').remove();
+
+			vis.insert('g', ':first-child')
+				.attr('class', 'x axis')
+				.attr('transform', `translate(0, ${this.height})`)
+				.call(xAxis)
+				.attr('opacity', 1)
+				.attr('fill', '#2d2d2d')
+				.attr('stroke', '#2d2d2d')
+				.attr('stroke-width', 0)
+				.selectAll('text')
+					.attr('opacity', 1)
+					.attr('fill', '#727272')
+					.attr('stroke-width',0)
+					.attr('transform', 'rotate(0)')
+					.style('text-anchor', 'middle');
+
+			vis.insert('g', ':first-child')
+				.attr('class', 'y axis')
+				.call(yAxis)
+				.attr('stroke-width', 1)
+				.attr('stroke', '#2d2d2d')
+				.attr('fill', '#2d2d2d')
+				.attr('opacity', 1)
+				.append('text')
+					.attr('y', -10)
+					.text(msg2)
+					.attr('stroke-width', 1)
+					.attr('color', '#727272')
+					.attr('stroke', '#727272')
+					.attr('fill', '#727272');
+
+			vis.select('.y.axis').selectAll('text')
+				.attr('stroke', '#727272')
+				.attr('fill', '#727272')
+				.attr('color', '#727272');
+
+			var iy = 0;
+			var dataIntermediate = xData.map(() => {
 				return data.map((d) => {
+					iy++;
+					iy = iy % 10;
+					var val = d[iy];
+					if (val === undefined) {
+						val = 0;
+					}
 					return {
-						x: d.week,
-						y: d[c]
+						x: iy,
+						y: val
 					};
 				});
 			});
@@ -630,33 +730,13 @@
 				return d.x;
 			}));
 
-			// Prep the tooltip bits, initial display is hidden
-			var tooltip = vis.append('g')
-				.attr('class', 'tooltip')
-				.style('display', 'none');
-
-			tooltip.append('rect')
-				.attr('width', 60)
-				.attr('height', 40)
-				.attr('fill', 'white')
-				.style('opacity', 0.5);
-
-			tooltip.append('text')
-				.attr('x', 30)
-				.attr('y', 10)
-				.attr('dy', '1.2em')
-				.style('text-anchor', 'middle')
-				.attr('font-size', '16px')
-				.attr('font-weight', 'bold');
-
 			var layer = vis.selectAll('.stack')
 				.data(dataStackLayout)
 				.enter().append('g')
 				.attr('class', 'stack')
-				.attr('opacity', 0.5)
 				/* unused: d */
 				.style('fill', function (d, i) {
-					return color(i);
+					return mColors[i];
 				});
 
 			var bars = layer.selectAll('rect')
@@ -676,37 +756,15 @@
 					return y(d.y0) - y(d.y + d.y0);
 				})
 				.attr('width', x.rangeBand())
-				.on('mouseover', () => {
-					tooltip.style('display', 'block');
-				})
-				.on('mouseout', () => {
-					tooltip.style('display', 'none');
-				})
-				.on('mousemove', (d) => {
-					var xPosition = d3.mouse(this)[0] - 30;
-					var yPosition = d3.mouse(this)[1] + 15;
-					tooltip.attr(
-						'transform',
-						`translate(${xPosition}, ${yPosition})`
-					);
-					tooltip.select('text').text(
-						Math.round(d.y*100)/100 + ' hr'
-					);
-					tooltip.style('text-anchor', 'middle');
-				})
+				.on('mouseover', tooltip.show)
+				.on('mouseout', tooltip.hide)
 				.on('click', (d, i) => {
-					if (!cmd) {
-						this.gInd = i;
-						console.log(d, i);
-					}
+					console.log(d, i);
 				});
 
 			bars.transition()
 				.duration(300)
-				.attr('transform', () => {
-					return 'translate(0, 0)';
-				});
-
+				.attr('transform', 'translate(0, 0)');
 		}
 	});
 	</script>
