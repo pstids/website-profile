@@ -227,20 +227,16 @@
                 <div class="slant"></div>
             </div>
             <ul class="navigation">
-                <li>
+                <li class="hidden" data-profile>
                     <a data-route="profile"
-                    href="/powercenter/profile"
-                    data-step="1"
-                    data-intro="View and analyze your recent runs.">
-                        Profile
+                    href="/powercenter/profile">
+                        Training
                     </a>
                 </li>
                 <li>
                     <a data-route="home"
-                    href="/powercenter/"
-                    data-step="1"
-                    data-intro="View and analyze your recent runs.">
-                        Dashboard
+                    href="/powercenter/">
+                        Training
                     </a>
                 </li>
                 <li>
@@ -353,6 +349,10 @@
             this.profileImage = user.getImage();
 
             this.checkTraining();
+        },
+        enable: function (test) {
+            console.log(test);
+            this.querySelector('[data-profile]').classList.remove('hidden');
         },
         logout: function () {
             jwt.logout();

@@ -92,7 +92,8 @@ gulp.task('jshint', function () {
         'page',
         'toast',
         'Ps',
-        'd3'
+        'd3',
+        'FeatureManagement'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

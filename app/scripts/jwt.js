@@ -269,3 +269,26 @@ class ColorInterpolate {
 }
 
 var colorInterpolate = new ColorInterpolate();
+
+class FeatureManagement {
+	constructor() {
+		this.usernames = ['angus', 'angus-nelson'];
+		this.addFeatures();
+	}
+	addFeatures() {
+		console.log(user.data.user_name);
+		if (this.usernames.indexOf(user.data.user_name) !== -1) {
+			document.querySelector('[data-reveal]').classList.remove('hidden');
+			document.querySelector('header-element').enable('profile');
+			document.querySelector('[data-reveal]')
+				.appendChild(
+					document.querySelector('log-calendar')
+				);
+			document.querySelector('[data-reveal]')
+				.appendChild(
+					document.querySelector('#uploader')
+				);
+
+		}
+	}
+}

@@ -59,20 +59,8 @@
     <div class="content">
         <header-element></header-element>
         <iron-pages attr-for-selected="data-route" selected="{{route}}">
-            <section data-route="profile">
+            <section data-route="profile" class="hidden" data-reveal="profile-section">
                 <performance-management></performance-management>
-                <log-calendar></log-calendar>
-                <div class="uploader"
-                    data-step="9"
-                    data-intro="Have FIT and TCX files? Upload them here."
-                    id="uploader">
-                    <h1 class="title">Upload</h1>
-                    <form class="dropzone" id="file">
-                        <div class="dz-message" data-dz-message>
-                            <span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
-                        </div>
-                    </form>
-                </div>
             </section>
 
             <section data-route="home">
@@ -86,6 +74,15 @@
                 <div class="layout horizontal max-width">
                     <workout-element id="workout-element" class="flex-4"></workout-element>
                     <plan-view class="flex"></plan-view>
+                </div>
+                <log-calendar></log-calendar>
+                <div class="uploader" id="uploader">
+                    <h1 class="title">Upload</h1>
+                    <form class="dropzone" id="file">
+                        <div class="dz-message" data-dz-message>
+                            <span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
+                        </div>
+                    </form>
                 </div>
             </section>
 

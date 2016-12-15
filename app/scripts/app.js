@@ -304,6 +304,8 @@ var toast = function (message) {
             document.location = '/signin';
         });
 
+        var featureManagement = new FeatureManagement();
+
         // add #! before urls
         page({
             hashbang: false
