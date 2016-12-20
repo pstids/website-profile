@@ -48,6 +48,8 @@ gulp.task('jshint', function () {
       '!app/scripts/superagent.js',
       '!app/scripts/dexie.js',
       '!app/scripts/moment.js',
+      '!app/scripts/d3.js',
+      '!app/scripts/d3.tip.js',
       '!app/scripts/amcharts/**/*',
       'app/elements/**/*.js',
       'app/elements/**/*.html'
@@ -128,6 +130,8 @@ gulp.task('js', function () {
         '!app/scripts/dexie.js',
         '!app/scripts/moment.js',
         '!app/scripts/amcharts/**/*',
+        '!app/scripts/d3.js',
+        '!app/scripts/d3.tip.js'
     ])
     .pipe($.sourcemaps.init())
     .pipe($.if('*.html', $.crisper())) // Extract JS from .html files
@@ -167,7 +171,9 @@ gulp.task('copy', function () {
     'app/scripts/toolbox.js',
     'app/scripts/dexie.js',
     'app/scripts/external.js',
-    'app/scripts/moment.js'
+    'app/scripts/moment.js',
+    'app/scripts/d3.js',
+    'app/scripts/d3.tip.js'
   ])
     .pipe(gulp.dest('dist/scripts'));
 
@@ -337,7 +343,9 @@ gulp.task('concat2', function () {
       'dist/scripts/toolbox.js',
       'dist/scripts/amcharts/concatenated.js',
       'dist/scripts/app.js',
-      'dist/scripts/jwt.js'
+      'dist/scripts/jwt.js',
+      'dist/scripts/d3.js',
+      'dist/scripts/d3.tip.js'
     ])
     .pipe(concat('app.min.js'))
     .pipe(gulp.dest('dist/scripts'));

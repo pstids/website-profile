@@ -1,127 +1,125 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Stryd PowerCenter</title>
-    <!-- Place favicon.ico in the `app/` directory -->
-    <link rel="shortcut icon" href="/powercenter/images/favicon.png">
+	<meta charset="utf-8">
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Stryd PowerCenter</title>
+	<!-- Place favicon.ico in the `app/` directory -->
+	<link rel="shortcut icon" href="/powercenter/images/favicon.png">
 
-    <!-- Chrome for Android theme color -->
-    <meta name="theme-color" content="#303F9F">
+	<!-- Chrome for Android theme color -->
+	<meta name="theme-color" content="#303F9F">
 
-    <!-- Web Application Manifest -->
-    <!-- link rel="manifest" href="manifest.json"> -->
+	<!-- Web Application Manifest -->
+	<!-- link rel="manifest" href="manifest.json"> -->
 
-    <!-- Tile color for Win8 -->
-    <meta name="msapplication-TileColor" content="#3372DF">
+	<!-- Tile color for Win8 -->
+	<meta name="msapplication-TileColor" content="#3372DF">
 
-    <!-- Add to homescreen for Chrome on Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Stryd PowerCenter">
-    <link rel="icon" sizes="192x192" href="/powercenter/images/favicon.png">
+	<!-- Add to homescreen for Chrome on Android -->
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="application-name" content="Stryd PowerCenter">
+	<link rel="icon" sizes="192x192" href="/powercenter/images/favicon.png">
 
-    <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Stryd PowerCenter">
-    <link rel="apple-touch-icon" href="/powercenter/images/favicon.png">
+	<!-- Add to homescreen for Safari on iOS -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Stryd PowerCenter">
+	<link rel="apple-touch-icon" href="/powercenter/images/favicon.png">
 
-    <!-- Tile icon for Win8 (144x144) -->
-    <meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
+	<!-- Tile icon for Win8 (144x144) -->
+	<meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
 
-    <link rel="stylesheet" href="/powercenter/styles/main.css">
-    <script>
-    var webComponentsSupported = (
-        'registerElement' in document
-        && 'import' in document.createElement('link')
-        && 'content' in document.createElement('template')
-    );
+	<link rel="stylesheet" href="/powercenter/styles/main.css">
+	<script>
+	var webComponentsSupported = (
+		'registerElement' in document
+		&& 'import' in document.createElement('link')
+		&& 'content' in document.createElement('template')
+	);
 
-    if (!webComponentsSupported) {
-      var wcPoly = document.createElement('script');
-      wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
-      document.head.appendChild(wcPoly);
-    }
-    </script>
+	if (!webComponentsSupported) {
+		var wcPoly = document.createElement('script');
+		wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
+		document.head.appendChild(wcPoly);
+	}
+	</script>
 
-    <!-- will be replaced with elements/elements.vulcanized.html -->
-    <link rel="import" href="/powercenter/elements/elements.html">
-    <!-- endreplace-->
+	<!-- will be replaced with elements/elements.vulcanized.html -->
+	<link rel="import" href="/powercenter/elements/elements.html">
+	<!-- endreplace-->
 </head>
 
 <body unresolved class="fullbleed layout vertical">
 <span id="browser-sync-binding"></span>
 
 <template is="dom-bind" id="app">
-    <!-- Main Content -->
-    <div class="content">
-        <header-element></header-element>
-        <iron-pages attr-for-selected="data-route" selected="{{route}}">
-            <section data-route="profile" class="hidden" data-reveal="profile-section">
-                <performance-management></performance-management>
-            </section>
+	<!-- Main Content -->
+	<div class="content">
+		<header-element></header-element>
+		<iron-pages attr-for-selected="data-route" selected="{{route}}">
+			<section data-route="profile" class="hidden" data-reveal="profile-section">
+				<performance-management></performance-management>
+			</section>
 
-            <section data-route="home">
-                <div class="layout horizontal flex-4" style="position: relative;" data-slide="1">
-                    <map-run id="map-run" class="flex"></map-run>
-                    <workout-shared id="workout-shared"></workout-shared>
-                </div>
-                <div class="layout horizontal" style="display: none;" data-slide="2">
-                    <performance-chart id="performance-chart"></performance-chart>
-                </div>
-                <div class="layout horizontal max-width">
-                    <workout-element id="workout-element" class="flex-4"></workout-element>
-                    <plan-view class="flex"></plan-view>
-                </div>
-                <log-calendar></log-calendar>
-                <div class="uploader" id="uploader">
-                    <h1 class="title">Upload</h1>
-                    <form class="dropzone" id="file">
-                        <div class="dz-message" data-dz-message>
-                            <span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
-                        </div>
-                    </form>
-                </div>
-            </section>
+			<section data-route="home">
+				<div class="layout horizontal flex-4" style="position: relative;" data-slide="1">
+					<map-run id="map-run" class="flex"></map-run>
+					<workout-shared id="workout-shared"></workout-shared>
+				</div>
+				<div class="layout horizontal" style="display: none;" data-slide="2">
+					<performance-chart id="performance-chart"></performance-chart>
+				</div>
+				<div class="layout horizontal max-width">
+					<workout-element id="workout-element" class="flex-4"></workout-element>
+					<plan-view class="flex"></plan-view>
+				</div>
+				<log-calendar></log-calendar>
+				<div class="uploader" id="uploader">
+					<h1 class="title">Upload</h1>
+					<form class="dropzone" id="file">
+						<div class="dz-message" data-dz-message>
+							<span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
+						</div>
+					</form>
+				</div>
+			</section>
 
-            <section data-route="connect">
-                <platform-connect></platform-connect>
-            </section>
+			<section data-route="connect">
+				<platform-connect></platform-connect>
+			</section>
 
-            <section data-route="settings">
-                <stryd-settings></stryd-settings>
-            </section>
+			<section data-route="settings">
+				<stryd-settings></stryd-settings>
+			</section>
 
-            <section data-route="plan">
-                <plan-list></plan-list>
-            </section>
+			<section data-route="plan">
+				<plan-list></plan-list>
+			</section>
 
-            <section data-route="new-plan">
-                <plan-entry id="plan-entry" plan-id="{{planID}}"></plan-entry>
-            </section>
+			<section data-route="new-plan">
+				<plan-entry id="plan-entry" plan-id="{{planID}}"></plan-entry>
+			</section>
 
-            <section data-route="plan-detail">
-                <plan-detailview id="plan-detailview" plan-id="{{planID}}"></plan-detailview>
-            </section>
+			<section data-route="plan-detail">
+				<plan-detailview id="plan-detailview" plan-id="{{planID}}"></plan-detailview>
+			</section>
 
-            <section data-route="*">
-            </section>
-        </iron-pages>
+			<section data-route="*">
+			</section>
+		</iron-pages>
 
-        <footer-element></footer-element>
-    </div>
-    <log-options></log-options>
-    <paper-toast id="toast" duration="5000"></paper-toast>
-    <google-analytics code="UA-56986987-2"></google-analytics>
-    <div class="tooltip hidden" data-tooltip>
-        <div class="description" id="description">Description</div>
-    </div>
-    <iframe id="dlFrame" class="hidden">
+		<footer-element></footer-element>
+	</div>
+	<log-options></log-options>
+	<paper-toast id="toast" duration="5000"></paper-toast>
+	<google-analytics code="UA-56986987-2"></google-analytics>
+	<div class="tooltip hidden" data-tooltip>
+		<div class="description" id="description">Description</div>
+	</div>
+	<iframe id="dlFrame" class="hidden">
 </template>
-<script src="//d3js.org/d3.v3.min.js"></script>
-<script src="//labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="/powercenter/scripts/app.min.js"></script>
 </body>
 </html>

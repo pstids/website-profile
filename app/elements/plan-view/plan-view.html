@@ -3,11 +3,13 @@
     :host {
         border: 1px solid #4D4D4D;
     }
+    :host.hasWorkout .tp {
+        max-height: 600px;
+    }
     #chart {
         color: #ffffff;
-        height: 60vh;
+        height: 70vh;
         width: 50%;
-        padding-bottom: 5vh;
     }
     h1.header {
         @apply(--header);
@@ -73,11 +75,14 @@ Polymer({
         this.processOverview();
     },
     loadTraining: function () {
+        this.$.tpplan.scrollTop = 0;
+        Ps.update(this.$.tpplan);
         var trainingDay = trainingPlan.getDay(this.dateHash);
         if (trainingDay !== null) {
             this.classList.remove('hidden');
             this.day_title = trainingDay.workout_title;
             this.day_description = trainingDay.workout_desc;
+
             // Clear previous segments
             while (Polymer.dom(this.$.segments).firstChild) {
                 Polymer.dom(
@@ -88,22 +93,28 @@ Polymer({
                     ).firstChild
                 );
             }
-            //var i = 0;
+
+            // Populate new segments
             for (var block of trainingDay.blocks) {
                 var horizontalDiv = document.createElement('div');
                 Polymer.dom(horizontalDiv).classList.add('layout', 'horizontal', 'block');
+
                 var repeatIndicator = document.createElement('div');
                 Polymer.dom(repeatIndicator).classList.add('repeat');
                 repeatIndicator.textContent = `${block.block_repeat}x`;
                 Polymer.dom(horizontalDiv).appendChild(repeatIndicator);
+
                 var verticalDiv = document.createElement('div');
                 Polymer.dom(verticalDiv).classList.add('layout', 'vertical');
+
                 for (var segment of block.segments) {
                     var segmentDom = document.createElement('plan-segment');
                     segmentDom.setData(segment);
                     Polymer.dom(verticalDiv).appendChild(segmentDom);
                 }
+
                 Polymer.dom(horizontalDiv).appendChild(verticalDiv);
+
                 Polymer.dom(this.$.segments).appendChild(horizontalDiv);
             }
         } else {
@@ -112,15 +123,18 @@ Polymer({
     },
     processOverview: function () {
         this.chartData = [];
+
         var workout = trainingPlan.getDay(this.dateHash);
         if (workout === null) {
             return;
         }
+
         var blocks = workout.blocks;
         if (blocks.length === 0) {
             this.chartToggle(false);
             return;
         }
+
         var iter = 0;
         for (var i = 0; i < blocks.length; i++) {
             var block = blocks[i];
@@ -131,6 +145,7 @@ Polymer({
                     z1: 0
                 });
             }
+
             for (var p = 0; p < block.block_repeat; p++) {
                 for (var o = 0; o < block.segments.length; o++) {
                     var segment = block.segments[o];
@@ -150,23 +165,13 @@ Polymer({
                             magnitude = segment.duration_time.second / 10;
                         }
                     }
-                    var zone = 0;
-                    if (segment.zone_selected === 0) {
-                        if (segment.segment_desc.includes('recover') || segment.segment_desc.includes('walk')) {
-                            zone = 0;
-                        } else {
-                            zone = 1;
-                        }
-                    } else {
-                        zone = segment.zone_selected+1;
-                    }
+
+                    var zone = segment.zone_selected+1;
                     for (var q = 0; q < magnitude; q++) {
                         iter++;
-                        this.chartData.push({
-                            iter: iter,
-                            z1: zone,
-                            desc: segment.segment_desc
-                        });
+                        segment.iter = iter;
+                        segment.z1 = zone;
+                        this.chartData.push(segment);
                     }
                 }
             }
@@ -187,8 +192,9 @@ Polymer({
             theme: 'stryd',
             marginRight: 40,
             marginLeft: 40,
-            marginBottom: 40,
-            autoMarginOffset: 40,
+            marginBottom: 150,
+            marginTop: 0,
+            autoMargins: false,
             dataDateFormat: 'YYYY-MM-DD',
             valueAxes: [{
                 stackType: 'regular',
@@ -227,7 +233,7 @@ Polymer({
                 ballon: {
                     enabled: true
                 },
-                lineColor: '#FFBC2E',
+                lineColor: '#CC8719',
                 type: 'step'
             }],
             plotAreaBorderAlpha: 0,
@@ -246,7 +252,16 @@ Polymer({
                     for (var i = 0; i < this.chartData.length; i++) {
                         var segment = this.chartData[i];
                         if (parseInt(a) === segment.iter) {
-                            return segment.desc;
+                            var title;
+                            if (segment.duration_type === 'time') {
+                                title = `<p class="bold">${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} HH:MM:SS in ZONE ${segment.z1}</p>`;
+                            } else {
+                                title = `<p class="bold">${segment.duration_distance} ${segment.distance_unit_selected} in ZONE ${segment.z1}</p>`;
+                            }
+                            if (segment.segment_desc === undefined) {
+                                return '';
+                            }
+                            return `${title}<p>${segment.segment_desc}</p>`;
                         }
                     }
                     return '';
@@ -254,11 +269,11 @@ Polymer({
             },
             legend: {
                 equalWidths: false,
-                periodValueText: 'zone',
+                periodValueText: 'ZONE',
                 position: 'top',
                 valueAlign: 'center',
                 valueWidth: 100,
-                valueText: 'Zone [[value]]',
+                valueText: 'ZONE [[value]]',
                 spacing: 0,
                 align: 'center'
             },
@@ -271,7 +286,6 @@ Polymer({
                 startOnAxis: true,
                 axisColor: '#DADADA',
                 fontSize: 0
-                //guides: plan_guides
             },
             dataProvider: this.chartData
         });

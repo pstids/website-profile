@@ -55,7 +55,7 @@
             }
 
             ul.navigation {
-                @apply(--layout-flex-5);
+                @apply(--layout-flex-6);
                 @apply(--layout-horizontal);
                 @apply(--layout-around-justified);
                 list-style: none;
@@ -98,7 +98,7 @@
             }
 
             div.insights {
-                @apply(--layout-flex-7);
+                @apply(--layout-flex-5);
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
                 list-style: none;
@@ -126,7 +126,7 @@
                 font-weight: 700;
             }
             .insight {
-                @apply(--layout-flex-3);
+                @apply(--layout-flex-2);
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
                 color: #FFFFFF;
@@ -230,7 +230,7 @@
                 <li class="hidden" data-profile>
                     <a data-route="profile"
                     href="/powercenter/profile">
-                        Training
+                        Analysis
                     </a>
                 </li>
                 <li>
@@ -317,12 +317,17 @@
                 </div>
             </template>
         </header>
-        <paper-dialog id="dialogTraining">
-            <h1>Would you like to start the {{plan_name}} training plan?</h1>
-            <div>
-                <paper-radio-group selected="next_monday">
+        <paper-dialog id="dialogTraining" class="paper-date-picker-dialog">
+            <h1>Start the {{plan_name}} training plan</h1>
+            <div class="layout vertical">
+                <paper-radio-group id="group" selected="next_monday" class="layout vertical">
                     <paper-radio-button name="next_monday">{{plan_next_monday}}</paper-radio-button>
+                    <paper-radio-button name="race_date">Start based on an upcoming race date
+                    </paper-radio-button>
                 </paper-radio-group>
+                <div id="datecontainer" style="display: flex; justify-content: center; opacity: 0; height: 0;">
+                    <paper-date-picker id="datepicker" date="January 20, 2017"></paper-date-picker>
+                </div>
             </div>
             <div class="buttons">
                 <paper-button dialog-dismiss on-click="trainingNo">Leave Plan</paper-button>
@@ -348,10 +353,23 @@
             this.grabStats();
             this.profileImage = user.getImage();
 
+            this.type_selected = 'next_monday';
+
             this.checkTraining();
+
+            this.$.group.addEventListener('iron-select', () => {
+                if (this.$.group.selected === 'next_monday') {
+                    this.$.datecontainer.style.height = 0;
+                    this.$.datecontainer.style.opacity = 0;
+                    this.type_selected = 'next_monday';
+                } else {
+                    this.$.datecontainer.style.height = 'auto';
+                    this.$.datecontainer.style.opacity = 1;
+                    this.type_selected = 'race_date';
+                }
+            });
         },
-        enable: function (test) {
-            console.log(test);
+        enable: function () {
             this.querySelector('[data-profile]').classList.remove('hidden');
         },
         logout: function () {
@@ -403,13 +421,12 @@
                     moment().day(1).format('MMDD') === moment().format('MMDD')
                 ) {
                     this.plan_next_monday = moment().day(1).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
+                    this.monday_hash = moment().day(1).format('YYYYMMDD');
                 } else {
                     this.plan_next_monday = moment().day(1+7).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
+                    this.monday_hash = moment().day(1+7).format('YYYYMMDD');
                 }
-                localStorage.setItem(
-                    'training-started',
-                    moment().day(1+7).format('YYYYMMDD')
-                );
+
                 if (window.location.hostname === 'www.stryd.com') {
                     superagent
                         .get(`/b/api/v1/training/plan/${trainingPlanID}`)
@@ -438,6 +455,28 @@
                 'training-selected',
                 localStorage.getItem('training-plan')
             );
+
+            if (this.type_selected === 'next_monday') {
+                localStorage.setItem(
+                    'training-started',
+                    this.monday_hash
+                );
+            } else {
+                var finish_date = moment(
+                    this.$.datepicker.date,
+                    'YYYY-MM-DD'
+                );
+                if (window.location.hostname === 'www.stryd.com') {
+                    finish_date.subtract(this.plan.week_duration, 'weeks').add(1, 'days');
+                } else {
+                    finish_date.subtract(12, 'weeks').add(1, 'days');
+                }
+                localStorage.setItem(
+                    'training-started',
+                    finish_date.format('YYYYMMDD')
+                );
+            }
+
             localStorage.removeItem('training-plan');
             window.location.reload();
         }

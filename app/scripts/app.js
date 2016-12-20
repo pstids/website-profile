@@ -233,6 +233,7 @@ var toast = function (message) {
             workoutShared.classList.remove('hidden');
             workoutElement.classList.remove('hidden');
             planView.chartToggle(false);
+            planView.classList.remove('hasWorkout');
 
             header.toggleActive('home');
             app.params = data.params;
@@ -255,6 +256,7 @@ var toast = function (message) {
             workoutElement.classList.add('hidden');
             planView.chartToggle(true);
             planView.setStartHash(data.params.hash);
+            planView.classList.add('hasWorkout');
         });
 
         page('/settings', () => {

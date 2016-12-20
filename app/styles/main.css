@@ -205,3 +205,15 @@ plan-list {
   color: #e2e2e2;
   display: inline;
 }
+
+.amcharts-balloon-div {
+  width: 400px;
+}
+.amcharts-balloon-div p {
+  width: 400px;
+}
+.amcharts-balloon-div p.bold {
+  width: 400px;
+  text-align: center;
+  font-weight: 700;
+}

@@ -272,11 +272,22 @@ var colorInterpolate = new ColorInterpolate();
 
 class FeatureManagement {
 	constructor() {
-		this.usernames = ['angus', 'angus-nelson'];
+		this.usernames = [
+			'angus',
+			'angus-nelson',
+			'kun',
+			'jamie',
+			'wyatt',
+			'adamheaney',
+			'emelie',
+			'test',
+			'test12',
+			'test11',
+			'firegirlred'
+		];
 		this.addFeatures();
 	}
 	addFeatures() {
-		console.log(user.data.user_name);
 		if (this.usernames.indexOf(user.data.user_name) !== -1) {
 			document.querySelector('[data-reveal]').classList.remove('hidden');
 			document.querySelector('header-element').enable('profile');

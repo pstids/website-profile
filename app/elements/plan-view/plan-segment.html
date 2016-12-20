@@ -93,8 +93,7 @@
 				this.display = {};
 			},
 			setData: function (segment) {
-				//this.order = segment.order;
-				if (segment.duration_distance !== 0) {
+				if (segment.duration_type === 'distance') {
 					this.duration_type = 'Distance';
 					this.duration_length = segment.duration_distance;
 					this.duration_unit = segment.distance_unit_selected;
