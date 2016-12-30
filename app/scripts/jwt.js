@@ -86,7 +86,7 @@ class User {
 	}
 
 	get(path) {
-		if (!(path in this.data) || this.data.path === null) {
+		if (!(path in this.data) || this.data[path] === null) {
 			this.data[path] = null;
 			this.fetchDetails(true);
 		}
@@ -170,6 +170,7 @@ class TrainingPlan {
 
 		this.targetDate = moment();
 
+		/* Check for local plan and store in user account */
 		var trainingSelected;
 		if (window.location.hostname !== 'stryd.dev') {
 			trainingSelected = localStorage.getItem('training-selected');
@@ -395,13 +396,18 @@ class FeatureManagement {
 			'der-pate',
 			'paulsgreenberg',
 			'gus-pernetz',
-			'1shammond'
+			'dpdumas642',
+			'bolwin',
+			'frogdr1ver',
+			'chvofa'
 		];
+		this.hasFeatures = false;
 		this.addFeatures();
 	}
 	addFeatures() {
 		if ('data' in user && 'user_name' in user.data) {
 			if (this.usernames.indexOf(user.data.user_name.toLowerCase()) !== -1) {
+				this.hasFeatures = true;
 				var dataReveal = document.querySelector('[data-reveal]');
 				dataReveal.classList.remove('hidden');
 				document.querySelector('header-element').enable('profile');

@@ -147,6 +147,9 @@
 
             this.displayedTime = moment();
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+
+            this.hasLoaded = false;
+            this.lastActivity = null;
             // var tooltip = document.querySelector('[data-tooltip]');
             // var x = 0, y = 0;
             // document.addEventListener('mousemove', function (e) {
@@ -157,16 +160,23 @@
             // setInterval(setPosition, 20);
 
             this.assembleDOM();
+            // if (jwt.hasToken) {
+            //     let state = false;
+            //     // Only auto load run activity when on the main PowerCenter page
+            //     if (location.pathname === '/powercenter/') {
+            //         state = true;
+            //     }
+            //     this.fetchMonth(
+            //         this.displayedTime.month(),
+            //         this.displayedTime.year(),
+            //         state
+            //     );
+            // }
             if (jwt.hasToken) {
-                let state = false;
-                // Only auto load run activity when on the main PowerCenter page
-                if (location.pathname === '/powercenter/') {
-                    state = true;
-                }
                 this.fetchMonth(
                     this.displayedTime.month(),
                     this.displayedTime.year(),
-                    state
+                    false
                 );
             }
 
@@ -244,6 +254,7 @@
         },
         loadLast: function (loadLast, id) {
             if (!loadLast) {
+                this.lastActivity = id;
                 return;
             }
             var bubbles = document.querySelector('.bubbles');
@@ -251,6 +262,7 @@
             workout.setLoading();
             page(`/run/${id}`);
             window.scrollTo(0, bubbles.offsetTop);
+            this.hasLoaded = true;
         },
         // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
         dateRange: function (monthInt, year) {
@@ -321,7 +333,8 @@
                         time: activity.moving_time,
                         distance: activity.distance,
                         description: activity.description,
-                        hash: activityMoment.format('YYYYMMDD')
+                        hash: activityMoment.format('YYYYMMDD'),
+                        rss: activity.stress
                     };
                     // See if there is planned training
                     var dailyPlan = trainingPlan.getDay(

@@ -115,6 +115,8 @@ var toast = function (message) {
     }
 };
 
+var featureManagement;
+
 (function (document) {
     'use strict';
 
@@ -190,6 +192,13 @@ var toast = function (message) {
             }
         };
 
+        var firstLoad = function () {
+            logCalendar.setMode('user', '');
+            performanceChart.setMode('user', '');
+            suuntoProcessing();
+        };
+        firstLoad();
+
         // More info: https://visionmedia.github.io/page.js/
         page.base('/powercenter');
 
@@ -197,23 +206,36 @@ var toast = function (message) {
             if (jwt.hasToken) {
                 app.route = 'home';
                 header.toggleActive('home');
-                suuntoProcessing();
-                logCalendar.setMode('user', '');
-                performanceChart.setMode('user', '');
                 var now = moment();
-                logCalendar.fetchMonth(
-                    now.month(),
-                    now.year(),
-                    true
-                );
+                if (featureManagement.hasFeatures) {
+                    logCalendar.fetchMonth(
+                        now.month(),
+                        now.year(),
+                        false
+                    );
+                    page('/analysis');
+                } else {
+                    logCalendar.fetchMonth(
+                        now.month(),
+                        now.year(),
+                        true
+                    );
+                }
+                if (!logCalendar.hasLoaded && logCalendar.lastActivity !== null) {
+                    logCalendar.loadLast(true, logCalendar.lastActivity);
+                }
             } else {
                 document.location = '/signin';
             }
         });
 
         page('/analysis', () => {
-            app.route = 'profile';
-            header.toggleActive('profile');
+            if (jwt.hasToken) {
+                app.route = 'profile';
+                header.toggleActive('profile');
+            } else {
+                document.location = '/signin';
+            }
         });
 
         page('/connect', () => {
@@ -319,7 +341,7 @@ var toast = function (message) {
             document.location = '/signin';
         });
 
-        var featureManagement = new FeatureManagement();
+        featureManagement = new FeatureManagement();
 
         // add #! before urls
         page({

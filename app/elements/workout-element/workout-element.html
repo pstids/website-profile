@@ -791,11 +791,11 @@
                     value: 0,
                     unit: 'Watts'
                 },
-                timeInMaxZone: {
+                rss: {
                     icon: 'image:flash-on',
-                    title: 'Time in Max Zone',
-                    value: 0,
-                    unit: 'Watts'
+                    title: 'RSS',
+                    value: this.activity.stress.toFixed(0),
+                    unit: ''
                 }
             };
             metrics.heartRate = {
@@ -910,10 +910,6 @@
                     if (data.power > 10) {
                         metrics.power.power.moving += data.power;
                         metrics.power.power.mTotal += 1;
-                    }
-
-                    if (data.power > 300) {
-                        metrics.power.timeInMaxZone.value += timeSectionMSeconds;
                     }
                 }
 
@@ -1032,7 +1028,6 @@
             }
 
             delete metrics.heartRate.movingHR;
-            delete metrics.power.timeInMaxZone;
 
             this.$.pace.setData(metrics.pace);
             this.$.time.setData(metrics.time);

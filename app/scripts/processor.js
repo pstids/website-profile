@@ -352,7 +352,8 @@ var workoutProcessing = function (workout, id, scope) {
         description: workout.description,
         id: workout.id,
         user_id: workout.user_id,
-        start_time: workout.start_time
+        start_time: workout.start_time,
+        stress: workout.stress
     };
     data.steps = steps;
     if (id === 'sample') {

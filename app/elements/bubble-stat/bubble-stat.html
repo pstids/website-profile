@@ -4,7 +4,7 @@
 			box-shadow: 0px 100px 100px -95px #000000;
 			border-radius: 50%;
 			cursor: pointer;
-			z-index: 10;
+			z-index: 2;
 			width: 12vw;
 			height: 12vw;
 			@apply(--bubble-stat-wrap);
@@ -64,7 +64,7 @@
 			font-size: 0.68vw;
 		}
 		:host.popped {
-			z-index: 100;
+			z-index: 4;
 		}
 		:host.popped .bubble-border:nth-child(1) {
 			transform: translate(0, 0px);
@@ -76,7 +76,7 @@
 			transform: translate(0, 12vw);
 		}
 		.active {
-			z-index: 11;
+			z-index: 3;
 		}
 	</style>
 	<template>

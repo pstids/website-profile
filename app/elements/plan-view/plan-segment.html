@@ -26,6 +26,7 @@
 			@apply(--layout-horizontal);
 			font-size: 25px;
 			font-weight: 400;
+			text-transform: uppercase;
 		}
 		.number {
 			border-color: #f7a017;
@@ -72,11 +73,11 @@
 				</div>
 			</div>
 			<div class="range insight">
-				<iron-icon icon="image:flash-on"></iron-icon>
+				<iron-icon icon="{{pace_icon}}"></iron-icon>
 				<div class="info">
-					<div class="title">Zone</div>
+					<div class="title">{{pace_name}}</div>
 					<div class="field">
-						<span>{{zone}}</span>
+						<span>{{pace_value}}</span>
 					</div>
 				</div>
 			</div>
@@ -106,7 +107,20 @@
 					this.$.distance.classList.add('hidden');
 					this.$.time.classList.remove('hidden');
 				}
-				this.zone = parseInt(segment.zone_selected) + 1;
+
+				if (segment.intensity_type === 'zone') {
+					this.pace_value = parseInt(segment.zone_selected) + 1;
+					this.pace_name = 'ZONE';
+					this.pace_icon = 'image:flash-on';
+				} else if (segment.intensity_type === 'pace') {
+					this.pace_value = segment.pace_selected;
+					this.pace_name = 'PACE';
+					this.pace_icon = 'maps:directions-run';
+				} else {
+					this.pace_value = parseInt(segment.zone_selected) + 1;
+					this.pace_name = 'ZONE';
+					this.pace_icon = 'image:flash-on';
+				}
 				this.description = segment.segment_desc;
 			}
 		});

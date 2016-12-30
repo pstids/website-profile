@@ -839,7 +839,7 @@
 		},
 		grabData: function () {
 			var srtDate = '06-01-2016';
-			var endDate = moment().format('MM-DD-YYYY');
+			var endDate = moment().add(2, 'days').format('MM-DD-YYYY');
 			var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
 
 			superagent

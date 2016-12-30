@@ -77,6 +77,7 @@ Polymer({
     loadTraining: function () {
         this.$.tpplan.scrollTop = 0;
         Ps.update(this.$.tpplan);
+
         var trainingDay = trainingPlan.getDay(this.dateHash);
         if (trainingDay !== null) {
             this.classList.remove('hidden');
@@ -254,9 +255,14 @@ Polymer({
                         if (parseInt(a) === segment.iter) {
                             var title;
                             if (segment.duration_type === 'time') {
-                                title = `<p class="bold">${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} HH:MM:SS in ZONE ${segment.z1}</p>`;
+                                title = `<p class="bold">${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} HH:MM:SS`;
                             } else {
-                                title = `<p class="bold">${segment.duration_distance} ${segment.distance_unit_selected} in ZONE ${segment.z1}</p>`;
+                                title = `<p class="bold">${segment.duration_distance} ${segment.distance_unit_selected}`;
+                            }
+                            if (segment.intensity_type === 'pace') {
+                                title += ` at ${segment.pace_selected.toUpperCase()} PACE</p>`;
+                            } else {
+                                title += ` in ZONE ${segment.z1}</p>`;
                             }
                             if (segment.segment_desc === undefined) {
                                 return '';

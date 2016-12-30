@@ -6,10 +6,7 @@
             position: relative;
             height: 100%;
         }
-        :host:hover .header {
-            opacity: 1;
-        }
-        :host:hover .header .options {
+        :host:hover .header, :host:hover .header .options {
             opacity: 1;
         }
         .container {
@@ -34,16 +31,10 @@
         .has-workout .workout-display {
             @apply(--layout);
         }
-        .plan-display {
+        .plan-display, .plan-type {
             display: none;
         }
-        .plan-type {
-            display: none;
-        }
-        .has-planned .plan-display {
-            @apply(--layout);
-        }
-        .has-planned .plan-type {
+        .has-planned .plan-display, .has-planned .plan-type {
             @apply(--layout);
         }
         .has-workout.has-planned .plan-type {
@@ -149,6 +140,10 @@
             height: 14px;
             cursor: pointer;
         }
+        .rss {
+            color: white;
+            font-size: 12px;
+        }
     </style>
     <template>
         <div class="container" id="container">
@@ -180,10 +175,12 @@
             </div>
             <div class="layout vertical around-justified data workout-display">
                 <div class="wattage">
-                    <iron-icon icon="image:flash-on"></iron-icon>
+                    <iron-icon icon="{{power_icon}}"></iron-icon>
                     <div class="value">
                         {{power}}
                     </div>
+                    <div class="rss" id="rss">RSS</div>
+                    <!-- image:flash-on -->
                 </div>
                 <div class="layout horizontal around-justified other">
                     <div class="stat">
@@ -211,6 +208,7 @@
     </template>
     <script>
     /*global updatedTime:true*/
+    /*global featureManagement:true*/
     Polymer({
         is: 'log-day',
         listeners: {
@@ -267,9 +265,21 @@
             this.rgb = 'rgb(0, 0, 0)';
             if ('power' in data) {
                 this.$.container.classList.add('has-workout');
-
-                this.unit = 'watts';
-                this.power = data.power.toFixed(0);
+                if (
+                    'rss' in this.data &&
+                    this.data.rss > 0 &&
+                    featureManagement.hasFeatures
+                ) {
+                    this.unit = 'RSS';
+                    this.power = this.data.rss.toFixed(0);
+                    this.power_icon = 'social:whatshot';
+                    this.$.rss.classList.remove('hidden');
+                } else {
+                    this.unit = 'watts';
+                    this.power = this.data.power.toFixed(0);
+                    this.power_icon = 'image:flash-on';
+                    this.$.rss.classList.add('hidden');
+                }
                 this.distance = meterToUserUnit(this.data.distance);
 
                 var duration = moment.duration(this.data.time, 'seconds');
