@@ -206,7 +206,15 @@ plan-list {
   display: inline;
 }
 
-.amcharts-balloon-div {
+.float-action {
+  display: block;
+  margin-top: 5px;
+  text-align: center;
+  color:rgb(236,176,31);
+  font-size: 12px;
+}
+
+/*.amcharts-balloon-div {
   width: 400px;
 }
 .amcharts-balloon-div p {
@@ -216,4 +224,4 @@ plan-list {
   width: 400px;
   text-align: center;
   font-weight: 700;
-}
+}*/

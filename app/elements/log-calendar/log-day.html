@@ -166,9 +166,9 @@
                         <iron-icon icon="icons:delete"></iron-icon>
                         <paper-tooltip>Delete</paper-tooltip>
                     </div>
-                    <div id="pin" class="hidden">
-                        <iron-icon icon="maps:place"></iron-icon>
-                        <paper-tooltip>Pin to Graph</paper-tooltip>
+                    <div id="recalculate">
+                        <iron-icon icon="icons:autorenew"></iron-icon>
+                        <paper-tooltip>Recalculate</paper-tooltip>
                     </div>
                 </div>
                 <div class="tp plan-display">
@@ -233,6 +233,11 @@
                 } else if (target.id === 'delete') {
                     if ('id' in this.data) {
                         this.logOption.callDelete(this.data.id);
+                    }
+                    return;
+                } else if (target.id === 'recalculate') {
+                    if ('id' in this.data) {
+                        this.logOption.callRecalculate(this.data.id);
                     }
                     return;
                 }

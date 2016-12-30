@@ -1,0 +1,89 @@
+<dom-module id="training-plan-info">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+			padding-bottom: 15%;
+		}
+		h1.title {
+			color: white;
+			margin-left: 0;
+			font-size: 32px;
+		}
+		p {
+			color: white;
+		}
+		button {
+			margin-right: 15px;
+		}
+	</style>
+	<template>
+		<template is="dom-if" if="{{plan_available}}">
+			<h1 class="title">{{plan_title}}</h1>
+			<p><b>Starts on:</b> <span>{{plan_start}}</span></p>
+			<p><b>Ends on:</b> <span>{{plan_end}}</span></p>
+			<p>{{plan_description}}</p>
+			<div class="layout horizontal">
+				<button is="stryd-button" on-click="viewPlan">View Plan</button>
+				<button is="stryd-button" on-click="leavePlan">Leave Plan</button>
+				<button is="stryd-button" on-click="viewPlans">Change Plan</button>
+			</div>
+		</template>
+		<template is="dom-if" if="{{!plan_available}}">
+			<h1 class="title">Get a Stryd Training Plan</h1>
+			<div class="layout horizontal">
+				<button is="stryd-button" on-click="viewPlans">View Plans</button>
+			</div>
+		</template>
+		<paper-dialog id="leavePlanDialog">
+			<h1>Are you sure you want to leave this plan? Your completed workouts will be unaffected.</h1>
+			<div class="buttons">
+				<paper-button dialog-dismiss>No</paper-button>
+				<paper-button autofocus on-click="leavePlanConfirm">Yes</paper-button>
+			</div>
+		</paper-dialog>
+	</template>
+	<script>
+	Polymer({
+		is: 'training-plan-info',
+		properties: {
+			plan_available: Boolean
+		},
+		ready: function () {
+			this.plan_available = false;
+			this.getPlan();
+		},
+		getPlan: function () {
+			if (trainingPlan && trainingPlan.hasPlan) {
+				this.plan_available = true;
+				this.plan_title = trainingPlan.plan.name;
+				this.plan_start = trainingPlan.targetDate.format('MMMM Do YYYY');
+				this.plan_end = trainingPlan.targetDate.clone().add(trainingPlan.plan.week_duration, 'weeks').format('MMMM Do YYYY');
+				this.plan_description = trainingPlan.plan.description;
+			}
+		},
+		viewPlan: function () {
+			page.redirect('/analysis');
+		},
+		leavePlan: function () {
+			this.$.leavePlanDialog.open();
+		},
+		leavePlanConfirm: function () {
+			superagent
+				.del(`/b/api/v1/users/plan`)
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res !== undefined && res.ok && res.body !== null) {
+						this.plan_available = false;
+						window.location.reload();
+					} else {
+						console.log('Error: failure to set training plan', err);
+					}
+				});
+		},
+		viewPlans: function () {
+			document.location = 'https://www.stryd.com#section-coaching';
+		}
+	});
+	</script>
+</dom-module>

@@ -128,6 +128,7 @@ var toast = function (message) {
     var logCalendar;
     var performanceChart;
     var planView;
+    var settingsElement;
 
     app.displayInstalledToast = function() {
         document.querySelector('#caching-complete').show();
@@ -144,6 +145,7 @@ var toast = function (message) {
         toastEle = document.querySelector('#toast');
         header = document.querySelector('header-element');
         planView = document.querySelector('plan-view');
+        settingsElement = document.querySelector('stryd-settings');
 
         window.mapReady = function () {
             mapRunEle.setReady();
@@ -205,11 +207,11 @@ var toast = function (message) {
                     true
                 );
             } else {
-                page.redirect('/welcome');
+                document.location = '/signin';
             }
         });
 
-        page('/profile', () => {
+        page('/analysis', () => {
             app.route = 'profile';
             header.toggleActive('profile');
         });
@@ -219,7 +221,7 @@ var toast = function (message) {
                 app.route = 'connect';
                 header.toggleActive('connect');
             } else {
-                page.redirect('/welcome');
+                document.location = '/signin';
             }
         });
 
@@ -264,7 +266,18 @@ var toast = function (message) {
                 app.route = 'settings';
                 header.toggleActive('settings');
             } else {
-                page.redirect('/welcome');
+                document.location = '/signin';
+            }
+        });
+
+        page('/zones', () => {
+            if (jwt.hasToken) {
+                app.route = 'settings';
+                header.toggleActive('settings');
+                settingsElement.toggle('zone');
+                settingsElement.route = 'zone';
+            } else {
+                document.location = '/signin';
             }
         });
 
@@ -272,7 +285,7 @@ var toast = function (message) {
             if (jwt.hasToken) {
                 app.route = 'plan';
             } else {
-                page.redirect('/welcome');
+                document.location = '/signin';
             }
         });
 

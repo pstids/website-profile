@@ -166,9 +166,36 @@ class TrainingPlan {
 	constructor() {
 		this.plan = {};
 		this.days = {};
-		var trainingSelected = localStorage.getItem('training-selected');
-		if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
-			if (window.location.hostname === 'stryd.dev') {
+		this.hasPlan = false;
+
+		this.targetDate = moment();
+
+		var trainingSelected;
+		if (window.location.hostname !== 'stryd.dev') {
+			trainingSelected = localStorage.getItem('training-selected');
+			var trainingStarted = localStorage.getItem('training-started');
+			var trainingParsed = moment(trainingStarted, 'YYYYMMDD').format('X');
+			if (trainingSelected !== null && trainingStarted !== null) {
+	            superagent
+	                .post(`/b/api/v1/users/plan?id=${trainingSelected}&start_date=${trainingParsed}`)
+	                .set('Accept', 'application/json')
+	                .set('Authorization', `Bearer: ${jwt.token}`)
+	                .end((err, res) => {
+	                    if (res !== undefined && res.ok && res.body !== null) {
+	                        localStorage.removeItem('training-selected');
+	                        localStorage.removeItem('training-started');
+	                        window.location.reload();
+	                    } else {
+	                        console.log('Error: failure to set training plan1', err);
+	                    }
+	                });
+			}
+		}
+
+		if (window.location.hostname === 'stryd.dev') {
+			trainingSelected = localStorage.getItem('training-selected');
+			if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
+				this.targetDateHash = localStorage.getItem('training-started');
 				superagent
 					.get('/powercenter/scripts/plan.json')
 					.set('Accept', 'application/json')
@@ -177,34 +204,37 @@ class TrainingPlan {
 							this.plan = res.body.plan;
 							this.processPlan();
 						} else {
-							console.log('Error: failure to get training plan', err);
-						}
-					});
-			} else {
-				superagent
-					.get(`/b/api/v1/training/plan/${trainingSelected}`)
-					.set('Accept', 'application/json')
-					.set('Authorization', `Bearer: ${jwt.token}`)
-					.end((err, res) => {
-						if (res !== undefined && res.ok && res.body !== null) {
-							this.plan = res.body.plan;
-							this.processPlan();
-						} else {
-							console.log('Error: failure to get training plan', err);
+							console.log('Error: failure to get training plan2', err);
 						}
 					});
 			}
+		} else {
+			superagent
+				.get('/b/api/v1/users/plan')
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res !== undefined && res.ok && res.body !== null) {
+						this.plan = res.body.training_plan;
+
+						this.targetDate = moment(res.body.training_plan_start_date);
+						this.targetDateHash = this.targetDate.format('YYYYMMDD');
+						this.processPlan();
+					} else {
+						console.log('Error: failure to get training plan', err);
+					}
+				});
 		}
 	}
 
 	processPlan() {
 		for (var workout of this.plan.workouts) {
 			var addDays = workout.workout_day;
-			var targetDateHash = localStorage.getItem('training-started');
-			var targetDate = moment(targetDateHash).add(addDays, 'days');
+			var targetDate = moment(this.targetDateHash).add(addDays, 'days');
 			var dateHash = targetDate.format('YYYYMMDD');
 			this.days[dateHash] = workout;
 		}
+		this.hasPlan = true;
 		processor.postMessage({
 			type: 'setPlan',
 			trainingPlan: this.plan,
@@ -283,23 +313,105 @@ class FeatureManagement {
 			'test',
 			'test12',
 			'test11',
-			'firegirlred'
+			'firegirlred',
+			'mzielinski',
+			'danielius-stasiulis',
+			'gregjudin',
+			'haider-hasan',
+			'torsten-wambold',
+			'ron-van-megen',
+			'glen-smetherham',
+			'fondph',
+			'michael-on',
+			'michel-emmenegger',
+			'stephen-pinkney',
+			'mojozoom',
+			'jamesdefillppi',
+			'david-lima',
+			'crimez',
+			'popejp',
+			'pjboud',
+			'petter-sallnas',
+			'marcelohsl',
+			'luisanacleto',
+			'muness',
+			'felipe-araya',
+			'erik-newell',
+			'trog311',
+			'tom',
+			'huido',
+			'nnhoward',
+			'rick-caylor',
+			'ijruz',
+			'michou-bousson',
+			'joseph-eschbach',
+			'chickenslippers',
+			'bud-t',
+			'runric',
+			'geji',
+			'johnschneider',
+			'go',
+			'u-ian-lo',
+			'dwoods15',
+			'rpmeier',
+			'guido23',
+			'fchicas',
+			'philip',
+			'crisesalazar',
+			'slamp',
+			'massimilianodoria',
+			'pipiche',
+			'azurblauw',
+			'presi',
+			'juanmvergara',
+			'drewski-nz',
+			'lukasgeorg',
+			'ralfgabler',
+			'mahatmacoata',
+			'saulsibayan',
+			'andydubois',
+			'djk',
+			'dcokley',
+			'erichunley',
+			'chrismlim',
+			'steveweber',
+			'samuel-chuma',
+			'drrafe',
+			'runnerizer',
+			'james-foreman',
+			'joelmh',
+			'pierpaolomaimone',
+			'wildwoodwarrior',
+			'jose-pascual-quesada-buades',
+			'nkarthic',
+			'bloom34',
+			'claudio-paixao',
+			'jamie-rytlewski',
+			'paine007',
+			'arcadio',
+			'matthi68',
+			'davidprocida',
+			'cortcramer',
+			'der-pate',
+			'paulsgreenberg',
+			'gus-pernetz',
+			'1shammond'
 		];
 		this.addFeatures();
 	}
 	addFeatures() {
-		if (this.usernames.indexOf(user.data.user_name) !== -1) {
-			document.querySelector('[data-reveal]').classList.remove('hidden');
-			document.querySelector('header-element').enable('profile');
-			document.querySelector('[data-reveal]')
-				.appendChild(
+		if ('data' in user && 'user_name' in user.data) {
+			if (this.usernames.indexOf(user.data.user_name.toLowerCase()) !== -1) {
+				var dataReveal = document.querySelector('[data-reveal]');
+				dataReveal.classList.remove('hidden');
+				document.querySelector('header-element').enable('profile');
+				dataReveal.appendChild(
 					document.querySelector('log-calendar')
 				);
-			document.querySelector('[data-reveal]')
-				.appendChild(
+				dataReveal.appendChild(
 					document.querySelector('#uploader')
 				);
-
+			}
 		}
 	}
 }

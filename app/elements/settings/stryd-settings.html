@@ -118,6 +118,17 @@
                             <div class="settings">Settings</div>
                         </div>
                     </li>
+                    <li class="setting" on-click="router" data-view="zone">
+                        <div class="icon-border">
+                            <div class="icon">
+                                <iron-icon icon="av:av-timer"></iron-icon>
+                            </div>
+                        </div>
+                        <div class="text">
+                            <div class="type">Zone</div>
+                            <div class="settings">Settings</div>
+                        </div>
+                    </li>
                     <li class="setting" on-click="router" data-view="training">
                         <div class="icon-border">
                             <div class="icon">
@@ -125,29 +136,7 @@
                             </div>
                         </div>
                         <div class="text">
-                            <div class="type">Training</div>
-                            <div class="settings">Settings</div>
-                        </div>
-                    </li>
-                    <li class="setting" on-click="notReady">
-                        <div class="icon-border">
-                            <div class="icon">
-                                <iron-icon icon="communication:vpn-key"></iron-icon>
-                            </div>
-                        </div>
-                        <div class="text">
-                            <div class="type">Account</div>
-                            <div class="settings">Settings</div>
-                        </div>
-                    </li>
-                    <li class="setting" on-click="notReady">
-                        <div class="icon-border">
-                            <div class="icon">
-                                <iron-icon icon="notification:mms"></iron-icon>
-                            </div>
-                        </div>
-                        <div class="text">
-                            <div class="type">Notification</div>
+                            <div class="type">Training Plan</div>
                             <div class="settings">Settings</div>
                         </div>
                     </li>
@@ -158,8 +147,11 @@
                     <section data-route="profile">
                         <user-info></user-info>
                     </section>
-                    <section data-route="training">
+                    <section data-route="zone">
                         <training-info></training-info>
+                    </section>
+                    <section data-route="training">
+                        <training-plan-info></training-plan-info>
                     </section>
                 </iron-pages>
             </div>
@@ -173,9 +165,6 @@
             }
             ready() {
                 this.route = 'profile';
-            }
-            notReady() {
-                toast('This feature is not ready yet.');
             }
             router (e) {
                 var target = e.target;

@@ -229,7 +229,7 @@
             <ul class="navigation">
                 <li class="hidden" data-profile>
                     <a data-route="profile"
-                    href="/powercenter/profile">
+                    href="/powercenter/analysis">
                         Analysis
                     </a>
                 </li>
@@ -309,7 +309,7 @@
                 <div class="profile">
                     <div class="text">
                         <div class="hello">Hello</div>
-                        <div class="name">Unregistered User</div>
+                        <div class="name">Visitor</div>
                         <div class="logout">
                             <a href="/signin">Signup?</a>
                         </div>
@@ -322,7 +322,7 @@
             <div class="layout vertical">
                 <paper-radio-group id="group" selected="next_monday" class="layout vertical">
                     <paper-radio-button name="next_monday">{{plan_next_monday}}</paper-radio-button>
-                    <paper-radio-button name="race_date">Start based on an upcoming race date
+                    <paper-radio-button name="race_date">Select your upcoming race day (Plan starts on: {{startday}})
                     </paper-radio-button>
                 </paper-radio-group>
                 <div id="datecontainer" style="display: flex; justify-content: center; opacity: 0; height: 0;">
@@ -367,6 +367,18 @@
                     this.$.datecontainer.style.opacity = 1;
                     this.type_selected = 'race_date';
                 }
+            });
+
+            this.startday = moment().format('MMM Do YYYY');
+            this.$.datepicker.addEventListener('change', (e) => {
+                console.log(e.detail.date);
+                var start_date = moment(e.detail.date);
+                if (window.location.hostname === 'www.stryd.com') {
+                    start_date.subtract(this.plan.week_duration, 'weeks').add(1, 'days');
+                } else {
+                    start_date.subtract(12, 'weeks').add(1, 'days');
+                }
+                this.startday = start_date.format('MM Do YYYY');
             });
         },
         enable: function () {
@@ -421,10 +433,10 @@
                     moment().day(1).format('MMDD') === moment().format('MMDD')
                 ) {
                     this.plan_next_monday = moment().day(1).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
-                    this.monday_hash = moment().day(1).format('YYYYMMDD');
+                    this.monday = moment().day(1);
                 } else {
                     this.plan_next_monday = moment().day(1+7).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
-                    this.monday_hash = moment().day(1+7).format('YYYYMMDD');
+                    this.monday = moment().day(1+7);
                 }
 
                 if (window.location.hostname === 'www.stryd.com') {
@@ -451,16 +463,9 @@
             localStorage.removeItem('training-plan');
         },
         trainingYes: function () {
-            localStorage.setItem(
-                'training-selected',
-                localStorage.getItem('training-plan')
-            );
-
+            var trainingStart;
             if (this.type_selected === 'next_monday') {
-                localStorage.setItem(
-                    'training-started',
-                    this.monday_hash
-                );
+                trainingStart = this.monday.format('X');
             } else {
                 var finish_date = moment(
                     this.$.datepicker.date,
@@ -475,10 +480,22 @@
                     'training-started',
                     finish_date.format('YYYYMMDD')
                 );
+                trainingStart = finish_date.format('X');
             }
 
-            localStorage.removeItem('training-plan');
-            window.location.reload();
+            var trainingID = localStorage.getItem('training-plan');
+            superagent
+                .post(`/b/api/v1/users/plan?id=${trainingID}&start_date=${trainingStart}`)
+                .set('Accept', 'application/json')
+                .set('Authorization', `Bearer: ${jwt.token}`)
+                .end((err, res) => {
+                    if (res !== undefined && res.ok && res.body !== null) {
+                        localStorage.removeItem('training-plan');
+                        window.location.reload();
+                    } else {
+                        console.log('Error: failure to set training plan', err);
+                    }
+                });
         }
     });
     </script>

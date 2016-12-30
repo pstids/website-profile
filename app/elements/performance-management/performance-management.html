@@ -489,7 +489,6 @@
 					.style('fill', '#CC8719')
 					.style('stroke', 'black')
 					.style('opacity', 0.2)
-					.attr('xlink:href', 'http://en.wikipedia.org/wiki/')
 					.attr('id', `tag${d.key}`)
 					.attr('d', this.runStressLine(d.values));
 			});
@@ -704,10 +703,9 @@
 						msg = `<div class="float-tag">Distance</div><div class="float-value">${d} KM</div>`;
 					}
 					if (time === 'weeks') {
-						return msg;
+						return `${msg}<div class="float-action">TAP FOR WEEK</div>`;
 					} else {
-						var id = '1';
-						return `${msg}<a href="https://www.stryd.com/powercenter/run/${id}" target="_blank"><span style="color:rgb(236,176,31)">Click for run</span>`;
+						return `${msg}<div class="float-action">TAP FOR RUN</div>`;
 					}
 				});
 

@@ -45,6 +45,20 @@
                 this.$.dialogShare.open();
                 this.shareID = null;
             },
+            callRecalculate: function (id) {
+                superagent
+                    .post(`/b/api/v1/activities/${id}/recalculate`)
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        if (res.ok) {
+                            toast('Activity updated.');
+                        } else {
+                            console.log('failed to recalculate');
+                        }
+                    });
+            },
             handleDelete: function () {
                 if (this.deleteID !== null) {
                     superagent
@@ -56,11 +70,10 @@
                             if (res.ok) {
                                 if (this.logCalendar !== null) {
                                     this.logCalendar.removeActivity(this.deleteID);
-                                    console.log('try to remove activities');
+                                    toast('Activity removed.');
                                 }
-                                console.log('workout deleted');
                             } else {
-                                console.log('failed to delete element');
+                                console.log('failed to delete');
                             }
                         });
                 }
