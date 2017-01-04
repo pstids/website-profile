@@ -82,7 +82,7 @@
 				</div>
 			</div>
 		</div>
-		<p>{{description}}</p>
+		<p style="display: none;">{{description}}</p>
 	</template>
 	<script>
 		Polymer({
@@ -98,6 +98,9 @@
 					this.duration_type = 'Distance';
 					this.duration_length = segment.duration_distance;
 					this.duration_unit = segment.distance_unit_selected;
+					if (segment.duration_distance > 50 && segment.distance_unit_selected === 'mile') {
+						this.duration_unit = 'meter';
+					}
 					this.$.time.classList.add('hidden');
 					this.$.distance.classList.remove('hidden');
 				} else {

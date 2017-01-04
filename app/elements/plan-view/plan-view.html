@@ -31,7 +31,7 @@
     }
     #segments {
         @apply(--layout-wrap);
-        @apply(--layout-horizontal);
+        @apply(--layout-vertical);
     }
     .repeat {
         background-color: #1C1C1C;
@@ -102,11 +102,14 @@ Polymer({
 
                 var repeatIndicator = document.createElement('div');
                 Polymer.dom(repeatIndicator).classList.add('repeat');
+                if (block.block_repeat === 0) {
+                    block.block_repeat = 1;
+                }
                 repeatIndicator.textContent = `${block.block_repeat}x`;
                 Polymer.dom(horizontalDiv).appendChild(repeatIndicator);
 
                 var verticalDiv = document.createElement('div');
-                Polymer.dom(verticalDiv).classList.add('layout', 'vertical');
+                Polymer.dom(verticalDiv).classList.add('layout', 'vertical', 'flex');
 
                 for (var segment of block.segments) {
                     var segmentDom = document.createElement('plan-segment');
@@ -152,10 +155,15 @@ Polymer({
                     var segment = block.segments[o];
                     var magnitude = 0;
                     if (segment.duration_type === 'distance') {
+                        if (segment.distance_unit_selected === 'mile') {
+                            if (segment.duration_distance > 50) {
+                                segment.distance_unit_selected = 'meter';
+                            } else {
+                                magnitude = segment.duration_distance * 3;
+                            }
+                        }
                         if (segment.distance_unit_selected === 'meter') {
                             magnitude = segment.duration_distance / 100;
-                        } else if (segment.distance_unit_selected === 'mile') {
-                            magnitude = segment.duration_distance * 3;
                         }
                     } else if (segment.duration_type === 'time') {
                         if (segment.duration_time.hour !== 0) {
@@ -181,7 +189,7 @@ Polymer({
     },
     chartToggle: function (toggle) {
         if (toggle) {
-            this.$.chart.classList.remove('hidden');
+            this.$.chart.classList.add('hidden');
         } else {
             this.$.chart.classList.add('hidden');
         }
@@ -257,6 +265,9 @@ Polymer({
                             if (segment.duration_type === 'time') {
                                 title = `<p class="bold">${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} HH:MM:SS`;
                             } else {
+                                if (segment.duration_distance > 50 && segment.distance_unit_selected === 'mile') {
+                                    segment.distance_unit_selected = 'meter';
+                                }
                                 title = `<p class="bold">${segment.duration_distance} ${segment.distance_unit_selected}`;
                             }
                             if (segment.intensity_type === 'pace') {

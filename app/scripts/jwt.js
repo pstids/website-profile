@@ -203,6 +203,7 @@ class TrainingPlan {
 					.end((err, res) => {
 						if (res !== undefined && res.ok && res.body !== null) {
 							this.plan = res.body.plan;
+							this.hasPlan = true;
 							this.processPlan();
 						} else {
 							console.log('Error: failure to get training plan2', err);
@@ -217,7 +218,7 @@ class TrainingPlan {
 				.end((err, res) => {
 					if (res !== undefined && res.ok && res.body !== null) {
 						this.plan = res.body.training_plan;
-
+						this.hasPlan = true;
 						this.targetDate = moment(res.body.training_plan_start_date);
 						this.targetDateHash = this.targetDate.format('YYYYMMDD');
 						this.processPlan();
@@ -235,7 +236,6 @@ class TrainingPlan {
 			var dateHash = targetDate.format('YYYYMMDD');
 			this.days[dateHash] = workout;
 		}
-		this.hasPlan = true;
 		processor.postMessage({
 			type: 'setPlan',
 			trainingPlan: this.plan,
@@ -399,7 +399,12 @@ class FeatureManagement {
 			'dpdumas642',
 			'bolwin',
 			'frogdr1ver',
-			'chvofa'
+			'chvofa',
+			'guilhermetri',
+			'kwp2135',
+			'gregjudin',
+			'krmackin',
+			'staceymcmickens'
 		];
 		this.hasFeatures = false;
 		this.addFeatures();

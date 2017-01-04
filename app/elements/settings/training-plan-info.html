@@ -51,6 +51,7 @@
 		ready: function () {
 			this.plan_available = false;
 			this.getPlan();
+			window.setTimeout(this.getPlan.bind(this), 3000);
 		},
 		getPlan: function () {
 			if (trainingPlan && trainingPlan.hasPlan) {
