@@ -1,0 +1,80 @@
+<dom-module id="bubble-stats">
+    <style>
+        .bubbles {
+            @apply(--layout-horizontal);
+            @apply(--layout-around-justified);
+            padding: 1vw 1vw;
+        }
+        bubble-stat {
+            @apply(--layout-flex);
+            margin: 1vw;
+            --bubble-stat-wrap: {
+                width: 10vw;
+                height: 10vw;
+            };
+            --bubble-stat-border: {
+                width: 10vw;
+                height: 10vw;
+            };
+        }
+    </style>
+    <template>
+        <div class="layout horizontal end options" style="display: none;">
+            <h1 class="header">Statistics</h1>
+            <div class="stat-toggles hidden">
+                <div class="stat-toggle"
+                data-toggle="on"
+                on-click="toggleMetrics"
+                data-stat="elapsed">
+                    <div class="type">Elapsed Statistics</div>
+                    <div class="circle"></div>
+                </div>
+                <div class="stat-toggle"
+                data-toggle="off"
+                on-click="toggleMetrics"
+                data-stat="moving">
+                    <div class="type">Moving Statistics</div>
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layout horizontal bubbles">
+            <bubble-stat id="bubble1"></bubble-stat>
+            <bubble-stat id="bubble2"></bubble-stat>
+            <bubble-stat id="bubble3"></bubble-stat>
+            <bubble-stat id="bubble4"></bubble-stat>
+            <bubble-stat id="bubble5"></bubble-stat>
+            <bubble-stat id="bubble6"></bubble-stat>
+        </div>
+    </template>
+    <script>
+    Polymer({
+        is: 'bubble-stats',
+        setData: function (metrics) {
+            this.$.bubble1.setData(metrics.pace);
+            this.$.bubble2.setData(metrics.time);
+            this.$.bubble3.setData(metrics.power);
+            this.$.bubble4.setData(metrics.heartRate);
+            this.$.bubble5.setData(metrics.dynamics);
+            this.$.bubble6.setData(metrics.misc);
+        },
+        toggleMetrics: function (e) {
+            var target = e.target;
+            while (!('stat' in target.dataset)) {
+                target = target.parentElement;
+            }
+            var opt = target.dataset.stat;
+
+            /* Change visual state */
+            var active = this.querySelector('[data-toggle="on"].stat');
+            active.dataset.toggle = 'off';
+            target.dataset.toggle = 'on';
+            
+            var bubbles = this.querySelectorAll('bubble-stat');
+            for (var bubble of bubbles) {
+                bubble.setMode(opt);
+            }
+        }
+    });
+    </script>
+</dom-module>

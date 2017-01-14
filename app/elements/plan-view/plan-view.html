@@ -1,37 +1,43 @@
 <dom-module id="plan-view">
 <style>
     :host {
-        border: 1px solid #4D4D4D;
+        flex: 1;
+        @apply(--layout-horizontal);
+        max-width: 100%;
     }
-    :host.hasWorkout .tp {
-        max-height: 600px;
-    }
-    #chart {
+    [data-tp="chart"] {
         color: #ffffff;
-        height: 70vh;
-        width: 50%;
+        height: 40vh;
+        padding: 0 0 0 35px;
+        @apply(--layout-flex-3);
+    }
+    [data-tp="plan"] {
+        @apply(--layout-flex);
+        background-color: #262626;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #4D4D4D;
+        height: 40vh;
+    }
+    [data-tp="plan"] p {
+        font-size: 16px;
+        line-height: 22px;
+        padding: 14px;
+        margin: 0;
+    }
+    [data-tp="segments"] {
+        @apply(--layout-wrap);
+        @apply(--layout-vertical);
+    }
+    [data-tp="description"] {
+        @apply(--layout-wrap);
+        @apply(--layout-vertical);
     }
     h1.header {
         @apply(--header);
         padding-top: 14px;
         padding-left: 14px;
-    }
-    .tp {
-        background-color: #262626;
-        color: white;
-        max-width: 400px;
-        position: relative;
-        overflow: hidden;
-    }
-    .tp p {
-        font-size: 16px;
-        line-height: 22px;
-        padding: 16px;
-        margin: 0;
-    }
-    #segments {
-        @apply(--layout-wrap);
-        @apply(--layout-vertical);
     }
     .repeat {
         background-color: #1C1C1C;
@@ -47,14 +53,12 @@
     }
 </style>
 <template>
-    <div class="layout horizontal center-justified">
-        <div id="chart"></div>
-        <div class="tp plan flex plan-toggle" data-tp="plan" on-click="slide" id="tpplan">
-            <h1 class="header">Training</h1>
-            <p>{{day_title}}</p>
-            <p>{{day_description}}</p>
-            <div id="segments"></div>
-        </div>
+    <div data-tp="chart"></div>
+    <div data-tp="plan">
+        <h1 class="header">{{day_title}}</h1>
+        <p style="display: none;">{{day_description}}</p>
+        <div data-tp="segments" style="display: none;"></div>
+        <div data-tp="description"></div>
     </div>
 </template>
 <script>
@@ -62,7 +66,13 @@ Polymer({
     is: 'plan-view',
     ready: function () {
         this.dateHash = '';
-        Ps.initialize(this.$.tpplan);
+
+        this.planList = this.querySelector('[data-tp="plan"]');
+        this.planSegments = this.querySelector('[data-tp="segments"]');
+        this.planChart = this.querySelector('[data-tp="chart"]');
+        this.planDescription = this.querySelector('[data-tp="description"]');
+
+        Ps.initialize(this.planList);
     },
     setStartTime: function (start_time) {
         this.dateHash = moment.unix(start_time).format('YYYYMMDD');
@@ -75,8 +85,8 @@ Polymer({
         this.processOverview();
     },
     loadTraining: function () {
-        this.$.tpplan.scrollTop = 0;
-        Ps.update(this.$.tpplan);
+        this.planList.scrollTop = 0;
+        Ps.update(this.planList);
 
         var trainingDay = trainingPlan.getDay(this.dateHash);
         if (trainingDay !== null) {
@@ -85,12 +95,12 @@ Polymer({
             this.day_description = trainingDay.workout_desc;
 
             // Clear previous segments
-            while (Polymer.dom(this.$.segments).firstChild) {
+            while (Polymer.dom(this.planSegments).firstChild) {
                 Polymer.dom(
-                    this.$.segments
+                    this.planSegments
                 ).removeChild(
                     Polymer.dom(
-                        this.$.segments
+                        this.planSegments
                     ).firstChild
                 );
             }
@@ -119,7 +129,7 @@ Polymer({
 
                 Polymer.dom(horizontalDiv).appendChild(verticalDiv);
 
-                Polymer.dom(this.$.segments).appendChild(horizontalDiv);
+                Polymer.dom(this.planSegments).appendChild(horizontalDiv);
             }
         } else {
             this.classList.add('hidden');
@@ -189,25 +199,20 @@ Polymer({
     },
     chartToggle: function (toggle) {
         if (toggle) {
-            this.$.chart.classList.remove('hidden');
+            this.planChart.classList.remove('hidden');
         } else {
-            this.$.chart.classList.add('hidden');
+            this.planChart.classList.add('hidden');
         }
     },
     /*global AmCharts*/
     loadOverview: function () {
-        AmCharts.makeChart(this.$.chart, {
+        AmCharts.makeChart(this.planChart, {
             type: 'serial',
             theme: 'stryd',
-            marginRight: 40,
-            marginLeft: 40,
-            marginBottom: 150,
-            marginTop: 0,
-            autoMargins: false,
-            dataDateFormat: 'YYYY-MM-DD',
+            autoResize: true,
+            autoMarginOffset: 20,
             valueAxes: [{
                 stackType: 'regular',
-                gridAlpha: 1,
                 position: 'left',
                 title: 'ZONE',
                 balloon: {
@@ -215,20 +220,21 @@ Polymer({
                 },
                 maximum: 5,
                 minimum: 0,
-                integersOnly: true,
-                labelFrequency: 1
+                axisThickness: 2,
+                gridAlpha: 0.2,
+                axisColor: '#f7a017',
+                dashLength: 1,
+                autoGridCount: false
             }],
-            balloon: {
-                borderThickness: 1,
-                shadowAlpha: 0,
-                enabled: false,
-                fillAlpha: 1
-            },
             graphs: [{
                 id: 'z1',
                 fillAlphas: 1,
                 title: 'Power',
                 valueField: 'z1',
+                type: 'step',
+                ballon: {
+                    enabled: true
+                },
                 balloonFunction: (e) => {
                     var a = parseInt(e.category);
                     for (var i = 0; i < this.chartData.length; i++) {
@@ -239,17 +245,21 @@ Polymer({
                     }
                     return '';
                 },
-                ballon: {
-                    enabled: true
-                },
-                lineColor: '#CC8719',
-                type: 'step'
+                lineColor: '#CC8719'
+                
             }],
+            autoMargins: false,
+            dataDateFormat: 'YYYY-MM-DD',
+            balloon: {
+                borderThickness: 1,
+                shadowAlpha: 0,
+                enabled: false,
+                fillAlpha: 1
+            },
             plotAreaBorderAlpha: 0,
             chartCursor: {
                 valueLineEnabled: false,
                 valueLineBalloonEnabled: false,
-                cursorAlpha: 1,
                 zoomable: false,
                 valueZoomable: true,
                 valueLineAlpha: 0,
@@ -257,18 +267,19 @@ Polymer({
                 oneBalloonOnly: true,
                 cursorPosition: 'mouse',
                 fontSize: 16,
+                cursorAlpha: 0,
                 categoryBalloonFunction: (a) => {
                     for (var i = 0; i < this.chartData.length; i++) {
                         var segment = this.chartData[i];
                         if (parseInt(a) === segment.iter) {
                             var title;
                             if (segment.duration_type === 'time') {
-                                title = `<p class="bold">${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} HH:MM:SS`;
+                                title = `<p class="bold" style='font-size: 16px;line-height: 22px;padding: 14px;'>${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} HH:MM:SS`;
                             } else {
                                 if (segment.duration_distance > 50 && segment.distance_unit_selected === 'mile') {
                                     segment.distance_unit_selected = 'meter';
                                 }
-                                title = `<p class="bold">${segment.duration_distance} ${segment.distance_unit_selected}`;
+                                title = `<p class="bold" style='font-size: 16px;line-height: 22px;padding: 14px;'>${segment.duration_distance} ${segment.distance_unit_selected}`;
                             }
                             if (segment.intensity_type === 'pace') {
                                 title += ` at ${segment.pace_selected.toUpperCase()} PACE</p>`;
@@ -278,6 +289,12 @@ Polymer({
                             if (segment.segment_desc === undefined) {
                                 return '';
                             }
+                            while (this.planDescription.firstChild) {
+                                this.planDescription.removeChild(
+                                    this.planDescription.firstChild
+                                );
+                            }
+                            this.planDescription.insertAdjacentHTML('beforeend', `${title}<p style='font-size: 16px;line-height: 22px;padding: 14px;'>${segment.segment_desc}</p>`);
                             return `${title}<p>${segment.segment_desc}</p>`;
                         }
                     }
@@ -287,12 +304,12 @@ Polymer({
             legend: {
                 equalWidths: false,
                 periodValueText: 'ZONE',
-                position: 'top',
-                valueAlign: 'center',
+                position: 'bottom',
+                valueAlign: 'left',
                 valueWidth: 100,
                 valueText: 'ZONE [[value]]',
                 spacing: 0,
-                align: 'center'
+                align: 'left'
             },
             categoryField: 'iter',
             categoryAxis: {
@@ -302,7 +319,8 @@ Polymer({
                 minorGridEnabled: false,
                 startOnAxis: true,
                 axisColor: '#DADADA',
-                fontSize: 0
+                fontSize: 0,
+                gridAlpha: 0
             },
             dataProvider: this.chartData
         });

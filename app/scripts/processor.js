@@ -14,6 +14,9 @@ var data = {};
 var token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
 var db;
 
+var activeMemory = {};
+var seriesMemory = {};
+
 class ColorInterpolate {
     constructor() {
         this.lowColorRGB = {
@@ -73,11 +76,13 @@ var colorInterpolate = new ColorInterpolate();
 
 /* Private methods */
 var initDB = function () {
-    db = new Dexie('Logs');
-    db.version(1).stores({
-        log: '++id, data'
-    });
-    db.open();
+    if (db === null) {
+        db = new Dexie('Logs');
+        db.version(1).stores({
+            log: '++id, data'
+        });
+        db.open();
+    }
 };
 
 var calcThreshold = function (nPowers) {
@@ -162,8 +167,7 @@ var checkTrainingDay = function (timestamp) {
     }
 };
 
-var workoutProcessing = function (workout, id, scope) {
-    workoutSave(workout, id);
+var workoutProcessing = function (workout, id) {
     if (workout.total_power_list === null) {
         data.error = true;
         postMessage(data);
@@ -181,8 +185,8 @@ var workoutProcessing = function (workout, id, scope) {
 
     // Limit displayed records to prevent browser slugginess
     var steps = 1;
-    if (workout.total_power_list.length > 800) {
-        steps = parseInt(workout.total_power_list.length / 800);
+    if (workout.total_power_list.length > 1000) {
+        steps = parseInt(workout.total_power_list.length / 1000);
     }
     if (steps < 1) {
         steps = 1;
@@ -365,46 +369,124 @@ var workoutProcessing = function (workout, id, scope) {
         data.type = 'data';
     }
     data.workoutShared = workout;
-    data.scope = scope;
     data.availableMetrics = availableMetrics;
+
+    activeMemory[id] = workout;
+    seriesMemory[id] = chartData;
     postMessage(data);
 };
 
-var workoutFetchingAJAX = function (workout, scope) {
+var workoutFetchingAJAX = function (workoutID) {
     if (token === undefined) {
         token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
     }
+
     superagent
-        .get(`/b/api/v1/activities/${workout}`)
+        .get(`/b/api/v1/activities/${workoutID}`)
         .send()
         .set('Accept', 'application/json')
         .set('Authorization', `Bearer: ${token}`)
         .end((err, res) => {
             if (res.ok) {
-                workoutProcessing(res.body, workout, scope);
+                workoutSave(res.body, workoutID);
+                workoutProcessing(res.body, workoutID);
             } else {
                 console.log('Error: cannot fetch workout');
             }
         });
 };
 
-var workoutFetching = function (workoutID, workoutUpdated, scope) {
+var workoutFetching = function (workoutID, workoutUpdated) {
+    var getExternal, workoutUpdatedTS, logUpdatedTS;
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
-    if (!checkIndexedDB) {
+    if (workoutID in activeMemory) {
+        workoutUpdatedTS = new Date(workoutUpdated);
+        logUpdatedTS = new Date(activeMemory[workoutID].updated_time);
+        getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
+            (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
+        if (getExternal) {
+            workoutFetchingAJAX(workoutID);
+        } else {
+            workoutProcessing(activeMemory[workoutID], workoutID);
+        }
+    } else if (!checkIndexedDB) {
         workoutFetchingAJAX(workoutID);
     } else {
         db.log.get(String(workoutID), (log) => {
             if (log === undefined) {
-                workoutFetchingAJAX(workoutID, scope);
+                workoutFetchingAJAX(workoutID);
+            } else {
+                workoutUpdatedTS = new Date(workoutUpdated);
+                logUpdatedTS = new Date(log.data.updated_time);
+                getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
+                    (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
+                if (getExternal) {
+                    workoutFetchingAJAX(workoutID);
+                } else {
+                    workoutProcessing(log.data, log.id);
+                }
+            }
+        });
+    }
+};
+
+var workoutProcessingComparison = function (workout) {
+    if (workout.total_power_list === null) {
+        return [];
+    }
+    var data = [];
+    for (var i = 0; i < workout.total_power_list.length; i += 1) {
+        var entry = {};
+        if ('timestamp_list' in workout) {
+            entry.date = setDate(workout.timestamp_list[i]);
+        }
+        if ('total_power_list' in workout) {
+            entry.power = workout.total_power_list[i];
+        }
+        if ('stress_list' in workout && workout.stress_list !== null) {
+            entry.rss = workout.stress_list[i].toFixed(1);
+        }
+        data.push(entry);
+    }
+    return data;
+};
+
+var workoutFetchingComparisonAJAX = function (workoutID) {
+    superagent
+        .get(`/b/api/v1/activities/${workoutID}`)
+        .send()
+        .set('Accept', 'application/json')
+        .set('Authorization', `Bearer: ${token}`)
+        .end((err, res) => {
+            if (res.ok) {
+                return res.body;
+            } else {
+                console.log('Error: cannot fetch workout');
+                return null;
+            }
+        });
+};
+
+var workoutFetchingComparison = function (workoutID, workoutUpdated) {
+    var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
+    if (!checkIndexedDB) {
+        return workoutFetchingComparisonAJAX(workoutID);
+    } else {
+        return db.log.get(String(workoutID), (log) => {
+            if (log === undefined) {
+                return workoutFetchingComparisonAJAX(workoutID);
             } else {
                 var workoutUpdatedTS = new Date(workoutUpdated);
                 var logUpdatedTS = new Date(log.data.updated_time);
                 var getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
                     (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
                 if (getExternal) {
-                    workoutFetchingAJAX(workoutID, scope);
+                    return workoutFetchingComparisonAJAX(workoutID);
                 } else {
-                    workoutProcessing(log.data, log.id, scope);
+                    if (typeof log.data === 'undefined') {
+                        return workoutFetchingComparisonAJAX(workoutID);
+                    }
+                    return log.data;
                 }
             }
         });
@@ -416,15 +498,15 @@ var logsProcessing = function (logs) {
     postMessage(data);
 };
 
-var addLog = function (id) {
+var addLog = function (workoutID) {
     superagent
-        .get(`/b/api/v1/activities/${id}`)
+        .get(`/b/api/v1/activities/${workoutID}`)
         .send({})
         .set('Accept', 'application/json')
         .set('Authorization', `Bearer: ${token}`)
         .end((err, res) => {
             if (res.ok) {
-                workoutSave(res.body, id);
+                workoutSave(res.body, workoutID);
                 data.addLog = res.body;
                 postMessage(data);
                 console.log('Success: Added workout');
@@ -442,12 +524,348 @@ var suuntoProcessing = function () {
         .set('Authorization', `Bearer: ${token}`)
         .end((err, res) => {
             if (res.ok && res.body.workouts !== null) {
-                for (var i = 0; i < res.body.workouts.length; i++) {
-                    var workoutID = res.body.workouts[i];
+                for (var workoutID of res.body.workouts) {
                     addLog(workoutID);
                 }
             }
         });
+};
+
+var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
+    var activityPrimary = new Promise(resolve => {
+        resolve(workoutFetchingComparison(idPrimary, updatedTime));
+    });
+    var activitySecondary = new Promise(resolve => {
+        if (+idSecondary === 0) {
+            resolve(0);
+        } else {
+            resolve(workoutFetchingComparison(idSecondary, updatedTime));
+        }
+    });
+    Promise.all([activityPrimary, activitySecondary])
+        .then(values => {
+            data.comparison = true;
+            data.activityPrimary = values[0];
+            data.activityIDPrimary = idPrimary;
+            data.dataPrimary = workoutProcessingComparison(values[0]);
+            if (values[1] === 0) {
+                data.activitySecondary = 0;
+                data.activityIDSecondary = 0;
+                data.dataSecondary = 0;
+            } else {
+                data.activitySecondary = values[1];
+                data.activityIDSecondary = idSecondary;
+                data.dataSecondary = workoutProcessingComparison(values[1]);
+            }
+            postMessage(data);
+        });
+};
+
+var metrics = {};
+var resetMetrics = function () {
+    metrics = {
+        pace: {
+            active: ['pace'],
+            pace: {
+                icon: 'maps:directions-run',
+                title: 'Pace',
+                moving: 0,
+                elapsed: 0,
+                unit: 0
+            },
+            maxPace: {
+                icon: 'maps:directions-run',
+                title: 'Max Pace',
+                value: 0,
+                unit: 0
+            }
+        },
+        time: {
+            active: ['time'],
+            time: {
+                icon: 'image:timer',
+                title: 'Time',
+                value: 0,
+                moving: 0,
+                elapsed: 0,
+                mseconds: 0,
+                unit: 'HH:MM:SS'
+            },
+            totalTime: {
+                icon: 'image:timer',
+                title: 'Total Time',
+                value: 0,
+                unit: 'HH:MM:SS'
+            }
+        },
+        power: {
+            active: ['power'],
+            power: {
+                icon: 'image:flash-on',
+                title: 'Power',
+                moving: 0,
+                elapsed: 0,
+                mTotal: 0,
+                unit: 'Watts'
+            },
+            maxPower: {
+                icon: 'image:flash-on',
+                title: 'Max Power',
+                value: 0,
+                unit: 'Watts'
+            },
+            rss: {
+                icon: 'image:flash-on',
+                title: 'RSS',
+                value: 0,
+                unit: ''
+            }
+        },
+        heartRate: {
+            active: ['formPower', 'legSpring', 'heartRate'],
+                formPower: {
+                icon: 'places:hot-tub',
+                title: 'Form Power',
+                elapsed: 0,
+                moving: 0,
+                mTotal: 0,
+                unit: 'Watts'
+            },
+            legSpring: {
+                icon: 'image:leak-add',
+                title: 'Leg Spring',
+                elapsed: 0,
+                moving: 0,
+                mTotal: 0,
+                unit: 'kN/M'
+            },
+            heartRate: {
+                icon: 'favorite',
+                title: 'HR',
+                moving: 0,
+                elapsed: 0,
+                mTotal: 0,
+                value: 0,
+                sum: 0,
+                total: 0,
+                unit: 'BPM'
+            }
+        },
+        dynamics: {
+            active: ['cadence', 'groundTime', 'vertOsc'],
+            cadence: {
+                icon: 'maps:directions-walk',
+                title: 'Cadence',
+                elapsed: 0,
+                moving: 0,
+                mTotal: 0,
+                unit: 'SPM'
+            },
+            groundTime: {
+                icon: 'av:av-timer',
+                title: 'Ground Time',
+                elapsed: 0,
+                moving: 0,
+                mTotal: 0,
+                unit: 'MS'
+            },
+            vertOsc: {
+                icon: 'communication:call-missed',
+                title: 'Vert. Osc.',
+                elapsed: 0,
+                moving: 0,
+                mTotal: 0,
+                unit: 'CM'
+            }
+        },
+        misc: {
+            active: [],
+            distance: {
+                icon: 'communication:swap-calls',
+                title: 'Distance',
+                value: 0,
+                unit: ''
+            }
+        }
+    };
+};
+
+var calcMetrics = function (start, end, activityID, unit) {
+    let lmetric = new Metric('my_event');
+    lmetric.start();
+    resetMetrics();
+    var activity = seriesMemory[activityID];
+
+    var total = end - start;
+
+    var distance = activity[end-1].distance - activity[start].distance;
+    var milliseconds = activity[end-1].date - activity[start].date;
+    var seconds = milliseconds / 1000;
+
+    var paceUnit = 'Min/Mi';
+    var distanceUnit = 'Mi';
+    var distanceDisplay = meterToMile(distance, 1);
+    var distanceValue = distance/metersPerMile;
+    if (unit === 'meters') {
+        paceUnit = 'Min/KM';
+        distanceUnit = 'KM';
+        distanceDisplay = meterToKM(distance);
+        distanceValue = distance/metersPerKM;
+    }
+
+    metrics.time.totalTime.value = hmsTime(milliseconds);
+    metrics.pace.pace.unit = paceUnit;
+    metrics.pace.maxPace.unit = paceUnit;
+    metrics.power.rss.unit = activity.stress;
+    metrics.misc.distance.unit = distanceUnit;
+
+    for (var i = start; i < end; i++) {
+        var entry = activity[i];
+
+        var timeSectionMSeconds = 1000;
+        if (i !== end - 1) {
+            timeSectionMSeconds = activity[i+1].date - activity[i].date;
+        }
+        metrics.time.time.elapsed += timeSectionMSeconds;
+
+        if ('pace' in entry) {
+            if (
+                entry.pace > metrics.pace.maxPace.value
+            ) {
+                metrics.pace.maxPace.value = entry.pace;
+            }
+        }
+
+        if ('power' in entry) {
+            if (
+                entry.power > metrics.power.maxPower.value
+            ) {
+                metrics.power.maxPower.value = entry.power.toFixed(0);
+            }
+            if (entry.power > 0) {
+                metrics.time.time.moving += timeSectionMSeconds;
+            }
+            metrics.power.power.elapsed += entry.power;
+            if (entry.power > 10) {
+                metrics.power.power.moving += entry.power;
+                metrics.power.power.mTotal += 1;
+            }
+        }
+
+        if ('heartRate' in entry && 'power' in entry) {
+            metrics.heartRate.heartRate.elapsed += entry.heartRate;
+
+            if (entry.power > 10) {
+                metrics.heartRate.heartRate.moving += entry.heartRate;
+                metrics.heartRate.heartRate.mTotal += 1;
+            }
+        }
+
+        if ('cadence' in entry) {
+            metrics.dynamics.cadence.elapsed += entry.cadence;
+            if (entry.power > 10) {
+                metrics.dynamics.cadence.moving += entry.cadence;
+                metrics.dynamics.cadence.mTotal += 1;
+            }
+        }
+
+        if ('groundTime' in entry && 'power' in entry) {
+            metrics.dynamics.groundTime.elapsed += entry.groundTime;
+            if (entry.power > 10) {
+                metrics.dynamics.groundTime.moving += entry.groundTime;
+                metrics.dynamics.groundTime.mTotal += 1;
+            }
+        }
+
+        if ('vertOsc' in entry && 'power' in entry) {
+            metrics.dynamics.vertOsc.elapsed += entry.vertOsc;
+            if (entry.power > 10) {
+                metrics.dynamics.vertOsc.moving += entry.vertOsc;
+                metrics.dynamics.vertOsc.mTotal += 1;
+            }
+        }
+
+        if ('formPower' in entry && 'power' in entry) {
+            metrics.heartRate.formPower.elapsed += entry.formPower;
+            if (entry.power > 10) {
+                metrics.heartRate.formPower.moving += entry.formPower;
+                metrics.heartRate.formPower.mTotal += 1;
+            }
+        }
+
+        if ('legSpring' in entry && 'power' in entry) {
+            metrics.heartRate.legSpring.elapsed += entry.legSpring;
+            if (entry.power > 10) {
+                metrics.heartRate.legSpring.moving += entry.legSpring;
+                metrics.heartRate.legSpring.mTotal += 1;
+            }
+        }
+    }
+
+    var elapsedMinutes = seconds / 60;
+    var movingMinutes = metrics.time.time.moving / 1000 / 60;
+
+    var elapsedDec = elapsedMinutes / distanceValue;
+    var movingDec = movingMinutes / distanceValue;
+
+    metrics.pace.pace.elapsed = formatPace(elapsedDec);
+    metrics.pace.pace.moving = formatPace(movingDec);
+    metrics.pace.maxPace.value = speedToPace(metrics.pace.maxPace.value, unit);
+
+    metrics.power.power.moving = (metrics.power.power.moving / metrics.power.power.mTotal).stat();
+    metrics.power.power.elapsed = (metrics.power.power.elapsed / total).stat();
+
+    metrics.heartRate.heartRate.moving = (metrics.heartRate.heartRate.moving / metrics.heartRate.heartRate.mTotal).stat();
+    metrics.heartRate.heartRate.elapsed = (metrics.heartRate.heartRate.elapsed / total).stat();
+
+    metrics.time.time.elapsed = hmsTime(metrics.time.time.elapsed);
+    metrics.time.time.moving = hmsTime(metrics.time.time.moving);
+
+    if (isNaN(distance)) {
+        metrics.misc.distance.value = 'Not';
+        metrics.misc.distance.unit = 'Available';
+    } else {
+        metrics.misc.distance.value = distanceDisplay;
+        metrics.misc.distance.unit = distanceUnit;
+    }
+
+    metrics.dynamics.cadence.moving = (metrics.dynamics.cadence.moving / metrics.dynamics.cadence.mTotal).stat();
+    metrics.dynamics.cadence.elapsed = (metrics.dynamics.cadence.elapsed / total).stat();
+
+    if (metrics.dynamics.groundTime.elapsed !== 0) {
+        metrics.dynamics.groundTime.moving = (metrics.dynamics.groundTime.moving / metrics.dynamics.groundTime.mTotal).stat();
+        metrics.dynamics.groundTime.elapsed = (metrics.dynamics.groundTime.elapsed / total).stat();
+    } else {
+        delete metrics.dynamics.groundTime;
+    }
+
+    if (metrics.dynamics.vertOsc.elapsed !== 0) {
+        metrics.dynamics.vertOsc.moving = (metrics.dynamics.vertOsc.moving / metrics.dynamics.vertOsc.mTotal).stat();
+        metrics.dynamics.vertOsc.elapsed = (metrics.dynamics.vertOsc.elapsed / total).stat();
+    } else {
+        delete metrics.dynamics.vertOsc;
+    }
+
+    if (metrics.heartRate.formPower.elapsed !== 0) {
+        metrics.heartRate.formPower.moving = (metrics.heartRate.formPower.moving / metrics.heartRate.formPower.mTotal).stat();
+        metrics.heartRate.formPower.elapsed = (metrics.heartRate.formPower.elapsed / total).stat();
+    } else {
+        delete metrics.heartRate.formPower;
+    }
+
+    if (metrics.heartRate.legSpring.elapsed !== 0) {
+        metrics.heartRate.legSpring.moving = (metrics.heartRate.legSpring.moving / metrics.heartRate.legSpring.mTotal).stat();
+        metrics.heartRate.legSpring.elapsed = (metrics.heartRate.legSpring.elapsed / total).stat();
+    } else {
+        delete metrics.heartRate.legSpring;
+    }
+
+    delete metrics.heartRate.movingHR;
+
+    data.metrics = metrics;
+    lmetric.end();
+    lmetric.log();
+    postMessage(data);
 };
 
 /* Public method */
@@ -459,10 +877,17 @@ onmessage = function (event) {
 
     switch(event.data.type) {
         case 'workout':
-            workoutFetching(event.data.id, event.data.updated_time, 'owned');
+            workoutFetching(
+                event.data.id,
+                event.data.updated_time
+            );
             break;
-        case 'workout-view':
-            workoutFetching(event.data.id, event.data.updated_time, 'owned');
+        case 'workoutComparison':
+            workoutComparison(
+                event.data.params.idPrimary,
+                event.data.params.idSecondary,
+                event.data.updated_time
+            );
             break;
         case 'addLog':
             addLog(event.data.id);
@@ -474,6 +899,14 @@ onmessage = function (event) {
             trainingPlan = event.data.trainingPlan;
             trainingDays = event.data.trainingDays;
             populateTrainingDays();
+            break;
+        case 'metrics':
+            calcMetrics(
+                event.data.start,
+                event.data.end,
+                event.data.activityID,
+                event.data.unit
+            );
             break;
         default:
             console.log('Error in onmessage/processor: unknown action');

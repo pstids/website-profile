@@ -301,128 +301,170 @@ class ColorInterpolate {
 
 var colorInterpolate = new ColorInterpolate();
 
-class FeatureManagement {
+// class FeatureManagement {
+// 	constructor() {
+// 		this.usernames = [
+// 			'angus',
+// 			'angus-nelson',
+// 			'kun',
+// 			'jamie',
+// 			'wyatt',
+// 			'adamheaney',
+// 			'emelie',
+// 			'test',
+// 			'test12',
+// 			'test11',
+// 			'firegirlred',
+// 			'mzielinski',
+// 			'danielius-stasiulis',
+// 			'gregjudin',
+// 			'haider-hasan',
+// 			'torsten-wambold',
+// 			'ron-van-megen',
+// 			'glen-smetherham',
+// 			'fondph',
+// 			'michael-on',
+// 			'michel-emmenegger',
+// 			'stephen-pinkney',
+// 			'mojozoom',
+// 			'jamesdefillppi',
+// 			'david-lima',
+// 			'crimez',
+// 			'popejp',
+// 			'pjboud',
+// 			'petter-sallnas',
+// 			'marcelohsl',
+// 			'luisanacleto',
+// 			'muness',
+// 			'felipe-araya',
+// 			'erik-newell',
+// 			'trog311',
+// 			'tom',
+// 			'huido',
+// 			'nnhoward',
+// 			'rick-caylor',
+// 			'ijruz',
+// 			'michou-bousson',
+// 			'joseph-eschbach',
+// 			'chickenslippers',
+// 			'bud-t',
+// 			'runric',
+// 			'geji',
+// 			'johnschneider',
+// 			'go',
+// 			'u-ian-lo',
+// 			'dwoods15',
+// 			'rpmeier',
+// 			'guido23',
+// 			'fchicas',
+// 			'philip',
+// 			'crisesalazar',
+// 			'slamp',
+// 			'massimilianodoria',
+// 			'pipiche',
+// 			'azurblauw',
+// 			'presi',
+// 			'juanmvergara',
+// 			'drewski-nz',
+// 			'lukasgeorg',
+// 			'ralfgabler',
+// 			'mahatmacoata',
+// 			'saulsibayan',
+// 			'andydubois',
+// 			'djk',
+// 			'dcokley',
+// 			'erichunley',
+// 			'chrismlim',
+// 			'steveweber',
+// 			'samuel-chuma',
+// 			'drrafe',
+// 			'runnerizer',
+// 			'james-foreman',
+// 			'joelmh',
+// 			'pierpaolomaimone',
+// 			'wildwoodwarrior',
+// 			'jose-pascual-quesada-buades',
+// 			'nkarthic',
+// 			'bloom34',
+// 			'claudio-paixao',
+// 			'jamie-rytlewski',
+// 			'paine007',
+// 			'arcadio',
+// 			'matthi68',
+// 			'davidprocida',
+// 			'cortcramer',
+// 			'der-pate',
+// 			'paulsgreenberg',
+// 			'gus-pernetz',
+// 			'dpdumas642',
+// 			'bolwin',
+// 			'frogdr1ver',
+// 			'chvofa',
+// 			'guilhermetri',
+// 			'kwp2135',
+// 			'gregjudin',
+// 			'krmackin',
+// 			'staceymcmickens'
+// 		];
+// 		this.hasFeatures = false;
+// 		this.addFeatures();
+// 	}
+// 	addFeatures() {
+// 		if ('data' in user && 'user_name' in user.data) {
+// 			if (this.usernames.indexOf(user.data.user_name.toLowerCase()) !== -1) {
+// 				this.hasFeatures = true;
+// 				// var dataReveal = document.querySelector('[data-reveal]');
+// 				// dataReveal.classList.remove('hidden');
+// 				// document.querySelector('header-element').enable('profile');
+// 				// dataReveal.appendChild(
+// 				// 	document.querySelector('log-calendar')
+// 				// );
+// 				// dataReveal.appendChild(
+// 				// 	document.querySelector('#uploader')
+// 				// );
+// 			}
+// 		}
+// 	}
+// }
+
+class URLManager {
 	constructor() {
-		this.usernames = [
-			'angus',
-			'angus-nelson',
-			'kun',
-			'jamie',
-			'wyatt',
-			'adamheaney',
-			'emelie',
-			'test',
-			'test12',
-			'test11',
-			'firegirlred',
-			'mzielinski',
-			'danielius-stasiulis',
-			'gregjudin',
-			'haider-hasan',
-			'torsten-wambold',
-			'ron-van-megen',
-			'glen-smetherham',
-			'fondph',
-			'michael-on',
-			'michel-emmenegger',
-			'stephen-pinkney',
-			'mojozoom',
-			'jamesdefillppi',
-			'david-lima',
-			'crimez',
-			'popejp',
-			'pjboud',
-			'petter-sallnas',
-			'marcelohsl',
-			'luisanacleto',
-			'muness',
-			'felipe-araya',
-			'erik-newell',
-			'trog311',
-			'tom',
-			'huido',
-			'nnhoward',
-			'rick-caylor',
-			'ijruz',
-			'michou-bousson',
-			'joseph-eschbach',
-			'chickenslippers',
-			'bud-t',
-			'runric',
-			'geji',
-			'johnschneider',
-			'go',
-			'u-ian-lo',
-			'dwoods15',
-			'rpmeier',
-			'guido23',
-			'fchicas',
-			'philip',
-			'crisesalazar',
-			'slamp',
-			'massimilianodoria',
-			'pipiche',
-			'azurblauw',
-			'presi',
-			'juanmvergara',
-			'drewski-nz',
-			'lukasgeorg',
-			'ralfgabler',
-			'mahatmacoata',
-			'saulsibayan',
-			'andydubois',
-			'djk',
-			'dcokley',
-			'erichunley',
-			'chrismlim',
-			'steveweber',
-			'samuel-chuma',
-			'drrafe',
-			'runnerizer',
-			'james-foreman',
-			'joelmh',
-			'pierpaolomaimone',
-			'wildwoodwarrior',
-			'jose-pascual-quesada-buades',
-			'nkarthic',
-			'bloom34',
-			'claudio-paixao',
-			'jamie-rytlewski',
-			'paine007',
-			'arcadio',
-			'matthi68',
-			'davidprocida',
-			'cortcramer',
-			'der-pate',
-			'paulsgreenberg',
-			'gus-pernetz',
-			'dpdumas642',
-			'bolwin',
-			'frogdr1ver',
-			'chvofa',
-			'guilhermetri',
-			'kwp2135',
-			'gregjudin',
-			'krmackin',
-			'staceymcmickens'
-		];
-		this.hasFeatures = false;
-		this.addFeatures();
+		this.activityID = 0;
+		this.trainingID = 0;
+		this.compareID = 0;
 	}
-	addFeatures() {
-		if ('data' in user && 'user_name' in user.data) {
-			if (this.usernames.indexOf(user.data.user_name.toLowerCase()) !== -1) {
-				this.hasFeatures = true;
-				var dataReveal = document.querySelector('[data-reveal]');
-				dataReveal.classList.remove('hidden');
-				document.querySelector('header-element').enable('profile');
-				dataReveal.appendChild(
-					document.querySelector('log-calendar')
-				);
-				dataReveal.appendChild(
-					document.querySelector('#uploader')
-				);
-			}
+	setURL(activityID, trainingID) {
+		this.activityID = activityID;
+		this.trainingID = trainingID;
+		if (this.activityID !== 0) {
+			page(`/run/${this.activityID}`);
+		} else if (this.compareID !== 0) {
+			page(`/training/${this.compareID}`);
+		}
+	}
+	compareRun(compareID) {
+		if (compareID !== null) {
+			this.compareID = compareID;
+		}
+		console.log(compareID, this.compareID, this.activityID);
+		if (this.activityID !== 0 && this.compareID !== 0) {
+			page(`/run/${this.activityID}/run/${this.compareID}`);
+		} else {
+			page(`/run/${this.activityID}`);
+		}
+	}
+	view(select) {
+		console.log(select);
+		if (select === 'analysis') {
+			page(`/run/${this.activityID}`);
+		} else if (select === 'comparison') {
+			page(`/run/${this.activityID}/run/${this.compareID}`);
+		} else if (select === 'training') {
+			page(`/run/${this.activityID}/training/${this.trainingID}`);
+		} else if (select === 'similar') {
+			page(`/run/${this.activityID}/similar`);
 		}
 	}
 }
+
+var urlManager = new URLManager();

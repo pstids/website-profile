@@ -33,13 +33,13 @@
 
 	<link rel="stylesheet" href="/powercenter/styles/main.css">
 	<script>
-	var webComponentsSupported = (
+	var wcSupported = (
 		'registerElement' in document
 		&& 'import' in document.createElement('link')
 		&& 'content' in document.createElement('template')
 	);
 
-	if (!webComponentsSupported) {
+	if (!wcSupported) {
 		var wcPoly = document.createElement('script');
 		wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
 		document.head.appendChild(wcPoly);
@@ -59,23 +59,51 @@
 	<div class="content">
 		<header-element></header-element>
 		<iron-pages attr-for-selected="data-route" selected="{{route}}">
-			<section data-route="profile" class="hidden" data-reveal="profile-section">
+			<section data-route="profile">
+				<div class="layout horizontal">
+					<workout-summary></workout-summary>
+					<log-overview></log-overview>
+				</div>
+				<div class="layout horizontal max-width" style="margin: 20px;">
+					<home-navigation></home-navigation>
+					<iron-pages attr-for-selected="data-home" selected="{{home}}" class="flex-auto">
+						<section data-home="comparison">
+							<div class="layout vertical max-width">
+								<rss-comparison id="rss-primary" class="flex" data-property="primary"></rss-comparison>
+								<rss-comparison id="rss-secondary" class="flex" data-property="secondary"></rss-comparison>
+							</div>
+						</section>
+						<section data-home="analysis">
+							<div class="layout vertical" data-analysis>
+								<bubble-stats></bubble-stats>
+								<div class="layout horizontal max-width flex">
+									<workout-element id="workout-element" class="flex-3"></workout-element>
+									<map-run id="map-run" class="flex"></map-run>
+								</div>
+							</div>
+						</section>
+						<section data-home="training">
+							<div class="layout vertical">
+								<div class="layout horizontal max-width flex">
+									<plan-view id="plan-view" class="flex"></plan-view>
+								</div>
+							</div>
+						</section>
+					</iron-pages>
+				</div>
 				<performance-management></performance-management>
+				<log-calendar></log-calendar>
 			</section>
 
 			<section data-route="home">
-				<div class="layout horizontal flex-4" style="position: relative;" data-slide="1">
-					<map-run id="map-run" class="flex"></map-run>
-					<workout-shared id="workout-shared"></workout-shared>
-				</div>
-				<div class="layout horizontal" style="display: none;" data-slide="2">
-					<performance-chart id="performance-chart"></performance-chart>
-				</div>
 				<div class="layout horizontal max-width">
-					<workout-element id="workout-element" class="flex-4"></workout-element>
-					<plan-view class="flex"></plan-view>
+					
+					<!-- <workout-shared id="workout-shared"></workout-shared> -->
 				</div>
-				<log-calendar></log-calendar>
+			</section>
+
+			<section data-route="connect">
+				<platform-connect></platform-connect>
 				<div class="uploader" id="uploader">
 					<h1 class="title">Upload</h1>
 					<form class="dropzone" id="file">
@@ -84,10 +112,6 @@
 						</div>
 					</form>
 				</div>
-			</section>
-
-			<section data-route="connect">
-				<platform-connect></platform-connect>
 			</section>
 
 			<section data-route="settings">

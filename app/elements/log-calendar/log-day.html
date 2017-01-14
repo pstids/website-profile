@@ -168,6 +168,10 @@
                         <iron-icon icon="icons:autorenew"></iron-icon>
                         <paper-tooltip>Recalculate</paper-tooltip>
                     </div>
+                    <div id="compare">
+                        <iron-icon icon="icons:compare-arrows"></iron-icon>
+                        <paper-tooltip>Compare</paper-tooltip>
+                    </div>
                 </div>
                 <div class="tp plan-display">
                     <iron-icon icon="notification:event-note"></iron-icon>
@@ -210,7 +214,6 @@
     </template>
     <script>
     /*global updatedTime:true*/
-    /*global featureManagement:true*/
     Polymer({
         is: 'log-day',
         listeners: {
@@ -238,6 +241,11 @@
                 } else if (target.id === 'recalculate') {
                     if ('id' in this.data) {
                         this.logOption.callRecalculate(this.data.id);
+                    }
+                    return;
+                } else if (target.id === 'compare') {
+                    if ('id' in this.data) {
+                        urlManager.compareRun(this.data.id);
                     }
                     return;
                 }
@@ -269,8 +277,7 @@
                 this.$.container.classList.add('has-workout');
                 if (
                     'rss' in this.data &&
-                    this.data.rss > 0 &&
-                    featureManagement.hasFeatures
+                    this.data.rss > 0
                 ) {
                     this.unit = 'RSS';
                     this.power = this.data.rss.toFixed(0);
@@ -342,7 +349,7 @@
                 .set('Authorization', `Bearer: ${jwt.token}`)
                 .end((err, res) => {
                     if (res.ok) {
-                        document.querySelector('#dlFrame').src = res.body.url;
+                        app.setDownload(res.body.url);
                     } else {
                         console.log('Error: get download link failed', err);
                     }
@@ -356,20 +363,18 @@
                     ('hash' in this.data)
                 )
             ) {
-                var bubbles = document.querySelector('.bubbles');
-                var logDayActive = document.querySelector('log-day.active');
-                if (logDayActive) {
-                    logDayActive.classList.remove('active');
-                }
-                this.classList.add('active');
+                var id = 0;
                 if ('id' in this.data) {
                     updatedTime = this.data.updated_time;
-                    document.querySelector('workout-element').setLoading();
-                    page(`/run/${this.data.id}`);
-                } else {
-                    page(`/training/${this.data.hash}`);
+                    id = this.data.id;
                 }
-                window.scrollTo(0, bubbles.offsetTop);
+                var hash = 0;
+                if ('hash' in this.data) {
+                    hash = this.data.hash;
+                }
+                urlManager.setURL(id, hash);
+                // var bubbles = document.querySelector('.bubbles');
+                // window.scrollTo(0, bubbles.offsetTop);
             }
         },
         // returns bool based on if workout has been inserted

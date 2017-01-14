@@ -1,0 +1,201 @@
+<dom-module id="workout-summary">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+			border: 1px solid #4D4D4D;
+			flex: 3;
+			margin: 20px;
+		}
+		.rss-container {
+			margin: 0 50px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: row;
+		}
+		.rss {
+			width: 160px;
+			height: 160px;
+			border-radius: 50%;
+			border: 1px solid orange;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: row;
+		}
+		.rss h1 {
+			font-size: 32px;
+			margin-right: 5px;
+		}
+		.rss span {
+			color: white;
+		}
+		.top {
+			background-color: #222222;
+			border-bottom: 1px solid #4D4D4D;
+			height: 70px;
+		}
+		.title {
+			@apply(--layout-horizontal);
+			@apply(--layout-flex);
+		}
+		.accent {
+			font-weight: 100;
+		}
+		.raindrop {
+			flex: 0 1;
+			border-left: 1px solid #4D4D4D;
+			@apply(--layout);
+			@apply(--layout-end-justified);
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+		.raindrop iron-icon {
+			width: 34px;
+			height: 34px;
+			fill: orange;
+			padding: 0 20px;
+		}
+		.stats {
+			padding: 20px;
+		}
+		.stats h2 {
+			margin: 0;
+			color: white;
+			font-size: 30px;
+		}
+		.stats h2 .unit {
+			margin-top: 10px;
+			font-size: 16px;
+		}
+		.stats .sub {
+			color: #A4A4A4;
+		}
+		.stats .stat {
+			@apply(--layout-flex);
+		}
+		.values {
+			@apply(--layout-flex);
+		}
+		.values .value {
+			@apply(--layout-flex);
+			justify-content: center;
+			align-items: center;
+		}
+		.tiz-container {
+			margin: 0 50px;
+		}
+	</style>
+	<template>
+		<div class="layout horizontal top">
+			<div class="title">
+				<h1 class="bold">Interval Run</h1>
+				<h1 class="accent">Jan 3rd, 2017</h1>
+			</div>
+			<div class="raindrop hidden">
+				<iron-icon icon="icons:arrow-drop-down-circle"></iron-icon>
+			</div>
+		</div>
+		<div class="layout horizontal stats">
+			<div class="layout horizontal stat">
+				<div class="layout vertical values">
+					<div class="layout vertical value">
+						<h2><span class="value">240</span> <span class="unit">watts</span></h2>
+						<span class="sub">Avg Power</span>
+					</div>
+					<div class="layout vertical value">
+						<h2><span class="value">1:00:00</span> <span class="unit"></span></h2>
+						<span class="sub">Time</span>
+					</div>
+				</div>
+				<div class="layout vertical values">
+					<div class="layout vertical value">
+						<h2><span class="value">6:00</span><span class="unit">/mi</span></h2>
+						<span class="sub">Pace</span>
+					</div>
+					<div class="layout vertical value">
+						<h2><span class="value">10</span> <span class="unit">mi</span></h2>
+						<span class="sub">Distance</span>
+					</div>
+				</div>
+			</div>
+			<div class="layout rss-container">
+				<div class="rss circle">
+					<h1>100</h1>
+					<span>RSS</span>
+				</div>
+			</div>
+			<div class="layout tiz-container">
+				<svg id="tiz232"></svg>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'workout-summary',
+			attached: function () {
+				this.tiz();
+			},
+			updateData: function (activity) {
+				this.activity = activity;
+			},
+			tiz: function () {
+				var width = 200, height = 200, radius = 100;
+				var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
+				var arc = d3.svg.arc()
+					.outerRadius(radius-20)
+					.innerRadius(0);
+				var labelArc = d3.svg.arc()
+					.outerRadius(radius-10)
+					.innerRadius(radius-10);
+				var pie = d3.layout.pie()
+					.sort(null)
+					.value((d) => {
+						return d.tiz;
+					});
+				var svg = d3.select('#tiz232')
+					.attr('width', width)
+					.attr('height', height)
+					.append('g')
+						.attr('transform', `translate(${radius}, ${radius})`);
+				var data = [
+					{
+						tiz: 720,
+						zone: 1
+					}, {
+						tiz: 360,
+						zone: 2
+					}, {
+						tiz: 3600,
+						zone: 3
+					}, {
+						tiz: 1800,
+						zone: 4
+					}, {
+						tiz: 360,
+						zone: 5
+					}
+				];
+				var g = svg.selectAll('.arc')
+					.data(pie(data))
+					.enter()
+					.append('g')
+						.attr('class', 'arc');
+				g.append('path')
+					.attr('d', arc)
+					.style('fill', (d) => {
+						return color(d.data.zone);
+					});
+				g.append('text')
+					.attr('transform', (d) => {
+						return `translate(${labelArc.centroid(d)})`;
+					})
+					.attr('dy', '.35em')
+					.text((d) => {
+						return 'Zone ' + d.data.zone;
+					});
+			}
+		});
+	</script>
+</dom-module>

@@ -14,14 +14,14 @@
         }
         #chartdiv {
             color: #ffffff;
-            height: 60vh;
+            height: 50vh;
             width: 100%;
         }
         .toggle {
             @apply(--layout-center);
             @apply(--layout-justified);
             @apply(--layout-vertical);
-            background-color: var(--primary-background-color);
+            background-color: #222222;
             border: 2px solid #FFFFFF;
             border-radius: 6px;
             color: #FFFFFF;
@@ -144,26 +144,6 @@
             padding-top: 15px;
         }
 
-        .bubbles {
-            @apply(--layout-horizontal);
-            @apply(--layout-around-justified);
-            @apply(--layout-wrap);
-            padding: 1vw 1vw;
-        }
-        bubble-stat {
-            width: 10vw;
-            height: 10vw;
-            margin: 1vw;
-            --bubble-stat-wrap: {
-                width: 10vw;
-                height: 10vw;
-            };
-            --bubble-stat-border: {
-                width: 10vw;
-                height: 10vw;
-            };
-        }
-
         .outer-spinner {
             margin: 0;
             padding: 0;
@@ -235,37 +215,6 @@
                 <div class="dot2"></div>
             </div>
         </div>
-        <div class="layout horizontal end options">
-            <h1 class="header">Statistics</h1>
-            <div class="stat-toggles hidden">
-                <div class="stat-toggle"
-                data-toggle="on"
-                on-click="toggleMetrics"
-                data-stat="elapsed">
-                    <div class="type">Elapsed Statistics</div>
-                    <div class="circle"></div>
-                </div>
-                <div class="stat-toggle"
-                data-toggle="off"
-                on-click="toggleMetrics"
-                data-stat="moving">
-                    <div class="type">Moving Statistics</div>
-                    <div class="circle"></div>
-                </div>
-            </div>
-        </div>
-        <div class="layout horizontal">
-            <div class="layout vertical flex">
-                <div class="bubbles">
-                    <bubble-stat id="pace"></bubble-stat>
-                    <bubble-stat id="time"></bubble-stat>
-                    <bubble-stat id="power"></bubble-stat>
-                    <bubble-stat id="heartRate"></bubble-stat>
-                    <bubble-stat id="dynamics"></bubble-stat>
-                    <bubble-stat id="misc"></bubble-stat>
-                </div>
-            </div>
-        </div>
         <div class="layout horizontal" style="position: relative; width: 100%;">
             <div id="chartdiv"></div>
             <div class="toggles">
@@ -283,7 +232,7 @@
                 </div>
             </div>
         </div>
-        <div class="layout vertical" style="padding-bottom: 5vh;">
+        <div class="layout vertical" style="padding-bottom: 5vh; display: none;">
             <div class="layout horizontal center center-justified">
                 <paper-textarea
                     class="editable"
@@ -294,7 +243,7 @@
                     id="descriptionInput"
                     style="flex: 0 70%;">
                 </paper-textarea>
-                <button is="stryd-button" id="descriptionButton" on-click="" style="margin-left: 10px;">Save</button> 
+                <button is="stryd-button" id="descriptionButton" on-click="" style="margin-left: 10px;">Save</button>
             </div>
             <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
         </div>
@@ -306,15 +255,22 @@
     Polymer({
         is: 'workout-element',
         switchMetric: function (metric, state) {
+            var graph = false;
             if (state === 'off' ||
                 (state === 'flip' &&
                 this.metrics[metric].toggle.checked === false)
             ) {
                 this.metrics[metric].toggle.checked = false;
-                this.chart.hideGraph(this.metrics[metric].graph());
+                graph = this.metrics[metric].graph();
+                if (graph) {
+                    this.chart.hideGraph(graph);
+                }
             } else {
                 this.metrics[metric].toggle.checked = true;
-                this.chart.showGraph(this.metrics[metric].graph());
+                graph = this.metrics[metric].graph();
+                if (graph) {
+                    this.chart.showGraph(graph);
+                }
             }
         },
         ready: function () {
@@ -336,7 +292,6 @@
             );
 
             AmCharts.handleLoad();
-            //this.fillzones();
             this.metrics = {
                 heartRate: {
                     toggle: this.querySelector('[data-graph="heartRate"]'),
@@ -344,28 +299,29 @@
                         return this.chart.getGraphById('heartRate');
                     },
                     axis: {
-                        'id': 'heartRate',
-                        'position': 'left',
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#683a78',
-                        'dashLength': 1
+                        autoGridCount: false,
+                        id: 'heartRate',
+                        position: 'left',
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#683a78',
+                        dashLength: 1
                     },
                     info: {
-                        'id': 'heartRate',
-                        'valueAxis': 'heartRate',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'heartRate',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'heartRate',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] BPM',
-                        'lineColor': '#683a78'
+                        id: 'heartRate',
+                        valueAxis: 'heartRate',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'heartRate',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'heartRate',
+                        type: 'smoothedLine',
+                        balloonText: '[[value]] BPM',
+                        lineColor: '#683a78'
                     }
                 },
                 power: {
@@ -374,29 +330,30 @@
                         return this.chart.getGraphById('power');
                     },
                     axis: {
-                        'id': 'power',
-                        'position': 'right',
-                        'offset': 0,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#f7a017',
-                        'dashLength': 1
+                        autoGridCount: false,
+                        id: 'power',
+                        position: 'right',
+                        offset: 0,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#f7a017',
+                        dashLength: 1
                     },
                     info: {
-                        'id': 'power',
-                        'valueAxis': 'power',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'power',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'power',
-                        'type': 'line',
-                        'balloonText': '[[value]] Watts',
-                        'lineColor': '#f7a017'
+                        id: 'power',
+                        valueAxis: 'power',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'power',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'power',
+                        type: 'line',
+                        balloonText: '[[value]] Watts',
+                        lineColor: '#f7a017'
                     }
                 },
                 formPower: {
@@ -405,29 +362,30 @@
                         return this.chart.getGraphById('formPower');
                     },
                     axis: {
-                        'id': 'formPower',
-                        'position': 'left',
-                        'offset': 0,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#DF7B0B',
-                        'dashLength': 1
+                        autoGridCount: false,
+                        id: 'formPower',
+                        position: 'left',
+                        offset: 0,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#DF7B0B',
+                        dashLength: 1
                     },
                     info: {
-                        'id': 'formPower',
-                        'valueAxis': 'formPower',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'formPower',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'formPower',
-                        'type': 'line',
-                        'balloonText': '[[value]] Watts',
-                        'lineColor': '#DF7B0B'
+                        id: 'formPower',
+                        valueAxis: 'formPower',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'formPower',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'formPower',
+                        type: 'line',
+                        balloonText: '[[value]] Watts',
+                        lineColor: '#DF7B0B'
                     }
                 },
                 pace: {
@@ -436,31 +394,33 @@
                         return this.chart.getGraphById('pace');
                     },
                     axis: {
-                        'id': 'pace',
-                        'position': 'right',
-                        'offset': 40,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#074a8c',
-                        'dashLength': 1,
-                        'labelFunction': speedToPaceForValueAxis
+                        autoGridCount: false,
+                        id: 'pace',
+                        position: 'right',
+                        offset: 40,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#074a8c',
+                        dashLength: 1,
+                        labelFunction: speedToPaceForValueAxis
                     },
                     info: {
-                        'id': 'pace',
-                        'valueAxis': 'pace',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'pace',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'pace',
-                        'type': 'smoothedLine',
-                        'balloonFunction': speedToPaceForBalloon,
-                        'balloonText': '[[value]] Min/Mile',
-                        'lineColor': '#074a8c',
+                        id: 'pace',
+                        valueAxis: 'pace',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'pace',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'pace',
+                        type: 'smoothedLine',
+                        balloonFunction: speedToPaceForBalloon,
+                        balloonText: '[[value]] Min/Mile',
+                        lineColor: '#074a8c',
+                        hidden: true
                     }
                 },
                 cadence : {
@@ -469,29 +429,31 @@
                         return this.chart.getGraphById('cadence');
                     },
                     axis: {
-                        'id': 'cadence',
-                        'position': 'left',
-                        'offset': 40,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#5ea7a1',
-                        'dashLength': 1
+                        autoGridCount: false,
+                        id: 'cadence',
+                        position: 'left',
+                        offset: 120,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#5ea7a1',
+                        dashLength: 1
                     },
                     info: {
-                        'id': 'cadence',
-                        'valueAxis': 'cadence',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'cadence',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'cadence',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] SPM',
-                        'lineColor': '#5ea7a1'
+                        id: 'cadence',
+                        valueAxis: 'cadence',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'cadence',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'cadence',
+                        type: 'smoothedLine',
+                        balloonText: '[[value]] SPM',
+                        lineColor: '#5ea7a1',
+                        hidden: true
                     }
                 },
                 elevation: {
@@ -500,29 +462,31 @@
                         return this.chart.getGraphById('elevation');
                     },
                     axis: {
-                        'id': 'elevation',
-                        'position': 'right',
-                        'offset': 80,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#a06a81',
-                        'dashLength': 1
+                        autoGridCount: false,
+                        id: 'elevation',
+                        position: 'right',
+                        offset: 80,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#a06a81',
+                        dashLength: 1
                     },
                     info: {
-                        'id': 'elevation',
-                        'valueAxis': 'elevation',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'elevation',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'elevation',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] Meters',
-                        'lineColor': '#a06a81',
+                        id: 'elevation',
+                        valueAxis: 'elevation',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'elevation',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'elevation',
+                        type: 'smoothedLine',
+                        balloonText: '[[value]] Meters',
+                        lineColor: '#a06a81',
+                        hidden: true
                     }
                 },
                 groundTime: {
@@ -531,30 +495,32 @@
                         return this.chart.getGraphById('groundTime');
                     },
                     axis: {
-                        'id': 'groundTime',
-                        'position': 'left',
-                        'offset': 80,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#00ACEE',
-                        'dashLength': 1,
-                        'stackType': '3d'
+                        autoGridCount: false,
+                        id: 'groundTime',
+                        position: 'left',
+                        offset: 80,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#00ACEE',
+                        dashLength: 1,
+                        stackType: '3d'
                     },
                     info: {
-                        'id': 'groundTime',
-                        'valueAxis': 'groundTime',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'groundTime',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'groundTime',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] MS',
-                        'lineColor': '#00ACEE',
+                        id: 'groundTime',
+                        valueAxis: 'groundTime',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'groundTime',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'groundTime',
+                        type: 'smoothedLine',
+                        balloonText: '[[value]] MS',
+                        lineColor: '#00ACEE',
+                        hidden: true
                     }
                 },
                 vertOsc: {
@@ -563,30 +529,32 @@
                         return this.chart.getGraphById('vertOsc');
                     },
                     axis: {
-                        'id': 'vertOsc',
-                        'position': 'right',
-                        'offset': 40,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#2BAF2B',
-                        'dashLength': 1,
-                        'stackType': '3d'
+                        autoGridCount: false,
+                        id: 'vertOsc',
+                        position: 'right',
+                        offset: 120,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#2BAF2B',
+                        dashLength: 1,
+                        stackType: '3d'
                     },
                     info: {
-                        'id': 'vertOsc',
-                        'valueAxis': 'vertOsc',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'vertOsc',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'vertOsc',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] CM',
-                        'lineColor': '#2BAF2B'
+                        id: 'vertOsc',
+                        valueAxis: 'vertOsc',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'vertOsc',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'vertOsc',
+                        type: 'smoothedLine',
+                        balloonText: '[[value]] CM',
+                        lineColor: '#2BAF2B',
+                        hidden: true
                     }
                 },
                 legSpring: {
@@ -595,30 +563,33 @@
                         return this.chart.getGraphById('legSpring');
                     },
                     axis: {
-                        'id': 'legSpring',
-                        'position': 'right',
-                        'offset': 40,
-                        'axisThickness': 2,
-                        'gridAlpha': 0.2,
-                        'axisColor': '#E94F65',
-                        'dashLength': 1,
-                        'stackType': '3d'
+                        autoGridCount: false,
+                        id: 'legSpring',
+                        position: 'right',
+                        offset: 40,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#E94F65',
+                        dashLength: 1,
+                        stackType: '3d',
+                        synchronizeWith: 'power'
                     },
                     info: {
-                        'id': 'legSpring',
-                        'valueAxis': 'legSpring',
-                        'bullet': 'round',
-                        'bulletBorderAlpha': 1,
-                        'bulletColor': '#FFFFFF',
-                        'bulletSize': 5,
-                        'hideBulletsCount': 50,
-                        'lineThickness': 2,
-                        'title': 'legSpring',
-                        'useLineColorForBulletBorder': true,
-                        'valueField': 'legSpring',
-                        'type': 'smoothedLine',
-                        'balloonText': '[[value]] kN/m',
-                        'lineColor': '#E94F65'
+                        id: 'legSpring',
+                        valueAxis: 'legSpring',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'legSpring',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'legSpring',
+                        type: 'smoothedLine',
+                        balloonText: '[[value]] kN/m',
+                        lineColor: '#E94F65',
+                        hidden: true
                     }
                 }
             };
@@ -671,23 +642,6 @@
             this.$.spinner.classList.remove('fade');
             this.$.spinner.style.zIndex = 12;
         },
-        toggleMetrics: function (e) {
-            var target = e.target;
-            while (!('stat' in target.dataset)) {
-                target = target.parentElement;
-            }
-            var opt = target.dataset.stat;
-
-            /* Change visual state */
-            var active = this.querySelector('[data-toggle="on"].stat');
-            active.dataset.toggle = 'off';
-            target.dataset.toggle = 'on';
-            
-            var bubbles = this.querySelectorAll('bubble-stat');
-            for (var bubble of bubbles) {
-                bubble.setMode(opt);
-            }
-        },
         bindToggles: function () {
             for (var key in this.metrics) {
                 if (this.availableMetrics.indexOf(key) === -1) {
@@ -696,18 +650,11 @@
                     this.metrics[key].toggle.classList.remove('hidden');
                 }
             }
-            var hiddenMetrics = [];
+
             if (this.availableMetrics.indexOf('heartRate') > -1) {
-                hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc', 'legSpring', 'formPower'];
+                this.switchMetric('formPower', 'off');
             } else {
-                hiddenMetrics = ['pace', 'elevation', 'cadence', 'groundTime', 'vertOsc', 'legSpring'];
-            }
-            for (key of this.availableMetrics) {
-                if (hiddenMetrics.indexOf(key) > -1) {
-                    this.switchMetric(key, 'off');
-                } else {
-                    this.switchMetric(key, 'on');
-                }
+                this.switchMetric('heartRate', 'off');
             }
             this.switchMetric('power', 'on');
         },
@@ -719,387 +666,64 @@
             var graph = target.dataset.graph;
             this.switchMetric(graph, 'flip');
         },
-        calcAvgs: function (begin, end) {
-            var total = end - begin;
-
-            var distance = this.data[end-1].distance - this.data[begin].distance;
-
-            var paceUnit;
-            var distanceUnit;
-            var distanceDisplay;
-            var distanceValue;
-            if (user.data.units === 'feet') {
-                paceUnit = 'Min/Mi';
-                distanceUnit = 'Mi';
-                distanceDisplay = meterToMile(distance, 1);
-                distanceValue = distance/1609.34;
-            } else {
-                paceUnit = 'Min/KM';
-                distanceUnit = 'KM';
-                distanceDisplay = meterToKM(distance);
-                distanceValue = distance/1000;
-            }
-
-            var metrics = {};
-            metrics.pace = {
-                active: ['pace'],
-                pace: {
-                    icon: 'maps:directions-run',
-                    title: 'Pace',
-                    moving: 0,
-                    elapsed: 0,
-                    unit: paceUnit
-                },
-                maxPace: {
-                    icon: 'maps:directions-run',
-                    title: 'Max Pace',
-                    value: 0,
-                    unit: paceUnit
-                }
-            };
-            metrics.time = {
-                active: ['time'],
-                time: {
-                    icon: 'image:timer',
-                    title: 'Time',
-                    value: 0,
-                    moving: 0,
-                    elapsed: 0,
-                    mseconds: 0,
-                    unit: 'HH:MM:SS'
-                },
-                totalTime: {
-                    icon: 'image:timer',
-                    title: 'Total Time',
-                    value: 0,
-                    unit: 'HH:MM:SS'
-                }
-            };
-            metrics.power = {
-                active: ['power'],
-                power: {
-                    icon: 'image:flash-on',
-                    title: 'Power',
-                    moving: 0,
-                    elapsed: 0,
-                    mTotal: 0,
-                    unit: 'Watts'
-                },
-                maxPower: {
-                    icon: 'image:flash-on',
-                    title: 'Max Power',
-                    value: 0,
-                    unit: 'Watts'
-                },
-                rss: {
-                    icon: 'image:flash-on',
-                    title: 'RSS',
-                    value: this.activity.stress.toFixed(0),
-                    unit: ''
-                }
-            };
-            metrics.heartRate = {
-                active: ['heartRate'],
-                heartRate: {
-                    icon: 'favorite',
-                    title: 'HR',
-                    moving: 0,
-                    elapsed: 0,
-                    mTotal: 0,
-                    value: 0,
-                    sum: 0,
-                    total: 0,
-                    unit: 'BPM'
-                },
-                maxHR: {
-                    icon: 'favorite',
-                    title: 'Max Heart Rate',
-                    value: 0,
-                    unit: 'BPM'
-                }
-            };
-            metrics.dynamics = {
-                active: ['cadence', 'groundTime', 'vertOsc'],
-                cadence: {
-                    icon: 'maps:directions-walk',
-                    title: 'Cadence',
-                    elapsed: 0,
-                    moving: 0,
-                    mTotal: 0,
-                    unit: 'SPM'
-                },
-                groundTime: {
-                    icon: 'av:av-timer',
-                    title: 'Ground Time',
-                    elapsed: 0,
-                    moving: 0,
-                    mTotal: 0,
-                    unit: 'MS'
-                },
-                vertOsc: {
-                    icon: 'communication:call-missed',
-                    title: 'Vert. Osc.',
-                    elapsed: 0,
-                    moving: 0,
-                    mTotal: 0,
-                    unit: 'CM'
-                }
-            };
-            metrics.form = {
-                active: ['formPower', 'legSpring'],
-                formPower: {
-                    icon: 'places:hot-tub',
-                    title: 'Form Power',
-                    elapsed: 0,
-                    moving: 0,
-                    mTotal: 0,
-                    unit: 'Watts'
-                },
-                legSpring: {
-                    icon: 'image:leak-add',
-                    title: 'Leg Spring',
-                    elapsed: 0,
-                    moving: 0,
-                    mTotal: 0,
-                    unit: 'kN/M'
-                }
-            };
-            metrics.misc = {
-                active: [],
-                distance: {
-                    icon: 'communication:swap-calls',
-                    title: 'Distance',
-                    value: 0,
-                    unit: distanceUnit
-                }
-            };
-
-            var milliseconds = this.data[end-1].date - this.data[begin].date;
-            var seconds = milliseconds / 1000;
-            var elapsedHMS = hmsTime(milliseconds);
-            
-            metrics.time.totalTime.value = elapsedHMS;
-
-            for (var i = begin; i < end; i++) {
-                var data = this.data[i];
-
-                var timeSectionMSeconds = 1000;
-                if (i !== end - 1) {
-                    timeSectionMSeconds = this.data[i+1].date - this.data[i].date;
-                }
-                metrics.time.time.elapsed += timeSectionMSeconds;
-
-                if ('pace' in data) {
-                    if (
-                        data.pace > metrics.pace.maxPace.value
-                    ) {
-                        metrics.pace.maxPace.value = data.pace;
-                    }
-                }
-
-                if ('power' in data) {
-                    if (
-                        data.power > metrics.power.maxPower.value
-                    ) {
-                        metrics.power.maxPower.value = data.power.toFixed(0);
-                    }
-                    if (data.power > 0) {
-                        metrics.time.time.moving += timeSectionMSeconds;
-                    }
-                    metrics.power.power.elapsed += data.power;
-                    if (data.power > 10) {
-                        metrics.power.power.moving += data.power;
-                        metrics.power.power.mTotal += 1;
-                    }
-                }
-
-                if ('heartRate' in data && 'power' in data) {
-                    if (
-                        data.heartRate > metrics.heartRate.maxHR.value
-                    ) {
-                        metrics.heartRate.maxHR.value = data.heartRate;
-                    }
-
-                    metrics.heartRate.heartRate.elapsed += data.heartRate;
-
-                    if (data.power > 10) {
-                        metrics.heartRate.heartRate.moving += data.heartRate;
-                        metrics.heartRate.heartRate.mTotal += 1;
-                    }
-                }
-
-                if ('cadence' in data) {
-                    metrics.dynamics.cadence.elapsed += data.cadence;
-                    if (data.power > 10) {
-                        metrics.dynamics.cadence.moving += data.cadence;
-                        metrics.dynamics.cadence.mTotal += 1;
-                    }
-                }
-
-                if ('groundTime' in data && 'power' in data) {
-                    metrics.dynamics.groundTime.elapsed += data.groundTime;
-                    if (data.power > 10) {
-                        metrics.dynamics.groundTime.moving += data.groundTime;
-                        metrics.dynamics.groundTime.mTotal += 1;
-                    }
-                }
-
-                if ('vertOsc' in data && 'power' in data) {
-                    metrics.dynamics.vertOsc.elapsed += data.vertOsc;
-                    if (data.power > 10) {
-                        metrics.dynamics.vertOsc.moving += data.vertOsc;
-                        metrics.dynamics.vertOsc.mTotal += 1;
-                    }
-                }
-
-                if ('formPower' in data && 'power' in data) {
-                    metrics.form.formPower.elapsed += data.formPower;
-                    if (data.power > 10) {
-                        metrics.form.formPower.moving += data.formPower;
-                        metrics.form.formPower.mTotal += 1;
-                    }
-                }
-
-                if ('legSpring' in data && 'power' in data) {
-                    metrics.form.legSpring.elapsed += data.legSpring;
-                    if (data.power > 10) {
-                        metrics.form.legSpring.moving += data.legSpring;
-                        metrics.form.legSpring.mTotal += 1;
-                    }
-                }
-            }
-
-            var elapsedMinutes = seconds / 60;
-            var movingMinutes = metrics.time.time.moving / 1000 / 60;
-
-            var elapsedDec = elapsedMinutes / distanceValue;
-            var movingDec = movingMinutes / distanceValue;
-
-            metrics.pace.pace.elapsed = formatPace(elapsedDec);
-            metrics.pace.pace.moving = formatPace(movingDec);
-            metrics.pace.maxPace.value = speedToPace(metrics.pace.maxPace.value, user.data.units);
-
-            metrics.power.power.moving = (metrics.power.power.moving / metrics.power.power.mTotal).stat();
-            metrics.power.power.elapsed = (metrics.power.power.elapsed / total).stat();
-
-            metrics.heartRate.heartRate.moving = (metrics.heartRate.heartRate.moving / metrics.heartRate.heartRate.mTotal).stat();
-            metrics.heartRate.heartRate.elapsed = (metrics.heartRate.heartRate.elapsed / total).stat();
-
-            metrics.time.time.elapsed = hmsTime(metrics.time.time.elapsed);
-            metrics.time.time.moving = hmsTime(metrics.time.time.moving);
-
-            if (isNaN(distance)) {
-                metrics.misc.distance.value = 'Not';
-                metrics.misc.distance.unit = 'Available';
-            } else {
-                metrics.misc.distance.value = distanceDisplay;
-                metrics.misc.distance.unit = distanceUnit;
-            }
-
-            metrics.dynamics.cadence.moving = (metrics.dynamics.cadence.moving / metrics.dynamics.cadence.mTotal).stat();
-            metrics.dynamics.cadence.elapsed = (metrics.dynamics.cadence.elapsed / total).stat();
-
-            if (metrics.dynamics.groundTime.elapsed !== 0) {
-                metrics.dynamics.groundTime.moving = (metrics.dynamics.groundTime.moving / metrics.dynamics.groundTime.mTotal).stat();
-                metrics.dynamics.groundTime.elapsed = (metrics.dynamics.groundTime.elapsed / total).stat();
-            } else {
-                delete metrics.dynamics.groundTime;
-            }
-
-            if (metrics.dynamics.vertOsc.elapsed !== 0) {
-                metrics.dynamics.vertOsc.moving = (metrics.dynamics.vertOsc.moving / metrics.dynamics.vertOsc.mTotal).stat();
-                metrics.dynamics.vertOsc.elapsed = (metrics.dynamics.vertOsc.elapsed / total).stat();
-            } else {
-                delete metrics.dynamics.vertOsc;
-            }
-
-            if (metrics.form.formPower.elapsed !== 0) {
-                metrics.form.formPower.moving = (metrics.form.formPower.moving / metrics.form.formPower.mTotal).stat();
-                metrics.form.formPower.elapsed = (metrics.form.formPower.elapsed / total).stat();
-            } else {
-                delete metrics.form.formPower;
-            }
-
-            if (metrics.form.legSpring.elapsed !== 0) {
-                metrics.form.legSpring.moving = (metrics.form.legSpring.moving / metrics.form.legSpring.mTotal).stat();
-                metrics.form.legSpring.elapsed = (metrics.form.legSpring.elapsed / total).stat();
-            } else {
-                delete metrics.form.legSpring;
-            }
-
-            delete metrics.heartRate.movingHR;
-
-            this.$.pace.setData(metrics.pace);
-            this.$.time.setData(metrics.time);
-            this.$.power.setData(metrics.power);
-            if (
-                this.availableMetrics.indexOf('legSpring') > -1 ||
-                this.availableMetrics.indexOf('formPower') > -1
-            ) {
-                this.$.heartRate.setData(metrics.form);
-            } else {
-                this.$.heartRate.setData(metrics.heartRate);
-            }
-            this.$.dynamics.setData(metrics.dynamics);
-            this.$.misc.setData(metrics.misc);
-        },
         fillChart: function (valueAxes, graphs) {
             this.chart = AmCharts.makeChart(
                 this.$.chartdiv,
                 {
-                    'type': 'serial',
-                    'theme': 'stryd',
-                    'autoResize': true,
-                    'autoMarginOffset': 20,
-                    'valueAxes': valueAxes,
-                    'graphs': graphs,
-                    'valueScrollbar':{
-                        'oppositeAxis': true,
-                        'offset': 50,
-                        'scrollbarHeight': 10
+                    type: 'serial',
+                    theme: 'stryd',
+                    autoResize: true,
+                    autoMarginOffset: 20,
+                    valueAxes: valueAxes,
+                    graphs: graphs,
+                    valueScrollbar:{
+                        oppositeAxis: false,
+                        offset: 50,
+                        scrollbarHeight: 10,
+                        enabled: false
                     },
-                    'chartScrollbar': {
-                        'graph': 'power',
-                        'autoGridCount': false,
-                        'scrollbarHeight': 50,
-                        'offset': 30,
-                        'backgroundAlpha': 0,
-                        'selectedBackgroundAlpha': 0.2,
-                        'selectedBackgroundColor': '#ababab',
-                        'graphFillAlpha': 0,
-                        'graphLineAlpha': 0.2,
-                        'selectedGraphFillAlpha': 0,
-                        'selectedGraphLineAlpha': 0.5,
-                        'oppositeAxis': false
+                    chartScrollbar: {
+                        graph: 'power',
+                        autoGridCount: false,
+                        scrollbarHeight: 50,
+                        offset: 30,
+                        backgroundAlpha: 0,
+                        selectedBackgroundAlpha: 0.2,
+                        selectedBackgroundColor: '#ababab',
+                        graphFillAlpha: 0,
+                        graphLineAlpha: 0.2,
+                        selectedGraphFillAlpha: 0,
+                        selectedGraphLineAlpha: 0.5,
+                        oppositeAxis: false
                     },
-                    'categoryField': 'date',
-                    'categoryAxis': {
-                        'parseDates': false,
-                        'minorGridEnabled': true,
-                        'axisAlpha': 0,
-                        'gridAlpha': 0,
-                        'gridCount': 0,
-                        'gridThickness': 0,
+                    categoryField: 'date',
+                    categoryAxis: {
+                        parseDates: false,
+                        minorGridEnabled: true,
+                        axisAlpha: 0,
+                        gridAlpha: 0,
+                        gridCount: 0,
+                        gridThickness: 0,
                         /*jshint unused: false */
                         categoryFunction: (a, d, b) => {
                             var timeDiff = a.getTime() - this.startTime.getTime();
                             return hmsTime(timeDiff);
                         }
                     },
-                    'chartCursor': {},
-                    'balloon': {
-                        'adjustBorderColor': true,
-                        'color': '#1e1e1e',
-                        'cornerRadius': 5,
-                        'borderThickness': 2,
-                        'fillColor': '#FFFFFF',
-                        'shadowAlpha': 0,
-                        'fontSize': 16,
-                        'verticalPadding': 4,
-                        'horizontalPadding': 8
+                    chartCursor: {},
+                    balloon: {
+                        adjustBorderColor: true,
+                        color: '#1e1e1e',
+                        cornerRadius: 5,
+                        borderThickness: 2,
+                        fillColor: '#FFFFFF',
+                        shadowAlpha: 0,
+                        fontSize: 16,
+                        verticalPadding: 4,
+                        horizontalPadding: 8
                     },
-                    'dataProvider': this.data,
-                    'pathToImages': 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
+                    dataProvider: this.data,
+                    pathToImages: 'https://www.stryd.com/powercenter/scripts/amcharts/images/'
                 },
                 0
             );
@@ -1107,11 +731,15 @@
             this.chart.addListener('init', (e) => {
                 this.removeLoading();
                 this.bindToggles();
-                this.calcAvgs(0, this.data.length);
             });
 
             this.chart.addListener('zoomed', (e) => {
-                this.calcAvgs(e.startIndex, e.endIndex + 1);
+                app.calcMetrics(
+                    e.startIndex,
+                    e.endIndex + 1,
+                    this.activity.id,
+                    user.data.units
+                );
             });
         }
     });

@@ -1,0 +1,354 @@
+<dom-module id="rss-comparison">
+	<style>
+		:host {
+			height: 30vh;
+            @apply(--layout-vertical);
+            background-color: var(--primary-background-color);
+            position: relative;
+		}
+
+		.outer-spinner {
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            background-color: var(--primary-background-color);
+            @apply(--layout-horizontal);
+            @apply(--layout-center)
+            @apply(--layout-center-justified)
+            transition: opacity 2s;
+            opacity: 1;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 12;
+		}
+		.outer-spinner.fade {
+			opacity: 0;
+			z-index: 0;
+		}
+
+		.spinner {
+			margin: 100px auto;
+			width: 40px;
+			height: 40px;
+			animation: sk-rotate 2.0s infinite linear;
+		}
+		.spinner .dot1, .spinner .dot2 {
+			width: 60%;
+			height: 60%;
+			display: inline-block;
+			position: absolute;
+			top: 0;
+			background-color: var(--primary-icon-color);
+			border-radius: 100%;
+			animation: sk-bounce 2.0s infinite ease-in-out;
+		}
+		.spinner .dot2 {
+			top: auto;
+			bottom: 0;
+			-webkit-animation-delay: -1.0s;
+			animation-delay: -1.0s;
+		}
+		@keyframes sk-rotate {
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+		@keyframes sk-bounce {
+			0%, 100% { 
+				transform: scale(0.0);
+			} 50% { 
+				transform: scale(1.0);
+			}
+		}
+
+		.chart-holder {
+			position: relative;
+			width: 100%;
+		}
+        #chart {
+            color: #ffffff;
+            height: 30vh;
+            width: 100%;
+            flex: 1;
+        }
+        svg {
+        	width: 240px;
+        	height: 240px;
+        }
+	</style>
+	<template>
+		<div class="outer-spinner" id="spinner">
+			<div class="spinner">
+				<div class="dot1"></div>
+				<div class="dot2"></div>
+			</div>
+		</div>
+        <div class="layout horizontal chart-holder" id="chartHolder">
+        	<svg></svg>
+			<div id="chart"></div>
+		</div>
+		<div class="instructions" id="instructions">
+			<h1>Scroll to calendar and click the double arrow.</h1>
+		</div>
+	</template>
+	<script>
+		/*global AmCharts*/
+		/*jshint camelcase: false */
+		Polymer({
+			is: 'rss-comparison',
+			ready: function () {
+				AmCharts.handleLoad();
+				this.querySelector('svg').id = `${this.dataset.property}-svg`;
+			},
+			calcTIZ: function (start, end) {
+				var tz = user.data.training_info.training_zones;
+				var tiz = [0, 0, 0, 0, 0];
+				for (var i = start; i < end; i++) {
+					var power = this.data[i].power;
+					for (var o = 0; o < 5; o++) {
+						if (power > tz[o].power_low && power < tz[o].power_high) {
+							tiz[o] += 1;
+						}
+					}
+				}
+				var total = tiz.reduce((a, b) => {
+					return a + b;
+				}, 0);
+				var result = [];
+				for (var p = 0; p < 5; p++) {
+					result.push({
+						zone: p+1,
+						tiz: tiz[p],
+						percentage: tiz[p]/total
+					});
+				}
+				this.genTIZ(result);
+			},
+			genTIZ: function (data) {
+				var width = 200, height = 200;
+				var radius = Math.min(width, height) / 2;
+				var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
+				var arc = d3.svg.arc()
+					.outerRadius(radius-30)
+					.innerRadius(0);
+				var labelArc = d3.svg.arc()
+					.outerRadius(radius-10)
+					.innerRadius(radius-10);
+				var pie = d3.layout.pie()
+					.sort(null)
+					.value((d) => {
+						return d.tiz;
+					});
+				d3.select(`#${this.dataset.property}-svg`)
+					.selectAll('*')
+					.remove();
+				var svg = d3.select(`#${this.dataset.property}-svg`)
+					.attr('width', width)
+					.attr('height', height)
+					.append('g')
+						.attr('transform', `translate(${radius}, ${radius})`);
+				var g = svg.selectAll('.arc')
+					.data(pie(data))
+					.enter()
+					.append('g')
+						.attr('class', 'arc');
+				g.append('path')
+					.attr('d', arc)
+					.style('fill', (d) => {
+						return color(d.data.zone);
+					});
+				g.append('text')
+					.attr('transform', (d) => {
+						return `translate(${labelArc.centroid(d)})`;
+					})
+					.attr('dy', '.35em')
+					.text((d) => {
+						if (d.data.percentage * 100 < 1) {
+							return '';
+						}
+						return `Zone ${d.data.zone}`;
+					});
+				g.append('text')
+					.attr('transform', (d) => {
+						return `translate(${labelArc.centroid(d)})`;
+					})
+					.attr('dy', '1.35em')
+					.text((d) => {
+						if (d.data.percentage * 100 < 1) {
+							return '';
+						}
+						var percentage = (d.data.percentage * 100).toFixed(2);
+						return `(${percentage}%)`;
+					});
+			},
+			removeLoading: function () {
+				this.$.spinner.classList.remove('show');
+				this.$.spinner.classList.add('hide');
+				this.$.spinner.classList.add('fade');
+				this.$.spinner.style.zIndex = -1;
+			},
+			setLoading: function () {
+				this.$.spinner.classList.add('show');
+				this.$.spinner.classList.remove('hide');
+				this.$.spinner.classList.remove('fade');
+				this.$.spinner.style.zIndex = 12;
+			},
+			notSelected: function (status) {
+				if (status) {
+					this.$.chartHolder.classList.add('hidden');
+					this.$.instructions.classList.remove('hidden');
+				} else {
+					this.$.chartHolder.classList.remove('hidden');
+					this.$.instructions.classList.add('hidden');
+				}
+			},
+			setChartData: function (activity, data, maxValue) {
+				if (activity === 0) {
+					this.notSelected(true);
+					this.removeLoading();
+				} else {
+					this.notSelected(false);
+					this.setLoading();
+					this.activity = activity;
+					this.data = data;
+					this.startTime = this.data[0].date;
+					this.maxValue = maxValue;
+
+					this.fillChart();
+				}
+			},
+			fillChart: function () {
+				this.chart = AmCharts.makeChart(
+					this.$.chart,
+					{
+						type: 'serial',
+						theme: 'stryd',
+						autoResize: true,
+						autoMarginOffset: 20,
+						valueAxes: [
+							{
+								autoGridCount: false,
+								gridCount: 4,
+								id: 'power',
+								position: 'left',
+								offset: 0,
+								axisThickness: 2,
+								gridAlpha: 0.2,
+								axisColor: '#f7a017',
+								dashLength: 1
+							},
+							{
+								autoGridCount: false,
+								gridCount: 4,
+								id: 'rss',
+								position: 'right',
+								offset: 0,
+								axisThickness: 2,
+								gridAlpha: 0.2,
+								axisColor: '#DF7B0B',
+								dashLength: 1,
+								maximum: this.maxValue
+							}
+						],
+						graphs: [
+							{
+								id: 'rss',
+								valueAxis: 'rss',
+								bullet: 'round',
+								bulletBorderAlpha: 1,
+								bulletColor: '#FFFFFF',
+								bulletSize: 5,
+								hideBulletsCount: 50,
+								lineThickness: 2,
+								title: 'rss',
+								useLineColorForBulletBorder: true,
+								valueField: 'rss',
+								type: 'line',
+								balloonText: '[[value]] RSS',
+								lineColor: '#DF7B0B',
+								fillAlphas: 0.7
+							},
+							{
+								id: 'power',
+								valueAxis: 'power',
+								bullet: 'round',
+								bulletBorderAlpha: 1,
+								bulletColor: '#FFFFFF',
+								bulletSize: 5,
+								hideBulletsCount: 50,
+								lineThickness: 2,
+								title: 'power',
+								useLineColorForBulletBorder: true,
+								valueField: 'power',
+								type: 'line',
+								balloonText: '[[value]] Watts',
+								lineColor: '#f7a017'
+							},
+						],
+						valueScrollbar: {
+							oppositeAxis: false,
+							offset: 50,
+							scrollbarHeight: 10,
+							enabled: false
+						},
+						chartScrollbar: {
+							graph: 'power',
+							autoGridCount: false,
+							scrollbarHeight: 50,
+							offset: 30,
+							backgroundAlpha: 0,
+							selectedBackgroundAlpha: 0.2,
+							selectedBackgroundColor: '#ababab',
+							graphFillAlpha: 0,
+							graphLineAlpha: 0.2,
+							selectedGraphFillAlpha: 0,
+							selectedGraphLineAlpha: 0.5,
+							oppositeAxis: false,
+							enabled: false
+						},
+						categoryField: 'date',
+						categoryAxis: {
+							parseDates: false,
+							minorGridEnabled: true,
+							axisAlpha: 0,
+							gridAlpha: 0,
+							gridCount: 0,
+							gridThickness: 0,
+							/*jshint unused: false */
+							categoryFunction: (a, d, b) => {
+								var timeDiff = a.getTime() - this.startTime.getTime();
+								return hmsTime(timeDiff);
+							}
+						},
+						chartCursor: {},
+						balloon: {
+							adjustBorderColor: true,
+							color: '#1e1e1e',
+							cornerRadius: 5,
+							borderThickness: 2,
+							fillColor: '#FFFFFF',
+							shadowAlpha: 0,
+							fontSize: 16,
+							verticalPadding: 4,
+							horizontalPadding: 8
+						},
+						pathToImages: 'https://www.stryd.com/powercenter/scripts/amcharts/images/',
+						dataProvider: this.data
+					},
+					0
+				);
+
+				this.chart.addListener('init', (e) => {
+					this.removeLoading();
+					this.calcTIZ(0, this.data.length);
+				});
+
+				this.chart.addListener('zoomed', (e) => {
+					this.calcTIZ(e.startIndex, e.endIndex);
+				});
+			}
+		});
+	</script>
+</dom-module>

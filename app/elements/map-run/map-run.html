@@ -2,7 +2,8 @@
     <style>
         #map {
             width: 100%;
-            height: 75vh;
+            height: calc(50vh - 30px);
+            margin-top: 15px;
         }
     </style>
     <template>
@@ -40,7 +41,6 @@
                 }
             },
             setMap: function () {
-                console.log('setMap');
                 if (!this.hasMap) {
                     this.hasMap = true;
                     this.strydDarkId = 'strydDarkStyle';
@@ -82,7 +82,7 @@
                             scaleControl: false,
                             scrollwheel: false,
                             mapTypeControlOptions: {
-                                mapTypeIds: [google.maps.MapTypeId.SATELLITE, this.strydDarkId]
+                                mapTypeIds: []
                             }
                         }
                     );

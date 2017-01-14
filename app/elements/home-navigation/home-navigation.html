@@ -1,0 +1,159 @@
+<dom-module id="home-navigation">
+	<style>
+		:host {
+			flex: 0 1;
+		}
+		.settings-nav {
+			@apply(--layout-self-start);
+			background-color: rgba(36, 36, 36, 0.7);
+			border: 1px solid #4D4D4D;
+			margin: 20px 0;
+			padding: 10px;
+			list-style-type: none;
+			@apply(--layout-vertical);
+			width: 210px;
+		}
+		.settings-nav p {
+			color: white;
+		}
+		.settings-nav li {
+			list-style: none;
+			padding: 0;
+			@apply(--layout-vertical);
+			margin: 1vw;
+			cursor: pointer;
+		}
+		.setting .icon-border {
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+			width: 55px;
+			height: 55px;
+			border-radius: 50%;
+			background: linear-gradient(to bottom, #FFFFFF 0%, #4D4D4D 100%);
+			position: relative;
+		}
+		.setting.active .icon-border {
+			background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
+		}
+		.setting .icon {
+			width: 95%;
+			height: 95%;
+			border-radius: 50%;
+			background-color: var(--secondary-background-color);
+			position: relative;
+			@apply(--layout-vertical);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+			box-shadow: inset 0px 0px 6vw -3.33vw #000000;
+			color: #FFFFFF;
+			fill: #FFFFFF;
+		}
+		.setting.active .icon {
+			color: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
+			fill: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
+		}
+		.setting iron-icon {
+			width: 30px;
+			height: 30px;
+			font-size: 2vw;
+		}
+		.setting .text {
+			@apply(--layout-flex-2);
+			color: white;
+			@apply(--layout-vertical);
+			@apply(--layout-center-justified);
+			margin-left: 15px;
+			text-transform: uppercase;
+		}
+		.setting .text .type {
+			font-size: 1.2vw;
+			line-height: 1.75vw;
+		}
+		.setting .text .settings {
+			font-size: 0.67vw;
+			line-height: 1vw;
+		}
+	</style>
+	<template>
+		<ul class="settings-nav">
+			<li class="setting active" on-click="router" data-select="analysis">
+				<div class="layout horizontal">
+					<div class="icon-border">
+						<div class="icon">
+							<iron-icon icon="places:fitness-center"></iron-icon>
+						</div>
+					</div>
+					<div class="text">
+						<div class="type">Data</div>
+						<div class="type">Analysis</div>
+					</div>
+				</div>
+				<paper-tooltip position="right">Use Data Analysis to look at your second by second data.</paper-tooltip>
+			</li>
+			<li class="setting" on-click="router" data-select="comparison">
+				<div class="layout horizontal">
+					<div class="icon-border">
+						<div class="icon">
+							<iron-icon icon="places:fitness-center"></iron-icon>
+						</div>
+					</div>
+					<div class="text">
+						<div class="type">Workout</div>
+						<div class="type">Comparison</div>
+					</div>
+				</div>
+				<paper-tooltip position="right">Use Workout Comparison to compare your similar runs to see how Run Stress Score builds.</paper-tooltip>
+			</li>
+			<li class="setting" on-click="router" data-select="training">
+				<div class="layout horizontal">
+					<div class="icon-border">
+						<div class="icon">
+							<iron-icon icon="places:fitness-center"></iron-icon>
+						</div>
+					</div>
+					<div class="text">
+						<div class="type">Planned</div>
+						<div class="type">Training</div>
+					</div>
+				</div>
+				<paper-tooltip position="right">Use Planned Training to compare your similar runs to see how Run Stress Score builds.</paper-tooltip>
+			</li>
+			<li class="setting" on-click="router" data-select="similar">
+				<div class="layout horizontal">
+					<div class="icon-border">
+						<div class="icon">
+							<iron-icon icon="places:fitness-center"></iron-icon>
+						</div>
+					</div>
+					<div class="text">
+						<div class="type">Similar</div>
+						<div class="type">Training</div>
+					</div>
+				</div>
+				<paper-tooltip position="right">Use Similar Training to compare your similar runs to see how Run Stress Score builds.</paper-tooltip>
+			</li>
+		</ul>
+	</template>
+	<script>
+		Polymer({
+			is: 'home-navigation',
+			router: function (e) {
+				var target = e.target;
+				while (target.dataset.select === undefined) {
+					target = target.parentElement;
+				}
+				this.querySelector('[data-select].active').classList.remove('active');
+				target.classList.add('active');
+
+				app.home = target.dataset.select;
+
+				urlManager.view(target.dataset.select);
+			},
+			select: function (target) {
+				this.querySelector('[data-select].active').classList.remove('active');
+				this.querySelector(`[data-select=${target}]`).classList.add('active');
+			}
+		});
+	</script>
+</dom-module>

@@ -50,6 +50,7 @@ gulp.task('jshint', function () {
       '!app/scripts/moment.js',
       '!app/scripts/d3.js',
       '!app/scripts/d3.tip.js',
+      '!app/scripts/appmetrics.js',
       '!app/scripts/amcharts/**/*',
       'app/elements/**/*.js',
       'app/elements/**/*.html'
@@ -95,7 +96,12 @@ gulp.task('jshint', function () {
         'toast',
         'Ps',
         'd3',
-        'FeatureManagement'
+        'FeatureManagement',
+        'Metric',
+        'app',
+        'metersPerMile',
+        'metersPerKM',
+        'urlManager'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
@@ -131,7 +137,8 @@ gulp.task('js', function () {
         '!app/scripts/moment.js',
         '!app/scripts/amcharts/**/*',
         '!app/scripts/d3.js',
-        '!app/scripts/d3.tip.js'
+        '!app/scripts/d3.tip.js',
+        '!app/scripts/appmetrics.js'
     ])
     .pipe($.sourcemaps.init())
     .pipe($.if('*.html', $.crisper())) // Extract JS from .html files
@@ -173,7 +180,8 @@ gulp.task('copy', function () {
     'app/scripts/external.js',
     'app/scripts/moment.js',
     'app/scripts/d3.js',
-    'app/scripts/d3.tip.js'
+    'app/scripts/d3.tip.js',
+    'app/scripts/appmetrics.js'
   ])
     .pipe(gulp.dest('dist/scripts'));
 
@@ -308,7 +316,9 @@ gulp.task('serve:dist', ['default'], function () {
     //       will present a certificate warning in the browser.
     // https: true,
     server: 'dist',
-    middleware: [ historyApiFallback() ]
+    middleware: [
+      historyApiFallback()
+    ]
   });
   gulp.watch(['app/**/*.html'], ['default', reload]);
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
@@ -331,7 +341,8 @@ gulp.task('concat1', function () {
       'app/scripts/superagent.js',
       'app/scripts/toolbox.js',
       'app/scripts/dexie.js',
-      'app/scripts/moment.js'
+      'app/scripts/moment.js',
+      'dist/scripts/appmetrics.js'
     ])
     .pipe(concat('processor.min.js'))
     .pipe(gulp.dest('dist/scripts'));
@@ -345,7 +356,8 @@ gulp.task('concat2', function () {
       'dist/scripts/jwt.js',
       'dist/scripts/app.js',
       'dist/scripts/d3.js',
-      'dist/scripts/d3.tip.js'
+      'dist/scripts/d3.tip.js',
+      'dist/scripts/appmetrics.js'
     ])
     .pipe(concat('app.min.js'))
     .pipe(gulp.dest('dist/scripts'));

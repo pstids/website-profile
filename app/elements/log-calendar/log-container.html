@@ -102,6 +102,15 @@
 				}
 				return false;
 			},
+			setActive: function (id) {
+				for (var node of Polymer.dom(this.$.container).children) {
+					if (node.getID() === id) {
+						node.classList.add('active');
+						return true;
+					}
+				}
+				return false;
+			},
 			removeID: function (id) {
 				var slide = false;
 				if (Polymer.dom(this.$.container).children.length > 1) {

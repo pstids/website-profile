@@ -1,10 +1,12 @@
 <dom-module id="footer-element">
   <style>
+    :host {
+        background-color: #1C1C1C;
+    }
     footer {
         @apply(--layout);
         @apply(--layout-horizontal);
         padding: 0 47px;
-        background-color: var(--dark-background-color);
     }
     h1 {
         font-size: 2vw;
@@ -35,7 +37,7 @@
   </template>
   <script>
     Polymer({
-        is: 'footer-element',
+        is: 'footer-element'
     });
   </script>
 </dom-module>

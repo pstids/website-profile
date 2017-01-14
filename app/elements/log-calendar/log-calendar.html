@@ -381,9 +381,22 @@
                 false
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-            var logDayActive = document.querySelector('log-container.active');
+            var logDayActive = this.querySelector('log-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
+            }
+        },
+        setActive: function (id) {
+            var logDayActive = this.querySelector('log-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+            for (var row of this.dom) {
+                for (var container of row) {
+                    if (container.hasID(id)) {
+                        container.setActive(id);
+                    }
+                }
             }
         }
     });
