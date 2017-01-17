@@ -794,7 +794,6 @@
 		},
 		/* unused: a */
 		callFun: function (a, e) {
-			console.log(a, e);
 			var vis = d3.select('#barchart');
 			vis.selectAll('.stack').remove();
 			this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
@@ -974,7 +973,6 @@
 				}
 				result.push(subResult);
 			}
-			console.log(result, 'zoneweek');
 			return result;
 		},
 		getData: function (hash, dataType) {
@@ -1124,14 +1122,12 @@
 					.attr('y', -10)
 					.text(msg2)
 					.attr('stroke-width', 1)
-					.attr('color', '#727272')
-					.attr('stroke', '#727272')
-					.attr('fill', '#727272');
+					.attr('stroke', '#FFFFFF')
+					.attr('fill', '#FFFFFF');
 
 			vis.select('.y.axis').selectAll('text')
-				.attr('stroke', '#727272')
-				.attr('fill', '#727272')
-				.attr('color', '#727272');
+				.attr('stroke', '#FFFFFF')
+				.attr('fill', '#FFFFFF');
 
 			var dataIntermediate = xData.map((c) => {
 				/* unused: d */

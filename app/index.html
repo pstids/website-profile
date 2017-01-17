@@ -64,7 +64,7 @@
 					<workout-summary></workout-summary>
 					<log-overview></log-overview>
 				</div>
-				<div class="layout horizontal max-width" style="margin: 20px;">
+				<div class="layout horizontal max-width" style="margin: 20px; position: relative;">
 					<home-navigation></home-navigation>
 					<iron-pages attr-for-selected="data-home" selected="{{home}}" class="flex-auto">
 						<section data-home="comparison">
@@ -95,13 +95,6 @@
 				<log-calendar></log-calendar>
 			</section>
 
-			<section data-route="home">
-				<div class="layout horizontal max-width">
-					
-					<!-- <workout-shared id="workout-shared"></workout-shared> -->
-				</div>
-			</section>
-
 			<section data-route="connect">
 				<platform-connect></platform-connect>
 				<div class="uploader" id="uploader">
@@ -118,7 +111,7 @@
 				<stryd-settings></stryd-settings>
 			</section>
 
-			<section data-route="plan">
+			<!-- <section data-route="plan">
 				<plan-list></plan-list>
 			</section>
 
@@ -128,7 +121,7 @@
 
 			<section data-route="plan-detail">
 				<plan-detailview id="plan-detailview" plan-id="{{planID}}"></plan-detailview>
-			</section>
+			</section> -->
 
 			<section data-route="*">
 			</section>
