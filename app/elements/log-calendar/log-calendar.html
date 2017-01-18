@@ -4,7 +4,7 @@
             @apply(--layout-vertical);
             font-family: "Stryd", sans-serif;
             background-color: var(--dark-background-color);
-            padding: 0 20px 20px 20px;
+            padding: 0 20px 20px;
         }
         h1.header {
             @apply(--header);
@@ -15,15 +15,6 @@
         .title {
             padding: 20px;
             @apply(--layout-end);
-        }
-
-        .horizontal-section {
-            text-align: center;
-            @apply(--layout-flex-4);
-        }
-        .vertical-section {
-            text-align: center;
-            @apply(--layout-flex-2);
         }
 
         .day {
@@ -42,14 +33,13 @@
         }
 
         .days {
-            border-top: 1px solid #4d4d4d;
+            border-top: 1px solid #4d4d4d !important;
         }
 
         .row {
             @apply(--layout-horizontal);
-            border-bottom: 1px solid #4d4d4d;
-            border-left: 1px solid #4d4d4d;
-            border-right: 1px solid #4d4d4d;
+            border: 1px solid #4d4d4d;
+            border-top: 0;
         }
 
         .entry {
@@ -150,6 +140,17 @@
 
             this.hasLoaded = false;
             this.lastActivity = null;
+            this.assembleDOM();
+
+            document.addEventListener('keyup', (e) => {
+                if (e.code === 'ArrowLeft') {
+                    this.prevMonth();
+                } else if (e.code === 'ArrowRight') {
+                    this.nextMonth();
+                }
+            });
+        },
+        attached: function () {
             // var tooltip = document.querySelector('[data-tooltip]');
             // var x = 0, y = 0;
             // document.addEventListener('mousemove', function (e) {
@@ -158,8 +159,6 @@
             // });
             // Set the position of the hover box. If the right side of the box would cause a horizontal scroll bar, move the hover box to the left side of the cursor.
             // setInterval(setPosition, 20);
-
-            this.assembleDOM();
             // if (jwt.hasToken) {
             //     let state = false;
             //     // Only auto load run activity when on the main PowerCenter page
@@ -179,14 +178,6 @@
                     false
                 );
             }
-
-            document.addEventListener('keyup', (e) => {
-                if (e.code === 'ArrowLeft') {
-                    this.prevMonth();
-                } else if (e.code === 'ArrowRight') {
-                    this.nextMonth();
-                }
-            });
         },
         setPosition: function () {
             // if (!tooltip.classList.contains('hidden')) {
@@ -222,47 +213,11 @@
                 this.dom.push(rowDom);
             }
         },
-        // Grabs array of activity data to populate calendar for month (int) and year (int)
-        fetchMonth: function (month, year, loadLast) {
+        // // Grabs array of activity data to populate calendar for month (int) and year (int)
+        fetchMonth: function (month, year) {
             var obj = this.dateRange(month, year);
-
-            var srtDate = obj.firstMonday.format('MM-DD-YYYY');
-            var endDate = obj.lastSunday.format('MM-DD-YYYY');
-            var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-            if (this.mode === 'admin') {
-                activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-            }
-            superagent
-                .get(activityEndPoint)
-                .send()
-                .set('Accept', 'application/json')
-                .set('Authorization', `Bearer: ${jwt.token}`)
-                .end((err, res) => {
-                    if (res.ok) {
-                        this.switchMonthContext(obj.firstMonday);
-                        if (res.body !== null && res.body.activities !== null) {
-                            this.processActivities(res.body.activities);
-                            this.loadLast(loadLast, res.body.last_activity);
-                        } else {
-                            this.processActivities([]);
-                            this.loadLast(loadLast, res.body.last_activity);
-                        }
-                    } else {
-                        console.log('Error: failure on grabLogs', err, res);
-                    }
-                });
-        },
-        loadLast: function (loadLast, id) {
-            if (!loadLast) {
-                this.lastActivity = id;
-                return;
-            }
-            var bubbles = document.querySelector('.bubbles');
-            var workout = document.querySelector('workout-element');
-            workout.setLoading();
-            page(`/run/${id}`);
-            window.scrollTo(0, bubbles.offsetTop);
-            this.hasLoaded = true;
+            this.switchMonthContext(obj.firstMonday);
+            calendarManager.requestActivities(obj.firstMonday, obj.lastSunday);
         },
         // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
         dateRange: function (monthInt, year) {
@@ -320,7 +275,6 @@
         addActivity: function (activity) {
             var activityMoment = moment
                 .unix(activity.start_time);
-
             for (var i = 0; i < this.dates.length; i++) {
             for (var o = 0; o < this.dates[i].length; o++) {
                 var startDate = this.dates[i][o];

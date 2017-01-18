@@ -176,31 +176,22 @@
                 <div class="tp plan-display">
                     <iron-icon icon="notification:event-note"></iron-icon>
                 </div>
-                <div class="numday">
-                    {{day}}
-                </div>
+                <div class="numday">{{day}}</div>
             </div>
             <div class="layout vertical around-justified data workout-display">
                 <div class="wattage">
                     <iron-icon icon="{{power_icon}}"></iron-icon>
-                    <div class="value">
-                        {{power}}
-                    </div>
+                    <div class="value">{{power}}</div>
                     <div class="rss" id="rss">RSS</div>
-                    <!-- image:flash-on -->
                 </div>
                 <div class="layout horizontal around-justified other">
                     <div class="stat">
                         <iron-icon icon="image:timer"></iron-icon>
-                        <div class="value">
-                            {{time}}
-                        </div>
+                        <div class="value">{{time}}</div>
                     </div>
                     <div class="stat">
                         <iron-icon icon="communication:swap-calls"></iron-icon>
-                        <div class="value">
-                            {{distance}}
-                        </div>
+                        <div class="value">{{distance}}</div>
                     </div>
                 </div>
             </div>
@@ -227,20 +218,22 @@
                     return;
                 } else if (target.id === 'share') {
                     if ('id' in this.data) {
-                        this.logOption.callShare(this.data.id);
+                        app.logOption.callShare(this.data.id);
                     }
                     return;
                 } else if (target.id === 'fit') {
-                    this.fit();
+                    if ('id' in this.data) {
+                        app.logOption.getFit(this.data.id);
+                    }
                     return;
                 } else if (target.id === 'delete') {
                     if ('id' in this.data) {
-                        this.logOption.callDelete(this.data.id);
+                        app.logOption.callDelete(this.data.id);
                     }
                     return;
                 } else if (target.id === 'recalculate') {
                     if ('id' in this.data) {
-                        this.logOption.callRecalculate(this.data.id);
+                        app.logOption.callRecalculate(this.data.id);
                     }
                     return;
                 } else if (target.id === 'compare') {
@@ -255,9 +248,6 @@
                     return;
                 }
             }
-        },
-        attached: function () {
-            this.logOption = document.querySelector('log-options');
         },
         ready: function () {
             this.data = {
@@ -341,20 +331,6 @@
                 this.$.header.style.backgroundColor = this.rgb;
             }
         },
-        fit: function () {
-            superagent
-                .post(`/b/api/v1/activities/${this.data.id}/fit`)
-                .send()
-                .set('Accept', 'application/json')
-                .set('Authorization', `Bearer: ${jwt.token}`)
-                .end((err, res) => {
-                    if (res.ok) {
-                        app.setDownload(res.body.url);
-                    } else {
-                        console.log('Error: get download link failed', err);
-                    }
-                });
-        },
         viewWorkout: function () {
             if (
                 ('id' in this.data) ||
@@ -373,8 +349,6 @@
                     hash = this.data.hash;
                 }
                 urlManager.setURL(id, hash);
-                // var bubbles = document.querySelector('.bubbles');
-                // window.scrollTo(0, bubbles.offsetTop);
             }
         },
         // returns bool based on if workout has been inserted
@@ -399,4 +373,3 @@
     });
     </script>
 </dom-module>
-

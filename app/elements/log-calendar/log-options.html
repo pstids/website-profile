@@ -35,6 +35,20 @@
                 this.descriptionID = null;
                 this.logCalendar = null;
             },
+            getFit: function (id) {
+                superagent
+                    .post(`/b/api/v1/activities/${id}/fit`)
+                    .send()
+                    .set('Accept', 'application/json')
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        if (res.ok) {
+                            app.setDownload(res.body.url);
+                        } else {
+                            console.log('Error: get download link failed', err);
+                        }
+                    });
+            },
             callDelete: function (id) {
                 this.deleteID = id;
                 this.$.dialogDelete.open();

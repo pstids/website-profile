@@ -340,3 +340,117 @@ class URLManager {
 }
 
 var urlManager = new URLManager();
+
+class CalendarManager {
+	constructor() {
+		this.dateSpan = {
+			start: moment('2016-06-01'),
+			end: moment().add(2, 'days')
+		};
+		this.activities = {};
+        var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
+        var endDate = this.dateSpan.end.format('MM-DD-YYYY');
+        var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+        // if (this.mode === 'admin') {
+        //     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+        // }
+        superagent
+            .get(activityEndPoint)
+            .send()
+            .set('Accept', 'application/json')
+            .set('Authorization', `Bearer: ${jwt.token}`)
+            .end((err, res) => {
+                if (res.ok) {
+                    if (res.body !== null && res.body.activities !== null) {
+                        this.saveActivities(res.body.activities);
+                        this.loadLast(res.body.last_activity);
+                    } else {
+                        this.saveActivities([]);
+                        this.loadLast(res.body.last_activity);
+                    }
+                } else {
+                    console.log('Error: failure on grabLogs', err, res);
+                }
+            });
+	}
+	saveActivities(activities) {
+		for (var activity of activities) {
+			if (!(activity.timestamp in this.activities)) {
+				this.activities[activity.timestamp] = activity;
+			}
+		}
+	}
+	getMoreActivities(start, end) {
+		if (this.dateSpan.start > start) {
+			this.dateSpan.start = start;
+		}
+		if (this.dateSpan.end < end) {
+			this.dateSpan.end = end;
+		}
+        var srtDate = start.format('MM-DD-YYYY');
+        var endDate = end.format('MM-DD-YYYY');
+        var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+        // if (this.mode === 'admin') {
+        //     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+        // }
+        superagent
+            .get(activityEndPoint)
+            .send()
+            .set('Accept', 'application/json')
+            .set('Authorization', `Bearer: ${jwt.token}`)
+            .end((err, res) => {
+                if (res.ok) {
+                    if (res.body !== null && res.body.activities !== null) {
+                        this.saveActivities(res.body.activities);
+                        this.requestActivities(start, end);
+                    } else {
+                        this.saveActivities([]);
+                        this.requestActivities(start, end);
+                    }
+                } else {
+                    console.log('Error: failure on grabLogs', err, res);
+                }
+            });
+	}
+	requestActivities(start, end) {
+		if (this.dateSpan.start <= start && this.dateSpan.end >= end) {
+			var results = [];
+			for (var timestamp of Object.keys(this.activities)) {
+				var compareDate = moment(+timestamp * 1000);
+				if (compareDate > start && compareDate < end) {
+					results.push(this.activities[timestamp]);
+				}
+			}
+			this.giveActivities(results);
+		} else {
+			this.getMoreActivities(start, end);
+		}
+	}
+	getPMActivities() {
+		var start = moment().subtract(7, 'months');
+		var end = moment().add(2, 'days');
+		var results = [];
+		for (var timestamp of Object.keys(this.activities)) {
+			var compareDate = moment(+timestamp * 1000);
+			if (compareDate > start && compareDate < end) {
+				results.push(this.activities[timestamp]);
+			}
+		}
+		return results;
+	}
+	giveActivities(results) {
+		app.giveActivities(results);
+	}
+    loadLast(id) {
+        page(`/powercenter/run/${id}`);
+        this.hasLoaded = true;
+        // var bubbles = document.querySelector('.bubbles');
+        // var workout = document.querySelector('workout-element');
+        // workout.setLoading();
+        // page(`/run/${id}`);
+        // window.scrollTo(0, bubbles.offsetTop);
+        // this.hasLoaded = true;
+    }
+}
+
+var calendarManager = new CalendarManager();

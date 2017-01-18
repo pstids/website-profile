@@ -37,8 +37,8 @@
                 border-color: var(--warning-color);
                 color: var(--warning-color);
             }
-            .authenticate div button[data-toggle="off"] {
-            }
+            /*.authenticate div button[data-toggle="off"] {
+            }*/
         </style>
         <h1 class="title">Stryd Connect</h1>
         <div class="import">
@@ -140,15 +140,15 @@
             },
             suuntoAuth: function (e) {
                 this.suunto = {
-                    connect: this.querySelector('[data-suunto=\'connect\']'),
-                    email: this.querySelector('[data-suunto=\'email\']'),
-                    auth: this.querySelector('[data-suunto=\'auth\']'),
-                    authStep: this.querySelector('[data-suunto=\'authStep\']'),
-                    confirm: this.querySelector('[data-suunto=\'confirm\']'),
-                    fetch: this.querySelector('[data-suunto=\'fetch\']'),
-                    fetching: this.querySelector('[data-suunto=\'fetching\']'),
-                    alert: this.querySelector('[data-suunto=\'alert\']'),
-                    disconnect: this.querySelector('[data-suunto=\'disconnect\']')
+                    connect: this.querySelector('[data-suunto="connect"]'),
+                    email: this.querySelector('[data-suunto="email"]'),
+                    auth: this.querySelector('[data-suunto="auth"]'),
+                    authStep: this.querySelector('[data-suunto="authStep"]'),
+                    confirm: this.querySelector('[data-suunto="confirm"]'),
+                    fetch: this.querySelector('[data-suunto="fetch"]'),
+                    fetching: this.querySelector('[data-suunto="fetching"]'),
+                    alert: this.querySelector('[data-suunto="alert"]'),
+                    disconnect: this.querySelector('[data-suunto="disconnect"]')
                 };
                 this.suunto.fetch.addEventListener('click', (e) => {
                     var target = e.target;

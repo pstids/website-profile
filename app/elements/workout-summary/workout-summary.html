@@ -90,10 +90,10 @@
 	<template>
 		<div class="layout horizontal top">
 			<div class="title">
-				<h1 class="bold">Interval Run</h1>
-				<h1 class="accent">Jan 3rd, 2017</h1>
+				<h1 class="bold">{{data.type}}</h1>
+				<h1 class="accent">{{data.date}}</h1>
 			</div>
-			<div class="raindrop hidden">
+			<div class="raindrop">
 				<iron-icon icon="icons:arrow-drop-down-circle"></iron-icon>
 			</div>
 		</div>
@@ -101,29 +101,23 @@
 			<div class="layout horizontal stat">
 				<div class="layout vertical values">
 					<div class="layout vertical value">
-						<h2><span class="value">240</span> <span class="unit">watts</span></h2>
-						<span class="sub">Avg Power</span>
+						<h2><span class="value">{{data.rss}}</span></h2>
+						<span class="sub">RSS</span>
 					</div>
 					<div class="layout vertical value">
-						<h2><span class="value">1:00:00</span> <span class="unit"></span></h2>
+						<h2><span class="value">{{data.duration}}</span> <span class="unit"></span></h2>
 						<span class="sub">Time</span>
 					</div>
 				</div>
 				<div class="layout vertical values">
 					<div class="layout vertical value">
-						<h2><span class="value">6:00</span><span class="unit">/mi</span></h2>
+						<h2><span class="value">{{data.pace}}</span><span class="unit">{{data.pace_unit}}</span></h2>
 						<span class="sub">Pace</span>
 					</div>
 					<div class="layout vertical value">
-						<h2><span class="value">10</span> <span class="unit">mi</span></h2>
+						<h2><span class="value">{{data.distance}}</span> <span class="unit">{{data.distance_unit}}</span></h2>
 						<span class="sub">Distance</span>
 					</div>
-				</div>
-			</div>
-			<div class="layout rss-container">
-				<div class="rss circle">
-					<h1>100</h1>
-					<span>RSS</span>
 				</div>
 			</div>
 			<div class="layout tiz-container">
@@ -134,8 +128,21 @@
 	<script>
 		Polymer({
 			is: 'workout-summary',
+			properties: {
+				data: Object
+			},
 			attached: function () {
 				this.tiz();
+				this.data = {
+					type: 'Interval Run',
+					date: 'Jan 3rd, 2017',
+					rss: '100',
+					duration: '1:00:00',
+					pace: '6:00',
+					distance: '10',
+					distance_unit: 'mi',
+					pace_unit: '/mi'
+				};
 			},
 			updateData: function (activity) {
 				this.activity = activity;

@@ -1,14 +1,15 @@
 <dom-module id="stryd-settings">
     <style>
         :host {
+            @apply(--layout-horizontal);
             background-image: url('../../images/grassy_field_150.jpg');
             background-size: cover;
             padding: 0;
             margin: 0;
             width: 100%;
-            @apply(--layout-horizontal);
         }
         .cover {
+            @apply(--layout-horizontal);
             background-color: rgba(36, 36, 36, 0.7);
             padding: 3vw 0 0 0;
             position: relative;
@@ -16,7 +17,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            @apply(--layout-horizontal);
         }
 
         .settings-nav {
@@ -43,27 +43,27 @@
             cursor: pointer;
         }
         .setting .icon-border {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            @apply(--layout-center-justified);
             width: 5.3vw;
             height: 5.3vw;
             border-radius: 50%;
             background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
             position: relative;
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-center-justified);
         }
         .setting.active .icon-border {
             background: linear-gradient(to bottom, #77E15D 0%, #276019 100%);
         }
         .setting .icon {
+            @apply(--layout-vertical);
+            @apply(--layout-center);
+            @apply(--layout-center-justified);
             width: 95%;
             height: 95%;
             border-radius: 50%;
             background-color: var(--secondary-background-color);
             position: relative;
-            @apply(--layout-vertical);
-            @apply(--layout-center);
-            @apply(--layout-center-justified);
             box-shadow: inset 0px 0px 6vw -3.33vw #000000;
             color: #FFFFFF;
             fill: #FFFFFF;
@@ -79,9 +79,9 @@
         }
         .setting .text {
             @apply(--layout-flex-2);
-            color: white;
             @apply(--layout-vertical);
             @apply(--layout-center-justified);
+            color: white;
             margin-left: 15px;
             text-transform: uppercase;
         }

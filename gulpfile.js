@@ -101,7 +101,8 @@ gulp.task('jshint', function () {
         'app',
         'metersPerMile',
         'metersPerKM',
-        'urlManager'
+        'urlManager',
+        'calendarManager'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
@@ -182,8 +183,7 @@ gulp.task('copy', function () {
     'app/scripts/d3.js',
     'app/scripts/d3.tip.js',
     'app/scripts/appmetrics.js'
-  ])
-    .pipe(gulp.dest('dist/scripts'));
+  ]).pipe(gulp.dest('dist/scripts'));
 
   var images = gulp.src(['app/images/mountain_outline.svg'])
     .pipe(gulp.dest('dist/images'));
@@ -382,4 +382,8 @@ gulp.task('default', ['clean'], function (cb) {
 require('web-component-tester').gulp.init(gulp);
 
 // Load custom tasks from the `tasks` directory
-try { require('require-dir')('tasks'); } catch (err) {}
+try {
+  require('require-dir')('tasks');
+} catch (err) {
+  
+}

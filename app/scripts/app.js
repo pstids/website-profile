@@ -124,7 +124,6 @@ var mapRunEle,
     settingsElement,
     rssPrimary,
     rssSecondary,
-    // featureManagement,
     bubbleStats,
     homeNavigation;
 
@@ -146,7 +145,7 @@ app.addEventListener('dom-change', function() {
     rssPrimary = document.querySelector('#rss-primary');
     rssSecondary = document.querySelector('#rss-secondary');
 
-    // featureManagement = new FeatureManagement();
+    app.logOption = document.querySelector('log-options');
 
     app.home = 'analysis';
     app.route = 'profile';
@@ -156,6 +155,8 @@ app.addEventListener('dom-change', function() {
     };
     var mapScript = document.createElement('script');
     mapScript.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady';
+    mapScript.async = true;
+    mapScript.defer = true;
     document.body.appendChild(mapScript);
 
     processor.onmessage = (event) => {
@@ -474,4 +475,8 @@ app.calcMetrics = function (start, end, activityID, unit) {
 
 app.setDownload = function (url) {
     document.querySelector('#dlFrame').src = url;
+};
+
+app.giveActivities = function (activities) {
+    logCalendar.processActivities(activities);
 };
