@@ -493,11 +493,6 @@ var workoutFetchingComparison = function (workoutID, workoutUpdated) {
     }
 };
 
-var logsProcessing = function (logs) {
-    data.logs = logs;
-    postMessage(data);
-};
-
 var addLog = function (workoutID) {
     superagent
         .get(`/b/api/v1/activities/${workoutID}`)
@@ -696,6 +691,10 @@ var calcMetrics = function (start, end, activityID, unit) {
     resetMetrics();
     var activity = seriesMemory[activityID];
 
+    if (end === 0) {
+        end = activity.length-1;
+    }
+
     var total = end - start;
 
     var distance = activity[end-1].distance - activity[start].distance;
@@ -868,6 +867,46 @@ var calcMetrics = function (start, end, activityID, unit) {
     postMessage(data);
 };
 
+var lap = {};
+var resetLap = function () {
+    lap = {
+        lap: 0,
+        power: 0,
+        time: 0,
+        distance: 0,
+        formPower: 0,
+        legSpring: 0
+    };
+};
+
+var calcLaps = function (type, activityID) {
+    var laps = [];
+    resetLap();
+
+    let lmetric = new Metric('my_event');
+    lmetric.start();
+
+    var activity = seriesMemory[activityID];
+
+    var samples = 0, lastTimestamp = activity[0].date, lastDistance = 0;
+
+    for (var i = 0; i < activity.length; i++) {
+        var entry = activity[i];
+
+        if (type === 'mi') {
+
+        } else if (type === 'km') {
+
+        } else if (type === 'split') {
+
+        }
+        if (lapSwitch) {
+            laps.push(lap);
+            lapSwitch = false;
+        }
+    }
+};
+
 /* Public method */
 onmessage = function (event) {
     initDB();
@@ -908,6 +947,11 @@ onmessage = function (event) {
                 event.data.unit
             );
             break;
+        case 'laps':
+            calcLaps(
+                event.data.type,
+                event.data.activityID
+            );
         default:
             console.log('Error in onmessage/processor: unknown action');
     }

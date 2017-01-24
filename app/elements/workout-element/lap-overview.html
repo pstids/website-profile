@@ -1,0 +1,81 @@
+<dom-module id="lap-overview">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+		}
+        h1.header {
+            @apply(--header);
+        }
+        h2.subtitle {
+            @apply(--subtitle);
+        }
+        .title {
+            padding: 20px;
+            @apply(--layout-end);
+        }
+	</style>
+	<template>
+        <div class="layout horizontal title">
+            <div class="flex">
+                <h1 class="header">Laps</h1>
+            </div>
+            <div class="flex layout horizontal end-justified">
+                <select>
+                	<option value="">Miles</option>
+                	<option value="">Kilometers</option>
+                	<option value="">Splits</option>
+                </select>
+            </div>
+        </div>
+		<div class="layout horizontal">
+			<table>
+				<thead>
+					<tr>
+						<th>Lap</th>
+						<th>Power</th>
+						<th>Time</th>
+						<th>Distance</th>
+						<th>Form Power</th>
+						<th>Leg Spring</th>
+					</tr>
+				</thead>
+				<tbody id="laps">
+					
+				</tbody>
+			</table>
+		</div>
+	</template>
+	<script>
+	Polmyer({
+		is: 'lap-overview',
+		listener: {
+			'tap': 'eleTap'
+		},
+		eleTap: function () {
+			console.log('tap');
+		},
+		setID: function () {
+
+		},
+		requestLaps: function (laps) {
+			this.displayLaps(laps);
+		},
+		displayLaps: function (laps) {
+			for (var lap of laps) {
+				var row = this.createRow(lap);
+				Polymer.dom(this.$.laps).appendChild(row);
+			}
+		},
+		createRow: function (row) {
+			var elements = ['lap', 'power', 'time', 'distance', 'formPower', 'legSpring'];
+			var tr = document.createElement('tr');
+			for (var ele of elements) {
+				var td = document.createElement('td');
+				Polymer.dom(td).textContent = row[ele];
+				Polymer.dom(tr).appendChild(td);
+			}
+			return tr;
+		}
+	})
+	</script>
+</dom-module>

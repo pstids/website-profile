@@ -438,6 +438,16 @@ class CalendarManager {
 		}
 		return results;
 	}
+	getLOActivities(start, end) {
+		var results = [];
+		for (var timestamp of Object.keys(this.activities)) {
+			var compareDate = moment(+timestamp * 1000);
+			if (compareDate > start && compareDate < end) {
+				results.push(this.activities[timestamp]);
+			}
+		}
+		return results;
+	}
 	giveActivities(results) {
 		app.giveActivities(results);
 	}

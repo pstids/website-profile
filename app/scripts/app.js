@@ -2,7 +2,6 @@
 /*jshint unused:false*/
 /*global Dropzone*/
 /*global Dexie*/
-/*exported mapReadyTrigger, mapReadyEvent*/
 
 /*
 processor is a webworker than handles workout fetching.
@@ -176,6 +175,12 @@ app.addEventListener('dom-change', function() {
             mapRunEle.setData(event.data.mapRunData);
         }
         if ('chartData' in event.data) {
+            app.calcMetrics(
+                0,
+                0,
+                event.data.chartDescription.id,
+                user.data.units
+            );
             workoutElement.setChartData(
                 event.data.chartData,
                 event.data.chartDescription,
@@ -209,7 +214,6 @@ app.addEventListener('dom-change', function() {
         }
     };
 
-    logCalendar.setMode('user', '');
     suuntoProcessing();
 
     page.base('/powercenter');
@@ -218,6 +222,7 @@ app.addEventListener('dom-change', function() {
         if (jwt.hasToken) {
             app.route = 'profile';
             header.toggleActive('profile');
+
             var now = moment();
             logCalendar.fetchMonth(
                 now.month(),
@@ -258,11 +263,10 @@ app.addEventListener('dom-change', function() {
 
     page('/run/:idPrimary/run/:idSecondary', (data) => {
         app.route = 'profile';
-        header.toggleActive('profile');
         app.params = data.params;
         app.home = 'comparison';
+        header.toggleActive('profile');
         homeNavigation.select('comparison');
-        console.log('called run comparison');
 
         processor.postMessage({
             token: jwt.token,
@@ -278,9 +282,9 @@ app.addEventListener('dom-change', function() {
 
     page('/run/:idPrimary/training/:idSecondary', (data) => {
         app.route = 'profile';
-        header.toggleActive('profile');
         app.params = data.params;
         app.home = 'analysis';
+        header.toggleActive('profile');
         homeNavigation.select('training');
 
         var planView = document.createElement('plan-view');
@@ -303,9 +307,9 @@ app.addEventListener('dom-change', function() {
 
     page('/run/:id', (data) => {
         app.route = 'profile';
-        header.toggleActive('profile');
         app.params = data.params;
         app.home = 'analysis';
+        header.toggleActive('profile');
         homeNavigation.select('analysis');
 
             header.toggleActive('home');
@@ -338,10 +342,10 @@ app.addEventListener('dom-change', function() {
     });
 
     page('/training/:hash', (data) => {
-        header.toggleActive('profile');
         app.params = data.params;
         app.route = 'profile';
         app.home = 'training';
+        header.toggleActive('profile');
 
         planView.chartToggle(true);
         planView.setStartHash(data.params.hash);
@@ -361,6 +365,7 @@ app.addEventListener('dom-change', function() {
         if (jwt.hasToken) {
             app.route = 'settings';
             header.toggleActive('settings');
+
             settingsElement.toggle('zone');
             settingsElement.route = 'zone';
         } else {
@@ -389,7 +394,6 @@ app.addEventListener('dom-change', function() {
     page('/a/:name', (data) => {
         if (jwt.hasToken) {
             app.route = 'home';
-            logCalendar.setMode('admin', data.params.name);
             var now = moment();
             logCalendar.fetchMonth(
                 now.month(),
@@ -409,7 +413,7 @@ app.addEventListener('dom-change', function() {
         hashbang: false
     });
 
-    this.Dropzone = new Dropzone(
+    app.dropzone = new Dropzone(
         document.querySelector('#file'),
         {
             paramName: 'file',

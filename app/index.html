@@ -10,42 +10,38 @@
 
 	<!-- Chrome for Android theme color -->
 	<meta name="theme-color" content="#303F9F">
-
-	<!-- Web Application Manifest -->
-	<!-- link rel="manifest" href="manifest.json"> -->
-
 	<!-- Tile color for Win8 -->
 	<meta name="msapplication-TileColor" content="#3372DF">
-
 	<!-- Add to homescreen for Chrome on Android -->
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="application-name" content="Stryd PowerCenter">
 	<link rel="icon" sizes="192x192" href="/powercenter/images/favicon.png">
-
 	<!-- Add to homescreen for Safari on iOS -->
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta name="apple-mobile-web-app-title" content="Stryd PowerCenter">
 	<link rel="apple-touch-icon" href="/powercenter/images/favicon.png">
-
 	<!-- Tile icon for Win8 (144x144) -->
 	<meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
 
-	<link rel="stylesheet" href="/powercenter/styles/main.css">
-	<script>
-	var wcSupported = (
-		'registerElement' in document
-		&& 'import' in document.createElement('link')
-		&& 'content' in document.createElement('template')
-	);
+	<!-- Web Application Manifest -->
+	<!-- link rel="manifest" href="manifest.json"> -->
 
-	if (!wcSupported) {
-		var wcPoly = document.createElement('script');
-		wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
-		document.head.appendChild(wcPoly);
-	}
+	<script>
+		var wcSupported = (
+			'registerElement' in document
+			&& 'import' in document.createElement('link')
+			&& 'content' in document.createElement('template')
+		);
+
+		if (!wcSupported) {
+			var wcPoly = document.createElement('script');
+			wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
+			document.head.appendChild(wcPoly);
+		}
 	</script>
 
+	<link rel="stylesheet" href="/powercenter/styles/main.css">
 	<!-- will be replaced with elements/elements.vulcanized.html -->
 	<link rel="import" href="/powercenter/elements/elements.html">
 	<!-- endreplace-->

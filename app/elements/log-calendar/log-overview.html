@@ -77,6 +77,11 @@
 		table a:hover .activity-indicator {
 			opacity: 0;
 		}
+
+		#action {
+			position: absolute;
+			display: none;
+		}
 	</style>
 	<template>
 		<table>
@@ -105,7 +110,8 @@
 					</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="container">
+				<!--
 				<tr>
 					<td class="day-wrapper">
 						<a href="#">
@@ -282,12 +288,113 @@
 						</a>
 					</td>
 				</tr>
+				-->
 			</tbody>
 		</table>
+		<paper-material id="action">
+			<paper-button data-view="" on-click="view" id="view">View</paper-button>
+			<paper-button data-compare="" on-click="compare" id="compare">Compare</paper-button>
+		</paper-material>
 	</template>
 	<script>
 		Polymer({
-			is: 'log-overview'
+			is: 'log-overview',
+			listeners: {
+				'tap': 'eleTap'
+			},
+			eleTap: function (e) {
+				var target = e.target;
+				while (true) {
+					if (target === this.$.container) {
+						return;
+					} else if ('dataset' in target && target.dataset.id !== undefined) {
+						this.$.action.style.display = 'block';
+						this.$.action.style.position = 'absolute';
+						this.$.action.style.top = `${e.detail.y}px`;
+						this.$.action.style.left = `${e.detail.x}px`;
+						this.$.view.dataset.view = target.dataset.id;
+						this.$.compare.dataset.compare = target.dataset.id;
+						return;
+					}
+					if ('parentNode' in target && target.parentNode !== null) {
+						target = target.parentNode;
+					} else {
+						return;
+					}
+				}
+			},
+			attached: function () {
+				this.createCalendar();
+			},
+			createCalendar: function () {
+				var past = moment().subtract(4, 'weeks');
+				var today = moment();
+				var activities = calendarManager.getLOActivities(past, today);
+				var hashed = {};
+				var hash;
+				for (var activity of activities) {
+					hash = moment.unix(activity.timestamp).format('YYYYMMDD');
+					hashed[hash] = activity;
+				}
+				for (var i = 0; i < 4; i++) {
+					var days = [];
+					for (var o = 0; o < 7; o++) {
+						hash = past.format('YYYYMMDD');
+						var day;
+						if (hash in hashed) {
+							day = hashed[hash];
+						} else {
+							day = {};
+						}
+						day.day = past.clone().format('MM');
+						days.push(day);
+						past.add(1, 'day');
+					}
+					var row = this.addRow(days);
+					Polymer.dom(this.$.container).appendChild(row);
+				}
+			},
+			addRow: function (days) {
+				var row = document.createElement('tr');
+				for (var day of days) {
+					var dayEle = this.addDay(day);
+					Polymer.dom(row).appendChild(dayEle);
+				}
+				return row;
+			},
+			addDay: function (day) {
+				var td = document.createElement('td');
+				Polymer.dom(td).classList.add('day-wrapper');
+				if ('timestamp' in day) {
+					Polymer.dom(td).classList.add('highlighted');
+					td.dataset.id = day.id;
+				}
+
+				var a = document.createElement('a');
+
+				var spanDay = document.createElement('span');
+				Polymer.dom(spanDay).classList.add('day');
+				Polymer.dom(spanDay).textContent = day.day;
+
+				var spanIndicator = document.createElement('span');
+				Polymer.dom(spanIndicator).classList.add('activity-indicator');
+
+				Polymer.dom(a).appendChild(spanDay);
+				Polymer.dom(a).appendChild(spanIndicator);
+
+				Polymer.dom(td).appendChild(a);
+				return td;
+			},
+			view: function (e) {
+				var id = +e.target.dataset.view;
+				urlManager.setURL(id, 0);
+				this.$.action.style.display = 'none';
+			},
+			compare: function (e) {
+				var id = +e.target.dataset.compare;
+				urlManager.compareRun(id);
+				this.$.action.style.display = 'none';
+			}
 		});
 	</script>
 </dom-module>

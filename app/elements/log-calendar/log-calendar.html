@@ -131,10 +131,6 @@
             this.dom = [];
             this.dates = [];
 
-            // Mode attributes
-            this.mode = 'user';
-            this.user = '';
-
             this.displayedTime = moment();
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
 
@@ -190,12 +186,6 @@
             //     tooltip.style.left = String(xPos) + 'px';
             //     tooltip.style.top = String(y + 30) + 'px';
             // }
-        },
-        // Mode is either user or admin
-        // User is username for admin
-        setMode: function (mode, user) {
-            this.mode = mode;
-            this.user = user;
         },
         // Creates dom structure of 5 rows of 7 columns of log-day elements
         assembleDOM: function () {
