@@ -326,7 +326,7 @@
                     </paper-radio-button>
                 </paper-radio-group>
                 <div id="datecontainer" style="display: flex; justify-content: center; opacity: 0; height: 0;">
-                    <paper-date-picker id="datepicker" date="January 20, 2017"></paper-date-picker>
+                    <paper-date-picker id="datepicker" date="February 20, 2017"></paper-date-picker>
                 </div>
             </div>
             <div class="buttons">
@@ -378,7 +378,7 @@
                 } else {
                     start_date.subtract(12, 'weeks').add(1, 'days');
                 }
-                this.startday = start_date.format('MM Do YYYY');
+                this.startday = start_date.format('MMM Do YYYY');
             });
         },
         enable: function () {
@@ -467,10 +467,7 @@
             if (this.type_selected === 'next_monday') {
                 trainingStart = this.monday.format('X');
             } else {
-                var finish_date = moment(
-                    this.$.datepicker.date,
-                    'YYYY-MM-DD'
-                );
+                var finish_date = moment(this.$.datepicker.date);
                 if (window.location.hostname === 'www.stryd.com') {
                     finish_date.subtract(this.plan.week_duration, 'weeks').add(1, 'days');
                 } else {
