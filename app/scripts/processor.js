@@ -84,6 +84,7 @@ var initDB = function () {
         db.open();
     }
 };
+initDB();
 
 var calcThreshold = function (nPowers) {
     var threshold = {
@@ -868,6 +869,7 @@ var calcMetrics = function (start, end, activityID, unit) {
 };
 
 var lap = {};
+var lapCount = {};
 var resetLap = function () {
     lap = {
         lap: 0,
@@ -875,42 +877,109 @@ var resetLap = function () {
         time: 0,
         distance: 0,
         formPower: 0,
-        legSpring: 0
+        legSpring: 0,
+        pace: 0,
+        ratio: 0,
+        tiz: [0, 0, 0, 0, 0]
+    };
+    lapCount = {
+        lap: 0,
+        power: 0,
+        time: 0,
+        distance: 0,
+        formPower: 0,
+        legSpring: 0,
+        pace: 0,
+        ratio: 0,
+        tiz: [0, 0, 0, 0, 0]
     };
 };
 
-var calcLaps = function (type, activityID) {
+var calcAverage = function (key, value) {
+    lap[key] = lap[key] + ((value - lap[key]) / ++lapCount[key]);
+};
+
+var calcLaps = function (type, activityID, zones) {
     var laps = [];
+    var lapCount = 0;
     resetLap();
 
-    let lmetric = new Metric('my_event');
-    lmetric.start();
-
     var activity = seriesMemory[activityID];
+    var oActivity = activeMemory[activityID];
+    console.log(oActivity);
 
-    var samples = 0, lastTimestamp = activity[0].date, lastDistance = 0;
+    //var timestamps = oActivity.lap_timestamp_list;
+    var lapTimestamps = [1485288924, 1485289491, 1485290240, 1485290737, 1485291048];
+    var lastLapTimestampIter = 0;
+    var lastLapTimestamp = lapTimestamps[lastLapTimestampIter];
+    var keepLapSearching = true;
+
+    var samples = 0;
+    var lastDistance = 0;
+    var lastTimestamp = activity[0].date;
+
+    var lapSwitch = false;
 
     for (var i = 0; i < activity.length; i++) {
         var entry = activity[i];
 
+        var power = entry.power;
+
+        calcAverage('power', power);
+        calcAverage('formPower', entry.formPower);
+        calcAverage('legSpring', entry.legSpring);
+
+        for (var o = 0; o < 5; o++) {
+            if (power > zones[o].power_low && power < zones[o].power_high) {
+                lap.tiz[o] += 1;
+            }
+        }
+
         if (type === 'mi') {
-
+            if (entry.distance - lastDistance > metersPerMile) {
+                lapSwitch = true;
+            }
         } else if (type === 'km') {
-
-        } else if (type === 'split') {
-
+            if (entry.distance - lastDistance > metersPerKM) {
+                lapSwitch = true;
+            }
+        } else if (type === 'split' && keepLapSearching) {
+            if (entry.date > setDate(lastLapTimestamp)) {
+                lastLapTimestampIter++;
+                if (lastLapTimestampIter < lapTimestamps.length) {
+                    lastLapTimestamp = lapTimestamps[lastLapTimestampIter];
+                } else {
+                    keepLapSearching = false;
+                }
+                lapSwitch = true;
+            }
+        }
+        if (!lapSwitch && i === activity.length-1) {
+            lapSwitch = true;
         }
         if (lapSwitch) {
+            var meters = entry.distance - lastDistance;
+            lap.distance = meters;
+            lap.lap = ++lapCount;
+            var seconds = (entry.date - lastTimestamp)/1000;
+            lap.time = secToDuration(seconds);
+            lap.pace = speedToPace(meters/seconds, 'feet');
+            lap.ratio = (lap.power/lap.formPower).toFixed(1);
+
+            lastDistance = entry.distance;
+            lastTimestamp = entry.date;
+
             laps.push(lap);
+            resetLap();
             lapSwitch = false;
         }
     }
+    data.laps = laps;
+    postMessage(data);
 };
 
 /* Public method */
 onmessage = function (event) {
-    initDB();
-
     data = {};
     token = event.data.token;
 
@@ -949,9 +1018,11 @@ onmessage = function (event) {
             break;
         case 'laps':
             calcLaps(
-                event.data.type,
-                event.data.activityID
+                event.data.lapMarker,
+                event.data.activityID,
+                event.data.zones
             );
+            break;
         default:
             console.log('Error in onmessage/processor: unknown action');
     }

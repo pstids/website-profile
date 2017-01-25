@@ -555,6 +555,9 @@
                 }
                 console.log('zones are', zones);
 
+                user.data.training_info.training_zones = zones;
+                user.updateData(user.data);
+
                 superagent
                     .put('/b/api/v1/training/zone')
                     .send(zones)

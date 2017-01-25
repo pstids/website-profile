@@ -1,81 +1,228 @@
 <dom-module id="lap-overview">
 	<style>
-		:host {
-			@apply(--layout-vertical);
+		h1.header {
+			@apply(--header);
 		}
-        h1.header {
-            @apply(--header);
-        }
-        h2.subtitle {
-            @apply(--subtitle);
-        }
-        .title {
-            padding: 20px;
-            @apply(--layout-end);
-        }
+		h2.subtitle {
+			@apply(--subtitle);
+		}
+		.title {
+			padding: 20px;
+			@apply(--layout-end);
+		}
+		table {
+			color: white;
+			border: 1px solid #4D4D4D;
+			width: 100%;
+		}
+		table thead {
+			background-color: #222222;
+		}
+		table tbody tr, table thead tr {
+			display: flex;
+			flex-direction: row;
+			border-bottom: 1px solid #4D4D4D;
+			cursor: pointer;
+		}
+		table tbody tr:last-child {
+			border-bottom: 0;
+		}
+		table th, table td {
+			flex: 1;
+			padding: 6px 0;
+			text-align: center;
+		}
 	</style>
 	<template>
-        <div class="layout horizontal title">
-            <div class="flex">
-                <h1 class="header">Laps</h1>
-            </div>
-            <div class="flex layout horizontal end-justified">
-                <select>
-                	<option value="">Miles</option>
-                	<option value="">Kilometers</option>
-                	<option value="">Splits</option>
-                </select>
-            </div>
-        </div>
-		<div class="layout horizontal">
-			<table>
-				<thead>
-					<tr>
-						<th>Lap</th>
-						<th>Power</th>
-						<th>Time</th>
-						<th>Distance</th>
-						<th>Form Power</th>
-						<th>Leg Spring</th>
-					</tr>
-				</thead>
-				<tbody id="laps">
-					
-				</tbody>
-			</table>
+		<div class="layout horizontal" id="container">
+			<div class="layout vertical flex-3">
+				<div class="layout horizontal title">
+					<div class="flex">
+						<h1 class="header">Laps</h1>
+					</div>
+					<div class="flex layout horizontal end-justified">
+						<select id="lapSelector">
+							<option value="mi">Miles</option>
+							<option value="km">Kilometers</option>
+							<option value="split">Splits</option>
+						</select>
+					</div>
+				</div>
+				<div class="layout horizontal">
+					<table>
+						<thead>
+							<tr>
+								<th>Lap</th>
+								<th>Power</th>
+								<th>Time</th>
+								<th>Distance</th>
+								<th>Pace</th>
+								<th>Form Power</th>
+								<th>Leg Spring</th>
+								<th>EI Ratio</th>
+							</tr>
+						</thead>
+						<tbody id="laps"></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="layout vertical flex">
+				<h1 class="header" style="padding: 20px;">Lap <span>{{lap_number}}</span></h1>
+				<div class="layout horizontal center center-justified flex">
+					<svg id="tiz233"></svg>
+				</div>
+			</div>
 		</div>
 	</template>
 	<script>
-	Polmyer({
+	/* global lapProcessing */
+	Polymer({
 		is: 'lap-overview',
-		listener: {
+		listeners: {
 			'tap': 'eleTap'
 		},
-		eleTap: function () {
-			console.log('tap');
+		properties: {
+			lap_number: Number
 		},
-		setID: function () {
+		ready: function () {
+			this.$.lapSelector.addEventListener('change', (e) => {
+				lapProcessing(this.id, e.target.value);
+			});
+			this.lap_number = 1;
+			this.laps = [];
+		},
+		eleTap: function (e) {
+			var target = e.target;
+			while (true) {
+				if (target === this.$.container) {
+					return;
+				} else if ('dataset' in target && target.dataset.lap !== undefined) {
+					this.lap_number = target.dataset.lap;
+					var lapIdx = (+target.dataset.lap)-1;
+					this.tiz(this.laps[lapIdx].tiz);
 
+					Polymer.dom(target.classList.add('active');
+					return;
+				}
+				if ('parentNode' in target && target.parentNode !== null) {
+					target = target.parentNode;
+				} else {
+					return;
+				}
+			}
 		},
-		requestLaps: function (laps) {
-			this.displayLaps(laps);
+		getLaps: function (id) {
+			this.id = id;
+			lapProcessing(this.id, 'mi');
 		},
 		displayLaps: function (laps) {
+			this.laps = laps;
+			while (Polymer.dom(this.$.laps).firstChild) {
+				Polymer.dom(
+					this.$.laps
+				).removeChild(
+					Polymer.dom(
+						this.$.laps
+					).firstChild
+				);
+			}
 			for (var lap of laps) {
 				var row = this.createRow(lap);
 				Polymer.dom(this.$.laps).appendChild(row);
 			}
+			console.log(this.laps);
+			this.tiz(this.laps[0].tiz);
 		},
 		createRow: function (row) {
-			var elements = ['lap', 'power', 'time', 'distance', 'formPower', 'legSpring'];
+			var elements = [
+				{
+					key: 'lap',
+					unit: ''
+				}, {
+					key: 'power',
+					unit: 'watts',
+				}, {
+					key: 'time',
+					unit: ''
+				}, {
+					key: 'distance',
+					unit: 'meters'
+				}, {
+					key: 'pace',
+					unit: '/mi'
+				}, {
+					key: 'formPower',
+					unit: 'watts'
+				}, {
+					key: 'legSpring',
+					unit: 'kN/m'
+				}, {
+					key: 'ratio',
+					unit: ''
+				}
+			];
 			var tr = document.createElement('tr');
+			tr.dataset.lap = row.lap;
 			for (var ele of elements) {
 				var td = document.createElement('td');
-				Polymer.dom(td).textContent = row[ele];
+				var value = row[ele.key];
+				if (typeof(value) === 'number') {
+					value = value.toFixed(0);
+				}
+				Polymer.dom(td).textContent = `${value} ${ele.unit}`;
 				Polymer.dom(tr).appendChild(td);
 			}
 			return tr;
+		},
+		tiz: function (tizs) {
+			var data = [];
+			for (var i = 0; i < tizs.length; i++) {
+				var tiz = tizs[i];
+				data.push({
+					zone: i+1,
+					tiz: tiz
+				});
+			}
+			var width = 200, height = 200, radius = 100;
+			var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
+			var arc = d3.svg.arc()
+				.outerRadius(radius-20)
+				.innerRadius(0);
+			var labelArc = d3.svg.arc()
+				.outerRadius(radius-10)
+				.innerRadius(radius-10);
+			var pie = d3.layout.pie()
+				.sort(null)
+				.value((d) => {
+					return d.tiz;
+				});
+			d3.select('#tiz233')
+				.selectAll('*')
+				.remove();
+			var svg = d3.select('#tiz233')
+				.attr('width', width)
+				.attr('height', height)
+				.append('g')
+					.attr('transform', `translate(${radius}, ${radius})`);
+			var g = svg.selectAll('.arc')
+				.data(pie(data))
+				.enter()
+				.append('g')
+					.attr('class', 'arc');
+			g.append('path')
+				.attr('d', arc)
+				.style('fill', (d) => {
+					return color(d.data.zone);
+				});
+			g.append('text')
+				.attr('transform', (d) => {
+					return `translate(${labelArc.centroid(d)})`;
+				})
+				.attr('dy', '.35em')
+				.text((d) => {
+					return `Zone ${d.data.zone}`;
+				});
 		}
-	})
+	});
 	</script>
 </dom-module>

@@ -54,6 +54,17 @@ var suuntoProcessing = function () {
     });
 };
 
+var lapProcessing = function (id, lapMarker) {
+    console.log(user.data.training_info.training_zones);
+    console.log(user);
+    processor.postMessage({
+        type: 'laps',
+        activityID: id,
+        lapMarker: lapMarker,
+        zones: user.data.training_info.training_zones
+    });
+};
+
 /*
 Creates a local storage database using Dexie.
 Items are fetched using ID and the workout data
@@ -124,7 +135,8 @@ var mapRunEle,
     rssPrimary,
     rssSecondary,
     bubbleStats,
-    homeNavigation;
+    homeNavigation,
+    lapOverview;
 
 // Listen for template bound event to know when bindings
 // have resolved and content has been stamped to the page
@@ -143,6 +155,7 @@ app.addEventListener('dom-change', function() {
     bubbleStats = document.querySelector('bubble-stats');
     rssPrimary = document.querySelector('#rss-primary');
     rssSecondary = document.querySelector('#rss-secondary');
+    lapOverview = document.querySelector('lap-overview');
 
     app.logOption = document.querySelector('log-options');
 
@@ -173,6 +186,9 @@ app.addEventListener('dom-change', function() {
         }
         if ('mapRunData' in event.data) {
             mapRunEle.setData(event.data.mapRunData);
+        }
+        if ('chartDescription' in event.data) {
+            lapOverview.getLaps(event.data.chartDescription.id);
         }
         if ('chartData' in event.data) {
             app.calcMetrics(
@@ -211,6 +227,9 @@ app.addEventListener('dom-change', function() {
         }
         if ('metrics' in event.data) {
             bubbleStats.setData(event.data.metrics);
+        }
+        if ('laps' in event.data) {
+            lapOverview.displayLaps(event.data.laps);
         }
     };
 
