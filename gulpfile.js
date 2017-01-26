@@ -342,8 +342,8 @@ gulp.task('concat2', function () {
       'app/scripts/external.js',
       'dist/scripts/toolbox.js',
       'dist/scripts/amcharts/concatenated.js',
-      'dist/scripts/app.js',
       'dist/scripts/jwt.js',
+      'dist/scripts/app.js',
       'dist/scripts/d3.js',
       'dist/scripts/d3.tip.js'
     ])

@@ -262,6 +262,7 @@ var featureManagement;
             header.toggleActive('home');
             app.params = data.params;
             app.route = 'home';
+
             processor.postMessage({
                 token: jwt.token,
                 type: 'workout',
