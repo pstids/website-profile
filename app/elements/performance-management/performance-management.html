@@ -192,6 +192,9 @@
 		grabData: function () {
 			var activities = calendarManager.getPMActivities();
 			this.processData(activities);
+			window.addEventListener('gotActivities', () => {
+				this.processData(calendarManager.getPMActivities());
+			});
 			//this.processOverlayData();
 		},
 		processData: function (activities) {

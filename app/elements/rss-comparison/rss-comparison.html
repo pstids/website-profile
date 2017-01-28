@@ -86,8 +86,8 @@
 			</div>
 		</div>
         <div class="layout horizontal chart-holder" id="chartHolder">
-        	<svg></svg>
 			<div id="chart"></div>
+			<svg></svg>
 		</div>
 		<div class="instructions" id="instructions">
 			<h1>Scroll to calendar and click the double arrow.</h1>
@@ -204,7 +204,7 @@
 					this.$.instructions.classList.add('hidden');
 				}
 			},
-			setChartData: function (activity, data, maxValue) {
+			setChartData: function (activity, data, maxPowerValue, maxRSSValue) {
 				if (activity === 0) {
 					this.notSelected(true);
 					this.removeLoading();
@@ -214,7 +214,8 @@
 					this.activity = activity;
 					this.data = data;
 					this.startTime = this.data[0].date;
-					this.maxValue = maxValue;
+					this.maxPowerValue = maxPowerValue;
+					this.maxRSSValue = maxRSSValue;
 
 					this.fillChart();
 				}
@@ -237,7 +238,8 @@
 								axisThickness: 2,
 								gridAlpha: 0.2,
 								axisColor: '#f7a017',
-								dashLength: 1
+								dashLength: 1,
+								maximum: this.maxPowerValue
 							},
 							{
 								autoGridCount: false,
@@ -249,7 +251,7 @@
 								gridAlpha: 0.2,
 								axisColor: '#DF7B0B',
 								dashLength: 1,
-								maximum: this.maxValue
+								maximum: this.maxRSSValue
 							}
 						],
 						graphs: [

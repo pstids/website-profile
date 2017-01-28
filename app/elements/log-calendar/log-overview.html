@@ -110,186 +110,7 @@
 					</th>
 				</tr>
 			</thead>
-			<tbody id="container">
-				<!--
-				<tr>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">13</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">14</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">15</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">16</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">17</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">18</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">19</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-				</tr>
-				<tr>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">20</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">21</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">22</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">23</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">24</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">25</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">26</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-				</tr>
-				<tr>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">27</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">28</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">29</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">30</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">1</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">2</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">3</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-				</tr>
-				<tr>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">4</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">5</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">6</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">7</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">8</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper">
-						<a href="#">
-							<span class="day">9</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-					<td class="day-wrapper highlighted">
-						<a href="#">
-							<span class="day">10</span>
-							<span class="activity-indicator"></span>
-						</a>
-					</td>
-				</tr>
-				-->
-			</tbody>
+			<tbody id="container"></tbody>
 		</table>
 		<paper-material id="action">
 			<paper-button data-view="" on-click="view" id="view">View</paper-button>
@@ -309,7 +130,7 @@
 						return;
 					} else if ('dataset' in target && target.dataset.id !== undefined) {
 						this.$.action.style.display = 'block';
-						this.$.action.style.position = 'absolute';
+						this.$.action.style.position = 'fixed';
 						this.$.action.style.top = `${e.detail.y}px`;
 						this.$.action.style.left = `${e.detail.x}px`;
 						this.$.view.dataset.view = target.dataset.id;
@@ -325,10 +146,18 @@
 			},
 			attached: function () {
 				this.createCalendar();
+				window.addEventListener('scroll', () => {
+					if (this.$.action.style.display !== 'none') {
+						this.$.action.style.display = 'none';
+					}
+				});
+				window.addEventListener('gotActivities', () => {
+					this.createCalendar();
+				});
 			},
 			createCalendar: function () {
-				var past = moment().subtract(4, 'weeks');
-				var today = moment();
+				var past = moment().subtract(3, 'weeks').day('Monday');
+				var today = moment().add(1, 'days');
 				var activities = calendarManager.getLOActivities(past, today);
 				var hashed = {};
 				var hash;
@@ -346,7 +175,7 @@
 						} else {
 							day = {};
 						}
-						day.day = past.clone().format('MM');
+						day.day = past.clone().format('DD');
 						days.push(day);
 						past.add(1, 'day');
 					}

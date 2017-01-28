@@ -23,7 +23,7 @@ workout-shared.
     updated_time: a value parsable by new Date()
 }
 */
-var workoutFetching = function (id, updated_time) {
+var workoutFetching = function (id) {
     processor.postMessage({
         token: jwt.token,
         type: 'workout',
@@ -55,8 +55,6 @@ var suuntoProcessing = function () {
 };
 
 var lapProcessing = function (id, lapMarker) {
-    console.log(user.data.training_info.training_zones);
-    console.log(user);
     processor.postMessage({
         type: 'laps',
         activityID: id,
@@ -136,11 +134,16 @@ var mapRunEle,
     rssSecondary,
     bubbleStats,
     homeNavigation,
-    lapOverview;
+    lapOverview,
+    workoutSummary,
+    bubbleStats;
+
+var firstLoad = true;
+var currentID = null;
 
 // Listen for template bound event to know when bindings
 // have resolved and content has been stamped to the page
-app.addEventListener('dom-change', function() {
+app.addEventListener('dom-change', () => {
     console.log('Stryd is ready to rock!');
 
     homeNavigation = document.querySelector('home-navigation');
@@ -156,6 +159,8 @@ app.addEventListener('dom-change', function() {
     rssPrimary = document.querySelector('#rss-primary');
     rssSecondary = document.querySelector('#rss-secondary');
     lapOverview = document.querySelector('lap-overview');
+    workoutSummary = document.querySelector('workout-summary');
+    bubbleStats = document.querySelector('bubble-stats');
 
     app.logOption = document.querySelector('log-options');
 
@@ -202,6 +207,7 @@ app.addEventListener('dom-change', function() {
                 event.data.chartDescription,
                 event.data.availableMetrics
             );
+            workoutSummary.setData(event.data.workout);
             planView.setStartTime(event.data.chartDescription.start_time);
         }
         if ('addLog' in event.data) {
@@ -210,19 +216,17 @@ app.addEventListener('dom-change', function() {
             logCalendar.addActivity(event.data.addLog);
         }
         if ('comparison' in event.data) {
-            var maxRSS = Math.max(
-                event.data.activityPrimary.stress,
-                event.data.activitySecondary.stress
-            );
             rssPrimary.setChartData(
                 event.data.activityPrimary,
                 event.data.dataPrimary,
-                maxRSS
+                event.data.maxPower,
+                event.data.maxRSS
             );
             rssSecondary.setChartData(
                 event.data.activitySecondary,
                 event.data.dataSecondary,
-                maxRSS
+                event.data.maxPower,
+                event.data.maxRSS
             );
         }
         if ('metrics' in event.data) {
@@ -295,10 +299,6 @@ app.addEventListener('dom-change', function() {
         });
     });
 
-    page('/run/:idPrimary/similar', () => {
-        console.log('Call similar');
-    });
-
     page('/run/:idPrimary/training/:idSecondary', (data) => {
         app.route = 'profile';
         app.params = data.params;
@@ -312,16 +312,10 @@ app.addEventListener('dom-change', function() {
         planView.setStartHash(data.params.idSecondary);
         planView.classList.add('hasWorkout');
 
-        document
-            .querySelector('[data-analysis]')
+        document.querySelector('[data-analysis]')
             .appendChild(planView);
 
-        processor.postMessage({
-            token: jwt.token,
-            type: 'workout',
-            id: data.params.idPrimary,
-            updated_time: updatedTime
-        });
+        workoutFetching(data.params.idPrimary);
     });
 
     page('/run/:id', (data) => {
@@ -331,33 +325,27 @@ app.addEventListener('dom-change', function() {
         header.toggleActive('profile');
         homeNavigation.select('analysis');
 
-            header.toggleActive('home');
-            app.params = data.params;
-            app.route = 'home';
-
-            processor.postMessage({
-                token: jwt.token,
-                type: 'workout',
-                id: data.params.id,
-                updated_time: updatedTime
-            });
-        });
-        console.log('called run view');
-
         logCalendar.setActive(app.params.id);
-        workoutElement.setLoading();
+        
+        lapOverview.classList.add('hidden');
 
         mapRunEle.classList.remove('hidden');
         workoutElement.classList.remove('hidden');
         planView.chartToggle(false);
         planView.classList.remove('hasWorkout');
 
-        processor.postMessage({
-            token: jwt.token,
-            type: 'workout',
-            id: data.params.id,
-            updated_time: updatedTime
-        });
+        if (firstLoad) {
+            urlManager.setNavigation(app.params.id, 0);
+            firstLoad = false;
+        } else {
+            window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+        }
+
+        if (currentID !== app.params.id) {
+            workoutElement.setLoading();
+            workoutFetching(app.params.id);
+            currentID = app.params.id;
+        }
     });
 
     page('/training/:hash', (data) => {
@@ -365,6 +353,8 @@ app.addEventListener('dom-change', function() {
         app.route = 'profile';
         app.home = 'training';
         header.toggleActive('profile');
+
+        window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
 
         planView.chartToggle(true);
         planView.setStartHash(data.params.hash);
@@ -472,7 +462,7 @@ app.addEventListener('dom-change', function() {
     );
 });
 
-app.logout = function() {
+app.logout = function () {
     jwt.logout();
 };
 
@@ -502,4 +492,16 @@ app.setDownload = function (url) {
 
 app.giveActivities = function (activities) {
     logCalendar.processActivities(activities);
+};
+
+app.setHomeNavigation = function (availables) {
+    homeNavigation.setAvailable(availables);
+};
+
+app.showLaps = function (status) {
+    if (!status) {
+        lapOverview.classList.add('hidden');
+    } else {
+        lapOverview.classList.remove('hidden');
+    }
 };

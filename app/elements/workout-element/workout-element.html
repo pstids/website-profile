@@ -126,6 +126,10 @@
             --paper-radio-button-checked-color: #E94F65;
             --paper-radio-button-checked-ink-color: #E94F65;
         }
+        [data-graph="rss"] {
+            --paper-radio-button-checked-color: #DF7B0B;
+            --paper-radio-button-checked-ink-color: #DF7B0B;
+        }
         .toggle .circle, .stat-toggle .circle {
             width: 1.3vw;
             height: 1.3vw;
@@ -207,6 +211,23 @@
                 -webkit-transform: scale(1.0);
             }
         }
+        .description {
+            padding-bottom: 5vh;
+            display: none;
+        }
+        #descriptionInput {
+            flex: 0 70%;
+        }
+        #descriptionButton {
+            margin-left: 10px;
+        }
+        #descriptionDisplay {
+            color: white;
+        }
+        .max-width {
+            position: relative;
+            width: 100%;
+        }
     </style>
     <template>
         <div class="outer-spinner" id="spinner">
@@ -215,7 +236,7 @@
                 <div class="dot2"></div>
             </div>
         </div>
-        <div class="layout horizontal" style="position: relative; width: 100%;">
+        <div class="layout horizontal max-width">
             <div id="chartdiv"></div>
             <div class="toggles">
                 <iron-icon icon="icons:menu"></iron-icon>
@@ -229,10 +250,11 @@
                     <paper-radio-button on-click="toggle" data-graph="vertOsc">Vertical Oscillation</paper-radio-button>
                     <paper-radio-button on-click="toggle" data-graph="legSpring">Leg Spring Stiffness</paper-radio-button>
                     <paper-radio-button on-click="toggle" data-graph="formPower">Form Power</paper-radio-button>
+                    <paper-radio-button on-click="toggle" data-graph="rss">RSS</paper-radio-button>
                 </div>
             </div>
         </div>
-        <div class="layout vertical" style="padding-bottom: 5vh; display: none;">
+        <div class="layout vertical description">
             <div class="layout horizontal center center-justified">
                 <paper-textarea
                     class="editable"
@@ -240,12 +262,11 @@
                     rows="1"
                     max-rows="3"
                     value="{{descriptionText}}"
-                    id="descriptionInput"
-                    style="flex: 0 70%;">
+                    id="descriptionInput">
                 </paper-textarea>
-                <button is="stryd-button" id="descriptionButton" on-click="" style="margin-left: 10px;">Save</button>
+                <button is="stryd-button" id="descriptionButton">Save</button>
             </div>
-            <p id="descriptionDisplay" style="color: white;">{{descriptionText}}</p>
+            <p id="descriptionDisplay">{{descriptionText}}</p>
         </div>
     </template>
     <script>
@@ -591,6 +612,41 @@
                         lineColor: '#E94F65',
                         hidden: true
                     }
+                },
+                rss: {
+                    toggle: this.querySelector('[data-graph="rss"]'),
+                    graph: () => {
+                        return this.chart.getGraphById('rss');
+                    },
+                    axis: {
+                        autoGridCount: false,
+                        gridCount: 4,
+                        id: 'rss',
+                        position: 'right',
+                        offset: 0,
+                        axisThickness: 2,
+                        gridAlpha: 0.2,
+                        axisColor: '#DF7B0B',
+                        dashLength: 1
+                    },
+                    info: {
+                        id: 'rss',
+                        valueAxis: 'rss',
+                        bullet: 'round',
+                        bulletBorderAlpha: 1,
+                        bulletColor: '#FFFFFF',
+                        bulletSize: 5,
+                        hideBulletsCount: 50,
+                        lineThickness: 2,
+                        title: 'rss',
+                        useLineColorForBulletBorder: true,
+                        valueField: 'rss',
+                        type: 'line',
+                        balloonText: '[[value]] RSS',
+                        lineColor: '#DF7B0B',
+                        fillAlphas: 0.7,
+                        hidden: true
+                    }
                 }
             };
         },
@@ -730,7 +786,6 @@
 
             this.chart.addListener('init', (e) => {
                 this.removeLoading();
-                this.bindToggles();
             });
 
             this.chart.addListener('zoomed', (e) => {

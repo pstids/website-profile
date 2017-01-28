@@ -234,6 +234,8 @@ class TrainingPlan {
 			var addDays = workout.workout_day;
 			var targetDate = moment(this.targetDateHash).add(addDays, 'days');
 			var dateHash = targetDate.format('YYYYMMDD');
+			var rss = this.getRSS(workout);
+			workout.rss = rss;
 			this.days[dateHash] = workout;
 		}
 		processor.postMessage({
@@ -242,6 +244,61 @@ class TrainingPlan {
 			trainingDays: this.days
 		});
 	}
+
+    getRSS(workout) {
+        var baseSpd = 6;
+        var relativeIntensities = [0.8, 0.85, 0.95, 1.1 ,1.25];
+        var blocks = workout.blocks;
+        var totalStress = 0;
+        var stress = 0;
+        for (var block of blocks) {
+            var segments = block.segments;
+            var repeat = block.block_repeat;
+            if (repeat === 0) {
+                repeat = 1;
+            }
+            for (var segment of segments) {
+                for (var i = 0; i < repeat; i++) {
+                    var zone = segment.zone_selected;
+                    var relativeIntensity = 0;
+                    var zonePercent = segment.intensity_percent;
+                    if (zonePercent.high > 0) {
+                        relativeIntensity = 0.01 * (zonePercent.high/2 + zonePercent.low/2);
+                    } else {
+                        relativeIntensity = relativeIntensities[zone];
+                    }
+
+                    var distanceMeters = 0;
+                    if (segment.distance_unit_selected === 'mile') {
+                        distanceMeters = metersPerMile * segment.duration_distance;
+                    } else if (segment.distance_unit_selected === 'meter') {
+                        distanceMeters = segment.duration_distance;
+                    } else if (segment.distance_unit_selected === 'km') {
+                        distanceMeters = metersPerKM * segment.duration_distance;
+                    }
+
+                    var durationSeconds = 0;
+                    var adjSpd = 0;
+                    if (segment.duration_type === 'time') {
+                        durationSeconds = segment.duration_time.hour*3600 + segment.duration_time.minute*60 + segment.duration_time.second;
+                        distanceMeters = durationSeconds * relativeIntensity * baseSpd;
+                    } else {
+                        if (distanceMeters > 0) {
+                            adjSpd = relativeIntensity * baseSpd;
+                            durationSeconds = distanceMeters / adjSpd;
+                        } else {
+                            adjSpd = 0;
+                            durationSeconds = 0;
+                        }
+                    }
+
+                    stress = 1.8 * durationSeconds/60 * Math.pow(relativeIntensity, 3.5);
+                    totalStress = totalStress + stress;
+                }
+            }
+        }
+        return totalStress.toFixed(0);
+    }
 
 	getDay(dateStr) {
 		if (dateStr in this.days) {
@@ -306,19 +363,35 @@ class URLManager {
 		this.activityID = 0;
 		this.trainingID = 0;
 		this.compareID = 0;
+		this.availables = [];
 	}
 	setURL(activityID, trainingID) {
 		this.activityID = activityID;
 		this.trainingID = trainingID;
+		this.setNavigation(activityID, trainingID);
 		if (this.activityID !== 0) {
 			page(`/run/${this.activityID}`);
-		} else if (this.compareID !== 0) {
-			page(`/training/${this.compareID}`);
+		} else if (this.trainingID !== 0) {
+			page(`/training/${this.trainingID}`);
 		}
+	}
+	setNavigation(activityID, trainingID) {
+		this.availables = [];
+		this.activityID = activityID;
+		if (this.activityID !== 0) {
+			this.availables.push('analysis', 'laps', 'comparison');
+		}
+		if (trainingID !== 0) {
+			this.availables.push('training');
+		}
+		app.setHomeNavigation(this.availables);
 	}
 	compareRun(compareID) {
 		if (compareID !== null) {
 			this.compareID = compareID;
+		}
+		if (this.activityID === 0) {
+			this.activityID = compareID;
 		}
 		if (this.activityID !== 0 && this.compareID !== 0) {
 			page(`/run/${this.activityID}/run/${this.compareID}`);
@@ -332,7 +405,7 @@ class URLManager {
 		} else if (select === 'comparison') {
 			page(`/run/${this.activityID}/run/${this.compareID}`);
 		} else if (select === 'training') {
-			page(`/run/${this.activityID}/training/${this.trainingID}`);
+			page(`/training/${this.trainingID}`);
 		} else if (select === 'similar') {
 			page(`/run/${this.activityID}/similar`);
 		}
@@ -348,12 +421,14 @@ class CalendarManager {
 			end: moment().add(2, 'days')
 		};
 		this.activities = {};
+		this.hasActivities = false;
         var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
         var endDate = this.dateSpan.end.format('MM-DD-YYYY');
         var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
         // if (this.mode === 'admin') {
         //     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
         // }
+        this.gotActivityEvent = new CustomEvent('gotActivities');
         superagent
             .get(activityEndPoint)
             .send()
@@ -364,6 +439,7 @@ class CalendarManager {
                     if (res.body !== null && res.body.activities !== null) {
                         this.saveActivities(res.body.activities);
                         this.loadLast(res.body.last_activity);
+                        window.dispatchEvent(this.gotActivityEvent);
                     } else {
                         this.saveActivities([]);
                         this.loadLast(res.body.last_activity);
@@ -454,12 +530,6 @@ class CalendarManager {
     loadLast(id) {
         page(`/powercenter/run/${id}`);
         this.hasLoaded = true;
-        // var bubbles = document.querySelector('.bubbles');
-        // var workout = document.querySelector('workout-element');
-        // workout.setLoading();
-        // page(`/run/${id}`);
-        // window.scrollTo(0, bubbles.offsetTop);
-        // this.hasLoaded = true;
     }
 }
 

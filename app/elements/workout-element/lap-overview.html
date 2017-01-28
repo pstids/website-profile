@@ -101,7 +101,7 @@
 					var lapIdx = (+target.dataset.lap)-1;
 					this.tiz(this.laps[lapIdx].tiz);
 
-					Polymer.dom(target.classList.add('active');
+					Polymer.dom(target.classList.add('active'));
 					return;
 				}
 				if ('parentNode' in target && target.parentNode !== null) {
@@ -176,21 +176,25 @@
 		},
 		tiz: function (tizs) {
 			var data = [];
+			var total = tizs.reduce((a, b) => {
+				return a + b;
+			}, 0);
 			for (var i = 0; i < tizs.length; i++) {
 				var tiz = tizs[i];
 				data.push({
 					zone: i+1,
-					tiz: tiz
+					tiz: tiz,
+					percentage: tiz/total
 				});
 			}
-			var width = 200, height = 200, radius = 100;
+			var width = 230, height = 230, radius = 110;
 			var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
 			var arc = d3.svg.arc()
-				.outerRadius(radius-20)
+				.outerRadius(radius-40)
 				.innerRadius(0);
 			var labelArc = d3.svg.arc()
-				.outerRadius(radius-10)
-				.innerRadius(radius-10);
+				.outerRadius(radius-20)
+				.innerRadius(radius-20);
 			var pie = d3.layout.pie()
 				.sort(null)
 				.value((d) => {
@@ -220,7 +224,22 @@
 				})
 				.attr('dy', '.35em')
 				.text((d) => {
+					if (d.data.percentage * 100 < 1) {
+						return '';
+					}
 					return `Zone ${d.data.zone}`;
+				});
+			g.append('text')
+				.attr('transform', (d) => {
+					return `translate(${labelArc.centroid(d)})`;
+				})
+				.attr('dy', '1.35em')
+				.text((d) => {
+					if (d.data.percentage * 100 < 1) {
+						return '';
+					}
+					var percentage = (d.data.percentage * 100).toFixed(2);
+					return `(${percentage}%)`;
 				});
 		}
 	});

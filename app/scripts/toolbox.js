@@ -155,19 +155,20 @@ var durationToSec = function (paceStr) {
 var secToDuration = function (sec) {
     var minStr = fillZero(Math.floor(sec / 60));
     var secStr = fillZero((sec % 60).toFixed(0));
-    return minStr + ':' + secStr;
+    return `${minStr}:${secStr}`;
 };
 
 var secToDurationFull = function (sec) {
-    var hrStr = fillZero(Math.floor(sec / 3600));
-    sec /= 3600;
-    var minStr = fillZero(Math.floor(sec / 60));
-    var secStr = fillZero(Math.floor(sec % 60).toFixed(0));
-    return hrStr + ':' + minStr + ':' + secStr;
+    var hrs = Math.floor(sec/3600);
+    var hrStr = fillZero(hrs);
+    var rSec = sec - (hrs * 3600);
+    var minStr = fillZero(Math.floor(rSec / 60));
+    var secStr = fillZero(Math.floor(rSec % 60).toFixed(0));
+    return `${hrStr}:${minStr}:${secStr}`;
 };
 
 var attribute = function (selector, parent) {
-  var eles = parent.querySelectorAll('[data-' + selector + ']');
+  var eles = parent.querySelectorAll(`[data-${selector}]`);
   var holder = {};
   for (var i = 0; i < eles.length; i++) {
     holder[eles[i].dataset[selector]] = eles[i];

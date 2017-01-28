@@ -12,7 +12,6 @@ importScripts('/powercenter/scripts/processor.min.js');
 
 var data = {};
 var token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
-var db;
 
 var activeMemory = {};
 var seriesMemory = {};
@@ -74,17 +73,16 @@ class ColorInterpolate {
 
 var colorInterpolate = new ColorInterpolate();
 
-/* Private methods */
-var initDB = function () {
-    if (db === null) {
-        db = new Dexie('Logs');
-        db.version(1).stores({
+class DB {
+    constructor() {
+        this.storage = new Dexie('Logs');
+        this.storage.version(1).stores({
             log: '++id, data'
         });
-        db.open();
+        this.storage.open();
     }
-};
-initDB();
+}
+var db = new DB();
 
 var calcThreshold = function (nPowers) {
     var threshold = {
@@ -98,7 +96,7 @@ var calcThreshold = function (nPowers) {
         for (var i = 0; i < nPowers.length; i++) {
             powers.push(nPowers[i]);
         }
-        var sortedPower = powers.sort(function (a, b) {
+        var sortedPower = powers.sort((a, b) => {
             return a - b;
         });
 
@@ -120,7 +118,7 @@ var calcThreshold = function (nPowers) {
 };
 
 var workoutSave = function (workout, id) {
-    db.log.put({
+    db.storage.log.put({
         id: String(id),
         data: workout
     });
@@ -294,6 +292,12 @@ var workoutProcessing = function (workout, id) {
                 availableMetrics.push('deviceElevation');
             }       
         }
+        if ('stress_list' in workout && workout.stress_list !== null) {
+            entry.rss = workout.stress_list[i].toFixed(1);
+            if (entry.rss !== 0 && availableMetrics.indexOf('rss') === -1) {
+                availableMetrics.push('rss');
+            }    
+        }
         if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
         }
@@ -362,6 +366,16 @@ var workoutProcessing = function (workout, id) {
         start_time: workout.start_time,
         stress: workout.stress
     };
+    data.workout = {
+        stress: workout.stress,
+        average_power: workout.average_power,
+        average_speed: workout.average_speed,
+        elapsed_time: workout.elapsed_time,
+        seconds_in_zones: workout.seconds_in_zones,
+        start_time: workout.start_time,
+        id: workout.id,
+        distance: workout.distance
+    };
     data.steps = steps;
     if (id === 'sample') {
         data.logs = [workout];
@@ -413,7 +427,7 @@ var workoutFetching = function (workoutID, workoutUpdated) {
     } else if (!checkIndexedDB) {
         workoutFetchingAJAX(workoutID);
     } else {
-        db.log.get(String(workoutID), (log) => {
+        db.storage.log.get(String(workoutID), (log) => {
             if (log === undefined) {
                 workoutFetchingAJAX(workoutID);
             } else {
@@ -469,24 +483,32 @@ var workoutFetchingComparisonAJAX = function (workoutID) {
 };
 
 var workoutFetchingComparison = function (workoutID, workoutUpdated) {
+    var getExternal, workoutUpdatedTS, logUpdatedTS;
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
-    if (!checkIndexedDB) {
+    if (workoutID in activeMemory) {
+        workoutUpdatedTS = new Date(workoutUpdated);
+        logUpdatedTS = new Date(activeMemory[workoutID].updated_time);
+        getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
+            (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
+        if (getExternal) {
+            return workoutFetchingComparisonAJAX(workoutID);
+        } else {
+            return activeMemory[workoutID];
+        }
+    } else if (!checkIndexedDB) {
         return workoutFetchingComparisonAJAX(workoutID);
     } else {
-        return db.log.get(String(workoutID), (log) => {
+        return db.storage.log.get(String(workoutID), (log) => {
             if (log === undefined) {
                 return workoutFetchingComparisonAJAX(workoutID);
             } else {
-                var workoutUpdatedTS = new Date(workoutUpdated);
-                var logUpdatedTS = new Date(log.data.updated_time);
-                var getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
+                workoutUpdatedTS = new Date(workoutUpdated);
+                logUpdatedTS = new Date(log.data.updated_time);
+                getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
                     (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
                 if (getExternal) {
                     return workoutFetchingComparisonAJAX(workoutID);
                 } else {
-                    if (typeof log.data === 'undefined') {
-                        return workoutFetchingComparisonAJAX(workoutID);
-                    }
                     return log.data;
                 }
             }
@@ -535,7 +557,9 @@ var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
         if (+idSecondary === 0) {
             resolve(0);
         } else {
-            resolve(workoutFetchingComparison(idSecondary, updatedTime));
+            var result = workoutFetchingComparison(idSecondary, updatedTime);
+            console.log(result);
+            resolve(result);
         }
     });
     Promise.all([activityPrimary, activitySecondary])
@@ -553,6 +577,14 @@ var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
                 data.activityIDSecondary = idSecondary;
                 data.dataSecondary = workoutProcessingComparison(values[1]);
             }
+            data.maxRSS = Math.max(
+                data.activityPrimary.stress,
+                data.activitySecondary.stress
+            );
+            data.maxPower = Math.max(
+                data.activityPrimary.max_power,
+                data.activitySecondary.max_power
+            );
             postMessage(data);
         });
 };
@@ -906,7 +938,6 @@ var calcLaps = function (type, activityID, zones) {
 
     var activity = seriesMemory[activityID];
     var oActivity = activeMemory[activityID];
-    console.log(oActivity);
 
     //var timestamps = oActivity.lap_timestamp_list;
     var lapTimestamps = [1485288924, 1485289491, 1485290240, 1485290737, 1485291048];

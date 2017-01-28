@@ -1,13 +1,13 @@
 <dom-module id="home-navigation">
 	<style>
 		:host {
-            @apply(--layout-vertical);
-            @apply(--layout-end);
-            @apply(--layout-flex);
-            position: absolute;
-            top: 13px;
-            left: 13px;
-            z-index: 100;
+			@apply(--layout-vertical);
+			@apply(--layout-end);
+			@apply(--layout-flex);
+			position: absolute;
+			top: 13px;
+			left: 13px;
+			z-index: 100;
 		}
 
 		:host:hover .toggle {
@@ -23,75 +23,117 @@
 		}
 
 		:host iron-icon {
-            padding: 10px;
-            border: 1px solid;
-            background-color: #1C1C1C;
-            border-radius: 6px;
-            color: white;
+			padding: 10px;
+			border: 1px solid;
+			background-color: #1C1C1C;
+			border-radius: 6px;
+			color: white;
 		}
-        .toggle {
-        	display: none;
-            background-color: #222222;
-            border: 2px solid #FFFFFF;
-            border-radius: 6px;
-            color: #FFFFFF;
-            cursor: pointer;
-            font-size: 1vw;
-            font-weight: 500;
-            margin: 0.5vw 0 0 0;
-            padding: 0.8vw 1.1vw;
-            position: relative;
-            text-transform: uppercase;
-            z-index: 5;
-            width: 200px;
-        }
-        .toggle paper-radio-button {
-            padding-bottom: 15px;
-            padding-left: 10px;
-        }
-        .toggle paper-radio-button:first-child {
-            padding-top: 15px;
-        }
+		.toggle {
+			display: none;
+			background-color: #222222;
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			color: #FFFFFF;
+			cursor: pointer;
+			font-size: 1vw;
+			font-weight: 500;
+			margin: 0.5vw 0 0 0;
+			padding: 0.8vw 1.1vw;
+			position: relative;
+			text-transform: uppercase;
+			z-index: 5;
+			width: 200px;
+		}
+		.toggle paper-radio-button {
+			padding-bottom: 15px;
+			padding-left: 10px;
+		}
+		.toggle paper-radio-button:first-child {
+			padding-top: 15px;
+		}
 
-        [data-select="analysis"] {
-            --paper-radio-button-checked-color: #f7a017;
-            --paper-radio-button-checked-ink-color: #f7a017;
-        }
-        [data-select="comparison"] {
-            --paper-radio-button-checked-color: #683a78;
-            --paper-radio-button-checked-ink-color: #683a78;
-        }
-        [data-select="training"] {
-            --paper-radio-button-checked-color: #074a8c;
-            --paper-radio-button-checked-ink-color: #074a8c;
-        }
+		[data-select="analysis"] {
+			--paper-radio-button-checked-color: #f7a017;
+			--paper-radio-button-checked-ink-color: #f7a017;
+		}
+		[data-select="comparison"] {
+			--paper-radio-button-checked-color: #683a78;
+			--paper-radio-button-checked-ink-color: #683a78;
+		}
+		[data-select="training"] {
+			--paper-radio-button-checked-color: #074a8c;
+			--paper-radio-button-checked-ink-color: #074a8c;
+		}
+		[data-select="laps"] {
+			--paper-radio-button-checked-color: #f7a017;
+			--paper-radio-button-checked-ink-color: #f7a017;
+		}
 	</style>
 	<template>
-        <iron-icon icon="icons:menu"></iron-icon>
-        <div class="toggle">
-            <paper-radio-button on-click="router" data-select="analysis" checked="true">Data Analysis</paper-radio-button>
-            <paper-radio-button on-click="router" data-select="comparison">Comparison</paper-radio-button>
-            <paper-radio-button on-click="router" data-select="training">Training</paper-radio-button>
-        </div>
+		<iron-icon icon="icons:menu"></iron-icon>
+		<div class="toggle">
+			<paper-radio-button on-click="router" data-select="analysis" checked="true">Data Analysis</paper-radio-button>
+			<paper-radio-button on-click="router" data-select="comparison">Comparison</paper-radio-button>
+			<paper-radio-button on-click="router" data-select="training">Training</paper-radio-button>
+			<paper-radio-button on-click="router" data-select="laps">Laps</paper-radio-button>
+		</div>
 	</template>
 	<script>
 		Polymer({
 			is: 'home-navigation',
+			ready: function () {
+				this.availables = {};
+			},
 			router: function (e) {
 				var target = e.target;
 				while (target.dataset.select === undefined) {
 					target = target.parentElement;
 				}
-				// this.querySelector('[data-select].active').classList.remove('active');
-				// target.classList.add('active');
+				var checks = this.querySelectorAll('paper-radio-button');
+				for (var check of checks) {
+					if (check.active) {
+						check.checked = false;
+					}
+				}
+				target.checked = true;
 
-				app.home = target.dataset.select;
-
-				urlManager.view(target.dataset.select);
+				var select = target.dataset.select;
+				if (select === 'analysis') {
+					app.home = 'analysis';
+					urlManager.view('analysis');
+					app.showLaps(false);
+				} else if (select === 'comparison') {
+					app.home = 'comparison';
+					urlManager.view('comparison');
+				} else if (select === 'training') {
+					app.home = 'training';
+					urlManager.view('training');
+				} else if (select === 'laps') {
+					app.home = 'analysis';
+					urlManager.view('analysis');
+					app.showLaps(true);
+				}
 			},
-			select: function () {
-				// this.querySelector('[data-select].active').classList.remove('active');
-				// this.querySelector(`[data-select=${target}]`).classList.add('active');
+			select: function (select) {
+				console.log(select);
+				// var checked = this.querySelector('paper-radio-button[checked]');
+				// if (checked && checked.active) {
+				// 	checked.checked = false;
+				// }
+				// this.querySelector(`[data-select="${select}"]`).checked = true;
+			},
+			setAvailable: function (availables) {
+				var navs = ['analysis', 'comparison', 'training', 'laps'];
+				this.availables = availables;
+				for (var nav of navs) {
+					var navEle = this.querySelector(`[data-select="${nav}"]`);
+					if (availables.indexOf(nav) !== -1) {
+						navEle.classList.remove('hidden');
+					} else {
+						navEle.classList.add('hidden');
+					}
+				}
 			}
 		});
 	</script>

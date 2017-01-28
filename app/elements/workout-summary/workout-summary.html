@@ -90,10 +90,10 @@
 	<template>
 		<div class="layout horizontal top">
 			<div class="title">
-				<h1 class="bold">{{data.type}}</h1>
-				<h1 class="accent">{{data.date}}</h1>
+				<h1 class="bold">{{data.date}}</h1>
+				<h1 class="accent hidden">{{data.type}}</h1>
 			</div>
-			<div class="raindrop">
+			<div class="raindrop hidden">
 				<iron-icon icon="icons:arrow-drop-down-circle"></iron-icon>
 			</div>
 		</div>
@@ -132,58 +132,64 @@
 				data: Object
 			},
 			attached: function () {
-				this.tiz();
 				this.data = {
 					type: 'Interval Run',
-					date: 'Jan 3rd, 2017',
-					rss: '100',
-					duration: '1:00:00',
-					pace: '6:00',
-					distance: '10',
+					date: 'Jan 1st, 2017',
+					rss: '--',
+					duration: '--:--:--',
+					pace: '--:--',
+					distance: '--',
 					distance_unit: 'mi',
 					pace_unit: '/mi'
 				};
 			},
-			updateData: function (activity) {
-				this.activity = activity;
+			setData: function (activity) {
+				this.data.date = moment(activity.start_time*1000).format('MMM Do, YYYY');
+				this.notifyPath('data.date');
+				this.data.rss = activity.stress.toFixed(0);
+				this.notifyPath('data.rss');
+				this.data.duration = secToDurationFull(activity.elapsed_time);
+				this.notifyPath('data.duration');
+				this.data.pace = speedToPace(activity.average_speed, user.data.units);
+				this.notifyPath('data.pace');
+				this.data.distance = meterToMile(activity.distance, 0);
+				this.notifyPath('data.distance');
+				this.tiz(activity.seconds_in_zones);
 			},
-			tiz: function () {
-				var width = 200, height = 200, radius = 100;
+			tiz: function (zones) {
+				var data = [];
+				var total = zones.reduce((a, b) => {
+					return a + b;
+				}, 0);
+				for (var i = 0; i < zones.length; i++) {
+					var tiz = zones[i];
+					data.push({
+						zone: i+1,
+						tiz: tiz,
+						percentage: tiz/total
+					});
+				}
+				var width = 230, height = 230, radius = 110;
 				var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
 				var arc = d3.svg.arc()
-					.outerRadius(radius-20)
+					.outerRadius(radius-40)
 					.innerRadius(0);
 				var labelArc = d3.svg.arc()
-					.outerRadius(radius-10)
-					.innerRadius(radius-10);
+					.outerRadius(radius-20)
+					.innerRadius(radius-20);
 				var pie = d3.layout.pie()
 					.sort(null)
 					.value((d) => {
 						return d.tiz;
 					});
+				d3.select('#tiz232')
+					.selectAll('*')
+					.remove();
 				var svg = d3.select('#tiz232')
 					.attr('width', width)
 					.attr('height', height)
 					.append('g')
 						.attr('transform', `translate(${radius}, ${radius})`);
-				var data = [
-					{
-						tiz: 720,
-						zone: 1
-					}, {
-						tiz: 360,
-						zone: 2
-					}, {
-						tiz: 3600,
-						zone: 3
-					}, {
-						tiz: 1800,
-						zone: 4
-					}, {
-						tiz: 360,
-						zone: 5
-					}
-				];
 				var g = svg.selectAll('.arc')
 					.data(pie(data))
 					.enter()
@@ -200,7 +206,22 @@
 					})
 					.attr('dy', '.35em')
 					.text((d) => {
-						return 'Zone ' + d.data.zone;
+						if (d.data.percentage * 100 < 1) {
+							return '';
+						}
+						return `Zone ${d.data.zone}`;
+					});
+				g.append('text')
+					.attr('transform', (d) => {
+						return `translate(${labelArc.centroid(d)})`;
+					})
+					.attr('dy', '1.35em')
+					.text((d) => {
+						if (d.data.percentage * 100 < 1) {
+							return '';
+						}
+						var percentage = (d.data.percentage * 100).toFixed(2);
+						return `(${percentage}%)`;
 					});
 			}
 		});
