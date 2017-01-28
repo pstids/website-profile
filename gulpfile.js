@@ -341,8 +341,7 @@ gulp.task('concat1', function () {
       'app/scripts/superagent.js',
       'app/scripts/toolbox.js',
       'app/scripts/dexie.js',
-      'app/scripts/moment.js',
-      'dist/scripts/appmetrics.js'
+      'app/scripts/moment.js'
     ])
     .pipe(concat('processor.min.js'))
     .pipe(gulp.dest('dist/scripts'));
@@ -356,8 +355,7 @@ gulp.task('concat2', function () {
       'dist/scripts/jwt.js',
       'dist/scripts/app.js',
       'dist/scripts/d3.js',
-      'dist/scripts/d3.tip.js',
-      'dist/scripts/appmetrics.js'
+      'dist/scripts/d3.tip.js'
     ])
     .pipe(concat('app.min.js'))
     .pipe(gulp.dest('dist/scripts'));

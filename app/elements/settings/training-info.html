@@ -168,27 +168,7 @@
     </style>
     <template>
     <div data-zone="container">
-        <div id="info" class="container">
-            <div id="bubbles">
-                <bubble-stat type="power"></bubble-stat>
-                <bubble-stat type="pace"></bubble-stat>
-            </div>
-            <div id="zone-titles">
-                <div class="title flex-1">
-                    <h3>Zones</h3>
-                </div>
-                <div class="title flex-1">
-                    <h3>Power (WATTS)</h3>
-                </div>
-                <div class="title flex-1">
-                    <h3>Pace (<span>{{paceUnit}}</span>)</h3>
-                </div>
-            </div>
-            <div class="zones" id="zones">
-            </div>
-            <button is="stryd-button" on-click="saveZones" style="min-width: 25vw;">Save</button>
-        </div>
-        <div id="calculate" class="container" style="margin: 10vh auto;">
+        <div id="calculate" class="container" style="margin: 5vh auto;">
             <h1 class="title">Critical Power Test</h1>
             <div class="layout horizontal center" style="padding: 2vw">
                 <paper-dropdown-menu class="test-selector" label="Critical Power Test Method" no-animations>
@@ -262,7 +242,7 @@
                         <div class="subtest-input">
                             <p class="label">5k result</p>
                             <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelDuration}}" value="{{distanceTestResult.fiveKDuration}}">
+                            label="{{labelDuration5K}}" value="{{distanceTestResult.fiveKDuration}}">
                             </paper-input>
                         </div>
                     </div>
@@ -271,7 +251,7 @@
                         <div class="subtest-input">
                             <p class="label">10k result</p>
                             <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelDuration}}" value="{{distanceTestResult.tenKDuration}}">
+                            label="{{labelDuration10K}}" value="{{distanceTestResult.tenKDuration}}">
                             </paper-input>
                         </div>
                     </div>
@@ -368,6 +348,27 @@
             </div>
         </div>
 
+        <div id="info" class="container" style="margin: 10vh 0;">
+            <div id="bubbles">
+                <bubble-stat type="power"></bubble-stat>
+                <bubble-stat type="pace"></bubble-stat>
+            </div>
+            <div id="zone-titles">
+                <div class="title flex-1">
+                    <h3>Zones</h3>
+                </div>
+                <div class="title flex-1">
+                    <h3>Power (WATTS)</h3>
+                </div>
+                <div class="title flex-1">
+                    <h3>Pace (<span>{{paceUnit}}</span>)</h3>
+                </div>
+            </div>
+            <div class="zones" id="zones">
+            </div>
+            <button is="stryd-button" on-click="saveZones" style="min-width: 25vw;">Save</button>
+        </div>
+
         <paper-dialog id="invalid">
             <h1>Some of your test result input are wrong. Please double check, correct it and re-calculate.</h1>
             <div class="buttons">
@@ -417,6 +418,16 @@
                     type: String,
                     readOnly: true,
                     value: 'Duration (e.g. 5:40)'
+                },
+                labelDuration5K: {
+                    type: String,
+                    readOnly: true,
+                    value: 'Duration (e.g. 23:00)'
+                },
+                labelDuration10K: {
+                    type: String,
+                    readOnly: true,
+                    value: 'Duration (e.g. 50:40)'
                 },
                 keyTraining: {
                     type: String,
@@ -528,6 +539,7 @@
                     return;
                 }
                 let result = JSON.parse(r);
+                console.log(result);
                 this.lapTestResult = result.lap;
                 this.distanceTestResult = result.distance;
                 this.minuteTestResult = result.minute;
@@ -579,6 +591,7 @@
                     speedCoeff *= 1.61;
                 }
                 localStorage.setItem(this.keyLastTest, this.selected.toString());
+                console.log(this.selected);
                 switch (this.selected) {
                     case 0:
                         keys = Object.keys(this.lapTestResult);
@@ -639,7 +652,7 @@
                         break;
                     case 2:
                         keys = Object.keys(this.distanceTestResult);
-                        if (!arraysEqual(keys, ['fiveKDuration'])) {
+                        if (keys.indexOf('fiveKDuration') === -1) {
                             break;
                         }
                         let duration5k = durationToSec(this.distanceTestResult.fiveKDuration);
@@ -656,10 +669,11 @@
                         break;
                     case 3:
                         keys = Object.keys(this.distanceTestResult);
-                        if (!arraysEqual(keys, ['tenKDuration'])) {
+                        if (keys.indexOf('tenKDuration') === -1) {
                             break;
                         }
                         let duration10k = durationToSec(this.distanceTestResult.tenKDuration);
+                        console.log(duration10k);
                         if (duration10k === -1) {
                             break;
                         }

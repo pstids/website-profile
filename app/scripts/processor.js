@@ -564,7 +564,6 @@ var suuntoProcessing = function () {
 var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
     var activityPrimary = new Promise(resolve => {
         var result = workoutFetchingComparison(idPrimary, updatedTime);
-        console.log(result);
         resolve(idPrimary);
     });
     var activitySecondary = new Promise(resolve => {
@@ -572,13 +571,11 @@ var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
             resolve(0);
         } else {
             var result = workoutFetchingComparison(idSecondary, updatedTime);
-            console.log(result);
             resolve(idSecondary);
         }
     });
     Promise.all([activityPrimary, activitySecondary])
         .then(values => {
-            console.log(values);
             data.comparison = true;
             data.activityPrimary = activeMemory[values[0]];
             data.activityIDPrimary = idPrimary;
@@ -735,8 +732,6 @@ var resetMetrics = function () {
 };
 
 var calcMetrics = function (start, end, activityID, unit) {
-    let lmetric = new Metric('my_event');
-    lmetric.start();
     resetMetrics();
     var activity = seriesMemory[activityID];
 
@@ -911,8 +906,7 @@ var calcMetrics = function (start, end, activityID, unit) {
     delete metrics.heartRate.movingHR;
 
     data.metrics = metrics;
-    lmetric.end();
-    lmetric.log();
+
     postMessage(data);
 };
 

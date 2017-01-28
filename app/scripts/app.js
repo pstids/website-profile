@@ -121,23 +121,25 @@ var currentID = null;
 app.addEventListener('dom-change', () => {
     console.log('Stryd is ready to rock!');
 
+    homeNavigation = document.querySelector('home-navigation');
     mapRunEle = document.querySelector('#map-run');
     workoutElement = document.querySelector('#workout-element');
-    header = document.querySelector('header-element');
     uploader = document.querySelector('#uploader');
     logCalendar = document.querySelector('log-calendar');
+    toastEle = document.querySelector('#toast');
+    header = document.querySelector('header-element');
     planView = document.querySelector('plan-view');
     settingsElement = document.querySelector('stryd-settings');
+    bubbleStats = document.querySelector('bubble-stats');
     rssPrimary = document.querySelector('#rss-primary');
     rssSecondary = document.querySelector('#rss-secondary');
-    bubbleStats = document.querySelector('bubble-stats');
-    homeNavigation = document.querySelector('home-navigation');
     lapOverview = document.querySelector('lap-overview');
     workoutSummary = document.querySelector('workout-summary');
+
     logOverview = document.querySelector('log-overview');
     performanceManagement = document.querySelector('performance-management');
 
-    toastEle = document.querySelector('#toast');
+    
     app.logOption = document.querySelector('log-options');
 
     app.home = 'analysis';
