@@ -195,8 +195,9 @@
                     <paper-menu class="dropdown-content" selected="{{selected}}">
                         <paper-item>3-6 laps test</paper-item>
                         <paper-item>3-9 minutes test</paper-item>
-                        <paper-item>5k/10k max-out test</paper-item>
-                        <paper-item>Self test</paper-item>
+                        <paper-item>5k estimation</paper-item>
+                        <paper-item>10k estimation</paper-item>
+                        <!--<paper-item>1 hour estimation</paper-item>-->
                     </paper-menu>
                 </paper-dropdown-menu>
             </div>
@@ -256,21 +257,19 @@
                             </paper-input>
                         </div>
                     </div>
+
                     <div class="test-input">
                         <div class="subtest-input">
                             <p class="label">5k result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{distanceTestResult.fiveKPower}}">
-                            </paper-input>
                             <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
                             label="{{labelDuration}}" value="{{distanceTestResult.fiveKDuration}}">
                             </paper-input>
                         </div>
+                    </div>
+
+                    <div class="test-input">
                         <div class="subtest-input">
                             <p class="label">10k result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{distanceTestResult.tenKPower}}">
-                            </paper-input>
                             <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
                             label="{{labelDuration}}" value="{{distanceTestResult.tenKDuration}}">
                             </paper-input>
@@ -357,16 +356,13 @@
                         </div>
                     </div>
                     <div>
-                        The following two runs need to be done on different days with enough recovery in between.
-                        <div>
-                            1. <b>5k run with race pace</b>. Run 5000-meters at your race pace.
-                        </div>
-                        <div>
-                            2. <b>10k run with race pace</b>. Run 10000-meters at your race pace.
-                        </div>
+                        Please input your 5k time to get the estimated critical power.
                     </div>
                     <div>
-                        Conduct your own critical power test protocol and input the result here.
+                        Please input your 10k time to get the estimated critical power.
+                    </div>
+                    <div>
+                        Please run for 1 hour at all out effort to get the estimated critical power.
                     </div>
                 </iron-pages>
             </div>
@@ -643,30 +639,39 @@
                         break;
                     case 2:
                         keys = Object.keys(this.distanceTestResult);
-                        if (!arraysEqual(keys, ['fiveKPower', 'fiveKDuration', 'tenKPower', 'tenKDuration'])) {
+                        if (!arraysEqual(keys, ['fiveKDuration'])) {
                             break;
                         }
                         let duration5k = durationToSec(this.distanceTestResult.fiveKDuration);
-                        let duration10k = durationToSec(this.distanceTestResult.tenKDuration);
-                        if (duration5k === -1 || duration10k === -1) {
+                        if (duration5k === -1) {
                             break;
                         }
                         results = [
                             {
                                 label: '5k',
-                                power: parseInt(this.distanceTestResult.fiveKPower),
                                 speed: 5000 / duration5k,
                                 duration: duration5k
                             },
+                        ];
+                        break;
+                    case 3:
+                        keys = Object.keys(this.distanceTestResult);
+                        if (!arraysEqual(keys, ['tenKDuration'])) {
+                            break;
+                        }
+                        let duration10k = durationToSec(this.distanceTestResult.tenKDuration);
+                        if (duration10k === -1) {
+                            break;
+                        }
+                        results = [
                             {
                                 label: '10k',
-                                power: parseInt(this.distanceTestResult.tenKPower),
                                 speed: 10000 / duration10k,
                                 duration: duration10k
                             }
                         ];
                         break;
-                    case 3:
+                    case 4:
                         keys = Object.keys(this.customTestResult);
                         if (!arraysEqual(keys, ['power', 'pace'])) {
                             break;
