@@ -245,11 +245,11 @@
 			d3.selectAll('[data-stat]')
 				.on('click', this.callFun.bind(this));
 
-			if (!this.doStress) {
-				this.state = 'distance';
-				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
-				this.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
-			}
+			// if (!this.doStress) {
+			// 	this.state = 'distance';
+			// 	this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+			// 	this.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
+			// }
 			// d3.select(window).on('resize', this.resize.bind(this));
 
 			this.fillBars('weeks');

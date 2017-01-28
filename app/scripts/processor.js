@@ -476,7 +476,7 @@ var workoutProcessingComparison = function (workout) {
     return data;
 };
 
-var workoutFetchingComparisonAJAX = function (workoutID) {
+var workoutFetchingComparisonAJAX = function (workoutID, resolve) {
     superagent
         .get(`/b/api/v1/activities/${workoutID}`)
         .send()
@@ -485,15 +485,17 @@ var workoutFetchingComparisonAJAX = function (workoutID) {
         .end((err, res) => {
             if (res.ok) {
                 activeMemory[workoutID] = res.body;
+                resolve(workoutID);
                 return res.body;
             } else {
                 console.log('Error: cannot fetch workout');
+                resolve(workoutID);
                 return null;
             }
         });
 };
 
-var workoutFetchingComparison = function (workoutID, workoutUpdated) {
+var workoutFetchingComparison = function (workoutID, workoutUpdated, resolve) {
     var getExternal, workoutUpdatedTS, logUpdatedTS;
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (workoutID in activeMemory) {
@@ -502,25 +504,27 @@ var workoutFetchingComparison = function (workoutID, workoutUpdated) {
         getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
             (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
         if (getExternal) {
-            return workoutFetchingComparisonAJAX(workoutID);
+            return workoutFetchingComparisonAJAX(workoutID, resolve);
         } else {
+            resolve(workoutID);
             return activeMemory[workoutID];
         }
     } else if (!checkIndexedDB) {
-        return workoutFetchingComparisonAJAX(workoutID);
+        return workoutFetchingComparisonAJAX(workoutID, resolve);
     } else {
         return db.storage.log.get(String(workoutID), (log) => {
             if (log === undefined) {
-                return workoutFetchingComparisonAJAX(workoutID);
+                return workoutFetchingComparisonAJAX(workoutID, resolve);
             } else {
                 workoutUpdatedTS = new Date(workoutUpdated);
                 logUpdatedTS = new Date(log.data.updated_time);
                 getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
                     (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
                 if (getExternal) {
-                    return workoutFetchingComparisonAJAX(workoutID);
+                    return workoutFetchingComparisonAJAX(workoutID, resolve);
                 } else {
                     activeMemory[workoutID] = log.data;
+                    resolve(workoutID);
                     return log.data;
                 }
             }
@@ -563,15 +567,13 @@ var suuntoProcessing = function () {
 
 var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
     var activityPrimary = new Promise(resolve => {
-        var result = workoutFetchingComparison(idPrimary, updatedTime);
-        resolve(idPrimary);
+        workoutFetchingComparison(idPrimary, updatedTime, resolve);
     });
     var activitySecondary = new Promise(resolve => {
         if (+idSecondary === 0) {
             resolve(0);
         } else {
-            var result = workoutFetchingComparison(idSecondary, updatedTime);
-            resolve(idSecondary);
+            workoutFetchingComparison(idSecondary, updatedTime, resolve);
         }
     });
     Promise.all([activityPrimary, activitySecondary])

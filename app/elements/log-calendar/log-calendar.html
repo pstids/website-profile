@@ -147,6 +147,13 @@
             });
         },
         attached: function () {
+            if (jwt.hasToken) {
+                this.fetchMonth(
+                    this.displayedTime.month(),
+                    this.displayedTime.year(),
+                    false
+                );
+            }
             // var tooltip = document.querySelector('[data-tooltip]');
             // var x = 0, y = 0;
             // document.addEventListener('mousemove', function (e) {
@@ -167,13 +174,6 @@
             //         state
             //     );
             // }
-            if (jwt.hasToken) {
-                this.fetchMonth(
-                    this.displayedTime.month(),
-                    this.displayedTime.year(),
-                    false
-                );
-            }
         },
         setPosition: function () {
             // if (!tooltip.classList.contains('hidden')) {
@@ -205,9 +205,13 @@
         },
         // // Grabs array of activity data to populate calendar for month (int) and year (int)
         fetchMonth: function (month, year) {
-            var obj = this.dateRange(month, year);
-            this.switchMonthContext(obj.firstMonday);
-            calendarManager.requestActivities(obj.firstMonday, obj.lastSunday);
+            this.dRange = this.dateRange(month, year);
+            this.switchMonthContext(this.dRange.firstMonday);
+            console.log('mark #1');
+            setTimeout(() => {
+                calendarManager.requestActivities(this.dRange.firstMonday, this.dRange.lastSunday);
+            }, 1000);
+
         },
         // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
         dateRange: function (monthInt, year) {

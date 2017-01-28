@@ -149,6 +149,10 @@
 					}
 				}
 			},
+			ready: function () {
+				this.primarySelected = null;
+				this.secondarySelected = null;
+			},
 			attached: function () {
 				this.createCalendar();
 				window.addEventListener('scroll', () => {

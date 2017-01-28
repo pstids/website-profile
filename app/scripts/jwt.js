@@ -371,14 +371,18 @@ class URLManager {
 		this.trainingID = 0;
 		this.compareID = 0;
 		this.availables = [];
+
+		this.mode = null;
 	}
 	setURL(activityID, trainingID) {
 		this.activityID = activityID;
 		this.trainingID = trainingID;
 		this.setNavigation(activityID, trainingID);
 		if (this.activityID !== 0) {
+			this.mode = 'analysis';
 			page(`/run/${this.activityID}`);
 		} else if (this.trainingID !== 0) {
+			this.mode = 'training';
 			page(`/training/${this.trainingID}`);
 		}
 	}
@@ -408,10 +412,13 @@ class URLManager {
 	}
 	view(select) {
 		if (select === 'analysis') {
+			this.mode = 'analysis';
 			page(`/run/${this.activityID}`);
 		} else if (select === 'comparison') {
+			this.mode = 'comparison';
 			page(`/run/${this.activityID}/run/${this.compareID}`);
 		} else if (select === 'training') {
+			this.mode = 'training';
 			page(`/training/${this.trainingID}`);
 		} else if (select === 'similar') {
 			page(`/run/${this.activityID}/similar`);
@@ -430,6 +437,8 @@ class CalendarManager {
 		this.activities = {};
 		this.hasActivities = false;
 		this.lastActivity = 0;
+		this.loadNew = false;
+		this.hasLoadNew = false;
 		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
 		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
@@ -448,14 +457,25 @@ class CalendarManager {
 						this.saveActivities(res.body.activities);
 						this.lastActivity = res.body.last_activity;
 						window.dispatchEvent(this.gotActivityEvent);
+						this.hasLoadNew = true;
+						if (this.loadNew) {
+							this.loadLast();
+						}
 					} else {
 						this.saveActivities([]);
-						this.loadLast(res.body.last_activity);
+						this.lastActivity = res.body.last_activity;
+						this.loadLast();
 					}
 				} else {
 					console.log('Error: failure on grabLogs', err, res);
 				}
 			});
+	}
+	loadFirst() {
+		this.loadNew = true;
+		if (this.hasLoadNew) {
+			this.loadLast();
+		}
 	}
 	saveActivities(activities) {
 		for (var activity of activities) {
@@ -486,9 +506,11 @@ class CalendarManager {
 				if (res.ok) {
 					if (res.body !== null && res.body.activities !== null) {
 						this.saveActivities(res.body.activities);
+						console.log('mark #2');
 						this.requestActivities(start, end);
 					} else {
 						this.saveActivities([]);
+						console.log('mark #3');
 						this.requestActivities(start, end);
 					}
 				} else {

@@ -2,15 +2,15 @@
 	<style>
 		:host {
 			@apply(--layout-vertical);
-			@apply(--layout-end);
-			@apply(--layout-flex);
-			position: absolute;
-			top: 13px;
-			left: 13px;
 			z-index: 100;
+			padding: 20px;
 		}
 
-		:host:hover .toggle {
+		h1.header {
+			@apply(--header);
+		}
+
+		/*:host:hover .toggle {
 			display: block;
 		}
 
@@ -68,15 +68,81 @@
 		[data-select="laps"] {
 			--paper-radio-button-checked-color: #f7a017;
 			--paper-radio-button-checked-ink-color: #f7a017;
+		}*/
+
+		[data-select] {
+			@apply(--layout-center);
+			@apply(--layout-justified);
+			@apply(--layout-horizontal);
+			background-color: var(--primary-background-color);
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			color: #FFFFFF;
+			cursor: pointer;
+			font-size: 1vw;
+			font-weight: 500;
+			margin: 0.5vw 1vw 0 0;
+			padding: 0.8vw 1.1vw;
+			position: relative;
+			text-transform: uppercase;
+			z-index: 5;
+		}
+		[data-select] .circle {
+			width: 1.3vw;
+			height: 1.3vw;
+			border-radius: 50%;
+			border: 3px #FFFFFF solid;
+			z-index: 2;
+		}
+		[data-select] .type {
+			padding-left: 10px;
+		}
+		[data-toggle="on"][data-select="analysis"] .circle {
+			background-color: #F7A017;
+			border-color: #F7A017;
+			-webkit-box-shadow: 0px 0px 20px 0px #F7A017;
+			-moz-box-shadow: 0px 0px 20px 0px #F7A017;
+			box-shadow: 0px 0px 20px 0px #F7A017;
+		}
+		[data-toggle="on"][data-select="comparison"] .circle {
+			background-color: #084784;
+			border-color: #084784;
+			-webkit-box-shadow: 0px 0px 20px 0px #084784;
+			-moz-box-shadow: 0px 0px 20px 0px #084784;
+			box-shadow: 0px 0px 20px 0px #084784;
+		}
+		[data-toggle="on"][data-select="training"] .circle {
+			background-color: #fce9d2;
+			border-color: #fce9d2;
+			-webkit-box-shadow: 0px 0px 20px 0px #5ea7a1;
+			-moz-box-shadow: 0px 0px 20px 0px #5ea7a1;
+			box-shadow: 0px 0px 20px 0px #5ea7a1;
 		}
 	</style>
 	<template>
-		<iron-icon icon="icons:menu"></iron-icon>
+		<!-- <iron-icon icon="icons:menu"></iron-icon>
 		<div class="toggle">
 			<paper-radio-button on-click="router" data-select="analysis" checked="true">Data Analysis</paper-radio-button>
 			<paper-radio-button on-click="router" data-select="comparison">Comparison</paper-radio-button>
 			<paper-radio-button on-click="router" data-select="training">Training</paper-radio-button>
-			<paper-radio-button on-click="router" data-select="laps">Laps</paper-radio-button>
+			<paper-radio-button on-click="router" data-select="laps" class="hidden">Laps</paper-radio-button>
+		</div> -->
+		<div class="layout horizontal title center">
+			<h1 class="header">{{title}}</h1>
+			<div class="flex layout horizontal end-justified">
+				<div data-select="analysis" on-click="router" data-toggle="on">
+					<div class="circle"></div>
+					<div class="type">Analysis</div>
+				</div>
+				<div data-select="comparison" on-click="router" data-toggle="off" >
+					<div class="circle"></div>
+					<div class="type">Comparison</div>
+				</div>
+				<div data-select="training" on-click="router" data-toggle="off">
+					<div class="circle"></div>
+					<div class="type">Training</div>
+				</div>
+			</div>
 		</div>
 	</template>
 	<script>
@@ -84,47 +150,45 @@
 			is: 'home-navigation',
 			ready: function () {
 				this.availables = {};
+				this.title = 'Analysis';
 			},
 			router: function (e) {
 				var target = e.target;
 				while (target.dataset.select === undefined) {
 					target = target.parentElement;
 				}
-				var checks = this.querySelectorAll('paper-radio-button');
-				for (var check of checks) {
-					if (check.active) {
-						check.checked = false;
-					}
-				}
-				target.checked = true;
+				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+				target.dataset.toggle = 'on';
 
 				var select = target.dataset.select;
 				if (select === 'analysis') {
 					app.home = 'analysis';
 					urlManager.view('analysis');
-					app.showLaps(false);
+					this.title = 'Analysis';
 				} else if (select === 'comparison') {
 					app.home = 'comparison';
 					urlManager.view('comparison');
+					this.title = 'Comparison';
 				} else if (select === 'training') {
 					app.home = 'training';
 					urlManager.view('training');
-				} else if (select === 'laps') {
-					app.home = 'analysis';
-					urlManager.view('analysis');
-					app.showLaps(true);
+					this.title = 'Training';
 				}
 			},
 			select: function (select) {
 				console.log(select);
-				// var checked = this.querySelector('paper-radio-button[checked]');
-				// if (checked && checked.active) {
-				// 	checked.checked = false;
-				// }
-				// this.querySelector(`[data-select="${select}"]`).checked = true;
+				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+				this.querySelector(`[data-select="${select}"]`).dataset.toggle = 'on';
+				if (select === 'analysis') {
+					this.title = 'Analysis';
+				} else if (select === 'comparison') {
+					this.title = 'Comparison';
+				} else if (select === 'training') {
+					this.title = 'Training';
+				}
 			},
 			setAvailable: function (availables) {
-				var navs = ['analysis', 'comparison', 'training', 'laps'];
+				var navs = ['analysis', 'comparison', 'training'];
 				this.availables = availables;
 				for (var nav of navs) {
 					var navEle = this.querySelector(`[data-select="${nav}"]`);

@@ -60,7 +60,7 @@ var lapProcessing = function (id, lapMarker) {
         activityID: id,
         lapMarker: lapMarker
     };
-    if (user && 'data' in user && 'training_zones' in user.data) {
+    if (user && 'data' in user && 'training_info' in user.data) {
         data.zones = user.data.training_info.training_zones;
     } else {
         data.zones = null;
@@ -227,6 +227,7 @@ app.addEventListener('dom-change', () => {
     page('/', () => {
         if (jwt.hasToken) {
             page('/analysis');
+            calendarManager.loadNew = true;
         } else {
             document.location = '/signin';
         }
@@ -236,7 +237,7 @@ app.addEventListener('dom-change', () => {
         if (jwt.hasToken) {
             app.route = 'profile';
             header.toggleActive('profile');
-            calendarManager.loadLast();
+            calendarManager.loadFirst();
         } else {
             document.location = '/signin';
         }
@@ -277,7 +278,7 @@ app.addEventListener('dom-change', () => {
 
         mapRunEle.classList.remove('hidden');
         workoutElement.classList.remove('hidden');
-        lapOverview.classList.add('hidden');
+        lapOverview.classList.remove('hidden');
         // planView.chartToggle(false);
         // planView.classList.remove('hasWorkout');
 
@@ -452,7 +453,9 @@ app.setDownload = function (url) {
 };
 
 app.giveActivities = function (activities) {
-    logCalendar.processActivities(activities);
+    if (logCalendar) {
+        logCalendar.processActivities(activities);
+    }
 };
 
 app.setHomeNavigation = function (availables) {
@@ -461,7 +464,7 @@ app.setHomeNavigation = function (availables) {
 
 app.showLaps = function (status) {
     if (!status) {
-        lapOverview.classList.add('hidden');
+        lapOverview.classList.remove('hidden');
     } else {
         lapOverview.classList.remove('hidden');
     }
@@ -496,4 +499,6 @@ app.updateWorkout = function (id, updates, cb) {
             });
         }
     });
+
+    toast('Activity updated!');
 };

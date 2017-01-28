@@ -120,7 +120,7 @@
 				<h1 class="bold">{{data.date}}</h1>
 				<h1 class="accent hidden">{{data.type}}</h1>
 			</div>
-			<div class="raindrop" on-click="recalculate">
+			<div class="raindrop hidden" on-click="recalculate">
 				<iron-icon icon="icons:autorenew"></iron-icon>
 			</div>
 		</div>
@@ -334,7 +334,7 @@
 					})
 					.attr('dy', '.35em')
 					.text((d) => {
-						if (d.data.percentage * 100 < 1) {
+						if (d.data.percentage * 100 < 4) {
 							return '';
 						}
 						return `Zone ${d.data.zone}`;
@@ -345,7 +345,7 @@
 					})
 					.attr('dy', '1.35em')
 					.text((d) => {
-						if (d.data.percentage * 100 < 1) {
+						if (d.data.percentage * 100 < 4) {
 							return '';
 						}
 						var percentage = (d.data.percentage * 100).toFixed(2);
