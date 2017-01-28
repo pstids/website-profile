@@ -77,6 +77,10 @@
 			width: 240px;
 			height: 240px;
 		}
+		#tizContainer, #messageContainer {
+			width: 240px;
+			height: 240px;
+		}
 		.instructions {
 			@apply(--layout);
 			@apply(--layout-vertical);
@@ -93,12 +97,17 @@
 		</div>
 		<div class="layout horizontal chart-holder" id="chartHolder">
 			<div id="chart"></div>
-			<svg></svg>
+			<div id="tizContainer">
+				<svg></svg>
+			</div>
+			<div id="messageContainer" class="hidden">
+				<h1>Vist the 'Settings' tab to input your zones.</h1>
+			</div>
 		</div>
 		<div class="instructions hidden" id="instructions">
 			<h1>Use the preview panel to select a workout to compare.</h1>
 			<video muted autoplay="true" loop="loop" preload="auto" width="300">
-				<source src="https://storage.googleapis.com/stryd_static_assets/powercenter/compare-example.mp4" type="video/mp4">
+				<source src="https://storage.googleapis.com/stryd_static_assets/powercenter/compare-example-2.mp4" type="video/mp4">
 			</video>
 		</div>
 	</template>
@@ -113,6 +122,14 @@
 			},
 			calcTIZ: function (start, end) {
 				var tz = user.data.training_info.training_zones;
+				if (tz === null) {
+					this.$.tizContainer.classList.add('hidden');
+					this.$.messageContainer.classList.add('hidden');
+					return;
+				} else {
+					this.$.tizContainer.classList.remove('hidden');
+					this.$.messageContainer.classList.add('hidden');
+				}
 				var tiz = [0, 0, 0, 0, 0];
 				for (var i = start; i < end; i++) {
 					var power = this.data[i].power;

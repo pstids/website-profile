@@ -484,6 +484,7 @@ var workoutFetchingComparisonAJAX = function (workoutID) {
         .set('Authorization', `Bearer: ${token}`)
         .end((err, res) => {
             if (res.ok) {
+                activeMemory[workoutID] = res.body;
                 return res.body;
             } else {
                 console.log('Error: cannot fetch workout');
@@ -519,6 +520,7 @@ var workoutFetchingComparison = function (workoutID, workoutUpdated) {
                 if (getExternal) {
                     return workoutFetchingComparisonAJAX(workoutID);
                 } else {
+                    activeMemory[workoutID] = log.data;
                     return log.data;
                 }
             }
@@ -561,7 +563,9 @@ var suuntoProcessing = function () {
 
 var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
     var activityPrimary = new Promise(resolve => {
-        resolve(workoutFetchingComparison(idPrimary, updatedTime));
+        var result = workoutFetchingComparison(idPrimary, updatedTime);
+        console.log(result);
+        resolve(idPrimary);
     });
     var activitySecondary = new Promise(resolve => {
         if (+idSecondary === 0) {
@@ -569,24 +573,26 @@ var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
         } else {
             var result = workoutFetchingComparison(idSecondary, updatedTime);
             console.log(result);
-            resolve(result);
+            resolve(idSecondary);
         }
     });
     Promise.all([activityPrimary, activitySecondary])
         .then(values => {
+            console.log(values);
             data.comparison = true;
-            data.activityPrimary = values[0];
+            data.activityPrimary = activeMemory[values[0]];
             data.activityIDPrimary = idPrimary;
-            data.dataPrimary = workoutProcessingComparison(values[0]);
+            data.dataPrimary = workoutProcessingComparison(data.activityPrimary);
             if (values[1] === 0) {
                 data.activitySecondary = 0;
                 data.activityIDSecondary = 0;
                 data.dataSecondary = 0;
             } else {
-                data.activitySecondary = values[1];
+                data.activitySecondary = activeMemory[values[1]];
                 data.activityIDSecondary = idSecondary;
-                data.dataSecondary = workoutProcessingComparison(values[1]);
+                data.dataSecondary = workoutProcessingComparison(data.activitySecondary);
             }
+            console.log(data.activityPrimary, data.activitySecondary, values);
             data.maxRSS = Math.max(
                 data.activityPrimary.stress,
                 data.activitySecondary.stress
@@ -948,7 +954,7 @@ var calcLaps = function (type, activityID, zones) {
 
     var activity = seriesMemory[activityID];
     var oActivity = activeMemory[activityID];
-    //var timestamps = oActivity.lap_timestamp_list;
+
     var lapTimestamps = [];
     var lastLapTimestamp = null;
     var lastLapTimestampIter = 0;
@@ -959,7 +965,6 @@ var calcLaps = function (type, activityID, zones) {
         lapTimestamps = oActivity.lap_timestamp_list;
         lastLapTimestamp = lapTimestamps[lastLapTimestampIter];
     }
-    //var lapTimestamps = [1485288924, 1485289491, 1485290240, 1485290737, 1485291048];
     var keepLapSearching = true;
 
     var samples = 0;

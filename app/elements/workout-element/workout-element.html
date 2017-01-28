@@ -272,7 +272,6 @@
     <script>
     /*global AmCharts*/
     /*jshint camelcase: false */
-    /*global updateWorkout*/
     Polymer({
         is: 'workout-element',
         switchMetric: function (metric, state) {
@@ -301,7 +300,7 @@
                 'blur',
                 () => {
                     if (this.activity !== null) {
-                        updateWorkout(
+                        app.updateWorkout(
                             this.activity.id,
                             {
                                 description: this.descriptionText

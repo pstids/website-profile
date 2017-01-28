@@ -87,6 +87,9 @@
 			width: 230px;
 			margin: 0 50px;
 		}
+		#messageContainer {
+			width: 230px;
+		}
 
 		paper-input input {
 			text-align: center !important;
@@ -280,7 +283,7 @@
 				}
 				if (total === 0) {
 					this.$.tizContainer.classList.add('hidden');
-					this.$.messageContainer.classList.remove('hidden');
+					this.$.messageContainer.classList.add('hidden');
 					return;
 				} else {
 					this.$.tizContainer.classList.remove('hidden');

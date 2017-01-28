@@ -55,12 +55,17 @@ var suuntoProcessing = function () {
 };
 
 var lapProcessing = function (id, lapMarker) {
-    processor.postMessage({
+    var data = {
         type: 'laps',
         activityID: id,
-        lapMarker: lapMarker,
-        zones: user.data.training_info.training_zones
-    });
+        lapMarker: lapMarker
+    };
+    if (user && 'data' in user && 'training_zones' in user.data) {
+        data.zones = user.data.training_info.training_zones;
+    } else {
+        data.zones = null;
+    }
+    processor.postMessage(data);
 };
 
 /*
@@ -78,37 +83,6 @@ var db, initDB = function () {
     db.open();
 };
 initDB();
-
-/*
-updateWorkout is a helper function.
-It updates the local databases with
-new information and updates the server.
-{
-    id: the id of the activity,
-    updates: json object with updates keys and fields,
-    cb: callback function for execution on
-        server response
-}
-*/
-var updateWorkout = function (id, updates, cb) {
-    superagent
-        .put(`/b/api/v1/activities/${id}`)
-        .send(updates)
-        .set('Authorization', `Bearer: ${jwt.token}`)
-        .end(cb);
-
-    db.log.get(String(id), (log) => {
-        if (log !== undefined) {
-            for (var key in updates) {
-                log.data[key] = updates[key];
-            }
-            db.log.put({
-                id: String(log.id),
-                data: log.data
-            });
-        }
-    });
-};
 
 /*
 toast is a helper function to set
@@ -136,7 +110,8 @@ var mapRunEle,
     homeNavigation,
     lapOverview,
     workoutSummary,
-    bubbleStats;
+    logOverview,
+    performanceManagement;
 
 var firstLoad = true;
 var currentID = null;
@@ -146,22 +121,23 @@ var currentID = null;
 app.addEventListener('dom-change', () => {
     console.log('Stryd is ready to rock!');
 
-    homeNavigation = document.querySelector('home-navigation');
     mapRunEle = document.querySelector('#map-run');
     workoutElement = document.querySelector('#workout-element');
+    header = document.querySelector('header-element');
     uploader = document.querySelector('#uploader');
     logCalendar = document.querySelector('log-calendar');
-    toastEle = document.querySelector('#toast');
-    header = document.querySelector('header-element');
     planView = document.querySelector('plan-view');
     settingsElement = document.querySelector('stryd-settings');
-    bubbleStats = document.querySelector('bubble-stats');
     rssPrimary = document.querySelector('#rss-primary');
     rssSecondary = document.querySelector('#rss-secondary');
+    bubbleStats = document.querySelector('bubble-stats');
+    homeNavigation = document.querySelector('home-navigation');
     lapOverview = document.querySelector('lap-overview');
     workoutSummary = document.querySelector('workout-summary');
-    bubbleStats = document.querySelector('bubble-stats');
+    logOverview = document.querySelector('log-overview');
+    performanceManagement = document.querySelector('performance-management');
 
+    toastEle = document.querySelector('#toast');
     app.logOption = document.querySelector('log-options');
 
     app.home = 'analysis';
@@ -170,6 +146,7 @@ app.addEventListener('dom-change', () => {
     window.mapReady = function () {
         mapRunEle.setReady();
     };
+
     var mapScript = document.createElement('script');
     mapScript.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady';
     mapScript.async = true;
@@ -185,9 +162,13 @@ app.addEventListener('dom-change', () => {
         if (!jwt.hasToken) {
             logCalendar.classList.add('hidden');
             uploader.classList.add('hidden');
+            logOverview.classList.add('hidden');
+            performanceManagement.classList.add('hidden');
         } else {
             logCalendar.classList.remove('hidden');
             uploader.classList.remove('hidden');
+            logOverview.classList.remove('hidden');
+            performanceManagement.classList.remove('hidden');
         }
         if ('mapRunData' in event.data) {
             mapRunEle.setData(event.data.mapRunData);
@@ -243,19 +224,7 @@ app.addEventListener('dom-change', () => {
 
     page('/', () => {
         if (jwt.hasToken) {
-            app.route = 'profile';
-            header.toggleActive('profile');
-
-            var now = moment();
-            logCalendar.fetchMonth(
-                now.month(),
-                now.year(),
-                true
-            );
             page('/analysis');
-            if (!logCalendar.hasLoaded && logCalendar.lastActivity !== null) {
-                logCalendar.loadLast(true, logCalendar.lastActivity);
-            }
         } else {
             document.location = '/signin';
         }
@@ -265,6 +234,7 @@ app.addEventListener('dom-change', () => {
         if (jwt.hasToken) {
             app.route = 'profile';
             header.toggleActive('profile');
+            calendarManager.loadLast();
         } else {
             document.location = '/signin';
         }
@@ -277,11 +247,6 @@ app.addEventListener('dom-change', () => {
         } else {
             document.location = '/signin';
         }
-    });
-
-    page('/users/:name', (data) => {
-        app.route = 'user-info';
-        app.params = data.params;
     });
 
     page('/run/:idPrimary/run/:idSecondary', (data) => {
@@ -299,25 +264,6 @@ app.addEventListener('dom-change', () => {
         });
     });
 
-    page('/run/:idPrimary/training/:idSecondary', (data) => {
-        app.route = 'profile';
-        app.params = data.params;
-        app.home = 'analysis';
-        header.toggleActive('profile');
-        homeNavigation.select('training');
-
-        var planView = document.createElement('plan-view');
-        planView.id = 'plan-compliment';
-        planView.chartToggle(true);
-        planView.setStartHash(data.params.idSecondary);
-        planView.classList.add('hasWorkout');
-
-        document.querySelector('[data-analysis]')
-            .appendChild(planView);
-
-        workoutFetching(data.params.idPrimary);
-    });
-
     page('/run/:id', (data) => {
         app.route = 'profile';
         app.params = data.params;
@@ -326,13 +272,12 @@ app.addEventListener('dom-change', () => {
         homeNavigation.select('analysis');
 
         logCalendar.setActive(app.params.id);
-        
-        lapOverview.classList.add('hidden');
 
         mapRunEle.classList.remove('hidden');
         workoutElement.classList.remove('hidden');
-        planView.chartToggle(false);
-        planView.classList.remove('hasWorkout');
+        lapOverview.classList.add('hidden');
+        // planView.chartToggle(false);
+        // planView.classList.remove('hasWorkout');
 
         if (firstLoad) {
             urlManager.setNavigation(app.params.id, 0);
@@ -382,24 +327,6 @@ app.addEventListener('dom-change', () => {
         }
     });
 
-    page('/plan', () => {
-        if (jwt.hasToken) {
-            app.route = 'plan';
-        } else {
-            document.location = '/signin';
-        }
-    });
-
-    page('/plan/:id', (data) => {
-        app.route = 'new-plan';
-        app.planID = data.params.id;
-    });
-
-    page('/plan/:id/detail', (data) => {
-        app.route = 'plan-detail';
-        app.planID = data.params.id;
-    });
-
     page('/a/:name', (data) => {
         if (jwt.hasToken) {
             app.route = 'home';
@@ -413,6 +340,48 @@ app.addEventListener('dom-change', () => {
             document.location = '/signin';
         }
     });
+
+    // page('/users/:name', (data) => {
+    //     app.route = 'user-info';
+    //     app.params = data.params;
+    // });
+
+    // page('/plan', () => {
+    //     if (jwt.hasToken) {
+    //         app.route = 'plan';
+    //     } else {
+    //         document.location = '/signin';
+    //     }
+    // });
+
+    // page('/plan/:id', (data) => {
+    //     app.route = 'new-plan';
+    //     app.planID = data.params.id;
+    // });
+
+    // page('/plan/:id/detail', (data) => {
+    //     app.route = 'plan-detail';
+    //     app.planID = data.params.id;
+    // });
+
+    // page('/run/:idPrimary/training/:idSecondary', (data) => {
+    //     app.route = 'profile';
+    //     app.params = data.params;
+    //     app.home = 'analysis';
+    //     header.toggleActive('profile');
+    //     homeNavigation.select('training');
+
+    //     var planView = document.createElement('plan-view');
+    //     planView.id = 'plan-compliment';
+    //     planView.chartToggle(true);
+    //     planView.setStartHash(data.params.idSecondary);
+    //     planView.classList.add('hasWorkout');
+
+    //     document.querySelector('[data-analysis]')
+    //         .appendChild(planView);
+
+    //     workoutFetching(data.params.idPrimary);
+    // });
 
     page('*', () => {
         document.location = '/signin';
@@ -466,16 +435,6 @@ app.logout = function () {
     jwt.logout();
 };
 
-app.compare = function (id) {
-    var pathParts = location.pathname.split('/');
-    pathParts.shift();
-    if (pathParts[1] === 'run') {
-        page.redirect(`/run/${pathParts[2]}/run/${id}`);
-    } else {
-        page.redirect(`/run/${id}`);
-    }
-};
-
 app.calcMetrics = function (start, end, activityID, unit) {
     processor.postMessage({
         type: 'metrics',
@@ -506,6 +465,33 @@ app.showLaps = function (status) {
     }
 };
 
+/*
+updateWorkout is a helper function.
+It updates the local databases with
+new information and updates the server.
+{
+    id: the id of the activity,
+    updates: json object with updates keys and fields,
+    cb: callback function for execution on
+        server response
+}
+*/
 app.updateWorkout = function (id, updates, cb) {
-    updateWorkout(id, updates, cb);
+    superagent
+        .put(`/b/api/v1/activities/${id}`)
+        .send(updates)
+        .set('Authorization', `Bearer: ${jwt.token}`)
+        .end(cb);
+
+    db.log.get(String(id), (log) => {
+        if (log !== undefined) {
+            for (var key in updates) {
+                log.data[key] = updates[key];
+            }
+            db.log.put({
+                id: String(log.id),
+                data: log.data
+            });
+        }
+    });
 };

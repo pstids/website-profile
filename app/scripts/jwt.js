@@ -429,6 +429,7 @@ class CalendarManager {
 		};
 		this.activities = {};
 		this.hasActivities = false;
+		this.lastActivity = 0;
 		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
 		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
@@ -445,7 +446,7 @@ class CalendarManager {
 				if (res.ok) {
 					if (res.body !== null && res.body.activities !== null) {
 						this.saveActivities(res.body.activities);
-						this.loadLast(res.body.last_activity);
+						this.lastActivity = res.body.last_activity;
 						window.dispatchEvent(this.gotActivityEvent);
 					} else {
 						this.saveActivities([]);
@@ -534,8 +535,8 @@ class CalendarManager {
 	giveActivities(results) {
 		app.giveActivities(results);
 	}
-	loadLast(id) {
-		page(`/powercenter/run/${id}`);
+	loadLast() {
+		page(`/powercenter/run/${this.lastActivity}`);
 		this.hasLoaded = true;
 	}
 }
