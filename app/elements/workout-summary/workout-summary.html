@@ -84,7 +84,31 @@
 			align-items: center;
 		}
 		.tiz-container {
+			width: 230px;
 			margin: 0 50px;
+		}
+
+		paper-input input {
+			text-align: center !important;
+		}
+
+		paper-dropdown-menu.test-selector {
+			--paper-input-container-label: {
+				color: white;
+				font-weight: bold;
+			};
+			--paper-input-container-input: {
+				color: white;
+				font-style: normal;
+			};
+			/* no underline */
+			--paper-input-container-underline: {
+				color: white;
+			};
+		}
+
+		paper-icon-button {
+			color: white;
 		}
 	</style>
 	<template>
@@ -93,8 +117,8 @@
 				<h1 class="bold">{{data.date}}</h1>
 				<h1 class="accent hidden">{{data.type}}</h1>
 			</div>
-			<div class="raindrop hidden">
-				<iron-icon icon="icons:arrow-drop-down-circle"></iron-icon>
+			<div class="raindrop" on-click="recalculate">
+				<iron-icon icon="icons:autorenew"></iron-icon>
 			</div>
 		</div>
 		<div class="layout horizontal stats">
@@ -102,7 +126,7 @@
 				<div class="layout vertical values">
 					<div class="layout vertical value">
 						<h2><span class="value">{{data.rss}}</span></h2>
-						<span class="sub">RSS</span>
+						<span class="sub">{{data.rss_message}}</span>
 					</div>
 					<div class="layout vertical value">
 						<h2><span class="value">{{data.duration}}</span> <span class="unit"></span></h2>
@@ -120,8 +144,44 @@
 					</div>
 				</div>
 			</div>
-			<div class="layout tiz-container">
+			<div class="layout tiz-container" id="tizContainer">
 				<svg id="tiz232"></svg>
+			</div>
+			<div id="messageContainer" class="hidden">
+				<h1>Vist the 'Settings' tab to input your zones.</h1>
+			</div>
+			<div class="flex layout vertical center center-justified">
+				<paper-dropdown-menu class="test-selector" label="Workout Type" style="margin-bottom: 50px;">
+					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType">
+						<paper-item>None</paper-item>
+						<paper-item>Easy Run</paper-item>
+						<paper-item>Long Run</paper-item>
+						<paper-item>Fartlek Run</paper-item>
+						<paper-item>Threshold Run</paper-item>
+						<paper-item>Cruise Interval</paper-item>
+						<paper-item>Interval</paper-item>
+						<paper-item>Tempo Run</paper-item>
+						<paper-item>Repetion Run</paper-item>
+						<paper-item>Race Pace Training</paper-item>
+						<paper-item>Race</paper-item>
+						<paper-item>Critical Test Run</paper-item>
+					</paper-menu>
+				</paper-dropdown-menu>
+				<paper-dropdown-menu class="test-selector" label="Post Run RPE">
+					<paper-menu class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE">
+						<paper-item>None</paper-item>
+						<paper-item>RPE 1</paper-item>
+						<paper-item>RPE 2</paper-item>
+						<paper-item>RPE 3</paper-item>
+						<paper-item>RPE 4</paper-item>
+						<paper-item>RPE 5</paper-item>
+						<paper-item>RPE 6</paper-item>
+						<paper-item>RPE 7</paper-item>
+						<paper-item>RPE 8</paper-item>
+						<paper-item>RPE 9</paper-item>
+						<paper-item>RPE 10</paper-item>
+					</paper-menu>
+				</paper-dropdown-menu>
 			</div>
 		</div>
 	</template>
@@ -130,6 +190,17 @@
 			is: 'workout-summary',
 			properties: {
 				data: Object
+			},
+			recalculate: function () {
+                if ('id' in this.activity) {
+                    app.logOption.callRecalculate(this.activity.id);
+                }
+			},
+			ready: function () {
+				this.selected_rpe = 0;
+				this.selected_type = 0;
+				this.rpes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+				this.types = ['', 'easy', 'long', 'fartlek', 'threshold', 'cruise interval', 'interval', 'tempo', 'repetition', 'pace', 'race', 'critical test'];
 			},
 			attached: function () {
 				this.data = {
@@ -140,27 +211,81 @@
 					pace: '--:--',
 					distance: '--',
 					distance_unit: 'mi',
-					pace_unit: '/mi'
+					pace_unit: '/mi',
+					rss_message: 'RSS'
 				};
+
+				this.$.workoutRPE.addEventListener('iron-select', () => {
+					var item = this.rpes[this.$.workoutRPE.selected];
+					if ('activity' in this) {
+						app.updateWorkout(
+							this.activity.id,
+							{
+								rpe: item
+							},
+							null
+						);
+					}
+				});
+				this.$.workoutType.addEventListener('iron-select', () => {
+					var item = this.types[this.$.workoutType.selected];
+					if ('activity' in this) {
+						app.updateWorkout(
+							this.activity.id,
+							{
+								type: item
+							},
+							null
+						);
+					}
+				});
 			},
 			setData: function (activity) {
+				this.activity = activity;
 				this.data.date = moment(activity.start_time*1000).format('MMM Do, YYYY');
 				this.notifyPath('data.date');
-				this.data.rss = activity.stress.toFixed(0);
+
+				if (activity.stress > 0) {
+					this.data.rss = activity.stress.toFixed(0);
+					this.data.rss_message = 'RSS';
+
+				} else {
+					this.data.rss = activity.average_power.toFixed(0);
+					this.data.rss_message = 'Avg Power';
+				}
 				this.notifyPath('data.rss');
+				this.notifyPath('data.rss_message');
+
 				this.data.duration = secToDurationFull(activity.elapsed_time);
 				this.notifyPath('data.duration');
+
 				this.data.pace = speedToPace(activity.average_speed, user.data.units);
 				this.notifyPath('data.pace');
+
 				this.data.distance = meterToMile(activity.distance, 0);
 				this.notifyPath('data.distance');
+
 				this.tiz(activity.seconds_in_zones);
+
+				this.selected_rpe = this.rpes.indexOf(activity.rpe);
+				this.selected_type = this.types.indexOf(activity.type);
 			},
 			tiz: function (zones) {
 				var data = [];
-				var total = zones.reduce((a, b) => {
-					return a + b;
-				}, 0);
+				var total = 0;
+				if (zones !== null) {
+					total = zones.reduce((a, b) => {
+						return a + b;
+					}, 0);
+				}
+				if (total === 0) {
+					this.$.tizContainer.classList.add('hidden');
+					this.$.messageContainer.classList.remove('hidden');
+					return;
+				} else {
+					this.$.tizContainer.classList.remove('hidden');
+					this.$.messageContainer.classList.add('hidden');
+				}
 				for (var i = 0; i < zones.length; i++) {
 					var tiz = zones[i];
 					data.push({

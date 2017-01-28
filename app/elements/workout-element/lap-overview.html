@@ -32,6 +32,29 @@
 			padding: 6px 0;
 			text-align: center;
 		}
+
+		paper-input input {
+			text-align: center !important;
+		}
+
+		paper-dropdown-menu.test-selector {
+			--paper-input-container-label: {
+				color: white;
+				font-weight: bold;
+			};
+			--paper-input-container-input: {
+				color: white;
+				font-style: normal;
+			};
+			/* no underline */
+			--paper-input-container-underline: {
+				color: white;
+			};
+		}
+
+		paper-icon-button {
+			color: white;
+		}
 	</style>
 	<template>
 		<div class="layout horizontal" id="container">
@@ -41,11 +64,13 @@
 						<h1 class="header">Laps</h1>
 					</div>
 					<div class="flex layout horizontal end-justified">
-						<select id="lapSelector">
-							<option value="mi">Miles</option>
-							<option value="km">Kilometers</option>
-							<option value="split">Splits</option>
-						</select>
+						<paper-dropdown-menu class="test-selector" label="Workout Type">
+							<paper-menu class="dropdown-content" selected="{{selected_lap}}" id="lapType">
+								<paper-item>Miles</paper-item>
+								<paper-item>Kilometers</paper-item>
+								<paper-item>Splits</paper-item>
+							</paper-menu>
+						</paper-dropdown-menu>
 					</div>
 				</div>
 				<div class="layout horizontal">
@@ -59,7 +84,6 @@
 								<th>Pace</th>
 								<th>Form Power</th>
 								<th>Leg Spring</th>
-								<th>EI Ratio</th>
 							</tr>
 						</thead>
 						<tbody id="laps"></tbody>
@@ -85,8 +109,16 @@
 			lap_number: Number
 		},
 		ready: function () {
-			this.$.lapSelector.addEventListener('change', (e) => {
-				lapProcessing(this.id, e.target.value);
+			this.first = true;
+			this.lapType = ['mi', 'km', 'split'];
+			this.selected_lap = 0;
+			this.$.lapType.addEventListener('iron-select', () => {
+				if (this.first) {
+					this.first = false;
+					return;
+				}
+				var item = this.lapType[this.$.lapType.selected];
+				lapProcessing(this.id, item);
 			});
 			this.lap_number = 1;
 			this.laps = [];
@@ -130,7 +162,6 @@
 				var row = this.createRow(lap);
 				Polymer.dom(this.$.laps).appendChild(row);
 			}
-			console.log(this.laps);
 			this.tiz(this.laps[0].tiz);
 		},
 		createRow: function (row) {
@@ -156,9 +187,6 @@
 				}, {
 					key: 'legSpring',
 					unit: 'kN/m'
-				}, {
-					key: 'ratio',
-					unit: ''
 				}
 			];
 			var tr = document.createElement('tr');

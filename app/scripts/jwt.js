@@ -177,19 +177,19 @@ class TrainingPlan {
 			var trainingStarted = localStorage.getItem('training-started');
 			var trainingParsed = moment(trainingStarted, 'YYYYMMDD').format('X');
 			if (trainingSelected !== null && trainingStarted !== null) {
-	            superagent
-	                .post(`/b/api/v1/users/plan?id=${trainingSelected}&start_date=${trainingParsed}`)
-	                .set('Accept', 'application/json')
-	                .set('Authorization', `Bearer: ${jwt.token}`)
-	                .end((err, res) => {
-	                    if (res !== undefined && res.ok && res.body !== null) {
-	                        localStorage.removeItem('training-selected');
-	                        localStorage.removeItem('training-started');
-	                        window.location.reload();
-	                    } else {
-	                        console.log('Error: failure to set training plan1', err);
-	                    }
-	                });
+				superagent
+					.post(`/b/api/v1/users/plan?id=${trainingSelected}&start_date=${trainingParsed}`)
+					.set('Accept', 'application/json')
+					.set('Authorization', `Bearer: ${jwt.token}`)
+					.end((err, res) => {
+						if (res !== undefined && res.ok && res.body !== null) {
+							localStorage.removeItem('training-selected');
+							localStorage.removeItem('training-started');
+							window.location.reload();
+						} else {
+							console.log('Error: failure to set training plan1', err);
+						}
+					});
 			}
 		}
 
@@ -245,60 +245,67 @@ class TrainingPlan {
 		});
 	}
 
-    getRSS(workout) {
-        var baseSpd = 6;
-        var relativeIntensities = [0.8, 0.85, 0.95, 1.1 ,1.25];
-        var blocks = workout.blocks;
-        var totalStress = 0;
-        var stress = 0;
-        for (var block of blocks) {
-            var segments = block.segments;
-            var repeat = block.block_repeat;
-            if (repeat === 0) {
-                repeat = 1;
-            }
-            for (var segment of segments) {
-                for (var i = 0; i < repeat; i++) {
-                    var zone = segment.zone_selected;
-                    var relativeIntensity = 0;
-                    var zonePercent = segment.intensity_percent;
-                    if (zonePercent.high > 0) {
-                        relativeIntensity = 0.01 * (zonePercent.high/2 + zonePercent.low/2);
-                    } else {
-                        relativeIntensity = relativeIntensities[zone];
-                    }
+	getRSS(workout) {
+		var baseSpd = 6;
+		var relativeIntensities = [0.8, 0.85, 0.95, 1.1 ,1.25];
+		var blocks = workout.blocks;
+		var totalStress = 0;
+		var stress = 0;
+		for (var block of blocks) {
+			var segments = block.segments;
+			var repeat = block.block_repeat;
+			if (repeat === 0) {
+				repeat = 1;
+			}
+			for (var segment of segments) {
+				for (var i = 0; i < repeat; i++) {
+					var zone = segment.zone_selected;
+					var relativeIntensity = 0;
+					var zonePercent = segment.intensity_percent;
+					if (zonePercent.high > 0) {
+						relativeIntensity = 0.01 * (zonePercent.high/2 + zonePercent.low/2);
+					} else {
+						relativeIntensity = relativeIntensities[zone];
+					}
 
-                    var distanceMeters = 0;
-                    if (segment.distance_unit_selected === 'mile') {
-                        distanceMeters = metersPerMile * segment.duration_distance;
-                    } else if (segment.distance_unit_selected === 'meter') {
-                        distanceMeters = segment.duration_distance;
-                    } else if (segment.distance_unit_selected === 'km') {
-                        distanceMeters = metersPerKM * segment.duration_distance;
-                    }
+					var distanceMeters = 0;
+					if (segment.duration_distance > 50) {
+						segment.distance_unit_selected = 'meter';
+					}
+					if (segment.distance_unit_selected === 'mile') {
+						distanceMeters = metersPerMile * segment.duration_distance;
+					} else if (segment.distance_unit_selected === 'meter') {
+						distanceMeters = segment.duration_distance;
+					} else if (segment.distance_unit_selected === 'km') {
+						distanceMeters = metersPerKM * segment.duration_distance;
+					}
 
-                    var durationSeconds = 0;
-                    var adjSpd = 0;
-                    if (segment.duration_type === 'time') {
-                        durationSeconds = segment.duration_time.hour*3600 + segment.duration_time.minute*60 + segment.duration_time.second;
-                        distanceMeters = durationSeconds * relativeIntensity * baseSpd;
-                    } else {
-                        if (distanceMeters > 0) {
-                            adjSpd = relativeIntensity * baseSpd;
-                            durationSeconds = distanceMeters / adjSpd;
-                        } else {
-                            adjSpd = 0;
-                            durationSeconds = 0;
-                        }
-                    }
+					var durationSeconds = 0;
+					var adjSpd = 0;
+					if (segment.duration_type === 'time') {
+						if (segment.duration_time.hour === 0 && segment.duration_time.minute === 10 && segment.duration_time.second === 0) {
+							segment.duration_time.minute = 0;
+							segment.duration_time.second = 10;
+						}
+						durationSeconds = segment.duration_time.hour*3600 + segment.duration_time.minute*60 + segment.duration_time.second;
+						distanceMeters = durationSeconds * relativeIntensity * baseSpd;
+					} else {
+						if (distanceMeters > 0) {
+							adjSpd = relativeIntensity * baseSpd;
+							durationSeconds = distanceMeters / adjSpd;
+						} else {
+							adjSpd = 0;
+							durationSeconds = 0;
+						}
+					}
 
-                    stress = 1.8 * durationSeconds/60 * Math.pow(relativeIntensity, 3.5);
-                    totalStress = totalStress + stress;
-                }
-            }
-        }
-        return totalStress.toFixed(0);
-    }
+					stress = 1.8 * durationSeconds/60 * Math.pow(relativeIntensity, 3.5);
+					totalStress = totalStress + stress;
+				}
+			}
+		}
+		return totalStress.toFixed(0);
+	}
 
 	getDay(dateStr) {
 		if (dateStr in this.days) {
@@ -422,32 +429,32 @@ class CalendarManager {
 		};
 		this.activities = {};
 		this.hasActivities = false;
-        var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
-        var endDate = this.dateSpan.end.format('MM-DD-YYYY');
-        var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-        // if (this.mode === 'admin') {
-        //     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-        // }
-        this.gotActivityEvent = new CustomEvent('gotActivities');
-        superagent
-            .get(activityEndPoint)
-            .send()
-            .set('Accept', 'application/json')
-            .set('Authorization', `Bearer: ${jwt.token}`)
-            .end((err, res) => {
-                if (res.ok) {
-                    if (res.body !== null && res.body.activities !== null) {
-                        this.saveActivities(res.body.activities);
-                        this.loadLast(res.body.last_activity);
-                        window.dispatchEvent(this.gotActivityEvent);
-                    } else {
-                        this.saveActivities([]);
-                        this.loadLast(res.body.last_activity);
-                    }
-                } else {
-                    console.log('Error: failure on grabLogs', err, res);
-                }
-            });
+		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
+		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
+		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		// if (this.mode === 'admin') {
+		//     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		// }
+		this.gotActivityEvent = new CustomEvent('gotActivities');
+		superagent
+			.get(activityEndPoint)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					if (res.body !== null && res.body.activities !== null) {
+						this.saveActivities(res.body.activities);
+						this.loadLast(res.body.last_activity);
+						window.dispatchEvent(this.gotActivityEvent);
+					} else {
+						this.saveActivities([]);
+						this.loadLast(res.body.last_activity);
+					}
+				} else {
+					console.log('Error: failure on grabLogs', err, res);
+				}
+			});
 	}
 	saveActivities(activities) {
 		for (var activity of activities) {
@@ -463,30 +470,30 @@ class CalendarManager {
 		if (this.dateSpan.end < end) {
 			this.dateSpan.end = end;
 		}
-        var srtDate = start.format('MM-DD-YYYY');
-        var endDate = end.format('MM-DD-YYYY');
-        var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-        // if (this.mode === 'admin') {
-        //     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-        // }
-        superagent
-            .get(activityEndPoint)
-            .send()
-            .set('Accept', 'application/json')
-            .set('Authorization', `Bearer: ${jwt.token}`)
-            .end((err, res) => {
-                if (res.ok) {
-                    if (res.body !== null && res.body.activities !== null) {
-                        this.saveActivities(res.body.activities);
-                        this.requestActivities(start, end);
-                    } else {
-                        this.saveActivities([]);
-                        this.requestActivities(start, end);
-                    }
-                } else {
-                    console.log('Error: failure on grabLogs', err, res);
-                }
-            });
+		var srtDate = start.format('MM-DD-YYYY');
+		var endDate = end.format('MM-DD-YYYY');
+		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		// if (this.mode === 'admin') {
+		//     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		// }
+		superagent
+			.get(activityEndPoint)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					if (res.body !== null && res.body.activities !== null) {
+						this.saveActivities(res.body.activities);
+						this.requestActivities(start, end);
+					} else {
+						this.saveActivities([]);
+						this.requestActivities(start, end);
+					}
+				} else {
+					console.log('Error: failure on grabLogs', err, res);
+				}
+			});
 	}
 	requestActivities(start, end) {
 		if (this.dateSpan.start <= start && this.dateSpan.end >= end) {
@@ -527,10 +534,10 @@ class CalendarManager {
 	giveActivities(results) {
 		app.giveActivities(results);
 	}
-    loadLast(id) {
-        page(`/powercenter/run/${id}`);
-        this.hasLoaded = true;
-    }
+	loadLast(id) {
+		page(`/powercenter/run/${id}`);
+		this.hasLoaded = true;
+	}
 }
 
 var calendarManager = new CalendarManager();

@@ -374,8 +374,18 @@ var workoutProcessing = function (workout, id) {
         seconds_in_zones: workout.seconds_in_zones,
         start_time: workout.start_time,
         id: workout.id,
-        distance: workout.distance
+        distance: workout.distance,
     };
+    if ('rpe' in workout) {
+        data.workout.rpe = workout.rpe;
+    } else {
+        data.workout.rpe = 0;
+    }
+    if ('type' in workout) {
+        data.workout.type = workout.type;
+    } else {
+        data.workout.type = '';
+    }
     data.steps = steps;
     if (id === 'sample') {
         data.logs = [workout];
@@ -938,11 +948,18 @@ var calcLaps = function (type, activityID, zones) {
 
     var activity = seriesMemory[activityID];
     var oActivity = activeMemory[activityID];
-
     //var timestamps = oActivity.lap_timestamp_list;
-    var lapTimestamps = [1485288924, 1485289491, 1485290240, 1485290737, 1485291048];
+    var lapTimestamps = [];
+    var lastLapTimestamp = null;
     var lastLapTimestampIter = 0;
-    var lastLapTimestamp = lapTimestamps[lastLapTimestampIter];
+    if (oActivity.lap_timestamp_list === null || oActivity.lap_timestamp_list.length === 0) {
+        lapTimestamps = [];
+        lastLapTimestamp = null;
+    } else {
+        lapTimestamps = oActivity.lap_timestamp_list;
+        lastLapTimestamp = lapTimestamps[lastLapTimestampIter];
+    }
+    //var lapTimestamps = [1485288924, 1485289491, 1485290240, 1485290737, 1485291048];
     var keepLapSearching = true;
 
     var samples = 0;
@@ -960,9 +977,11 @@ var calcLaps = function (type, activityID, zones) {
         calcAverage('formPower', entry.formPower);
         calcAverage('legSpring', entry.legSpring);
 
-        for (var o = 0; o < 5; o++) {
-            if (power > zones[o].power_low && power < zones[o].power_high) {
-                lap.tiz[o] += 1;
+        if (zones !== null) {
+            for (var o = 0; o < 5; o++) {
+                if (power > zones[o].power_low && power < zones[o].power_high) {
+                    lap.tiz[o] += 1;
+                }
             }
         }
 
@@ -975,7 +994,7 @@ var calcLaps = function (type, activityID, zones) {
                 lapSwitch = true;
             }
         } else if (type === 'split' && keepLapSearching) {
-            if (entry.date > setDate(lastLapTimestamp)) {
+            if (lastLapTimestamp !== null && entry.date > setDate(lastLapTimestamp)) {
                 lastLapTimestampIter++;
                 if (lastLapTimestampIter < lapTimestamps.length) {
                     lastLapTimestamp = lapTimestamps[lastLapTimestampIter];
@@ -991,6 +1010,11 @@ var calcLaps = function (type, activityID, zones) {
         if (lapSwitch) {
             var meters = entry.distance - lastDistance;
             lap.distance = meters;
+            if (type === 'mi' && lap.distance > 1609) {
+                lap.distance = 1609.34;
+            } else if (type === 'km' && lap.distance > 1000) {
+                lap.distance = 1000;
+            }
             lap.lap = ++lapCount;
             var seconds = (entry.date - lastTimestamp)/1000;
             lap.time = secToDuration(seconds);

@@ -112,7 +112,7 @@
 			</thead>
 			<tbody id="container"></tbody>
 		</table>
-		<paper-material id="action">
+		<paper-material id="action" elevation="5">
 			<paper-button data-view="" on-click="view" id="view">View</paper-button>
 			<paper-button data-compare="" on-click="compare" id="compare">Compare</paper-button>
 		</paper-material>
@@ -132,7 +132,12 @@
 						this.$.action.style.display = 'block';
 						this.$.action.style.position = 'fixed';
 						this.$.action.style.top = `${e.detail.y}px`;
-						this.$.action.style.left = `${e.detail.x}px`;
+						if (window.innerWidth < (e.detail.x + 150)) {
+							var leftPos = e.detail.x - 150;
+							this.$.action.style.left = `${leftPos}px`;
+						} else {
+							this.$.action.style.left = `${e.detail.x}px`;
+						}
 						this.$.view.dataset.view = target.dataset.id;
 						this.$.compare.dataset.compare = target.dataset.id;
 						return;
@@ -156,6 +161,15 @@
 				});
 			},
 			createCalendar: function () {
+				while (Polymer.dom(this.$.container).firstChild) {
+					Polymer.dom(
+						this.$.container
+					).removeChild(
+						Polymer.dom(
+							this.$.container
+						).firstChild
+					);
+				}
 				var past = moment().subtract(3, 'weeks').day('Monday');
 				var today = moment().add(1, 'days');
 				var activities = calendarManager.getLOActivities(past, today);

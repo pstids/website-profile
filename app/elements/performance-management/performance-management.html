@@ -6,6 +6,7 @@
 			font-family: "Stryd", sans-serif;
 			background-color: #222222;
 			padding: 20px;
+			--paper-slider-knob-color: #F7A017;
 		}
 		#management {
 			position: relative;
@@ -199,8 +200,12 @@
 		},
 		processData: function (activities) {
 			this.days = {};
+			this.doStress = false;
 			for (var activity of activities) {
 				var hash = moment(activity.timestamp * 1000).format('YYYYMMDD');
+				if (!this.doStress && activity.stress > 0) {
+					this.doStress = true;
+				}
 				this.days[hash] = activity;
 			}
 			this.fillInit();
@@ -255,7 +260,7 @@
 			if (this.state === 'stress') {
 				this.data = this.getTimeType('stress', time, idx);
 				mColor = '#f7a017';
-				msg2 = 'Stress';
+				msg2 = 'Running Stress Score';
 				this.max = d3.max(this.data) + 10;
 			} else if (this.state === 'distance') {
 				this.data = this.getTimeType('distance', time, idx);
@@ -332,7 +337,7 @@
 				.attr('stroke-width', 0)
 				.selectAll('text')
 					.attr('opacity', 1)
-					.attr('fill', '#727272')
+					.attr('fill', '#FFFFFF')
 					.attr('stroke-width',0)
 					.attr('transform', 'rotate(0)')
 					.style('text-anchor', 'middle');
@@ -352,14 +357,14 @@
 					.attr('y', -10)
 					.text(msg2)
 					.attr('stroke-width', 1)
-					.attr('color', '#727272')
-					.attr('stroke', '#727272')
-					.attr('fill', '#727272');
+					.attr('color', '#FFFFFF')
+					.attr('stroke', '#FFFFFF')
+					.attr('fill', '#FFFFFF');
 
 			vis.select('.y.axis').selectAll('text')
-				.attr('stroke', '#727272')
-				.attr('fill', '#727272')
-				.attr('color', '#727272');
+				.attr('stroke', '#FFFFFF')
+				.attr('fill', '#FFFFFF')
+				.attr('color', '#FFFFFF');
 
 			var bars = vis.selectAll('.bar')
 				.data(this.data);
@@ -475,6 +480,7 @@
 			this.yAxis = d3.svg.axis()
 				.scale(this.y)
 				.tickSize(1)
+				.ticks(this.max+1)
 				.tickPadding(10)
 				.tickFormat(d3.format('.0f'))
 				.orient('left')
@@ -521,7 +527,7 @@
 				.attr('stroke-width', 0)
 				.selectAll('text')
 					.attr('opacity', 1)
-					.attr('fill', '#727272')
+					.attr('fill', '#FFFFFF')
 					.attr('stroke-width',0)
 					.attr('transform', 'rotate(0)')
 					.style('text-anchor', 'middle');
@@ -985,7 +991,7 @@
 				.attr('stroke-width', 1)
 				.selectAll('text')
 					.attr('opacity', 1)
-					.attr('fill', '#727272')
+					.attr('fill', '#FFFFFF')
 					.attr('stroke-width',0)
 					.attr('transform', 'rotate(0)')
 					.style('text-anchor', 'middle');

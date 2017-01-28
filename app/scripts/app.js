@@ -196,6 +196,7 @@ app.addEventListener('dom-change', () => {
             lapOverview.getLaps(event.data.chartDescription.id);
         }
         if ('chartData' in event.data) {
+            workoutSummary.setData(event.data.workout);
             app.calcMetrics(
                 0,
                 0,
@@ -207,7 +208,6 @@ app.addEventListener('dom-change', () => {
                 event.data.chartDescription,
                 event.data.availableMetrics
             );
-            workoutSummary.setData(event.data.workout);
             planView.setStartTime(event.data.chartDescription.start_time);
         }
         if ('addLog' in event.data) {
@@ -504,4 +504,8 @@ app.showLaps = function (status) {
     } else {
         lapOverview.classList.remove('hidden');
     }
+};
+
+app.updateWorkout = function (id, updates, cb) {
+    updateWorkout(id, updates, cb);
 };

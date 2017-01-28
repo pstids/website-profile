@@ -2,26 +2,26 @@
 	<style>
 		:host {
 			height: 30vh;
-            @apply(--layout-vertical);
-            background-color: var(--primary-background-color);
-            position: relative;
+			@apply(--layout-vertical);
+			background-color: var(--primary-background-color);
+			position: relative;
 		}
 
 		.outer-spinner {
-            margin: 0;
-            padding: 0;
-            position: absolute;
-            background-color: var(--primary-background-color);
-            @apply(--layout-horizontal);
-            @apply(--layout-center)
-            @apply(--layout-center-justified)
-            transition: opacity 2s;
-            opacity: 1;
-            top: 0;
-            right: 0;
-            left: 0;
-            bottom: 0;
-            z-index: 12;
+			margin: 0;
+			padding: 0;
+			position: absolute;
+			background-color: var(--primary-background-color);
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+			transition: opacity 2s;
+			opacity: 1;
+			top: 0;
+			right: 0;
+			left: 0;
+			bottom: 0;
+			z-index: 12;
 		}
 		.outer-spinner.fade {
 			opacity: 0;
@@ -67,16 +67,22 @@
 			position: relative;
 			width: 100%;
 		}
-        #chart {
-            color: #ffffff;
-            height: 30vh;
-            width: 100%;
-            flex: 1;
-        }
-        svg {
-        	width: 240px;
-        	height: 240px;
-        }
+		#chart {
+			color: #ffffff;
+			height: 30vh;
+			width: 100%;
+			flex: 1;
+		}
+		svg {
+			width: 240px;
+			height: 240px;
+		}
+		.instructions {
+			@apply(--layout);
+			@apply(--layout-vertical);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+		}
 	</style>
 	<template>
 		<div class="outer-spinner" id="spinner">
@@ -85,12 +91,15 @@
 				<div class="dot2"></div>
 			</div>
 		</div>
-        <div class="layout horizontal chart-holder" id="chartHolder">
+		<div class="layout horizontal chart-holder" id="chartHolder">
 			<div id="chart"></div>
 			<svg></svg>
 		</div>
-		<div class="instructions" id="instructions">
-			<h1>Scroll to calendar and click the double arrow.</h1>
+		<div class="instructions hidden" id="instructions">
+			<h1>Use the preview panel to select a workout to compare.</h1>
+			<video muted autoplay="true" loop="loop" preload="auto" width="300">
+				<source src="https://storage.googleapis.com/stryd_static_assets/powercenter/compare-example.mp4" type="video/mp4">
+			</video>
 		</div>
 	</template>
 	<script>
