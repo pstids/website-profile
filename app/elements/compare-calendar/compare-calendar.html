@@ -1,36 +1,39 @@
-<dom-module id="log-calendar">
+<dom-module id="compare-calendar">
     <style>
         :host {
             @apply(--layout-vertical);
             font-family: "Stryd", sans-serif;
             background-color: var(--dark-background-color);
-            padding: 0 20px 20px;
+            padding: 0;
+            width: 600px;
         }
         h1.header {
             @apply(--header);
+            margin-bottom: 10px;
         }
         .title {
-            padding: 20px;
+            padding: 0 20px;
             @apply(--layout-end);
-        }
-
-        .day {
-            @apply(--layout-flex);
-            @apply(--layout-center-justified);
-            border-right: 1px solid #4d4d4d;
-            font-size: 20px;
-            height: 64px;
-            color: white;
-            text-transform: uppercase;
-            text-align: center;
-            line-height: 64px;
-        }
-        .day:last-child {
-            border-right: 0;
+            border: 1px solid #4d4d4d;
+            border-bottom: 0;
         }
 
         .days {
             border-top: 1px solid #4d4d4d !important;
+        }
+        .day {
+            @apply(--layout-flex);
+            @apply(--layout-center-justified);
+            border-right: 1px solid #4d4d4d;
+            font-size: 17px;
+            height: 50px;
+            color: white;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 50px;
+        }
+        .day:last-child {
+            border-right: 0;
         }
 
         .row {
@@ -41,6 +44,12 @@
 
         button {
             margin-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        button iron-icon {
+            width: 20px;
+            height: 20px;
         }
     </style>
     <template>
@@ -67,7 +76,7 @@
     </template>
     <script>
     Polymer({
-        is: 'log-calendar',
+        is: 'compare-calendar',
         ready: function () {
             this.dom = [];
             this.dates = [];
@@ -78,24 +87,14 @@
             this.hasLoaded = false;
             this.lastActivity = null;
             this.assembleDOM();
-
-            document.addEventListener('keyup', (e) => {
-                if (e.code === 'ArrowLeft') {
-                    this.prevMonth();
-                } else if (e.code === 'ArrowRight') {
-                    this.nextMonth();
-                }
-            });
         },
         attached: function () {
             if (jwt.hasToken) {
-                setTimeout(() => {
-                    this.fetchMonth(
-                        this.displayedTime.month(),
-                        this.displayedTime.year(),
-                        false
-                    );
-                }, 1000);
+                this.fetchMonth(
+                    this.displayedTime.month(),
+                    this.displayedTime.year(),
+                    false
+                );
             }
         },
         // Creates dom structure of 5 rows of 7 columns of log-day elements
@@ -106,7 +105,7 @@
                 row.classList.add('row');
                 var rowDom = [];
                 for (var o = 0; o < 7; o++) {
-                    var node = document.createElement('log-container');
+                    var node = document.createElement('compare-container');
                     row.appendChild(node);
                     rowDom.push(node);
                 }
@@ -118,7 +117,9 @@
         fetchMonth: function (month, year) {
             this.dRange = this.dateRange(month, year);
             this.switchMonthContext(this.dRange.firstMonday);
-            calendarManager.requestActivities(this.dRange.firstMonday, this.dRange.lastSunday);
+            setTimeout(() => {
+                calendarManager.requestActivities2(this.dRange.firstMonday, this.dRange.lastSunday);
+            }, 1000);
         },
         // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
         dateRange: function (monthInt, year) {
@@ -160,7 +161,7 @@
                     // Clear container
                     container.clear();
                     // Create blank child
-                    var day = document.createElement('log-day');
+                    var day = document.createElement('compare-day');
                     // Add day data
                     day.setData(dayObj);
                     // Append to container
@@ -191,13 +192,6 @@
                         hash: activityMoment.format('YYYYMMDD'),
                         rss: activity.stress
                     };
-                    // See if there is planned training
-                    var dailyPlan = trainingPlan.getDay(
-                        activityMoment.format('YYYYMMDD')
-                    );
-                    if (dailyPlan !== null) {
-                        dayObj.training = dailyPlan;
-                    }
                     var container = this.dom[i][o];
                     container.addDay(dayObj);
                     return true;
@@ -217,29 +211,35 @@
         },
         nextMonth: function () {
             this.displayedTime.add(1, 'months');
-            this.callMonth();
-        },
-        prevMonth: function () {
-            this.displayedTime.subtract(1, 'months');
-            this.callMonth();
-        },
-        callMonth: function () {
             this.fetchMonth(
                 this.displayedTime.month(),
                 this.displayedTime.year(),
                 false
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-            this.removeActive();
+            var logDayActive = this.querySelector('compare-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
         },
-        removeActive: function () {
-            var logDayActive = this.querySelector('log-container.active');
+        prevMonth: function () {
+            this.displayedTime.subtract(1, 'months');
+            this.fetchMonth(
+                this.displayedTime.month(),
+                this.displayedTime.year(),
+                false
+            );
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            var logDayActive = this.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
         },
         setActive: function (id) {
-            this.removeActive();
+            var logDayActive = this.querySelector('compare-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
             for (var row of this.dom) {
                 for (var container of row) {
                     if (container.hasID(id)) {

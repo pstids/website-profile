@@ -84,7 +84,7 @@
 			align-items: center;
 		}
 		.tiz-container {
-			width: 230px;
+			width: 330px;
 			margin: 0 50px;
 		}
 		#messageContainer {
@@ -150,9 +150,6 @@
 			<div class="layout tiz-container" id="tizContainer">
 				<svg id="tiz232"></svg>
 			</div>
-			<div id="messageContainer" class="hidden">
-				<h1>Vist the 'Settings' tab to input your zones.</h1>
-			</div>
 			<div class="flex layout vertical center center-justified">
 				<paper-dropdown-menu class="test-selector" label="Workout Type" style="margin-bottom: 50px;">
 					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType">
@@ -202,6 +199,7 @@
 			ready: function () {
 				this.selected_rpe = 0;
 				this.selected_type = 0;
+				this.hasWorkout = false;
 				this.rpes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 				this.types = ['', 'easy', 'long', 'fartlek', 'threshold', 'cruise interval', 'interval', 'tempo', 'repetition', 'pace', 'race', 'critical test'];
 			},
@@ -244,18 +242,13 @@
 				});
 			},
 			setData: function (activity) {
+				this.hasWorkout = true;
 				this.activity = activity;
 				this.data.date = moment(activity.start_time*1000).format('MMM Do, YYYY');
 				this.notifyPath('data.date');
 
-				if (activity.stress > 0) {
-					this.data.rss = activity.stress.toFixed(0);
-					this.data.rss_message = 'RSS';
-
-				} else {
-					this.data.rss = activity.average_power.toFixed(0);
-					this.data.rss_message = 'Avg Power';
-				}
+				this.data.rss = activity.average_power.toFixed(0);
+				this.data.rss_message = 'Avg Power';
 				this.notifyPath('data.rss');
 				this.notifyPath('data.rss_message');
 
@@ -268,12 +261,12 @@
 				this.data.distance = meterToMile(activity.distance, 0);
 				this.notifyPath('data.distance');
 
-				this.tiz(activity.seconds_in_zones);
+				this.tiz(activity.seconds_in_zones, activity.stress);
 
 				this.selected_rpe = this.rpes.indexOf(activity.rpe);
 				this.selected_type = this.types.indexOf(activity.type);
 			},
-			tiz: function (zones) {
+			tiz: function (zones, rss) {
 				var data = [];
 				var total = 0;
 				if (zones !== null) {
@@ -283,11 +276,9 @@
 				}
 				if (total === 0) {
 					this.$.tizContainer.classList.add('hidden');
-					this.$.messageContainer.classList.add('hidden');
 					return;
 				} else {
 					this.$.tizContainer.classList.remove('hidden');
-					this.$.messageContainer.classList.add('hidden');
 				}
 				for (var i = 0; i < zones.length; i++) {
 					var tiz = zones[i];
@@ -297,14 +288,11 @@
 						percentage: tiz/total
 					});
 				}
-				var width = 230, height = 230, radius = 110;
+				var width = 330, height = 230, radius = 110;
 				var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
 				var arc = d3.svg.arc()
 					.outerRadius(radius-40)
-					.innerRadius(0);
-				var labelArc = d3.svg.arc()
-					.outerRadius(radius-20)
-					.innerRadius(radius-20);
+					.innerRadius(radius-60);
 				var pie = d3.layout.pie()
 					.sort(null)
 					.value((d) => {
@@ -328,29 +316,41 @@
 					.style('fill', (d) => {
 						return color(d.data.zone);
 					});
-				g.append('text')
+				g.append('rect')
+					.attr('width', 20)
+					.attr('height', 20)
 					.attr('transform', (d) => {
-						return `translate(${labelArc.centroid(d)})`;
+						return `translate(${radius}, ${d.data.zone*25-radius+15})`;
 					})
-					.attr('dy', '.35em')
-					.text((d) => {
-						if (d.data.percentage * 100 < 4) {
-							return '';
-						}
-						return `Zone ${d.data.zone}`;
+					.attr('fill', (d) => {
+						return color(d.data.zone);
 					});
 				g.append('text')
 					.attr('transform', (d) => {
-						return `translate(${labelArc.centroid(d)})`;
+						return `translate(${radius+25}, ${d.data.zone*25-radius+30})`;
 					})
-					.attr('dy', '1.35em')
+					.style('text-anchor', 'start')
+					.attr('font-size', 16)
 					.text((d) => {
-						if (d.data.percentage * 100 < 4) {
-							return '';
-						}
-						var percentage = (d.data.percentage * 100).toFixed(2);
-						return `(${percentage}%)`;
+						var percentage = (d.data.percentage * 100).toFixed(0);
+						return `Z${d.data.zone} ${percentage}%`;
 					});
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 0)
+					.attr('font-size', 25)
+					.attr('font-weight', '400')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text('RSS');
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 25)
+					.attr('font-size', 25)
+					.attr('font-weight', 'bolder')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text(rss.toFixed(0));
 			}
 		});
 	</script>

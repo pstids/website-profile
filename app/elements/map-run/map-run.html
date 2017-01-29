@@ -40,6 +40,11 @@
                     this.setMap();
                 }
             },
+            resizeMap: function () {
+                if ('map' in this) {
+                    google.maps.event.trigger(this.map, 'resize');
+                }
+            },
             setMap: function () {
                 if (!this.hasMap) {
                     this.hasMap = true;
@@ -102,7 +107,7 @@
                     this.mapObjs[i].setMap(null);
                 }
                 var bounds = new google.maps.LatLngBounds();
-                for (i = 0; i < this.data.length; i++) {
+                for (i = 0; i < this.data.length; i+=5) {
                     // Set segments on map
                     graphSegment = this.data[i];
                     path = new google.maps.Polyline({

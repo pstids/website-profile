@@ -170,7 +170,7 @@
                         <iron-icon icon="icons:autorenew"></iron-icon>
                         <paper-tooltip>Recalculate</paper-tooltip>
                     </div>
-                    <div id="compare">
+                    <div id="compare" class="hidden">
                         <iron-icon icon="icons:compare-arrows"></iron-icon>
                         <paper-tooltip>Compare</paper-tooltip>
                     </div>
@@ -358,7 +358,6 @@
                 if ('hash' in this.data) {
                     hash = this.data.hash;
                 }
-                console.log(hash, this.data.hash, this.data.training);
                 urlManager.setURL(id, hash);
             }
         },

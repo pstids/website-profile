@@ -708,8 +708,10 @@
 
             if (this.availableMetrics.indexOf('heartRate') > -1) {
                 this.switchMetric('formPower', 'off');
+                this.switchMetric('heartRate', 'on');
             } else {
                 this.switchMetric('heartRate', 'off');
+                this.switchMetric('formPower', 'on');
             }
             this.switchMetric('power', 'on');
         },

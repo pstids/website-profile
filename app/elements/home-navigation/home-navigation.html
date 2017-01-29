@@ -97,26 +97,18 @@
 		[data-select] .type {
 			padding-left: 10px;
 		}
-		[data-toggle="on"][data-select="analysis"] .circle {
+		[data-toggle="on"] .circle {
 			background-color: #F7A017;
 			border-color: #F7A017;
 			-webkit-box-shadow: 0px 0px 20px 0px #F7A017;
 			-moz-box-shadow: 0px 0px 20px 0px #F7A017;
 			box-shadow: 0px 0px 20px 0px #F7A017;
 		}
-		[data-toggle="on"][data-select="comparison"] .circle {
-			background-color: #084784;
-			border-color: #084784;
-			-webkit-box-shadow: 0px 0px 20px 0px #084784;
-			-moz-box-shadow: 0px 0px 20px 0px #084784;
-			box-shadow: 0px 0px 20px 0px #084784;
-		}
-		[data-toggle="on"][data-select="training"] .circle {
-			background-color: #fce9d2;
-			border-color: #fce9d2;
-			-webkit-box-shadow: 0px 0px 20px 0px #5ea7a1;
-			-moz-box-shadow: 0px 0px 20px 0px #5ea7a1;
-			box-shadow: 0px 0px 20px 0px #5ea7a1;
+		compare-calendar {
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 10;
 		}
 	</style>
 	<template>
@@ -144,6 +136,7 @@
 				</div>
 			</div>
 		</div>
+		<compare-calendar class="hidden"></compare-calendar>
 	</template>
 	<script>
 		Polymer({
@@ -151,6 +144,15 @@
 			ready: function () {
 				this.availables = {};
 				this.title = 'Analysis';
+
+				this.compareCalendar = this.querySelector('compare-calendar');
+				this.selectComparison = this.querySelector('[data-select="comparison"]');
+				this.selectComparison.addEventListener('mouseenter', () => {
+					this.compareCalendar.classList.remove('hidden');
+				});
+				this.compareCalendar.addEventListener('mouseleave', () => {
+					this.compareCalendar.classList.add('hidden');
+				});
 			},
 			router: function (e) {
 				var target = e.target;

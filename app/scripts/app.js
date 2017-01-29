@@ -47,13 +47,6 @@ var logsFetching = function () {
     });
 };
 
-var suuntoProcessing = function () {
-    processor.postMessage({
-        token: jwt.token,
-        type: 'suuntoProcessing'
-    });
-};
-
 var lapProcessing = function (id, lapMarker) {
     var data = {
         type: 'laps',
@@ -111,7 +104,8 @@ var mapRunEle,
     lapOverview,
     workoutSummary,
     logOverview,
-    performanceManagement;
+    performanceManagement,
+    compareCalendar;
 
 var firstLoad = true;
 var currentID = null;
@@ -135,10 +129,9 @@ app.addEventListener('dom-change', () => {
     rssSecondary = document.querySelector('#rss-secondary');
     lapOverview = document.querySelector('lap-overview');
     workoutSummary = document.querySelector('workout-summary');
-
+    compareCalendar = document.querySelector('compare-calendar');
     logOverview = document.querySelector('log-overview');
     performanceManagement = document.querySelector('performance-management');
-
     
     app.logOption = document.querySelector('log-options');
 
@@ -149,34 +142,28 @@ app.addEventListener('dom-change', () => {
         mapRunEle.setReady();
     };
 
-    var mapScript = document.createElement('script');
-    mapScript.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady';
-    mapScript.async = true;
-    mapScript.defer = true;
-    document.body.appendChild(mapScript);
+    app.loadMap();
+    app.suuntoProcessing();
 
     processor.onmessage = (event) => {
         if ('error' in event.data && event.data.error === true) {
-            toast('Cannot load workout! Visit the log book to select another.');
+            toast('Cannot load workout! Visit the calendar to select another.');
             return;
         }
-        // If a user is signed in, display the uploader and calendar
-        if (!jwt.hasToken) {
-            logCalendar.classList.add('hidden');
-            uploader.classList.add('hidden');
-            logOverview.classList.add('hidden');
-            performanceManagement.classList.add('hidden');
-        } else {
-            logCalendar.classList.remove('hidden');
-            uploader.classList.remove('hidden');
-            logOverview.classList.remove('hidden');
-            performanceManagement.classList.remove('hidden');
-        }
+
+        app.checkUserFeatures();
+
         if ('mapRunData' in event.data) {
             mapRunEle.setData(event.data.mapRunData);
         }
         if ('chartDescription' in event.data) {
             lapOverview.getLaps(event.data.chartDescription.id);
+        }
+        if ('metrics' in event.data) {
+            bubbleStats.setData(event.data.metrics);
+        }
+        if ('laps' in event.data) {
+            lapOverview.displayLaps(event.data.laps);
         }
         if ('chartData' in event.data) {
             workoutSummary.setData(event.data.workout);
@@ -212,15 +199,7 @@ app.addEventListener('dom-change', () => {
                 event.data.maxRSS
             );
         }
-        if ('metrics' in event.data) {
-            bubbleStats.setData(event.data.metrics);
-        }
-        if ('laps' in event.data) {
-            lapOverview.displayLaps(event.data.laps);
-        }
     };
-
-    suuntoProcessing();
 
     page.base('/powercenter');
 
@@ -265,6 +244,20 @@ app.addEventListener('dom-change', () => {
             params: data.params,
             updated_time: updatedTime
         });
+
+        if (firstLoad) {
+            urlManager.setNavigation(+app.params.idPrimary, 0);
+            urlManager.compareID = +app.params.idSecondary;
+            firstLoad = false;
+        } else {
+            window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+        }
+        logCalendar.setActive(+app.params.idPrimary);
+        compareCalendar.setActive(+app.params.idPrimary);
+        if (!workoutSummary.hasWorkout) {
+            workoutFetching(app.params.idPrimary);
+            currentID = app.params.idPrimary;
+        }
     });
 
     page('/run/:id', (data) => {
@@ -274,9 +267,10 @@ app.addEventListener('dom-change', () => {
         header.toggleActive('profile');
         homeNavigation.select('analysis');
 
-        logCalendar.setActive(app.params.id);
+        logCalendar.setActive(+app.params.id);
 
         mapRunEle.classList.remove('hidden');
+        mapRunEle.resizeMap();
         workoutElement.classList.remove('hidden');
         lapOverview.classList.remove('hidden');
         // planView.chartToggle(false);
@@ -302,7 +296,12 @@ app.addEventListener('dom-change', () => {
         app.home = 'training';
         header.toggleActive('profile');
 
-        window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+        if (firstLoad) {
+            urlManager.setNavigation(0, app.params.hash);
+            firstLoad = false;
+        } else {
+            window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+        }
 
         planView.chartToggle(true);
         planView.setStartHash(data.params.hash);
@@ -438,6 +437,35 @@ app.logout = function () {
     jwt.logout();
 };
 
+app.checkUserFeatures = function () {
+    if (!jwt.hasToken) {
+        logCalendar.classList.add('hidden');
+        uploader.classList.add('hidden');
+        logOverview.classList.add('hidden');
+        performanceManagement.classList.add('hidden');
+    } else {
+        logCalendar.classList.remove('hidden');
+        uploader.classList.remove('hidden');
+        logOverview.classList.remove('hidden');
+        performanceManagement.classList.remove('hidden');
+    }
+};
+
+app.loadMap = function () {
+    var mapScript = document.createElement('script');
+    mapScript.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady';
+    mapScript.async = true;
+    mapScript.defer = true;
+    document.body.appendChild(mapScript);
+};
+
+app.suuntoProcessing = function () {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'suuntoProcessing'
+    });
+};
+
 app.calcMetrics = function (start, end, activityID, unit) {
     processor.postMessage({
         type: 'metrics',
@@ -455,6 +483,12 @@ app.setDownload = function (url) {
 app.giveActivities = function (activities) {
     if (logCalendar) {
         logCalendar.processActivities(activities);
+    }
+};
+
+app.giveActivities2 = function (activities) {
+    if (compareCalendar) {
+        compareCalendar.processActivities(activities);
     }
 };
 

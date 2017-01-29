@@ -224,8 +224,6 @@ a[href="https://www.google.com/intl/en-US_US/help/terms_maps.html"] {
 }
 
 .arc text {
-  font: 10px sans-serif;
-  text-anchor: middle;
   color: white;
   fill: white;
 }

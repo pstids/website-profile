@@ -7,6 +7,10 @@
 			position: relative;
 		}
 
+		h1 {
+			font-size: 24px;
+		}
+
 		.outer-spinner {
 			margin: 0;
 			padding: 0;
@@ -74,11 +78,11 @@
 			flex: 1;
 		}
 		svg {
-			width: 240px;
+			width: 350px;
 			height: 240px;
 		}
 		#tizContainer, #messageContainer {
-			width: 240px;
+			width: 350px;
 			height: 240px;
 		}
 		.instructions {
@@ -95,13 +99,16 @@
 				<div class="dot2"></div>
 			</div>
 		</div>
-		<div class="layout horizontal chart-holder" id="chartHolder">
-			<div id="chart"></div>
-			<div id="tizContainer">
-				<svg></svg>
-			</div>
-			<div id="messageContainer" class="hidden">
-				<h1>Vist the 'Settings' tab to input your zones.</h1>
+		<div class="layout vertical">
+			<h1 class="bold">{{date}}</h1>
+			<div class="layout horizontal chart-holder" id="chartHolder">
+				<div id="chart"></div>
+				<div id="tizContainer">
+					<svg></svg>
+				</div>
+				<div id="messageContainer" class="hidden">
+					<h1>Vist the 'Settings' tab to input your zones.</h1>
+				</div>
 			</div>
 		</div>
 		<div class="instructions hidden" id="instructions">
@@ -119,6 +126,7 @@
 			ready: function () {
 				AmCharts.handleLoad();
 				this.querySelector('svg').id = `${this.dataset.property}-svg`;
+				this.date = 'Jan 1st, 2016';
 			},
 			calcTIZ: function (start, end) {
 				var tz = user.data.training_info.training_zones;
@@ -150,18 +158,15 @@
 						percentage: tiz[p]/total
 					});
 				}
-				this.genTIZ(result);
+				this.genTIZ(result, this.activity.stress);
 			},
-			genTIZ: function (data) {
-				var width = 200, height = 200;
+			genTIZ: function (data, rss) {
+				var width = 350, height = 200;
 				var radius = Math.min(width, height) / 2;
 				var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
 				var arc = d3.svg.arc()
 					.outerRadius(radius-30)
-					.innerRadius(0);
-				var labelArc = d3.svg.arc()
-					.outerRadius(radius-10)
-					.innerRadius(radius-10);
+					.innerRadius(radius-55);
 				var pie = d3.layout.pie()
 					.sort(null)
 					.value((d) => {
@@ -185,29 +190,41 @@
 					.style('fill', (d) => {
 						return color(d.data.zone);
 					});
-				g.append('text')
+				g.append('rect')
+					.attr('width', 20)
+					.attr('height', 20)
 					.attr('transform', (d) => {
-						return `translate(${labelArc.centroid(d)})`;
+						return `translate(${radius}, ${d.data.zone*25-radius+5})`;
 					})
-					.attr('dy', '.35em')
-					.text((d) => {
-						if (d.data.percentage * 100 < 1) {
-							return '';
-						}
-						return `Zone ${d.data.zone}`;
+					.attr('fill', (d) => {
+						return color(d.data.zone);
 					});
 				g.append('text')
 					.attr('transform', (d) => {
-						return `translate(${labelArc.centroid(d)})`;
+						return `translate(${radius+25}, ${d.data.zone*25-radius+20})`;
 					})
-					.attr('dy', '1.35em')
+					.style('text-anchor', 'start')
+					.attr('font-size', 16)
 					.text((d) => {
-						if (d.data.percentage * 100 < 1) {
-							return '';
-						}
-						var percentage = (d.data.percentage * 100).toFixed(2);
-						return `(${percentage}%)`;
+						var percentage = (d.data.percentage * 100).toFixed(0);
+						return `Z${d.data.zone} ${percentage}%`;
 					});
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 0)
+					.attr('font-size', 25)
+					.attr('font-weight', '400')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text('RSS');
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 25)
+					.attr('font-size', 25)
+					.attr('font-weight', 'bolder')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text(rss.toFixed(0));
 			},
 			removeLoading: function () {
 				this.$.spinner.classList.remove('show');
@@ -238,6 +255,7 @@
 					this.notSelected(false);
 					this.setLoading();
 					this.activity = activity;
+					this.date = moment(activity.timestamp * 1000).format('MMM Do, YYYY');
 					this.data = data;
 					this.startTime = this.data[0].date;
 					this.maxPowerValue = maxPowerValue;

@@ -95,11 +95,9 @@
 			box-shadow: 0px 0px 20px 0px #F7A017;
 		}
 		[data-toggle="on"][data-stat="distance"] .circle {
-			background-color: #084784;
-			border-color: #084784;
-			-webkit-box-shadow: 0px 0px 20px 0px #084784;
-			-moz-box-shadow: 0px 0px 20px 0px #084784;
-			box-shadow: 0px 0px 20px 0px #084784;
+			background-color: #FFFFFF;
+			border-color: #FFFFFF;
+			box-shadow: 0px 0px 20px 0px #FFFFFF;
 		}
 		[data-toggle="on"][data-stat="zones"] .circle {
 			background-color: #fce9d2;
@@ -269,7 +267,7 @@
 				this.max = d3.max(this.data) + 10;
 			} else if (this.state === 'distance') {
 				this.data = this.getTimeType('distance', time, idx);
-				mColor = '#084784';
+				mColor = '#FFFFFF';
 				msg2 = 'Distance (km)';
 				this.max = d3.max(this.data) + 1;
 			}

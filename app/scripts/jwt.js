@@ -506,11 +506,9 @@ class CalendarManager {
 				if (res.ok) {
 					if (res.body !== null && res.body.activities !== null) {
 						this.saveActivities(res.body.activities);
-						console.log('mark #2');
 						this.requestActivities(start, end);
 					} else {
 						this.saveActivities([]);
-						console.log('mark #3');
 						this.requestActivities(start, end);
 					}
 				} else {
@@ -530,6 +528,18 @@ class CalendarManager {
 			this.giveActivities(results);
 		} else {
 			this.getMoreActivities(start, end);
+		}
+	}
+	requestActivities2(start, end) {
+		if (this.dateSpan.start <= start && this.dateSpan.end >= end) {
+			var results = [];
+			for (var timestamp of Object.keys(this.activities)) {
+				var compareDate = moment(+timestamp * 1000);
+				if (compareDate > start && compareDate < end) {
+					results.push(this.activities[timestamp]);
+				}
+			}
+			this.giveActivities2(results);
 		}
 	}
 	getPMActivities() {
@@ -556,6 +566,9 @@ class CalendarManager {
 	}
 	giveActivities(results) {
 		app.giveActivities(results);
+	}
+	giveActivities2(results) {
+		app.giveActivities2(results);
 	}
 	loadLast() {
 		page(`/powercenter/run/${this.lastActivity}`);

@@ -55,6 +55,9 @@
 		paper-icon-button {
 			color: white;
 		}
+		svg {
+			width: 330px;
+		}
 	</style>
 	<template>
 		<div class="layout horizontal" id="container">
@@ -83,6 +86,7 @@
 								<th>Pace</th>
 								<th>Form Power</th>
 								<th>Leg Spring</th>
+								<th>RSS</th>
 							</tr>
 						</thead>
 						<tbody id="laps"></tbody>
@@ -130,7 +134,7 @@
 				} else if ('dataset' in target && target.dataset.lap !== undefined) {
 					this.lap_number = target.dataset.lap;
 					var lapIdx = (+target.dataset.lap)-1;
-					this.tiz(this.laps[lapIdx].tiz);
+					this.tiz(this.laps[lapIdx].tiz, this.laps[lapIdx].rss);
 
 					Polymer.dom(target.classList.add('active'));
 					return;
@@ -161,7 +165,7 @@
 				var row = this.createRow(lap);
 				Polymer.dom(this.$.laps).appendChild(row);
 			}
-			this.tiz(this.laps[0].tiz);
+			this.tiz(this.laps[0].tiz, this.laps[0].rss);
 		},
 		createRow: function (row) {
 			var elements = [
@@ -186,6 +190,9 @@
 				}, {
 					key: 'legSpring',
 					unit: 'kN/m'
+				}, {
+					key: 'rss',
+					unit: ''
 				}
 			];
 			var tr = document.createElement('tr');
@@ -201,7 +208,7 @@
 			}
 			return tr;
 		},
-		tiz: function (tizs) {
+		tiz: function (tizs, rss) {
 			var data = [];
 			var total = tizs.reduce((a, b) => {
 				return a + b;
@@ -214,14 +221,11 @@
 					percentage: tiz/total
 				});
 			}
-			var width = 230, height = 230, radius = 110;
+			var width = 330, height = 230, radius = 110;
 			var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
 			var arc = d3.svg.arc()
 				.outerRadius(radius-40)
-				.innerRadius(0);
-			var labelArc = d3.svg.arc()
-				.outerRadius(radius-20)
-				.innerRadius(radius-20);
+				.innerRadius(radius-60);
 			var pie = d3.layout.pie()
 				.sort(null)
 				.value((d) => {
@@ -245,29 +249,41 @@
 				.style('fill', (d) => {
 					return color(d.data.zone);
 				});
-			g.append('text')
+			g.append('rect')
+				.attr('width', 20)
+				.attr('height', 20)
 				.attr('transform', (d) => {
-					return `translate(${labelArc.centroid(d)})`;
+					return `translate(${radius}, ${d.data.zone*25-radius+15})`;
 				})
-				.attr('dy', '.35em')
-				.text((d) => {
-					if (d.data.percentage * 100 < 1) {
-						return '';
-					}
-					return `Zone ${d.data.zone}`;
+				.attr('fill', (d) => {
+					return color(d.data.zone);
 				});
 			g.append('text')
 				.attr('transform', (d) => {
-					return `translate(${labelArc.centroid(d)})`;
+					return `translate(${radius+25}, ${d.data.zone*25-radius+30})`;
 				})
-				.attr('dy', '1.35em')
+				.style('text-anchor', 'start')
+				.attr('font-size', 16)
 				.text((d) => {
-					if (d.data.percentage * 100 < 1) {
-						return '';
-					}
-					var percentage = (d.data.percentage * 100).toFixed(2);
-					return `(${percentage}%)`;
+					var percentage = (d.data.percentage * 100).toFixed(0);
+					return `Z${d.data.zone} ${percentage}%`;
 				});
+			svg.append('text')
+				.attr('x', 0)
+				.attr('y', 0)
+				.attr('font-size', 25)
+				.attr('font-weight', '400')
+				.attr('fill', '#FFFFFF')
+				.style('text-anchor', 'middle')
+				.text('RSS');
+			svg.append('text')
+				.attr('x', 0)
+				.attr('y', 25)
+				.attr('font-size', 25)
+				.attr('font-weight', 'bolder')
+				.attr('fill', '#FFFFFF')
+				.style('text-anchor', 'middle')
+				.text(rss.toFixed(0));
 		}
 	});
 	</script>

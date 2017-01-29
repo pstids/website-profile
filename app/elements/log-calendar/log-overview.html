@@ -121,7 +121,7 @@
 		Polymer({
 			is: 'log-overview',
 			listeners: {
-				'tap': 'eleTap'
+				// 'tap': 'eleTap2'
 			},
 			eleTap: function (e) {
 				var target = e.target;
@@ -155,11 +155,11 @@
 			},
 			attached: function () {
 				this.createCalendar();
-				window.addEventListener('scroll', () => {
-					if (this.$.action.style.display !== 'none') {
-						this.$.action.style.display = 'none';
-					}
-				});
+				// window.addEventListener('scroll', () => {
+				// 	if (this.$.action.style.display !== 'none') {
+				// 		this.$.action.style.display = 'none';
+				// 	}
+				// });
 				window.addEventListener('gotActivities', () => {
 					this.createCalendar();
 				});

@@ -293,7 +293,7 @@ var workoutProcessing = function (workout, id) {
             }       
         }
         if ('stress_list' in workout && workout.stress_list !== null) {
-            entry.rss = workout.stress_list[i].toFixed(1);
+            entry.rss = +workout.stress_list[i].toFixed(1);
             if (entry.rss !== 0 && availableMetrics.indexOf('rss') === -1) {
                 availableMetrics.push('rss');
             }    
@@ -504,28 +504,26 @@ var workoutFetchingComparison = function (workoutID, workoutUpdated, resolve) {
         getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
             (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
         if (getExternal) {
-            return workoutFetchingComparisonAJAX(workoutID, resolve);
+            workoutFetchingComparisonAJAX(workoutID, resolve);
         } else {
             resolve(workoutID);
-            return activeMemory[workoutID];
         }
     } else if (!checkIndexedDB) {
-        return workoutFetchingComparisonAJAX(workoutID, resolve);
+        workoutFetchingComparisonAJAX(workoutID, resolve);
     } else {
-        return db.storage.log.get(String(workoutID), (log) => {
+        db.storage.log.get(String(workoutID), (log) => {
             if (log === undefined) {
-                return workoutFetchingComparisonAJAX(workoutID, resolve);
+                workoutFetchingComparisonAJAX(workoutID, resolve);
             } else {
                 workoutUpdatedTS = new Date(workoutUpdated);
                 logUpdatedTS = new Date(log.data.updated_time);
                 getExternal = (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === true) ||
                     (workoutUpdatedTS !== undefined && isNaN(logUpdatedTS) === false && workoutUpdatedTS.getTime() > logUpdatedTS.getTime());
                 if (getExternal) {
-                    return workoutFetchingComparisonAJAX(workoutID, resolve);
+                    workoutFetchingComparisonAJAX(workoutID, resolve);
                 } else {
                     activeMemory[workoutID] = log.data;
                     resolve(workoutID);
-                    return log.data;
                 }
             }
         });
@@ -591,7 +589,6 @@ var workoutComparison = function (idPrimary, idSecondary, updatedTime) {
                 data.activityIDSecondary = idSecondary;
                 data.dataSecondary = workoutProcessingComparison(data.activitySecondary);
             }
-            console.log(data.activityPrimary, data.activitySecondary, values);
             data.maxRSS = Math.max(
                 data.activityPrimary.stress,
                 data.activitySecondary.stress
@@ -924,7 +921,8 @@ var resetLap = function () {
         legSpring: 0,
         pace: 0,
         ratio: 0,
-        tiz: [0, 0, 0, 0, 0]
+        tiz: [0, 0, 0, 0, 0],
+        rss: 0
     };
     lapCount = {
         lap: 0,
@@ -935,7 +933,8 @@ var resetLap = function () {
         legSpring: 0,
         pace: 0,
         ratio: 0,
-        tiz: [0, 0, 0, 0, 0]
+        tiz: [0, 0, 0, 0, 0],
+        rss: 0
     };
 };
 
@@ -966,6 +965,7 @@ var calcLaps = function (type, activityID, zones) {
     var samples = 0;
     var lastDistance = 0;
     var lastTimestamp = activity[0].date;
+    var lastRSS = 0;
 
     var lapSwitch = false;
 
@@ -1021,9 +1021,11 @@ var calcLaps = function (type, activityID, zones) {
             lap.time = secToDuration(seconds);
             lap.pace = speedToPace(meters/seconds, 'feet');
             lap.ratio = (lap.power/lap.formPower).toFixed(1);
+            lap.rss = entry.rss - lastRSS;
 
             lastDistance = entry.distance;
             lastTimestamp = entry.date;
+            lastRSS = entry.rss;
 
             laps.push(lap);
             resetLap();
