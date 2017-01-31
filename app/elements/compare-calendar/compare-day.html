@@ -154,7 +154,7 @@
                     this.power = this.data.power.toFixed(0);
                     this.power_icon = 'image:flash-on';
                 }
-                this.distance = meterToUserUnit(this.data.distance);
+                this.distance = unit.distanceValue(this.data.distance, user.data.units);
 
                 var duration = moment.duration(this.data.time, 'seconds');
                 var minutesStr = duration.minutes().toString();

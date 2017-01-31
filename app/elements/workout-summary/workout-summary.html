@@ -252,14 +252,18 @@
 				this.notifyPath('data.rss');
 				this.notifyPath('data.rss_message');
 
-				this.data.duration = secToDurationFull(activity.elapsed_time);
+				this.data.duration = secToDuration(activity.elapsed_time);
 				this.notifyPath('data.duration');
 
-				this.data.pace = speedToPace(activity.average_speed, user.data.units);
+				this.data.pace = unit.speedValue(activity.average_speed, user.data.units);
+				this.data.pace_unit = unit.speedUnit(user.data.units);
 				this.notifyPath('data.pace');
+				this.notifyPath('data.pace_unit');
 
-				this.data.distance = meterToMile(activity.distance, 0);
+				this.data.distance = unit.distanceValue(activity.distance, user.data.units);
+				this.data.distance_unit = unit.distanceUnit(user.data.units);
 				this.notifyPath('data.distance');
+				this.notifyPath('data.distance_unit');
 
 				this.tiz(activity.seconds_in_zones, activity.stress);
 

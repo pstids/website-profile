@@ -63,8 +63,6 @@ gulp.task('jshint', function () {
         'user',
         'superagent',
         'setDate',
-        'speedToPace',
-        'speedToPaceInDecimal',
         'workoutProcessing',
         'workoutFetching',
         'arraysEqual',
@@ -76,17 +74,11 @@ gulp.task('jshint', function () {
         'fillZero',
         'hmsTime',
         'google',
-        'meterToKM',
-        'meterToUserUnit',
         'hrTime',
-        'meterToMile',
-        'speedToPaceForBalloon',
-        'speedToPaceForValueAxis',
         'durationToSec',
         'secToDuration', 
         'secToDurationFull',
         'windowFocusEvent',
-        'formatPace',
         'attribute',
         'moment',
         'addLog',
@@ -99,10 +91,9 @@ gulp.task('jshint', function () {
         'FeatureManagement',
         'Metric',
         'app',
-        'metersPerMile',
-        'metersPerKM',
         'urlManager',
-        'calendarManager'
+        'calendarManager',
+        'unit'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

@@ -238,11 +238,6 @@ class TrainingPlan {
 			workout.rss = rss;
 			this.days[dateHash] = workout;
 		}
-		processor.postMessage({
-			type: 'setPlan',
-			trainingPlan: this.plan,
-			trainingDays: this.days
-		});
 	}
 
 	getRSS(workout) {
@@ -273,11 +268,11 @@ class TrainingPlan {
 						segment.distance_unit_selected = 'meter';
 					}
 					if (segment.distance_unit_selected === 'mile') {
-						distanceMeters = metersPerMile * segment.duration_distance;
+						distanceMeters = unit.metersPerMile * segment.duration_distance;
 					} else if (segment.distance_unit_selected === 'meter') {
 						distanceMeters = segment.duration_distance;
 					} else if (segment.distance_unit_selected === 'km') {
-						distanceMeters = metersPerKM * segment.duration_distance;
+						distanceMeters = unit.metersPerKM * segment.duration_distance;
 					}
 
 					var durationSeconds = 0;
@@ -573,6 +568,20 @@ class CalendarManager {
 	loadLast() {
 		page(`/powercenter/run/${this.lastActivity}`);
 		this.hasLoaded = true;
+	}
+
+	updateActivity() {
+
+	}
+	removeActivity() {
+
+	}
+	addActivity(id) {
+		processor.postMessage({
+			token: jwt.token,
+			type: 'addLog',
+			id: id
+		});
 	}
 }
 

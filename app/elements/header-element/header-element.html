@@ -404,13 +404,8 @@
                         if (res.ok) {
                             var incomingWeekly = res.body;
                             incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
-                            if (user.data.units === 'feet') {
-                                incomingWeekly.total_distance = Math.round(meterToKM(res.body.total_distance) * 0.621371);
-                                this.units = 'Mi';
-                            } else {
-                                incomingWeekly.total_distance = meterToKM(res.body.total_distance);
-                                this.units = 'KM';
-                            }
+                            incomingWeekly.total_distance = unit.distanceValue(res.body.total_distance, user.data.units);
+                            this.units = unit.distanceUnit(user.data.units);
                             
                             incomingWeekly.average_power = Math.round(res.body.average_power);
                             this.weekly = incomingWeekly;

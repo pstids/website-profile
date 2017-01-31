@@ -422,7 +422,9 @@
                         gridAlpha: 0.2,
                         axisColor: '#074a8c',
                         dashLength: 1,
-                        labelFunction: speedToPaceForValueAxis
+                        labelFunction: function (value) {
+                            return unit.speedDecimal(value, user.data.units);
+                        }
                     },
                     info: {
                         id: 'pace',
@@ -437,7 +439,9 @@
                         useLineColorForBulletBorder: true,
                         valueField: 'pace',
                         type: 'smoothedLine',
-                        balloonFunction: speedToPaceForBalloon,
+                        balloonFunction: function (graphDataItem) {
+                            return unit.speedValue(graphDataItem.values.value, user.data.units) + unit.speedUnit(user.data.units);
+                        },
                         balloonText: '[[value]] Min/Mile',
                         lineColor: '#074a8c',
                         hidden: true

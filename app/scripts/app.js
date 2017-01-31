@@ -51,7 +51,8 @@ var lapProcessing = function (id, lapMarker) {
     var data = {
         type: 'laps',
         activityID: id,
-        lapMarker: lapMarker
+        lapMarker: lapMarker,
+        unit: user.data.units
     };
     if (user && 'data' in user && 'training_info' in user.data) {
         data.zones = user.data.training_info.training_zones;
@@ -184,6 +185,7 @@ app.addEventListener('dom-change', () => {
             var activityDate = moment.unix(event.data.addLog.start_time);
             toast(`Workout from ${activityDate.format('MMMM Do YYYY')} uploaded!`);
             logCalendar.addActivity(event.data.addLog);
+            compareCalendar.addActivity(event.data.addLog);
         }
         if ('comparison' in event.data) {
             rssPrimary.setChartData(

@@ -117,53 +117,108 @@ var calcThreshold = function (nPowers) {
     return threshold;
 };
 
-var workoutSave = function (workout, id) {
-    db.storage.log.put({
-        id: String(id),
-        data: workout
-    });
-};
-
-var trainingPlan = {};
-var trainingDays = {};
-var trainingGraphDays = {};
-
 var getDateHash = function (timestamp) {
     return moment.unix(timestamp).format('YYYYMMDD');
 };
 
-var processTrainingDay = function (day) {
-    //day as parameter
-    var trainingArray = [];
-    for (var i = 0; i < day.blocks.length; i++) {
-        var block = day.blocks[i];
-        for (var o = 0; o < block.segments.length; o++) {
-            var segment = block.segments[o];
-            if (segment.duration_type === 'minutes') {
-                var seconds = segment.duration_length * 60;
-                for (var p = 0; p < seconds; p++) {
-                    trainingArray.push(segment.low_range);
-                }
+var createChartData = function (workout) {
+    var chartData = [];
+    var lastEntry = {}, entry = {};
+    var suuntoDrop = true;
+
+    var steps = 1;
+    if (workout.total_power_list.length > 1000) {
+        steps = parseInt(workout.total_power_list.length / 1000);
+    }
+    if (steps < 1) {
+        steps = 1;
+    }
+
+    for (var i = 0; i < workout.total_power_list.length; i += steps) {
+        suuntoDrop = true;
+        entry = {};
+
+        if ('timestamp_list' in workout) {
+            entry.date = setDate(workout.timestamp_list[i]);
+        }
+        if ('heart_rate_list' in workout) {
+            entry.heartRate = workout.heart_rate_list[i];
+            if (entry.heartRate !== 0) {
+                suuntoDrop = false;
             }
         }
+        if ('speed_list' in workout && workout.speed_list !== null) {
+            entry.pace = workout.speed_list[i];
+        }
+        if ('speed_device_list' in workout && workout.speed_device_list !== null) {
+            entry.devicePace = workout.speed_device_list[i];
+        }
+        if ('total_power_list' in workout) {
+            entry.power = workout.total_power_list[i];
+            if (entry.power !== 0) {
+                suuntoDrop = false;
+            }
+        }
+        if ('vertical_power_list' in workout && workout.vertical_power_list !== null) {
+            entry.formPower = workout.vertical_power_list[i];
+            if (entry.power !== 0) {
+                suuntoDrop = false;
+            }
+        }
+        if ('cadence_list' in workout) {
+            entry.cadence = workout.cadence_list[i];
+            if (entry.cadence !== 0) {
+                suuntoDrop = false;
+            }
+        }
+        if ('elevation_list' in workout && workout.elevation_list !== null) {
+            entry.elevation = Math.round(workout.elevation_list[i] * 10) / 10;
+            if (entry.elevation !== 0) {
+                suuntoDrop = false;
+            }
+        }
+        if ('oscillation_list' in workout && workout.oscillation_list !== null && i < workout.oscillation_list.length) {
+            entry.vertOsc = workout.oscillation_list[i];
+        }
+        if ('leg_spring_list' in workout && workout.leg_spring_list !== null && i < workout.leg_spring_list.length) {
+            entry.legSpring = workout.leg_spring_list[i];
+        }
+        if ('ground_time_list' in workout && workout.ground_time_list !== null && i < workout.ground_time_list.length) {
+            entry.groundTime = workout.ground_time_list[i];
+        }
+        if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
+            entry.deviceElevation = Math.round(workout.elevation_device_list[i] * 10) / 10;     
+        }
+        if ('stress_list' in workout && workout.stress_list !== null) {
+            entry.rss = +workout.stress_list[i].toFixed(1);
+        }
+        if ('distance_list' in workout && workout.distance_list !== null) {
+            entry.distance = workout.distance_list[i];
+        }
+
+        if (suuntoDrop && i !== 0) {
+            entry = lastEntry;
+        } else {
+            lastEntry = entry;
+        }
+
+        chartData.push(entry);
     }
-    return trainingArray;
+    return chartData;
 };
 
-
-var populateTrainingDays = function () {
-    for (var key in trainingDays) {
-        trainingGraphDays[key] = processTrainingDay(trainingDays[key]);
+var workoutSave = function (workout, id) {
+    id = +id;
+    if (!(id in activeMemory)) {
+        activeMemory[id] = workout;
     }
-};
-
-var checkTrainingDay = function (timestamp) {
-    var dateHash = getDateHash(timestamp);
-    if (dateHash in trainingDays) {
-        return true;
-    } else {
-        return false;
+    if (!(id in seriesMemory)) {
+        seriesMemory[id] = createChartData(workout);
     }
+    db.storage.log.put({
+        id: String(id),
+        data: workout
+    });
 };
 
 var workoutProcessing = function (workout, id) {
@@ -191,153 +246,70 @@ var workoutProcessing = function (workout, id) {
         steps = 1;
     }
 
-    var chartData = [], mapRunData = [];
-    var hex, i;
-    var graphSegment = {};
+    var mapRunData = [];
+    var availableMetrics = ['power'];
 
-    var lastEntry = {};
-    var suuntoDrop = true;
+    if ('heart_rate_list' in workout && workout.heart_rate_list !== null) {
+        availableMetrics.push('heartRate');
+    }
+    if ('speed_list' in workout && workout.speed_list !== null) {
+        availableMetrics.push('pace');
+    }
+    if ('speed_device_list' in workout && workout.speed_device_list !== null) {
+        availableMetrics.push('devicePace');
+    }
+    if ('vertical_power_list' in workout && workout.vertical_power_list !== null) {
+        availableMetrics.push('formPower');
+    }
+    if ('cadence_list' in workout && workout.cadence !== null) {
+        availableMetrics.push('cadence');
+    }
+    if ('oscillation_list' in workout && workout.oscillation_list !== null) {
+        availableMetrics.push('vertOsc');
+    }
+    if ('leg_spring_list' in workout && workout.leg_spring_list !== null) {
+        availableMetrics.push('legSpring');
+    }
+    if ('ground_time_list' in workout && workout.ground_time_list !== null) {
+        availableMetrics.push('groundTime');
+    }
+    if ('elevation_list' in workout && workout.elevation_list !== null) {
+        availableMetrics.push('elevation');
+    }
+    if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
+        availableMetrics.push('deviceElevation');    
+    }
+    if ('stress_list' in workout && workout.stress_list !== null) {
+        availableMetrics.push('rss'); 
+    }
 
-    var availableMetrics = [];
-
-    for (i = 0; i < workout.total_power_list.length; i += steps) {
-        graphSegment = {};
-        var entry = {};
+    for (var i = 0; i < workout.total_power_list.length; i += steps) {
         /* Assemble chart data */
-        if ('timestamp_list' in workout) {
-            entry.date = setDate(workout.timestamp_list[i]);
+        var power = workout.total_power_list[i];
+        if (power > 5) {
+            avgs.powerCount += 1;
+            avgs.power += power;
         }
-        if ('heart_rate_list' in workout) {
-            entry.heartRate = workout.heart_rate_list[i];
-            if (entry.heartRate !== 0) {
-                suuntoDrop = false;
-            }
-            if (entry.heartRate !== 0 && availableMetrics.indexOf('heartRate') === -1) {
-                availableMetrics.push('heartRate');
-            }
-        }
-        if ('speed_list' in workout && workout.speed_list !== null) {
-            entry.pace = workout.speed_list[i];
-            if (entry.pace !== 0 && availableMetrics.indexOf('pace') === -1) {
-                availableMetrics.push('pace');
-            }
-        }
-        if ('speed_device_list' in workout && workout.speed_device_list !== null) {
-            entry.devicePace = workout.speed_device_list[i];
-            if (entry.devicePace !== 0 && availableMetrics.indexOf('devicePace') === -1) {
-                availableMetrics.push('devicePace');
-            }
-        }
-        if ('total_power_list' in workout) {
-            entry.power = workout.total_power_list[i];
-            if (entry.power > 5) {
-                avgs.powerCount += 1;
-                avgs.power += entry.power;
-            }
-            if (entry.power !== 0) {
-                suuntoDrop = false;
-            }
-            if (entry.power !== 0 && availableMetrics.indexOf('power') === -1) {
-                availableMetrics.push('power');
-            }
-        }
-        if ('vertical_power_list' in workout && workout.vertical_power_list !== null) {
-            entry.formPower = workout.vertical_power_list[i];
-            if (entry.power !== 0) {
-                suuntoDrop = false;
-            }
-            if (entry.formPower !== 0 && availableMetrics.indexOf('formPower') === -1) {
-                availableMetrics.push('formPower');
-            }
-        }
-        if ('cadence_list' in workout) {
-            entry.cadence = workout.cadence_list[i];
-            if (entry.cadence !== 0) {
-                suuntoDrop = false;
-            }
-            if (entry.cadence !== 0 && availableMetrics.indexOf('cadence') === -1) {
-                availableMetrics.push('cadence');
-            }
-        }
-        if ('oscillation_list' in workout && workout.oscillation_list !== null && i < workout.oscillation_list.length) {
-            entry.vertOsc = workout.oscillation_list[i];
-            if (entry.vertOsc !== 0 && availableMetrics.indexOf('vertOsc') === -1) {
-                availableMetrics.push('vertOsc');
-            }
-        }
-        if ('leg_spring_list' in workout && workout.leg_spring_list !== null && i < workout.leg_spring_list.length) {
-            entry.legSpring = workout.leg_spring_list[i];
-            if (entry.legSpring !== 0 && availableMetrics.indexOf('legSpring') === -1) {
-                availableMetrics.push('legSpring');
-            }
-        }
-        if ('ground_time_list' in workout && workout.ground_time_list !== null && i < workout.ground_time_list.length) {
-            entry.groundTime = workout.ground_time_list[i];
-            if (entry.groundTime !== 0 && availableMetrics.indexOf('groundTime') === -1) {
-                availableMetrics.push('groundTime');
-            }
-        }
-        if ('elevation_list' in workout && workout.elevation_list !== null) {
-            entry.elevation = Math.round(workout.elevation_list[i] * 10) / 10;
-            if (entry.elevation !== 0) {
-                suuntoDrop = false;
-            }
-            if (entry.elevation !== 0 && availableMetrics.indexOf('elevation') === -1) {
-                availableMetrics.push('elevation');
-            }
-        }
-        if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
-            entry.deviceElevation = Math.round(workout.elevation_device_list[i] * 10) / 10;
-            if (entry.deviceElevation !== 0 && availableMetrics.indexOf('deviceElevation') === -1) {
-                availableMetrics.push('deviceElevation');
-            }       
-        }
-        if ('stress_list' in workout && workout.stress_list !== null) {
-            entry.rss = +workout.stress_list[i].toFixed(1);
-            if (entry.rss !== 0 && availableMetrics.indexOf('rss') === -1) {
-                availableMetrics.push('rss');
-            }    
-        }
-        if ('distance_list' in workout && workout.distance_list !== null) {
-            entry.distance = workout.distance_list[i];
-        }
-        // if (checkTrainingDay(workout.timestamp)) {
-        //     var graphTraining = trainingGraphDays[getDateHash(workout.timestamp)];
-        //     if (i < graphTraining.length) {
-        //         entry.training = graphTraining[i];
-        //     } else {
-        //         entry.training = 0;
-        //     }
-        // }
 
-        if (suuntoDrop && i !== 0) {
-            entry = lastEntry;
-        } else {
-            lastEntry = entry;
-        }
-        suuntoDrop = true;
-
-        chartData.push(entry);
         /* Assemble map data */
         if (
             i > 0 &&
             'loc_list' in workout &&
-            workout.loc_list !== null &&
-            'power' in entry
+            workout.loc_list !== null
         ) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
                 relativePower = 1;
-            } else if (entry.power > threshold.high) {
+            } else if (power > threshold.high) {
                 relativePower = threshold.range;
-            } else if (entry.power < threshold.low) {
+            } else if (power < threshold.low) {
                 relativePower = 0;
             } else {
-                relativePower = entry.power - threshold.low;
+                relativePower = power - threshold.low;
             }
-            hex = colorInterpolate.HEX(relativePower, threshold.range);
-            graphSegment = {
+            var hex = colorInterpolate.HEX(relativePower, threshold.range);
+            var graphSegment = {
                 hex: hex,
                 location: [
                     {
@@ -357,6 +329,14 @@ var workoutProcessing = function (workout, id) {
     avgs.pace = (workout.distance / 1600) / (workout.moving_time / 60);
 
     data.mapRunData = mapRunData;
+
+    var chartData = [];
+    if (id in seriesMemory) {
+        chartData = seriesMemory[id];
+    } else {
+        chartData = createChartData(workout);
+        seriesMemory[id] = chartData;
+    }
     data.chartData = chartData;
 
     data.chartDescription = {
@@ -396,8 +376,10 @@ var workoutProcessing = function (workout, id) {
     data.workoutShared = workout;
     data.availableMetrics = availableMetrics;
 
-    activeMemory[id] = workout;
-    seriesMemory[id] = chartData;
+    if (!(id in activeMemory)) {
+        activeMemory[id] = workout;
+    }
+
     postMessage(data);
 };
 
@@ -422,6 +404,7 @@ var workoutFetchingAJAX = function (workoutID) {
 };
 
 var workoutFetching = function (workoutID, workoutUpdated) {
+    workoutID = +workoutID;
     var getExternal, workoutUpdatedTS, logUpdatedTS;
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (workoutID in activeMemory) {
@@ -484,18 +467,17 @@ var workoutFetchingComparisonAJAX = function (workoutID, resolve) {
         .set('Authorization', `Bearer: ${token}`)
         .end((err, res) => {
             if (res.ok) {
-                activeMemory[workoutID] = res.body;
+                workoutSave(res.body, workoutID);
                 resolve(workoutID);
-                return res.body;
             } else {
                 console.log('Error: cannot fetch workout');
                 resolve(workoutID);
-                return null;
             }
         });
 };
 
 var workoutFetchingComparison = function (workoutID, workoutUpdated, resolve) {
+    workoutID = +workoutID;
     var getExternal, workoutUpdatedTS, logUpdatedTS;
     var checkIndexedDB = self.indexedDB || self.mozIndexedDB || self.webkitIndexedDB || self.msIndexedDB;
     if (workoutID in activeMemory) {
@@ -730,7 +712,7 @@ var resetMetrics = function () {
     };
 };
 
-var calcMetrics = function (start, end, activityID, unit) {
+var calcMetrics = function (start, end, activityID, userUnit) {
     resetMetrics();
     var activity = seriesMemory[activityID];
 
@@ -744,16 +726,10 @@ var calcMetrics = function (start, end, activityID, unit) {
     var milliseconds = activity[end-1].date - activity[start].date;
     var seconds = milliseconds / 1000;
 
-    var paceUnit = 'Min/Mi';
-    var distanceUnit = 'Mi';
-    var distanceDisplay = meterToMile(distance, 1);
-    var distanceValue = distance/metersPerMile;
-    if (unit === 'meters') {
-        paceUnit = 'Min/KM';
-        distanceUnit = 'KM';
-        distanceDisplay = meterToKM(distance);
-        distanceValue = distance/metersPerKM;
-    }
+    var paceUnit = unit.speedUnit(userUnit);
+    var distanceUnit = unit.distanceUnit(userUnit);
+    var distanceDisplay = unit.distanceValue(distance, userUnit);
+    var distanceValue = unit.distanceValueRaw(distance, userUnit);
 
     metrics.time.totalTime.value = hmsTime(milliseconds);
     metrics.pace.pace.unit = paceUnit;
@@ -850,9 +826,9 @@ var calcMetrics = function (start, end, activityID, unit) {
     var elapsedDec = elapsedMinutes / distanceValue;
     var movingDec = movingMinutes / distanceValue;
 
-    metrics.pace.pace.elapsed = formatPace(elapsedDec);
-    metrics.pace.pace.moving = formatPace(movingDec);
-    metrics.pace.maxPace.value = speedToPace(metrics.pace.maxPace.value, unit);
+    metrics.pace.pace.elapsed = unit.paceFormat(elapsedDec);
+    metrics.pace.pace.moving = unit.paceFormat(movingDec);
+    metrics.pace.maxPace.value = unit.speedValue(metrics.pace.maxPace.value, userUnit) + unit.speedUnit(userUnit);
 
     metrics.power.power.moving = (metrics.power.power.moving / metrics.power.power.mTotal).stat();
     metrics.power.power.elapsed = (metrics.power.power.elapsed / total).stat();
@@ -942,10 +918,11 @@ var calcAverage = function (key, value) {
     lap[key] = lap[key] + ((value - lap[key]) / ++lapCount[key]);
 };
 
-var calcLaps = function (type, activityID, zones) {
+var calcLaps = function (type, activityID, zones, userUnit) {
     var laps = [];
     var lapCount = 0;
     resetLap();
+    activityID = +activityID;
 
     var activity = seriesMemory[activityID];
     var oActivity = activeMemory[activityID];
@@ -987,11 +964,11 @@ var calcLaps = function (type, activityID, zones) {
         }
 
         if (type === 'mi') {
-            if (entry.distance - lastDistance > metersPerMile) {
+            if (entry.distance - lastDistance > unit.metersPerMile) {
                 lapSwitch = true;
             }
         } else if (type === 'km') {
-            if (entry.distance - lastDistance > metersPerKM) {
+            if (entry.distance - lastDistance > unit.metersPerKM) {
                 lapSwitch = true;
             }
         } else if (type === 'split' && keepLapSearching) {
@@ -1019,7 +996,7 @@ var calcLaps = function (type, activityID, zones) {
             lap.lap = ++lapCount;
             var seconds = (entry.date - lastTimestamp)/1000;
             lap.time = secToDuration(seconds);
-            lap.pace = speedToPace(meters/seconds, 'feet');
+            lap.pace = unit.speedValue(meters/seconds, userUnit) + unit.speedUnit(userUnit);
             lap.ratio = (lap.power/lap.formPower).toFixed(1);
             lap.rss = entry.rss - lastRSS;
 
@@ -1061,11 +1038,6 @@ onmessage = function (event) {
         case 'suuntoProcessing':
             suuntoProcessing();
             break;
-        case 'setPlan':
-            trainingPlan = event.data.trainingPlan;
-            trainingDays = event.data.trainingDays;
-            populateTrainingDays();
-            break;
         case 'metrics':
             calcMetrics(
                 event.data.start,
@@ -1078,7 +1050,8 @@ onmessage = function (event) {
             calcLaps(
                 event.data.lapMarker,
                 event.data.activityID,
-                event.data.zones
+                event.data.zones,
+                event.data.unit
             );
             break;
         default:

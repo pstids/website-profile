@@ -751,8 +751,8 @@
                     zone = zones[i];
                     zone.power_low = Math.round(zone.power_low);
                     zone.power_high = Math.round(zone.power_high);
-                    zone.pace_low = speedToPace(zone.speed_low, user.data.units);
-                    zone.pace_high = speedToPace(zone.speed_high, user.data.units);
+                    zone.pace_low = unit.speedValue(zone.speed_low, user.data.units)+unit.speedUnit(user.data.units);
+                    zone.pace_high = unit.speedValue(zone.speed_high, user.data.units)+unit.speedUnit(user.data.units);
                     this.addZone(zone);
                 }
 
@@ -762,7 +762,7 @@
                     pace: {
                         icon: 'maps:directions-run',
                         title: 'Critical Pace',
-                        value: speedToPace(info.critical_speed, user.data.units),
+                        value: unit.speedValue(info.critical_speed, user.data.units)+unit.speedUnit(user.data.units),
                         unit: this.paceUnit
                     }
                 };
