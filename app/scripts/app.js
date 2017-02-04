@@ -15,54 +15,6 @@ var updatedTime = '';
 Dropzone.autoDiscover = false;
 
 /*
-workoutFetching grabs a workout by ID and
-sends the content to workout-element, map-run, and
-workout-shared.
-{
-    id: id of the activity,
-    updated_time: a value parsable by new Date()
-}
-*/
-var workoutFetching = function (id) {
-    processor.postMessage({
-        token: jwt.token,
-        type: 'workout',
-        id: id,
-        updated_time: updatedTime
-    });
-};
-
-var addLog = function (id) {
-    processor.postMessage({
-        token: jwt.token,
-        type: 'addLog',
-        id: id
-    });
-};
-
-var logsFetching = function () {
-    processor.postMessage({
-        token: jwt.token,
-        type: 'all'
-    });
-};
-
-var lapProcessing = function (id, lapMarker) {
-    var data = {
-        type: 'laps',
-        activityID: id,
-        lapMarker: lapMarker,
-        unit: user.data.units
-    };
-    if (user && 'data' in user && 'training_info' in user.data) {
-        data.zones = user.data.training_info.training_zones;
-    } else {
-        data.zones = null;
-    }
-    processor.postMessage(data);
-};
-
-/*
 Creates a local storage database using Dexie.
 Items are fetched using ID and the workout data
 is stored as JSON in the storage.
@@ -109,6 +61,7 @@ var mapRunEle,
     compareCalendar;
 
 var firstLoad = true;
+var forceLoad = false;
 var currentID = null;
 
 // Listen for template bound event to know when bindings
@@ -201,6 +154,9 @@ app.addEventListener('dom-change', () => {
                 event.data.maxRSS
             );
         }
+        if ('updateLog' in event.data) {
+            forceLoad = true;
+        }
     };
 
     page.base('/powercenter');
@@ -257,7 +213,7 @@ app.addEventListener('dom-change', () => {
         logCalendar.setActive(+app.params.idPrimary);
         compareCalendar.setActive(+app.params.idPrimary);
         if (!workoutSummary.hasWorkout) {
-            workoutFetching(app.params.idPrimary);
+            app.workoutFetching(app.params.idPrimary);
             currentID = app.params.idPrimary;
         }
     });
@@ -285,11 +241,13 @@ app.addEventListener('dom-change', () => {
             window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
         }
 
-        if (currentID !== app.params.id) {
+        if (currentID !== app.params.id || forceLoad) {
             workoutElement.setLoading();
-            workoutFetching(app.params.id);
+            app.workoutFetching(app.params.id);
             currentID = app.params.id;
+            forceLoad = false;
         }
+        workoutElement.toggleView();
     });
 
     page('/training/:hash', (data) => {
@@ -333,59 +291,32 @@ app.addEventListener('dom-change', () => {
 
     page('/a/:name', (data) => {
         if (jwt.hasToken) {
-            app.route = 'home';
-            var now = moment();
-            logCalendar.fetchMonth(
-                now.month(),
-                now.year(),
-                true
-            );
+            console.log(data.params.name);
+            calendarManager.loadNew = true;
+            calendarManager.setAdmin(data.params.name);
+            page('/analysis');
         } else {
             document.location = '/signin';
         }
     });
 
-    // page('/users/:name', (data) => {
-    //     app.route = 'user-info';
-    //     app.params = data.params;
-    // });
+    page('/plan', () => {
+        if (jwt.hasToken) {
+            app.route = 'plan';
+        } else {
+            document.location = '/signin';
+        }
+    });
 
-    // page('/plan', () => {
-    //     if (jwt.hasToken) {
-    //         app.route = 'plan';
-    //     } else {
-    //         document.location = '/signin';
-    //     }
-    // });
+    page('/plan/:id', (data) => {
+        app.route = 'new-plan';
+        app.planID = data.params.id;
+    });
 
-    // page('/plan/:id', (data) => {
-    //     app.route = 'new-plan';
-    //     app.planID = data.params.id;
-    // });
-
-    // page('/plan/:id/detail', (data) => {
-    //     app.route = 'plan-detail';
-    //     app.planID = data.params.id;
-    // });
-
-    // page('/run/:idPrimary/training/:idSecondary', (data) => {
-    //     app.route = 'profile';
-    //     app.params = data.params;
-    //     app.home = 'analysis';
-    //     header.toggleActive('profile');
-    //     homeNavigation.select('training');
-
-    //     var planView = document.createElement('plan-view');
-    //     planView.id = 'plan-compliment';
-    //     planView.chartToggle(true);
-    //     planView.setStartHash(data.params.idSecondary);
-    //     planView.classList.add('hasWorkout');
-
-    //     document.querySelector('[data-analysis]')
-    //         .appendChild(planView);
-
-    //     workoutFetching(data.params.idPrimary);
-    // });
+    page('/plan/:id/detail', (data) => {
+        app.route = 'plan-detail';
+        app.planID = data.params.id;
+    });
 
     page('*', () => {
         document.location = '/signin';
@@ -414,7 +345,7 @@ app.addEventListener('dom-change', () => {
                 done();
             },
             success: (file, message) => {
-                addLog(message.activity_id);
+                app.addLog(message.activity_id);
             },
             error: (file, message) => {
                 toast('Workout could not be uploaded');
@@ -537,4 +468,56 @@ app.updateWorkout = function (id, updates, cb) {
     });
 
     toast('Activity updated!');
+};
+
+/*
+workoutFetching grabs a workout by ID and
+sends the content to workout-element, map-run, and
+workout-shared.
+{
+    id: id of the activity,
+    updated_time: a value parsable by new Date()
+}
+*/
+app.workoutFetching = function (id) {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'workout',
+        id: id,
+        updated_time: updatedTime
+    });
+};
+
+app.addLog = function (id) {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'addLog',
+        id: id
+    });
+};
+
+app.logsFetching = function () {
+    processor.postMessage({
+        token: jwt.token,
+        type: 'all'
+    });
+};
+
+app.lapProcessing = function (id, lapMarker) {
+    var data = {
+        type: 'laps',
+        activityID: id,
+        lapMarker: lapMarker,
+        unit: user.data.units
+    };
+    if (user && 'data' in user && 'training_info' in user.data) {
+        data.zones = user.data.training_info.training_zones;
+    } else {
+        data.zones = null;
+    }
+    processor.postMessage(data);
+};
+
+app.addGuide = function (from, to, zone) {
+    workoutElement.addGuide(from, to, zone);
 };

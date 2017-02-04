@@ -5,8 +5,6 @@
 /*global postMessage*/
 /*global Dexie:true*/
 /*global self*/
-/*global trainingPlan:true */
-/*global trainingDays:true */
 
 importScripts('/powercenter/scripts/processor.min.js');
 
@@ -190,7 +188,11 @@ var createChartData = function (workout) {
             entry.deviceElevation = Math.round(workout.elevation_device_list[i] * 10) / 10;     
         }
         if ('stress_list' in workout && workout.stress_list !== null) {
-            entry.rss = +workout.stress_list[i].toFixed(1);
+            if (workout.stress_list[i] === undefined) {
+                entry.rss = 0;
+            } else {
+                entry.rss = +workout.stress_list[i].toFixed(1);
+            }
         }
         if ('distance_list' in workout && workout.distance_list !== null) {
             entry.distance = workout.distance_list[i];
@@ -221,6 +223,20 @@ var workoutSave = function (workout, id) {
     });
 };
 
+var workoutUpdate = function (workout, id) {
+    id = +id;
+    activeMemory[id] = workout;
+    seriesMemory[id] = createChartData(workout);
+    db.storage.log.put({
+        id: String(id),
+        data: workout
+    });
+};
+
+var add = function (a, b) {
+    return (+a) + (+b);
+};
+
 var workoutProcessing = function (workout, id) {
     if (workout.total_power_list === null) {
         data.error = true;
@@ -235,8 +251,6 @@ var workoutProcessing = function (workout, id) {
         pace: 0
     };
 
-    var maxPower = workout.max_power;
-
     // Limit displayed records to prevent browser slugginess
     var steps = 1;
     if (workout.total_power_list.length > 1000) {
@@ -248,39 +262,73 @@ var workoutProcessing = function (workout, id) {
 
     var mapRunData = [];
     var availableMetrics = ['power'];
+    var sum = 0;
 
     if ('heart_rate_list' in workout && workout.heart_rate_list !== null) {
-        availableMetrics.push('heartRate');
+        sum = workout.heart_rate_list.slice(0, 1000).reduce(add, 0);
+        if (sum > 0) {
+            availableMetrics.push('heartRate');
+        }
     }
     if ('speed_list' in workout && workout.speed_list !== null) {
-        availableMetrics.push('pace');
+        // sum = workout.speed_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('pace');
+        // }
     }
     if ('speed_device_list' in workout && workout.speed_device_list !== null) {
-        availableMetrics.push('devicePace');
+        // sum = workout.speed_device_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('devicePace');
+        // }
     }
     if ('vertical_power_list' in workout && workout.vertical_power_list !== null) {
-        availableMetrics.push('formPower');
+        // sum = workout.vertical_power_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('formPower');
+        // }
     }
-    if ('cadence_list' in workout && workout.cadence !== null) {
-        availableMetrics.push('cadence');
+    if ('cadence_list' in workout && workout.cadence_list !== null) {
+        // sum = workout.cadence_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('cadence');
+        // }
     }
     if ('oscillation_list' in workout && workout.oscillation_list !== null) {
-        availableMetrics.push('vertOsc');
+        // sum = workout.oscillation_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('vertOsc');
+        // }
     }
     if ('leg_spring_list' in workout && workout.leg_spring_list !== null) {
-        availableMetrics.push('legSpring');
+        // sum = workout.leg_spring_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('legSpring');
+        // }
     }
     if ('ground_time_list' in workout && workout.ground_time_list !== null) {
-        availableMetrics.push('groundTime');
+        // sum = workout.ground_time_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('groundTime');
+        // }
     }
     if ('elevation_list' in workout && workout.elevation_list !== null) {
-        availableMetrics.push('elevation');
+        // sum = workout.elevation_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('elevation');
+        // }
     }
     if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
-        availableMetrics.push('deviceElevation');    
+        // sum = workout.elevation_device_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('deviceElevation');
+        // }  
     }
     if ('stress_list' in workout && workout.stress_list !== null) {
-        availableMetrics.push('rss'); 
+        // sum = workout.stress_list.slice(0, 10).reduce(add, 0);
+        // if (sum > 0) {
+            availableMetrics.push('rss'); 
+        // }
     }
 
     for (var i = 0; i < workout.total_power_list.length; i += steps) {
@@ -524,6 +572,24 @@ var addLog = function (workoutID) {
                 data.addLog = res.body;
                 postMessage(data);
                 console.log('Success: Added workout');
+            } else {
+                console.log('Error: Cannot fetch workout');
+            }
+        });
+};
+
+var updateLog = function (id) {
+    superagent
+        .get(`/b/api/v1/activities/${id}`)
+        .send({})
+        .set('Accept', 'application/json')
+        .set('Authorization', `Bearer: ${token}`)
+        .end((err, res) => {
+            if (res.ok) {
+                workoutUpdate(res.body, id);
+                data.updateLog = res.body;
+                postMessage(data);
+                console.log('Success: Updated workout');
             } else {
                 console.log('Error: Cannot fetch workout');
             }
@@ -898,7 +964,9 @@ var resetLap = function () {
         pace: 0,
         ratio: 0,
         tiz: [0, 0, 0, 0, 0],
-        rss: 0
+        rss: 0,
+        startTimestamp: 0,
+        endTimestamp: 0
     };
     lapCount = {
         lap: 0,
@@ -930,11 +998,18 @@ var calcLaps = function (type, activityID, zones, userUnit) {
     var lapTimestamps = [];
     var lastLapTimestamp = null;
     var lastLapTimestampIter = 0;
+
     if (oActivity.lap_timestamp_list === null || oActivity.lap_timestamp_list.length === 0) {
         lapTimestamps = [];
         lastLapTimestamp = null;
     } else {
         lapTimestamps = oActivity.lap_timestamp_list;
+        for (var g = 0; g < oActivity.lap_timestamp_list.length; g++) {
+            // Set base date to 1970 if the base level is 1990
+            if (oActivity.lap_timestamp_list[g] < 999999999) {
+                oActivity.lap_timestamp_list[g] += 631065600;
+            }
+        }
         lastLapTimestamp = lapTimestamps[lastLapTimestampIter];
     }
     var keepLapSearching = true;
@@ -951,6 +1026,7 @@ var calcLaps = function (type, activityID, zones, userUnit) {
 
         var power = entry.power;
 
+        // calculate moving average for code simplicity
         calcAverage('power', power);
         calcAverage('formPower', entry.formPower);
         calcAverage('legSpring', entry.legSpring);
@@ -963,14 +1039,17 @@ var calcLaps = function (type, activityID, zones, userUnit) {
             }
         }
 
+        // check if distance passes mile marker
         if (type === 'mi') {
             if (entry.distance - lastDistance > unit.metersPerMile) {
                 lapSwitch = true;
             }
+        // check if distance passes km marker
         } else if (type === 'km') {
             if (entry.distance - lastDistance > unit.metersPerKM) {
                 lapSwitch = true;
             }
+        // check if timestamp passes lap timestamp marker
         } else if (type === 'split' && keepLapSearching) {
             if (lastLapTimestamp !== null && entry.date > setDate(lastLapTimestamp)) {
                 lastLapTimestampIter++;
@@ -988,10 +1067,11 @@ var calcLaps = function (type, activityID, zones, userUnit) {
         if (lapSwitch) {
             var meters = entry.distance - lastDistance;
             lap.distance = meters;
+            // sets distance to marker distance to prevent customer confusion
             if (type === 'mi' && lap.distance > 1609) {
-                lap.distance = 1609.34;
+                lap.distance = unit.metersPerMile;
             } else if (type === 'km' && lap.distance > 1000) {
-                lap.distance = 1000;
+                lap.distance = unit.metersPerKM;
             }
             lap.lap = ++lapCount;
             var seconds = (entry.date - lastTimestamp)/1000;
@@ -999,6 +1079,9 @@ var calcLaps = function (type, activityID, zones, userUnit) {
             lap.pace = unit.speedValue(meters/seconds, userUnit) + unit.speedUnit(userUnit);
             lap.ratio = (lap.power/lap.formPower).toFixed(1);
             lap.rss = entry.rss - lastRSS;
+            lap.startTimestamp = lastTimestamp;
+            lap.endTimestamp = entry.date;
+            console.log(lap);
 
             lastDistance = entry.distance;
             lastTimestamp = entry.date;
@@ -1053,6 +1136,9 @@ onmessage = function (event) {
                 event.data.zones,
                 event.data.unit
             );
+            break;
+        case 'updateLog':
+            updateLog(event.data.id);
             break;
         default:
             console.log('Error in onmessage/processor: unknown action');

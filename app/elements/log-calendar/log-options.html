@@ -67,6 +67,7 @@
                     .set('Authorization', `Bearer: ${jwt.token}`)
                     .end((err, res) => {
                         if (res.ok) {
+                            calendarManager.recalculateActivity(id);
                             toast('Activity updated.');
                         } else {
                             console.log('failed to recalculate');

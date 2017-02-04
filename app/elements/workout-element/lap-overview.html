@@ -67,10 +67,11 @@
 						<h1 class="header">Laps</h1>
 					</div>
 					<div class="flex layout horizontal end-justified">
-						<paper-dropdown-menu class="test-selector" label="Workout Type">
+						<paper-dropdown-menu class="test-selector" label="Lap Selection">
 							<paper-menu class="dropdown-content" selected="{{selected_lap}}" id="lapType">
 								<paper-item>Miles</paper-item>
 								<paper-item>Kilometers</paper-item>
+								<paper-item>Splits</paper-item>
 							</paper-menu>
 						</paper-dropdown-menu>
 					</div>
@@ -102,7 +103,6 @@
 		</div>
 	</template>
 	<script>
-	/* global lapProcessing */
 	Polymer({
 		is: 'lap-overview',
 		listeners: {
@@ -121,7 +121,7 @@
 					return;
 				}
 				var item = this.lapType[this.$.lapType.selected];
-				lapProcessing(this.id, item);
+				app.lapProcessing(this.id, item);
 			});
 			this.lap_number = 1;
 			this.laps = [];
@@ -134,7 +134,9 @@
 				} else if ('dataset' in target && target.dataset.lap !== undefined) {
 					this.lap_number = target.dataset.lap;
 					var lapIdx = (+target.dataset.lap)-1;
-					this.tiz(this.laps[lapIdx].tiz, this.laps[lapIdx].rss);
+					var lap = this.laps[lapIdx];
+					this.tiz(lap.tiz, lap.rss);
+					// app.addGuide(lap.startTimestamp, lap.endTimestamp, lapIdx);
 
 					Polymer.dom(target.classList.add('active'));
 					return;
@@ -148,7 +150,7 @@
 		},
 		getLaps: function (id) {
 			this.id = id;
-			lapProcessing(this.id, 'mi');
+			app.lapProcessing(this.id, 'mi');
 		},
 		displayLaps: function (laps) {
 			this.laps = laps;

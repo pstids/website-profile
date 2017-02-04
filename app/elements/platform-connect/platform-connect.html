@@ -99,9 +99,6 @@
         <paper-toast duration="1300" text="Workouts fetched." data-suunto="alert"></paper-toast>
     </template>
     <script>
-        /*global superagent */
-        /*global jwt */
-        /*jshint unused: false*/
         /*jshint camelcase: false */
         Polymer({
             is: 'platform-connect',
@@ -119,7 +116,7 @@
                 this.suunto.alert.text = message;
                 this.suunto.alert.show();
             },
-            suuntoCheck: function (e) {
+            suuntoCheck: function () {
                 if (document.visibilityState === 'visible' &&
                     !this.suunto.confirm.classList.contains('hidden')) {
                     superagent
@@ -138,7 +135,7 @@
                         });
                 }
             },
-            suuntoAuth: function (e) {
+            suuntoAuth: function () {
                 this.suunto = {
                     connect: this.querySelector('[data-suunto="connect"]'),
                     email: this.querySelector('[data-suunto="email"]'),
@@ -150,8 +147,7 @@
                     alert: this.querySelector('[data-suunto="alert"]'),
                     disconnect: this.querySelector('[data-suunto="disconnect"]')
                 };
-                this.suunto.fetch.addEventListener('click', (e) => {
-                    var target = e.target;
+                this.suunto.fetch.addEventListener('click', () => {
                     this.suunto.fetch.classList.add('hidden');
                     this.suunto.fetching.classList.remove('hidden');
                     superagent
@@ -167,7 +163,7 @@
                                 if (res.body.workouts !== null) {
                                     for (var i = 0; i < res.body.workouts.length; i++) {
                                         var workoutID = res.body.workouts[i];
-                                        addLog(workoutID);
+                                        app.addLog(workoutID);
                                     }
                                 }
                             } else {
@@ -175,12 +171,12 @@
                             }
                         });
                 });
-                this.suunto.connect.addEventListener('click', (e) => {
+                this.suunto.connect.addEventListener('click', () => {
                     this.suunto.connect.classList.add('hidden');
                     this.suunto.authStep.classList.remove('hidden');
                     this.suunto.disconnect.classList.remove('hidden');
                 });
-                this.suunto.auth.addEventListener('click', (e) => {
+                this.suunto.auth.addEventListener('click', () => {
                     superagent
                         .post('/b/platform/auth/suunto')
                         .send({
@@ -198,7 +194,7 @@
                             }
                         });
                 });
-                this.suunto.disconnect.addEventListener('click', (e) => {
+                this.suunto.disconnect.addEventListener('click', () => {
                     this.oauthDisconnect('suunto', () => {
                         this.suunto.confirm.classList.add('hidden');
                         this.suunto.disconnect.classList.add('hidden');

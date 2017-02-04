@@ -434,6 +434,8 @@ class CalendarManager {
 		this.lastActivity = 0;
 		this.loadNew = false;
 		this.hasLoadNew = false;
+		this.mode = 'user';
+		this.username = '';
 		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
 		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
@@ -449,6 +451,43 @@ class CalendarManager {
 			.end((err, res) => {
 				if (res.ok) {
 					if (res.body !== null && res.body.activities !== null) {
+						this.saveActivities(res.body.activities);
+						this.lastActivity = res.body.last_activity;
+						window.dispatchEvent(this.gotActivityEvent);
+						this.hasLoadNew = true;
+						if (this.loadNew) {
+							this.loadLast();
+						}
+					} else {
+						this.saveActivities([]);
+						this.lastActivity = res.body.last_activity;
+						this.loadLast();
+					}
+				} else {
+					console.log('Error: failure on grabLogs', err, res);
+				}
+			});
+	}
+	setAdmin(username) {
+		this.dateSpan = {
+			start: moment('2016-06-01'),
+			end: moment().add(2, 'days')
+		};
+		this.mode = 'admin';
+		this.username = username;
+		this.activities = {};
+		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
+		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
+		var activityEndPoint = `/b/admin/users/${this.username}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		superagent
+			.get(activityEndPoint)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					if (res.body !== null && res.body.activities !== null) {
+						this.activities = {};
 						this.saveActivities(res.body.activities);
 						this.lastActivity = res.body.last_activity;
 						window.dispatchEvent(this.gotActivityEvent);
@@ -570,8 +609,12 @@ class CalendarManager {
 		this.hasLoaded = true;
 	}
 
-	updateActivity() {
-
+	recalculateActivity(id) {
+		processor.postMessage({
+			token: jwt.token,
+			type: 'updateLog',
+			id: id
+		});
 	}
 	removeActivity() {
 

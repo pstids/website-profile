@@ -270,7 +270,6 @@
         </div>
     </template>
     <script>
-    /*global AmCharts*/
     /*jshint camelcase: false */
     Polymer({
         is: 'workout-element',
@@ -293,9 +292,36 @@
                 }
             }
         },
+        addGuide: function (from, to, zone) {
+            console.log(from, to, zone, this.guide, this.chart.categoryAxis);
+            if ('chart' in this) {
+                this.removeGuide();
+                var fromDiff = from.getTime() - this.startTime.getTime();
+                var fromHMS = hmsTime(fromDiff);
+                var toDiff = to.getTime() - this.startTime.getTime();
+                var toHMS = hmsTime(toDiff);
+                this.guide = {
+                    category: fromHMS,
+                    categoryTo: toHMS,
+                    label: zone,
+                    lineColor: '#FFFFFF',
+                    lineAlpha: 0.5,
+                    fillColor: '#FFFFFF',
+                    fillAlpha: 0.3,
+                    dashLength: 0
+                };
+                this.chart.categoryAxis.addGuide(this.guide);
+            }
+        },
+        removeGuide: function () {
+            if ('chart' in this) {
+                this.chart.categoryAxis.removeGuide(this.guide);
+            }
+        },
         ready: function () {
             this.activity = null;
             this.descriptionText = '';
+            this.guide = {};
             this.$.descriptionInput.addEventListener(
                 'blur',
                 () => {
@@ -653,6 +679,11 @@
                 }
             };
         },
+        toggleView: function () {
+            if ('chart' in this && this.chart !== null) {
+                this.chart.handleResize();
+            }
+        },
         setChartData: function (data, activity, activityMetrics) {
             this.setLoading();
 
@@ -765,8 +796,7 @@
                         gridAlpha: 0,
                         gridCount: 0,
                         gridThickness: 0,
-                        /*jshint unused: false */
-                        categoryFunction: (a, d, b) => {
+                        categoryFunction: (a) => {
                             var timeDiff = a.getTime() - this.startTime.getTime();
                             return hmsTime(timeDiff);
                         }
@@ -789,7 +819,7 @@
                 0
             );
 
-            this.chart.addListener('init', (e) => {
+            this.chart.addListener('init', () => {
                 this.removeLoading();
             });
 
