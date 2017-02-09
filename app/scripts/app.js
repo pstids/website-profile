@@ -289,6 +289,15 @@ app.addEventListener('dom-change', () => {
         }
     });
 
+    page('/leaderboard', () => {
+        if (jwt.hasToken) {
+            app.route = 'leaderboard';
+            header.toggleActive('leaderboard');
+        } else {
+            document.location = '/signin';
+        }
+    });
+
     page('/a/:name', (data) => {
         if (jwt.hasToken) {
             console.log(data.params.name);
