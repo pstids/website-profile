@@ -300,7 +300,6 @@ app.addEventListener('dom-change', () => {
 
     page('/a/:name', (data) => {
         if (jwt.hasToken) {
-            console.log(data.params.name);
             calendarManager.loadNew = true;
             calendarManager.setAdmin(data.params.name);
             page('/analysis');

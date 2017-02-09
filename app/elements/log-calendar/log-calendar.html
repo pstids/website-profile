@@ -79,6 +79,10 @@
             this.lastActivity = null;
             this.assembleDOM();
 
+            window.addEventListener('gotActivities', () => {
+                this.callMonth();
+            });
+
             document.addEventListener('keyup', (e) => {
                 if (e.code === 'ArrowLeft') {
                     this.prevMonth();

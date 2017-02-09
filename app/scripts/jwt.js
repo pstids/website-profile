@@ -475,7 +475,6 @@ class CalendarManager {
 		};
 		this.mode = 'admin';
 		this.username = username;
-		this.activities = {};
 		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
 		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/admin/users/${this.username}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
@@ -492,6 +491,7 @@ class CalendarManager {
 						this.lastActivity = res.body.last_activity;
 						window.dispatchEvent(this.gotActivityEvent);
 						this.hasLoadNew = true;
+						this.loadNew = true;
 						if (this.loadNew) {
 							this.loadLast();
 						}
@@ -528,9 +528,9 @@ class CalendarManager {
 		var srtDate = start.format('MM-DD-YYYY');
 		var endDate = end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-		// if (this.mode === 'admin') {
-		//     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-		// }
+		if (this.mode === 'admin') {
+			activityEndPoint = `/b/admin/users/${this.username}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		}
 		superagent
 			.get(activityEndPoint)
 			.send()

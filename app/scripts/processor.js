@@ -788,7 +788,10 @@ var calcMetrics = function (start, end, activityID, userUnit) {
 
     var total = end - start;
 
-    var distance = activity[end-1].distance - activity[start].distance;
+    var distance = 0;
+    if ('distance' in activity[start]) {
+        distance = activity[end-1].distance - activity[start].distance;
+    }
     var milliseconds = activity[end-1].date - activity[start].date;
     var seconds = milliseconds / 1000;
 

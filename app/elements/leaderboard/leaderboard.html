@@ -140,7 +140,8 @@
 		ready: function () {
 			var daily = new Promise(resolve => {
 				superagent
-					.get('/b/internal/leaderboard/1')
+					// .get('/b/internal/leaderboard/1')
+					.get('/powercenter/scripts/daily.json')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer: ${jwt.token}`)
 					.end((err, res) => {
@@ -153,7 +154,8 @@
 			});
 			var weekly = new Promise(resolve => {
 				superagent
-					.get('/b/internal/leaderboard/7')
+					//.get('/b/internal/leaderboard/7')
+					.get('/powercenter/scripts/weekly.json')
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer: ${jwt.token}`)
 					.end((err, res) => {
@@ -166,6 +168,9 @@
 			});
 			Promise.all([daily, weekly])
 				.then(values => {
+					if (values[0] === null || values[1] === null) {
+						return;
+					}
 					var max = 10;
 					if (values[0].user.rank <= 28 || values[1].user.rank <= 28) {
 						max = 8;
