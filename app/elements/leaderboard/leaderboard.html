@@ -4,14 +4,17 @@
 		min-height: 450px;
 		height: 100%;
 		margin: 0;
-		background: #333333;
 		color: #fff;
 	}
-	.leaderboard {
-		width: 50%;
+	.main {
 		background: -webkit-linear-gradient(top, #262626, #1C1C1C);
 		background: linear-gradient(to bottom, #262626, #1C1C1C);
+	}
+	.leaderboard {
+		width: 60%;
+		background: #262626;
 		height: 100%;
+		margin: 0 20%;
 	}
 	.leaderboard h1 {
 		@apply(--layout-horizontal);
@@ -41,27 +44,33 @@
 		position: relative;
 	}
 	.leaderboard:first-child ol li {
-		border-left: 0;
+		/*border-left: 0;*/
+	}
+	.leaderboard ol li:first-child {
+		border-top: solid 1px #4D4D4D;
 	}
 	.leaderboard ol li {
-		border-left: solid 1px orange;
+		/*border-left: solid 1px orange;*/
 		position: relative;
 		z-index: 1;
 		font-size: 14px;
 		counter-increment: leaderboard;
-		padding: 10px 25% 10px 25%;
+		padding: 10px 5% 10px 5%;
 		cursor: pointer;
 		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
 		-webkit-transform: translateZ(0) scale(1, 1);
 		transform: translateZ(0) scale(1, 1);
-		border-top: dashed 1px gray;
-		border-bottom: dashed 1px gray;
+		border: solid 1px #4D4D4D;
+		border-top: 0;
 		height: 57px;
 
 		@apply(--layout-horizontal);
 		@apply(--layout-center);
 		@apply(--layout-center-justified);
+	}
+	.leaderboard ol li:nth-child(odd) {
+		background-color: #1C1C1C;
 	}
 	.leaderboard ol li .count {
 		z-index: 2;
@@ -88,12 +97,22 @@
 		background: none;
 		color: #fff;
 		font-size: 16px;
+		width: 150px;
+	}
+	.leaderboard ol li mark.rank {
+		width: auto;
 	}
 	.leaderboard ol li small {
 		font-size: 16px;
-		flex-grow: 1;
+		flex: 1;
 		text-align: right;
 		margin-right: 1em;
+		opacity: 0.75;
+		color: #FFFFFF;
+	}
+	.leaderboard ol li small.toggle {
+		opacity: 1;
+		font-weight: 700;
 	}
 	.leaderboard ol li.active {
 		background: orange;
@@ -109,35 +128,106 @@
 	}
 	.space {
 		width: 52px;
+		display: block;
 	}
 	iron-icon {
 		width: 12px;
 		height: 12px;
 		padding: 0 10px;
 	}
+	#dialog {
+
+	}
+	#dialog .commit {
+		width: 300px;
+		height: 200px;
+	}
+	#dialog .breakdown {
+		flex: 1;
+		height: 200px;
+	}
+	#dialog .progression {
+		flex: 3;
+		height: 200px;
+	}
+	img {
+		max-width: 100%;
+		height: auto;
+	}
 	</style>
 	<template>
-		<div class="layout horizontal">
+		<div class="layout horizontal main">
 			<div class="leaderboard">
-				<h1>
-					<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/badge.png" alt="Badge">
-					<div>Weekly RSS</div>
-				</h1>
+				<div class="layout horizontal">
+					<h1>
+						<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/badge.png" alt="Badge">
+						<div><span>{{ltitle}}</span> Leaderboard</div>
+					</h1>
+					<div class="layout horizontal center end" style="padding: 2vw">
+						<paper-dropdown-menu class="test-selector" label="My Performance" no-animations>
+							<paper-menu class="dropdown-content" selected="{{selected}}" id="rank">
+								<paper-item>Rank My Training Load</paper-item>
+								<paper-item>Rank My Efficiency</paper-item>
+								<paper-item>Rank My Intensity</paper-item>
+							</paper-menu>
+						</paper-dropdown-menu>
+					</div>
+				</div>
 				<ol data-rss="weekly"></ol>
 			</div>
-			<div class="leaderboard">
+			<!-- <div class="leaderboard">
 				<h1>
 					<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/badge.png" alt="Badge">
 					<div>Daily RSS</div>
 				</h1>
 				<ol data-rss="daily"></ol>
-			</div>
+			</div> -->
 		</div>
+		<paper-dialog id="dialog">
+			<h1>Run Stats for Username</h1>
+			<div class="layout vertical">
+				<div class="commit">
+					<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/commit-chart.png">
+				</div>
+				<div class="layout horizontal">
+					<div class="progression">
+						<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/rss-chart.png">
+					</div>
+					<div class="breakdown">
+						<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/breakdown-chart.png">
+					</div>
+				</div>
+			</div>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Close</paper-button>
+			</div>
+		</paper-dialog>
 	</template>
 	<script>
 	Polymer({
 		is: 'social-leaderboard',
+		listeners: {
+			'tap': 'eleTap'
+		},
+		eleTap: function (e) {
+			var target = e.target;
+			while (true) {
+				if (target === this) {
+					return;
+				} else if ('dataset' in target && target.dataset.entry !== undefined) {
+					console.log('FOUND!', target.dataset.entry);
+					this.$.dialog.open();
+				}
+				if ('parentNode' in target && target.parentNode !== null) {
+					target = target.parentNode;
+				} else {
+					return;
+				}
+			}
+		},
 		ready: function () {
+			this.entries = {};
+			this.ltitle = 'Training Load';
 			var daily = new Promise(resolve => {
 				superagent
 					// .get('/b/internal/leaderboard/1')
@@ -171,27 +261,72 @@
 					if (values[0] === null || values[1] === null) {
 						return;
 					}
+					// sets maximum entries to show after user
 					var max = 10;
 					if (values[0].user.rank <= 28 || values[1].user.rank <= 28) {
 						max = 8;
 					}
-					if (values[0] !== null) {
-						this.processEntries(values[0], 'daily', max);
-					}
 					if (values[1] !== null) {
-						this.processEntries(values[1], 'weekly', max);
+						this.entries = values[1];
+						this.processEntries('weekly', max, 'rss');
 					}
 				});
+			this.selected = 0;
 		},
-		processEntries: function (entries, type, max) {
+		attached: function () {
+			this.$.rank.addEventListener('iron-select', () => {
+				var rank = this.$.rank.selected;
+				var type = 'rss';
+				if (rank === 0) {
+					this.ltitle = 'Training Load';
+					type = 'rss';
+				} else if (rank === 1) {
+					this.ltitle = 'Efficiency';
+					type = 'eff';
+				} else if (rank === 2) {
+					this.ltitle = 'Intensity';
+					type = 'cp';
+				}
+				if (this.entries !== {}) {
+					this.processEntries('weekly', 10, type);
+				}
+			});
+		},
+		processEntries: function (type, max, highlight) {
+			var rssContainer = this.querySelector(`[data-rss="${type}"]`);
+			while (Polymer.dom(rssContainer).firstChild) {
+				Polymer.dom(
+					rssContainer
+				).removeChild(
+					Polymer.dom(
+						rssContainer
+					).firstChild
+				);
+			}
+
+			var entries = this.entries;
 			var i = 0;
 			var entry = {};
 			var active = false;
-			this.addTitle(type, 'top');
+			// Add guide to top
+			this.addTitle(type, 'top', highlight);
+			// Show 10 if user is outside, show 30 if user is inside
 			var iterations = 10;
 			if (entries.user.rank <= 28) {
 				iterations = 30;
 			}
+			// Add user entry to top
+			entry = entries.user;
+			this.addEntry(
+				type,
+				entry.profile,
+				entry.name,
+				entry.stress,
+				entry.rank,
+				true,
+				highlight
+			);
+			// Add top entries
 			for (i = 0; i < iterations; i++) {
 				entry = entries.top[i];
 				active = false;
@@ -204,12 +339,15 @@
 					entry.name,
 					entry.stress,
 					entry.rank,
-					active
+					active,
+					highlight
 				);
 			}
 			
 			if (entries.user.rank > 29) {
+				// Add ellipsis
 				this.addTitle(type, 'mine');
+				// Add top half of mine
 				if (entries.ahead !== null) {
 					for (i = 0; i < entries.ahead.length; i++) {
 						entry = entries.ahead[i];
@@ -219,10 +357,12 @@
 							entry.name,
 							entry.stress,
 							entry.rank,
-							false
+							false,
+							highlight
 						);
 					}
 				}
+				// Add mine
 				entry = entries.user;
 				this.addEntry(
 					type,
@@ -230,8 +370,10 @@
 					entry.name,
 					entry.stress,
 					entry.rank,
-					true
+					true,
+					highlight
 				);
+				// Add bottom half of mine
 				if (entries.behind !== null) {
 					for (i = 0; i < max; i++) {
 						entry = entries.behind[i];
@@ -241,17 +383,20 @@
 							entry.name,
 							entry.stress,
 							entry.rank,
-							false
+							false,
+							highlight
 						);
 					}
 				}
 			}
 		},
-		addEntry: function (type, image, name, stress, order, active) {
+		// Add run entry
+		addEntry: function (type, image, name, stress, order, active, highlight) {
 			var li = document.createElement('li');
 			if (active) {
 				Polymer.dom(li).classList.add('active');
 			}
+			li.dataset.entry = order;
 			var count = document.createElement('div');
 			Polymer.dom(count).classList.add('count');
 			Polymer.dom(count).textContent = ++order;
@@ -263,17 +408,73 @@
 			}
 			var mark = document.createElement('mark');
 			Polymer.dom(mark).textContent = name;
-			var small = document.createElement('small');
-			Polymer.dom(small).textContent = stress.toFixed(0);
+
+			var smallRSS = document.createElement('small');
+			Polymer.dom(smallRSS).textContent = stress.toFixed(0);
+			var smallCP = document.createElement('small');
+			Polymer.dom(smallCP).textContent = '3.75 w/kg';
+			var smallEff = document.createElement('small');
+			Polymer.dom(smallEff).textContent = '75%';
+
+			if (highlight === 'rss') {
+				Polymer.dom(smallRSS).classList.add('toggle');
+			} else if (highlight === 'cp') {
+				Polymer.dom(smallCP).classList.add('toggle');
+			} else if (highlight === 'eff') {
+				Polymer.dom(smallEff).classList.add('toggle');
+			}
 
 			Polymer.dom(li).appendChild(count);
 			Polymer.dom(li).appendChild(img);
 			Polymer.dom(li).appendChild(mark);
-			Polymer.dom(li).appendChild(small);
+			Polymer.dom(li).appendChild(smallRSS);
+			Polymer.dom(li).appendChild(smallEff);
+			Polymer.dom(li).appendChild(smallCP);
 
 			var rssContainer = this.querySelector(`[data-rss="${type}"]`);
 			Polymer.dom(rssContainer).appendChild(li);
 		},
+		// Add title element
+		addTitle: function (type, title, highlight) {
+			var li = document.createElement('li');
+			if (title === 'top') {
+				var count = document.createElement('mark');
+				count.classList.add('rank');
+				Polymer.dom(count).textContent = 'Rank';
+				var space = document.createElement('div');
+				Polymer.dom(space).classList.add('space');
+				var mark = document.createElement('mark');
+				Polymer.dom(mark).textContent = 'Username';
+
+				var smallRSS = document.createElement('small');
+				Polymer.dom(smallRSS).textContent = 'RSS';
+				var smallCP = document.createElement('small');
+				Polymer.dom(smallCP).textContent = 'Critical Power';
+				var smallEff = document.createElement('small');
+				Polymer.dom(smallEff).textContent = 'Efficiency';
+
+				if (highlight === 'rss') {
+					Polymer.dom(smallRSS).classList.add('toggle');
+				} else if (highlight === 'cp') {
+					Polymer.dom(smallCP).classList.add('toggle');
+				} else if (highlight === 'eff') {
+					Polymer.dom(smallEff).classList.add('toggle');
+				}
+
+				Polymer.dom(li).appendChild(count);
+				Polymer.dom(li).appendChild(space);
+				Polymer.dom(li).appendChild(mark);
+				Polymer.dom(li).appendChild(smallRSS);
+				Polymer.dom(li).appendChild(smallEff);
+				Polymer.dom(li).appendChild(smallCP);
+
+				var rssContainer = this.querySelector(`[data-rss="${type}"]`);
+				Polymer.dom(rssContainer).appendChild(li);
+			} else {
+				this.addBridge(type);
+			}
+		},
+		// Add ellipsis
 		addBridge: function (type) {
 			var li = document.createElement('li');
 			var icon1 = document.createElement('iron-icon');
@@ -289,29 +490,6 @@
 
 			var rssContainer = this.querySelector(`[data-rss="${type}"]`);
 			Polymer.dom(rssContainer).appendChild(li);
-		},
-		addTitle: function (type, title) {
-			var li = document.createElement('li');
-			if (title === 'top') {
-				var count = document.createElement('mark');
-				Polymer.dom(count).textContent = 'Rank';
-				var space = document.createElement('div');
-				Polymer.dom(space).classList.add('space');
-				var mark = document.createElement('mark');
-				Polymer.dom(mark).textContent = 'Username';
-				var small = document.createElement('small');
-				Polymer.dom(small).textContent = 'RSS';
-
-				Polymer.dom(li).appendChild(count);
-				Polymer.dom(li).appendChild(space);
-				Polymer.dom(li).appendChild(mark);
-				Polymer.dom(li).appendChild(small);
-
-				var rssContainer = this.querySelector(`[data-rss="${type}"]`);
-				Polymer.dom(rssContainer).appendChild(li);
-			} else {
-				this.addBridge(type);
-			}
 		}
 	});
 	</script>
