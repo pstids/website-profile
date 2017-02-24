@@ -72,6 +72,7 @@ gulp.task('jshint', function () {
         'colorInterpolate',
         'd3',
         'durationToSec',
+        'ga',
         'google',
         'hmsTime',
         'hrTime',

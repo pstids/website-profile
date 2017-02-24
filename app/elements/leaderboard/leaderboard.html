@@ -6,15 +6,23 @@
 		margin: 0;
 		color: #fff;
 	}
+
 	.main {
 		background: -webkit-linear-gradient(top, #262626, #1C1C1C);
 		background: linear-gradient(to bottom, #262626, #1C1C1C);
 	}
+
+	iron-icon {
+		width: 12px;
+		height: 12px;
+		padding: 0 10px;
+	}
+
 	.leaderboard {
-		width: 60%;
+		width: 26%;
 		background: #262626;
 		height: 100%;
-		margin: 0 20%;
+		margin: 0 0 0 5.5%;
 	}
 	.leaderboard h1 {
 		@apply(--layout-horizontal);
@@ -25,6 +33,7 @@
 		color: #F5A214;
 		font-weight: 800;
 		margin: 15px;
+		line-height: 70px;
 	}
 	.leaderboard h1 img {
 		height: 80px;
@@ -42,12 +51,6 @@
 		margin: 0;
 		height: 100%;
 		position: relative;
-	}
-	.leaderboard:first-child ol li {
-		/*border-left: 0;*/
-	}
-	.leaderboard ol li:first-child {
-		border-top: solid 1px #4D4D4D;
 	}
 	.leaderboard ol li {
 		/*border-left: solid 1px orange;*/
@@ -69,8 +72,23 @@
 		@apply(--layout-center);
 		@apply(--layout-center-justified);
 	}
+	.leaderboard ol li:first-child {
+		border-top: solid 1px #4D4D4D;
+	}
 	.leaderboard ol li:nth-child(odd) {
 		background-color: #1C1C1C;
+	}
+	.leaderboard ol li.active {
+		background: orange;
+	}
+	.leaderboard ol li.active .count {
+		color: #1F1F1F;
+	}
+	.leaderboard ol li.active mark {
+		color: #1F1F1F;
+	}
+	.leaderboard ol li.active small {
+		color: #1F1F1F;
 	}
 	.leaderboard ol li .count {
 		z-index: 2;
@@ -83,6 +101,26 @@
 		font-weight: 800;
 		border-radius: 20px;
 		text-align: center;
+		margin-right: 13px;
+		margin-left: 12px;
+	}
+	.leaderboard ol li .count.award {
+		background-color: rgba(0, 0, 0, 0);
+		background-size: 50px 50px;
+		width: 50px;
+		height: 50px;
+		margin-right: 0;
+		margin-left: 0;
+		border-radius: 0;
+	}
+	.leaderboard ol li .count.first {
+		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-gold.png);
+	}
+	.leaderboard ol li .count.second {
+		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-silver.png);
+	}
+	.leaderboard ol li .count.third {
+		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-bronze.png);
 	}
 	.leaderboard ol li img {
 		display: inline;
@@ -91,6 +129,8 @@
 		border-radius: 50%;
 		margin-right: 1em;
 		margin-left: 1em;
+		background-color: #1C1C1C;
+		max-width: 100%;
 	}
 	.leaderboard ol li mark {
 		margin: 0;
@@ -107,99 +147,209 @@
 		flex: 1;
 		text-align: right;
 		margin-right: 1em;
-		opacity: 0.75;
+		opacity: 1;
 		color: #FFFFFF;
 	}
-	.leaderboard ol li small.toggle {
-		opacity: 1;
-		font-weight: 700;
-	}
-	.leaderboard ol li.active {
-		background: orange;
-	}
-	.leaderboard ol li.active .count {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li.active mark {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li.active small {
-		color: #1F1F1F;
-	}
+
 	.space {
-		width: 52px;
+		width: 75px;
 		display: block;
 	}
-	iron-icon {
-		width: 12px;
-		height: 12px;
-		padding: 0 10px;
-	}
-	#dialog {
 
-	}
 	#dialog .commit {
-		width: 300px;
-		height: 200px;
+		@apply(--layout);
+		@apply(--layout-horizontal);
 	}
 	#dialog .breakdown {
-		flex: 1;
-		height: 200px;
+		@apply(--layout-flex);
+		@apply(--layout);
+		@apply(--layout-vertical);
 	}
 	#dialog .progression {
-		flex: 3;
-		height: 200px;
+		@apply(--layout-flex-3);
+		@apply(--layout);
+		@apply(--layout-vertical);
 	}
-	img {
-		max-width: 100%;
-		height: auto;
+
+	.tile {
+		width: 18px;
+		height: 18px;
+		margin: 2px;
+		color: white;
+		background: white;
+	}
+	.tile.active {
+		color: orange;
+		background: orange;
+	}
+	.tile-day {
+		font-size: 16px;
+		line-height: 18px;
+		color: white;
+		margin: 2px 5px 2px 2px;
+		text-align: right;
+	}
+
+	.top {
+		background-color: #222222;
+		border-bottom: 1px solid #4D4D4D;
+	}
+	.tops {
+		border: 1px solid #4D4D4D;
+		flex: 1;
+	}
+	.raindrop {
+		flex: 0 1;
+		border-left: 1px solid #4D4D4D;
+		@apply(--layout);
+		@apply(--layout-end-justified);
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+	.stats {
+		padding: 0 20px;
+	}
+	.stat .sub {
+		color: #A4A4A4;
+	}
+	.stat .values {
+		@apply(--layout-flex);
+	}
+	.stat .values .value {
+		@apply(--layout-flex);
+		justify-content: center;
+		align-items: center;
+	}
+	.stat h2 {
+		margin: 0;
+		color: white;
+		font-size: 30px;
+	}
+	.stat h2 .unit {
+		margin-top: 10px;
+		font-size: 16px;
+	}
+	.buttons {
+		padding-left: 8px;
+	}
+
+	.prompt {
+		margin: 2% 5.5%;
+	}
+	.prompt h1 span {
+		color: orange;
+	}
+	.prompt ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.prompt ul li {
+		margin: 20px 0;
+	}
+	.prompt p {
+		font-size: 18px;
+		line-height: 28px;
+	}
+
+	.dialog-container {
+		padding: 0;
+		margin: 0;
+	}
+	.dialog-container .bottom {
+		border: 1px solid #4D4D4D;
+		border-top: 0;
+		padding: 0 20px;
+	}
+	.dialog-container .frequency {
+		padding-top: 20px;
 	}
 	</style>
 	<template>
+		<div class="layout vertical tops hidden prompt" id="crit">
+			<div class="layout horizontal top">
+				<div class="title flex">
+					<h1 class="bold"><span>Get To The Top</span> - Add Your Critical Power</h1>
+				</div>
+			</div>
+			<div class="layout vertical stats">
+				<p>Critical power is the key metric that lets you compare your training against ther rest of the Stryd Community. You can figure out your critical power in just a few easy steps. This lets you get in the competition and hone in your training more than ever before.</p>
+				<ul>
+					<li>1. Visit the 'Settings' tab at the top of the page.</li>
+					<li>2. Click on 'Zone Settings' in the left navigation.</li>
+					<li>3. Look at the 'Critical Power Test' header. Select '5K estimation' or '10K estimation'.</li>
+					<li>4. Enter your 5K or 10K time and click on 'Calculate'.</li>
+					<li>5. Now, you have a critical power. All of your future activities will have RSS from now on.</li>
+				</ul>
+			</div>
+		</div>
 		<div class="layout horizontal main">
 			<div class="leaderboard">
-				<div class="layout horizontal">
-					<h1>
-						<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/badge.png" alt="Badge">
-						<div><span>{{ltitle}}</span> Leaderboard</div>
-					</h1>
-					<div class="layout horizontal center end" style="padding: 2vw">
-						<paper-dropdown-menu class="test-selector" label="My Performance" no-animations>
-							<paper-menu class="dropdown-content" selected="{{selected}}" id="rank">
-								<paper-item>Rank My Training Load</paper-item>
-								<paper-item>Rank My Efficiency</paper-item>
-								<paper-item>Rank My Intensity</paper-item>
-							</paper-menu>
-						</paper-dropdown-menu>
-					</div>
-				</div>
-				<ol data-rss="weekly"></ol>
+				<h1>I Am Dedicated</h1>
+				<ol data-leaderboard="rss"></ol>
 			</div>
-			<!-- <div class="leaderboard">
-				<h1>
-					<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/badge.png" alt="Badge">
-					<div>Daily RSS</div>
-				</h1>
-				<ol data-rss="daily"></ol>
-			</div> -->
+			<div class="leaderboard">
+				<h1>I Am Powerful</h1>
+				<ol data-leaderboard="cp"></ol>
+			</div>
+			<div class="leaderboard">
+				<h1>I Am Active</h1>
+				<ol data-leaderboard="eff"></ol>
+			</div>
 		</div>
 		<paper-dialog id="dialog">
-			<h1>Run Stats for Username</h1>
-			<div class="layout vertical">
-				<div class="commit">
-					<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/commit-chart.png">
-				</div>
-				<div class="layout horizontal">
-					<div class="progression">
-						<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/rss-chart.png">
+			<div class="layout vertical dialog-container">
+				<div class="layout vertical tops">
+					<div class="layout horizontal top">
+						<div class="title flex">
+							<h1 class="bold">Last 12 Week Statistics for <span>{{statUsername}}</span></h1>
+						</div>
+						<div class="raindrop">
+							<div class="buttons">
+								<paper-button dialog-dismiss>Close</paper-button>
+							</div>
+						</div>
 					</div>
-					<div class="breakdown">
-						<img src="https://storage.googleapis.com/stryd_static_assets/powercenter/breakdown-chart.png">
+					<div class="layout horizontal stats">
+						<div class="layout horizontal stat flex-3">
+							<div class="layout vertical values">
+								<div class="layout vertical value">
+									<h2><span class="value">{{statRSS}}</span></h2>
+									<span class="sub">RSS Total</span>
+								</div>
+								<div class="layout vertical value">
+									<h2><span class="value">{{statTime}}</span> <span class="unit"></span></h2>
+									<span class="sub">Time</span>
+								</div>
+							</div>
+							<div class="layout vertical values">
+								<div class="layout vertical value">
+									<h2><span class="value">{{statPower}}</span> <span class="unit">Watts</span></h2>
+									<span class="sub">Critical Power</span>
+								</div>
+								<div class="layout vertical value">
+									<h2><span class="value">{{statDistance}}</span> <span class="unit">mi</span></h2>
+									<span class="sub">Distance</span>
+								</div>
+							</div>
+						</div>
+						<div class="breakdown flex">
+							<svg id="tiz242"></svg>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="buttons">
-				<paper-button dialog-dismiss>Close</paper-button>
+				<div class="layout horizontal bottom">
+					<div class="progression flex-3">
+						<svg id="stress2"></svg>
+					</div>
+					<div class="layout vertical flex">
+						<h2 class="frequency">Run Frequency</h2>
+						<div class="layout vertical flex center-justified">
+							<div class="commit" id="commit"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</paper-dialog>
 	</template>
@@ -214,9 +364,8 @@
 			while (true) {
 				if (target === this) {
 					return;
-				} else if ('dataset' in target && target.dataset.entry !== undefined) {
-					console.log('FOUND!', target.dataset.entry);
-					this.$.dialog.open();
+				} else if ('dataset' in target && target.dataset.user !== undefined) {
+					this.fetchUserData(target.dataset.user);
 				}
 				if ('parentNode' in target && target.parentNode !== null) {
 					target = target.parentNode;
@@ -225,75 +374,145 @@
 				}
 			}
 		},
+		fetchUserData: function (username) {
+			var srtDate = moment().subtract(12, 'weeks').format('MM-DD-YYYY');
+			var endDate = moment().add(2, 'days').format('MM-DD-YYYY');
+			this.statUsername = username;
+			var path = `/b/api/v1/activities/${username}/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+			if (location.host === 'stryd.dev:8080') {
+				path = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+			}
+			superagent
+				.get(path)
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res.ok) {
+						this.processUserData(res.body.activities);
+					} else {
+						console.log(err);
+					}
+				});
+		},
+		processUserData: function (activities) {
+			var rss = 0, time = 0, max_power = 0, distance = 0;
+			var frequency = {};
+			var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], names = [], tiz = [0, 0, 0, 0, 0];
+			for (var activity of activities) {
+				rss += +activity.stress;
+				time += +activity.elapsed_time;
+				distance += +activity.distance;
+
+				if (activity.seconds_in_zones !== null) {
+					for (var o = 0; o < 5; o++) {
+						tiz[o] += activity.seconds_in_zones[o];
+					}
+				}
+
+				var actTime = moment(activity.timestamp * 1000);
+				frequency[actTime.format('YYYYMMDD')] = true;
+
+				var diffWeeks = moment().diff(actTime, 'weeks');
+				weeks[11-diffWeeks] += +activity.stress;
+			}
+
+			max_power = activities[activities.length-1].ftp;
+			for (var p = 12; p > 0; p--) {
+				names.push(moment().subtract(p, 'weeks').format('MMM Do'));
+			}
+			this.statRSS = rss.toFixed(0);
+			this.statDistance = unit.distanceValue(distance, user.data.units).toFixed(0);
+			this.statTime = secToDuration(time);
+			this.statPower = max_power.toFixed(1);
+
+			this.createTIZ(tiz);
+			this.createCommitChart(frequency);
+			this.createRSSProgression(weeks, names);
+			this.$.dialog.open();
+		},
+		checkHasCP: function () {
+            superagent
+                .get('/b/api/v1/training')
+                .set('Accept', 'application/json')
+                .set('Authorization', `Bearer: ${jwt.token}`)
+                .end((err, res) => {
+                    if (res.ok) {
+                    	if (res.body.critical_power < 1) {
+                    		this.$.crit.classList.remove('hidden');
+                    	}
+                    } else {
+                    	console.log(err);
+                    }
+                });
+		},
+		callPath: function (path, resolve) {
+			superagent
+				.get(path)
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res.ok) {
+						resolve(res.body);
+					} else {
+						resolve(null);
+					}
+				});
+		},
 		ready: function () {
+			this.statRSS = 0;
+			this.statDistance = 0;
+			this.statTime = 0;
+			this.statPower = 0;
+			this.statUsername = '';
+
+			this.checkHasCP();
+
 			this.entries = {};
 			this.ltitle = 'Training Load';
-			var daily = new Promise(resolve => {
-				superagent
-					// .get('/b/internal/leaderboard/1')
-					.get('/powercenter/scripts/daily.json')
-					.set('Accept', 'application/json')
-					.set('Authorization', `Bearer: ${jwt.token}`)
-					.end((err, res) => {
-						if (res.ok) {
-							resolve(res.body);
-						} else {
-							resolve(null);
-						}
-					});
+			var stress = new Promise(resolve => {
+				var path = '/b/internal/leaderboard/7';
+				if (location.host === 'stryd.dev:8080') {
+					path = '/powercenter/scripts/weekly.json';
+				}
+				this.callPath(path, resolve);
 			});
-			var weekly = new Promise(resolve => {
-				superagent
-					//.get('/b/internal/leaderboard/7')
-					.get('/powercenter/scripts/weekly.json')
-					.set('Accept', 'application/json')
-					.set('Authorization', `Bearer: ${jwt.token}`)
-					.end((err, res) => {
-						if (res.ok) {
-							resolve(res.body);
-						} else {
-							resolve(null);
-						}
-					});
+			var today = new Promise(resolve => {
+				var path = '/b/internal/leaderboard/1';
+				if (location.host === 'stryd.dev:8080') {
+					path = '/powercenter/scripts/weekly.json';
+				}
+				this.callPath(path, resolve);
 			});
-			Promise.all([daily, weekly])
+			var cp = new Promise(resolve => {
+				var path = '/b/internal/leaderboard/cp';
+				if (location.host === 'stryd.dev:8080') {
+					path = '/powercenter/scripts/daily.json';
+				}
+				this.callPath(path, resolve);
+			});
+			Promise.all([stress, cp, today])
 				.then(values => {
-					if (values[0] === null || values[1] === null) {
+					if (values.indexOf(null) !== -1) {
 						return;
 					}
 					// sets maximum entries to show after user
-					var max = 10;
-					if (values[0].user.rank <= 28 || values[1].user.rank <= 28) {
-						max = 8;
+					var max = 5;
+					if (values[0].user.rank <= 28 || values[1].user.rank <= 28 || values[2].user.rank <= 28) {
+						max = 5;
+					}
+					if (values[0] !== null) {
+						this.processEntries(max, 'rss', values[0]);
 					}
 					if (values[1] !== null) {
-						this.entries = values[1];
-						this.processEntries('weekly', max, 'rss');
+						this.processEntries(max, 'cp', values[1]);
+					}
+					if (values[2] !== null) {
+						this.processEntries(max, 'eff', values[2]);
 					}
 				});
-			this.selected = 0;
 		},
-		attached: function () {
-			this.$.rank.addEventListener('iron-select', () => {
-				var rank = this.$.rank.selected;
-				var type = 'rss';
-				if (rank === 0) {
-					this.ltitle = 'Training Load';
-					type = 'rss';
-				} else if (rank === 1) {
-					this.ltitle = 'Efficiency';
-					type = 'eff';
-				} else if (rank === 2) {
-					this.ltitle = 'Intensity';
-					type = 'cp';
-				}
-				if (this.entries !== {}) {
-					this.processEntries('weekly', 10, type);
-				}
-			});
-		},
-		processEntries: function (type, max, highlight) {
-			var rssContainer = this.querySelector(`[data-rss="${type}"]`);
+		processEntries: function (max, highlight, entries) {
+			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
 			while (Polymer.dom(rssContainer).firstChild) {
 				Polymer.dom(
 					rssContainer
@@ -304,28 +523,16 @@
 				);
 			}
 
-			var entries = this.entries;
 			var i = 0;
 			var entry = {};
 			var active = false;
 			// Add guide to top
-			this.addTitle(type, 'top', highlight);
+			this.addTitle('top', highlight);
 			// Show 10 if user is outside, show 30 if user is inside
-			var iterations = 10;
+			var iterations = 5;
 			if (entries.user.rank <= 28) {
-				iterations = 30;
+				iterations = 17;
 			}
-			// Add user entry to top
-			entry = entries.user;
-			this.addEntry(
-				type,
-				entry.profile,
-				entry.name,
-				entry.stress,
-				entry.rank,
-				true,
-				highlight
-			);
 			// Add top entries
 			for (i = 0; i < iterations; i++) {
 				entry = entries.top[i];
@@ -334,10 +541,9 @@
 					active = true;
 				}
 				this.addEntry(
-					type,
 					entry.profile,
 					entry.name,
-					entry.stress,
+					entry,
 					entry.rank,
 					active,
 					highlight
@@ -346,16 +552,15 @@
 			
 			if (entries.user.rank > 29) {
 				// Add ellipsis
-				this.addTitle(type, 'mine');
+				this.addTitle('mine', highlight);
 				// Add top half of mine
 				if (entries.ahead !== null) {
-					for (i = 0; i < entries.ahead.length; i++) {
+					for (i = 0; i < 5; i++) {
 						entry = entries.ahead[i];
 						this.addEntry(
-							type,
 							entry.profile,
 							entry.name,
-							entry.stress,
+							entry,
 							entry.rank,
 							false,
 							highlight
@@ -365,10 +570,9 @@
 				// Add mine
 				entry = entries.user;
 				this.addEntry(
-					type,
 					entry.profile,
 					entry.name,
-					entry.stress,
+					entry,
 					entry.rank,
 					true,
 					highlight
@@ -378,10 +582,9 @@
 					for (i = 0; i < max; i++) {
 						entry = entries.behind[i];
 						this.addEntry(
-							type,
 							entry.profile,
 							entry.name,
-							entry.stress,
+							entry,
 							entry.rank,
 							false,
 							highlight
@@ -391,91 +594,92 @@
 			}
 		},
 		// Add run entry
-		addEntry: function (type, image, name, stress, order, active, highlight) {
+		addEntry: function (image, name, entry, order, active, highlight) {
 			var li = document.createElement('li');
 			if (active) {
 				Polymer.dom(li).classList.add('active');
 			}
-			li.dataset.entry = order;
+			li.dataset.user = name;
+
 			var count = document.createElement('div');
 			Polymer.dom(count).classList.add('count');
-			Polymer.dom(count).textContent = ++order;
+			if (order <= 2) {
+				Polymer.dom(count).classList.add('award');
+				if (order === 0) {
+					Polymer.dom(count).classList.add('first');
+				} else if (order === 1) {
+					Polymer.dom(count).classList.add('second');
+				} else if (order === 2) {
+					Polymer.dom(count).classList.add('third');
+				}
+			} else {
+				Polymer.dom(count).textContent = ++order;
+			}
+
 			var img = document.createElement('img');
 			if (image === '') {
 				img.src = 'https://www.stryd.com/powercenter/images/favicon.png';
 			} else {
 				img.src = image;
 			}
+
 			var mark = document.createElement('mark');
 			Polymer.dom(mark).textContent = name;
-
-			var smallRSS = document.createElement('small');
-			Polymer.dom(smallRSS).textContent = stress.toFixed(0);
-			var smallCP = document.createElement('small');
-			Polymer.dom(smallCP).textContent = '3.75 w/kg';
-			var smallEff = document.createElement('small');
-			Polymer.dom(smallEff).textContent = '75%';
-
-			if (highlight === 'rss') {
-				Polymer.dom(smallRSS).classList.add('toggle');
-			} else if (highlight === 'cp') {
-				Polymer.dom(smallCP).classList.add('toggle');
-			} else if (highlight === 'eff') {
-				Polymer.dom(smallEff).classList.add('toggle');
-			}
 
 			Polymer.dom(li).appendChild(count);
 			Polymer.dom(li).appendChild(img);
 			Polymer.dom(li).appendChild(mark);
-			Polymer.dom(li).appendChild(smallRSS);
-			Polymer.dom(li).appendChild(smallEff);
-			Polymer.dom(li).appendChild(smallCP);
 
-			var rssContainer = this.querySelector(`[data-rss="${type}"]`);
+			var small = document.createElement('small');
+			if (highlight === 'rss') {
+				Polymer.dom(small).textContent = entry.stress.toFixed(1);
+			} else if (highlight === 'cp') {
+				Polymer.dom(small).textContent = entry.critical_power.toFixed(1);
+			} else if (highlight === 'eff') {
+				Polymer.dom(small).textContent = entry.stress.toFixed(1);
+			}
+			Polymer.dom(li).appendChild(small);
+
+			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
 			Polymer.dom(rssContainer).appendChild(li);
 		},
 		// Add title element
-		addTitle: function (type, title, highlight) {
-			var li = document.createElement('li');
+		addTitle: function (title, highlight) {
 			if (title === 'top') {
+				var li = document.createElement('li');
+
 				var count = document.createElement('mark');
 				count.classList.add('rank');
 				Polymer.dom(count).textContent = 'Rank';
+
 				var space = document.createElement('div');
 				Polymer.dom(space).classList.add('space');
+
 				var mark = document.createElement('mark');
 				Polymer.dom(mark).textContent = 'Username';
-
-				var smallRSS = document.createElement('small');
-				Polymer.dom(smallRSS).textContent = 'RSS';
-				var smallCP = document.createElement('small');
-				Polymer.dom(smallCP).textContent = 'Critical Power';
-				var smallEff = document.createElement('small');
-				Polymer.dom(smallEff).textContent = 'Efficiency';
-
-				if (highlight === 'rss') {
-					Polymer.dom(smallRSS).classList.add('toggle');
-				} else if (highlight === 'cp') {
-					Polymer.dom(smallCP).classList.add('toggle');
-				} else if (highlight === 'eff') {
-					Polymer.dom(smallEff).classList.add('toggle');
-				}
 
 				Polymer.dom(li).appendChild(count);
 				Polymer.dom(li).appendChild(space);
 				Polymer.dom(li).appendChild(mark);
-				Polymer.dom(li).appendChild(smallRSS);
-				Polymer.dom(li).appendChild(smallEff);
-				Polymer.dom(li).appendChild(smallCP);
 
-				var rssContainer = this.querySelector(`[data-rss="${type}"]`);
+				var small = document.createElement('small');
+				if (highlight === 'rss') {
+					Polymer.dom(small).textContent = 'Weekly RSS';
+				} else if (highlight === 'cp') {
+					Polymer.dom(small).textContent = 'Critical Power (w/kg)';
+				} else if (highlight === 'eff') {
+					Polymer.dom(small).textContent = 'Daily RSS';
+				}
+				Polymer.dom(li).appendChild(small);
+
+				var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
 				Polymer.dom(rssContainer).appendChild(li);
 			} else {
-				this.addBridge(type);
+				this.addBridge(highlight);
 			}
 		},
 		// Add ellipsis
-		addBridge: function (type) {
+		addBridge: function (highlight) {
 			var li = document.createElement('li');
 			var icon1 = document.createElement('iron-icon');
 			Polymer.dom(icon1).setAttribute('icon', 'image:brightness-1');
@@ -488,8 +692,260 @@
 			Polymer.dom(li).appendChild(icon2);
 			Polymer.dom(li).appendChild(icon3);
 
-			var rssContainer = this.querySelector(`[data-rss="${type}"]`);
+			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
 			Polymer.dom(rssContainer).appendChild(li);
+		},
+		createCommitChart: function (data) {
+			// clear old
+			while (Polymer.dom(this.$.commit).firstChild) {
+				Polymer.dom(
+					this.$.commit
+				).removeChild(
+					Polymer.dom(
+						this.$.commit
+					).firstChild
+				);
+			}
+			// seperate out activities for simple picking
+			var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+			var daysDiv = document.createElement('div');
+			Polymer.dom(daysDiv).classList.add('layout', 'vertical');
+			for (var day of days) {
+				var innerDay = document.createElement('div');
+				Polymer.dom(innerDay).classList.add('tile-day');
+				Polymer.dom(innerDay).textContent = day;
+				Polymer.dom(daysDiv).appendChild(innerDay);
+			}
+			Polymer.dom(this.$.commit).appendChild(daysDiv);
+			// create chart
+			var moving = moment().subtract(12, 'weeks');
+			for (var i = 0; i < 12; i++) {
+				var div = document.createElement('div');
+				Polymer.dom(div).classList.add('layout', 'vertical');
+				for (var o = 0; o < 7; o++) {
+					var innerDiv = document.createElement('div');
+					Polymer.dom(innerDiv).classList.add('tile');
+					if (moving.format('YYYYMMDD') in data) {
+						Polymer.dom(innerDiv).classList.add('active');
+					}
+					Polymer.dom(div).appendChild(innerDiv);
+					moving.add(1, 'days');
+				}
+				Polymer.dom(this.$.commit).appendChild(div);
+			}
+		},
+		createRSSProgression: function (data, days) {
+			var width = 760;
+			var height = 250;
+			var mColor = '#f7a017';
+
+			var graph = d3.select('#stress2')
+				.attr('width', width + 100)
+				.attr('height', height + 100);
+
+			graph.append('svg:g')
+				.attr('id', 'barchart2')
+				.attr('transform', 'translate(50, 50)');
+
+			//remove function & process data
+			var max = d3.max(data) + 10;
+
+			var x = d3.scale.ordinal()
+				.domain(d3.range(data.length))
+				.range([0, width])
+				.rangeBands([0, width], 0.3);
+
+			var y = d3.scale.linear()
+				.domain([0, max])
+				.range([height, 0]);
+
+			var xAxis = d3.svg.axis()
+				.scale(x)
+				.tickSize(1)
+				.tickPadding(10)
+				.orient('bottom')
+				.innerTickSize(-height)
+				.outerTickSize(0)
+				.tickFormat((idx) => {
+					return days[idx];
+				});
+
+			var yAxis = d3.svg.axis()
+				.scale(y)
+				.tickSize(1)
+				.tickPadding(10)
+				.tickFormat(d3.format('.0f'))
+				.orient('left')
+				.innerTickSize(-width)
+				.outerTickSize(0);
+
+			d3.selectAll('.d3-tip')
+				.remove();
+			
+			var tip = d3.tip()
+				.attr('class', 'd3-tip')
+				.offset([-10, 0])
+				.html((d) => {
+					return `<div class="float-tag">Stress</div><div class="float-value">${+d} RSS</div>`;
+				});
+
+			var vis = d3.select('#barchart2');
+			vis.call(tip);
+
+			d3.selectAll('.axis').remove();
+
+			vis.insert('g', ':first-child')
+				.attr('class', 'x axis')
+				.attr('transform', `translate(0, ${height})`)
+				.call(xAxis)
+				.attr('opacity', 1)
+				.attr('fill', '#2d2d2d')
+				.attr('stroke', '#2d2d2d')
+				.attr('stroke-width', 0)
+				.selectAll('text')
+					.attr('opacity', 1)
+					.attr('fill', '#FFFFFF')
+					.attr('stroke-width',0)
+					.attr('transform', 'rotate(0)')
+					.style('text-anchor', 'middle');
+
+			vis.insert('g', ':first-child')
+				.attr('class', 'y axis')
+				.call(yAxis)
+				.attr('stroke-width', 1)
+				.attr('stroke', '#2d2d2d')
+				.attr('fill', '#2d2d2d')
+				.attr('opacity', 1)
+				.append('text')
+					.attr('y', -10)
+					.text('RSS Load Over Time')
+					.attr('stroke-width', 1)
+					.attr('color', '#FFFFFF')
+					.attr('font-size', '20px')
+					.attr('font-family', 'Roboto')
+					.attr('stroke', '#FFFFFF')
+					.attr('font-weight', 500)
+					.attr('fill', '#FFFFFF');
+
+			vis.select('.y.axis').selectAll('text')
+				.attr('stroke', '#FFFFFF')
+				.attr('fill', '#FFFFFF')
+				.attr('color', '#FFFFFF');
+
+			var bars = vis.selectAll('.bar')
+				.data(data);
+
+			//update
+			bars.attr('fill', mColor)
+				.attr('stroke', '#050');
+
+			bars.enter()
+				.append('svg:rect')
+				.attr('class', 'bar')
+				.attr('fill', mColor)
+				.attr('opacity', 0.8);
+
+			bars.exit()
+				.attr('fill', mColor)
+				.transition()
+				.duration(300)
+				.ease('square')
+				.attr('transform', () => {
+					return 'translate(100, 0)';
+				})
+				.remove();
+
+			bars.transition()
+				.duration(300)
+				.ease('square')
+				.attr('width', x.rangeBand())
+				.attr('height', (d) => {
+					return height - y(d);
+				})
+				/* unused: d */
+				.attr('x', (d, i) => {
+					return 2*(x(i) - x(3));
+				})
+				.attr('y', (d) => {
+					return y(d);
+				})
+				/* unused: d */
+				.attr('transform', (d, i) => {
+					var first = -x(i)+2*x(3);
+					return `translate(${first}, 0)`;
+				});
+		},
+		createTIZ: function (zones) {
+			var data = [];
+			var total = 0;
+			if (zones !== null) {
+				total = zones.reduce((a, b) => {
+					return a + b;
+				}, 0);
+			}
+			for (var i = 0; i < zones.length; i++) {
+				var tiz = zones[i];
+				data.push({
+					zone: i+1,
+					tiz: tiz,
+					percentage: tiz/total
+				});
+			}
+			var width = 330, height = 200, radius = 110;
+			var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
+			var arc = d3.svg.arc()
+				.outerRadius(radius-40)
+				.innerRadius(radius-60);
+			var pie = d3.layout.pie()
+				.sort(null)
+				.value((d) => {
+					return d.tiz;
+				});
+			d3.select('#tiz242')
+				.selectAll('*')
+				.remove();
+			var svg = d3.select('#tiz242')
+				.attr('width', width)
+				.attr('height', height)
+				.append('g')
+					.attr('transform', `translate(${radius}, ${radius})`);
+			var g = svg.selectAll('.arc')
+				.data(pie(data))
+				.enter()
+				.append('g')
+					.attr('class', 'arc');
+			g.append('path')
+				.attr('d', arc)
+				.style('fill', (d) => {
+					return color(d.data.zone);
+				});
+			g.append('rect')
+				.attr('width', 20)
+				.attr('height', 20)
+				.attr('transform', (d) => {
+					return `translate(${radius}, ${d.data.zone*25-radius+15})`;
+				})
+				.attr('fill', (d) => {
+					return color(d.data.zone);
+				});
+			g.append('text')
+				.attr('transform', (d) => {
+					return `translate(${radius+25}, ${d.data.zone*25-radius+30})`;
+				})
+				.style('text-anchor', 'start')
+				.attr('font-size', 16)
+				.text((d) => {
+					var percentage = (d.data.percentage * 100).toFixed(0);
+					return `Z${d.data.zone} ${percentage}%`;
+				});
+			svg.append('text')
+				.attr('x', 0)
+				.attr('y', 10)
+				.attr('font-size', 20)
+				.attr('font-weight', '400')
+				.attr('fill', '#FFFFFF')
+				.style('text-anchor', 'middle')
+				.text('ZONES');
 		}
 	});
 	</script>

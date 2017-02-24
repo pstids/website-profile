@@ -42,7 +42,6 @@ header-element, footer-element {
 }
 
 .uploader {
-  background-color: #262626;
   color: white;
   padding: 4vw;
 
@@ -231,4 +230,10 @@ a[href="https://www.google.com/intl/en-US_US/help/terms_maps.html"] {
 .arc path {
   stroke: orange;
   color: white;
+}
+
+[data-route="connect"] {
+  background: -webkit-linear-gradient(#262626, #1C1C1C);
+  background: -o-linear-gradient(#262626, #1C1C1C);
+  background: linear-gradient(#262626, #1C1C1C);
 }

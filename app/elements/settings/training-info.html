@@ -447,22 +447,30 @@
                 lapTestResult: {
                     type: Object,
                     notify: true,
-                    value: function() { return {}; }
+                    value: function () {
+                        return {};
+                    }
                 },
                 minuteTestResult: {
                     type: Object,
                     notify: true,
-                    value: function() { return {}; }
+                    value: function () {
+                        return {};
+                    }
                 },
                 distanceTestResult: {
                     type: Object,
                     notify: true,
-                    value: function() { return {}; }
+                    value: function () {
+                        return {};
+                    }
                 },
                 customTestResult: {
                     type: Object,
                     notify: true,
-                    value: function() { return {}; }
+                    value: function () {
+                        return {};
+                    }
                 },
             },
             ready: function () {
@@ -507,30 +515,30 @@
                     this.trainingInfo = JSON.parse(storage);
                 }
                 superagent
-                        .get('/b/api/v1/training')
-                        .set('Accept', 'application/json')
-                        .set('Authorization', `Bearer: ${jwt.token}`)
-                        .end((err, res) => {
-                            var text;
-                            if (res.ok) {
-                                switch (res.status) {
-                                    case 200:
-                                        text = 'Your training information is up-to-date!';
-                                        this.trainingInfo = res.body;
-                                        localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
-                                        this.parseTrainingInfo(this.trainingInfo);
-                                        this.$.info.hidden = false;
-                                        break;
-                                    case 204:
-                                        text = 'No training information found.';
-                                        this.$.info.hidden = true;
-                                        break;
-                                }
-                            } else {
-                                text = 'Your information has not been updated. Please try again.';
+                    .get('/b/api/v1/training')
+                    .set('Accept', 'application/json')
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        var text;
+                        if (res.ok) {
+                            switch (res.status) {
+                                case 200:
+                                    text = 'Your training information is up-to-date!';
+                                    this.trainingInfo = res.body;
+                                    localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
+                                    this.parseTrainingInfo(this.trainingInfo);
+                                    this.$.info.hidden = false;
+                                    break;
+                                case 204:
+                                    text = 'No training information found.';
+                                    this.$.info.hidden = true;
+                                    break;
                             }
-                            //toast(text);
-                        });
+                        } else {
+                            text = 'Your information has not been updated. Please try again.';
+                        }
+                        //toast(text);
+                    });
             },
 
             loadTestResult: function () {

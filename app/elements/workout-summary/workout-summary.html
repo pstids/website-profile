@@ -71,6 +71,7 @@
 		}
 		.stats .sub {
 			color: #A4A4A4;
+			text-align: center;
 		}
 		.stats .stat {
 			@apply(--layout-flex);
@@ -215,6 +216,7 @@
 					pace_unit: '/mi',
 					rss_message: 'RSS'
 				};
+				this.eState = false;
 
 				this.$.workoutRPE.addEventListener('iron-select', () => {
 					var item = this.rpes[this.$.workoutRPE.selected];
@@ -247,8 +249,13 @@
 				this.data.date = moment(activity.start_time*1000).format('MMM Do, YYYY');
 				this.notifyPath('data.date');
 
-				this.data.rss = activity.average_power.toFixed(0);
-				this.data.rss_message = 'Avg Power';
+				if (!this.eState) {
+					this.data.rss = activity.average_power.toFixed(0);
+					this.data.rss_message = 'Avg Power';
+				} else {
+					this.data.rss = ((activity.average_power) / (activity.average_power + 100) * 100).toFixed(0) + '%';
+					this.data.rss_message = 'Run Efficiency Score';
+				}
 				this.notifyPath('data.rss');
 				this.notifyPath('data.rss_message');
 
@@ -269,6 +276,9 @@
 
 				this.selected_rpe = this.rpes.indexOf(activity.rpe);
 				this.selected_type = this.types.indexOf(activity.type);
+			},
+			setEfficiency: function () {
+				this.eState = true;
 			},
 			tiz: function (zones, rss) {
 				var data = [];

@@ -293,6 +293,7 @@ app.addEventListener('dom-change', () => {
         if (jwt.hasToken) {
             app.route = 'leaderboard';
             header.toggleActive('leaderboard');
+            ga('send', 'event', 'view', 'leaderboard');
         } else {
             document.location = '/signin';
         }
@@ -324,6 +325,13 @@ app.addEventListener('dom-change', () => {
     page('/plan/:id/detail', (data) => {
         app.route = 'plan-detail';
         app.planID = data.params.id;
+    });
+
+    page('/efficiency', () => {
+        app.route = 'profile';
+        header.toggleActive('profile');
+        workoutSummary.setEfficiency();
+        page('/run/4951793020698624');
     });
 
     page('*', () => {

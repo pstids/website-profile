@@ -149,12 +149,12 @@
                 text-transform: uppercase;
             }
             .insight .value {
-                font-size: 2vw;
+                font-size: 1.7vw;
                 font-weight: 700;
                 padding-right: 0.2em;
             }
             .insight .unit {
-                font-size: 1.5vw;
+                font-size: 1.3vw;
                 font-weight: 700;
             }
 
@@ -228,32 +228,24 @@
             </div>
             <ul class="navigation">
                 <li>
-                    <a data-route="profile"
-                    href="/powercenter/">
-                        Analysis
-                    </a>
+                    <a data-selector="profile"
+                    href="/powercenter/">Analysis</a>
                 </li>
                 <li>
-                    <a data-route="leaderboard"
-                    href="/powercenter/leaderboard">
-                        Leaderboard
-                    </a>
+                    <a data-selector="leaderboard"
+                    href="/powercenter/leaderboard">Leaderboard</a>
                 </li>
                 <li>
-                    <a data-route="connect"
+                    <a data-selector="connect"
                     href="/powercenter/connect"
                     data-step="2"
-                    data-intro="Connect your other training platforms for easy synchronization.">
-                        Connect
-                    </a>
+                    data-intro="Connect your other training platforms for easy synchronization.">Connect</a>
                 </li>
                 <li>
-                    <a data-route="settings"
+                    <a data-selector="settings"
                     href="/powercenter/settings"
                     data-step="3"
-                    data-intro="Configure your profile.">
-                        Settings
-                    </a>
+                    data-intro="Configure your profile.">Settings</a>
                 </li>
             </ul>
             <div class="space-taker"></div>
@@ -393,7 +385,7 @@
             }
 
             if (active !== null) {
-                var anchor = this.querySelector(`[data-route=${active}]`);
+                var anchor = this.querySelector(`[data-selector=${active}]`);
                 anchor.parentElement.classList.add('active');
             }
         },

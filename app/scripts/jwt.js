@@ -439,9 +439,7 @@ class CalendarManager {
 		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
 		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-		// if (this.mode === 'admin') {
-		//     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-		// }
+
 		this.gotActivityEvent = new CustomEvent('gotActivities');
 		superagent
 			.get(activityEndPoint)

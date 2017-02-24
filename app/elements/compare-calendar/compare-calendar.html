@@ -86,15 +86,24 @@
 
             this.hasLoaded = false;
             this.lastActivity = null;
-            this.assembleDOM();
+
+            window.addEventListener('gotActivities', () => {
+                if (!this.hasLoaded) {
+                    this.hasLoaded = true;
+                    this.assembleDOM();
+                    this.callMonth();
+                }
+            });
         },
         attached: function () {
             if (jwt.hasToken) {
-                this.fetchMonth(
-                    this.displayedTime.month(),
-                    this.displayedTime.year(),
-                    false
-                );
+                setTimeout(() => {
+                    if (!this.hasLoaded) {
+                        this.hasLoaded = true;
+                        this.assembleDOM();
+                        this.callMonth();
+                    }
+                }, 1000);
             }
         },
         // Creates dom structure of 5 rows of 7 columns of log-day elements
@@ -235,6 +244,14 @@
                 logDayActive.classList.remove('active');
             }
         },
+        callMonth: function () {
+            this.fetchMonth(
+                this.displayedTime.month(),
+                this.displayedTime.year()
+            );
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            this.removeActive();
+        },
         setActive: function (id) {
             var logDayActive = this.querySelector('compare-container.active');
             if (logDayActive) {
@@ -246,6 +263,12 @@
                         container.setActive(id);
                     }
                 }
+            }
+        },
+        removeActive: function () {
+            var logDayActive = this.querySelector('log-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
             }
         }
     });

@@ -77,10 +77,17 @@
 
             this.hasLoaded = false;
             this.lastActivity = null;
-            this.assembleDOM();
+
+            this.dayTotal = 7;
+            this.weekTotal = 6;
+            this.lastRow = null;
 
             window.addEventListener('gotActivities', () => {
-                this.callMonth();
+                if (!this.hasLoaded) {
+                    this.hasLoaded = true;
+                    this.assembleDOM();
+                    this.callMonth();
+                }
             });
 
             document.addEventListener('keyup', (e) => {
@@ -94,22 +101,25 @@
         attached: function () {
             if (jwt.hasToken) {
                 setTimeout(() => {
-                    this.fetchMonth(
-                        this.displayedTime.month(),
-                        this.displayedTime.year(),
-                        false
-                    );
+                    if (!this.hasLoaded) {
+                        this.hasLoaded = true;
+                        this.assembleDOM();
+                        this.callMonth();
+                    }
                 }, 1000);
             }
         },
-        // Creates dom structure of 5 rows of 7 columns of log-day elements
+        // Creates dom structure of week rows of day columns of log-day elements
         assembleDOM: function () {
             var calendarContainer = this.$.calendarContainer;
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < this.weekTotal; i++) {
                 var row = document.createElement('div');
                 row.classList.add('row');
+                if (i === this.weekTotal-1) {
+                    this.lastRow = row;
+                }
                 var rowDom = [];
-                for (var o = 0; o < 7; o++) {
+                for (var o = 0; o < this.dayTotal; o++) {
                     var node = document.createElement('log-container');
                     row.appendChild(node);
                     rowDom.push(node);
@@ -133,7 +143,13 @@
             var startOfMonth = month.startOf('month');
             var indexFOM = startOfMonth.isoWeekday();
             var firstMonday = startOfMonth.subtract(indexFOM - 1, 'days');
-            var lastSunday = moment(firstMonday).add(35, 'days');
+            var lastSunday = moment(firstMonday).add((this.weekTotal-1) * this.dayTotal, 'days');
+            if (parseInt(lastSunday.format('M')) === monthInt+1) {
+                lastSunday = moment(firstMonday).add(this.weekTotal * this.dayTotal, 'days');
+                Polymer.dom(this.lastRow).classList.remove('hidden');
+            } else {
+                Polymer.dom(this.lastRow).classList.add('hidden');
+            }
             return {
                 firstMonday: firstMonday,
                 lastSunday: lastSunday
@@ -230,8 +246,7 @@
         callMonth: function () {
             this.fetchMonth(
                 this.displayedTime.month(),
-                this.displayedTime.year(),
-                false
+                this.displayedTime.year()
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
             this.removeActive();
