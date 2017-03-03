@@ -43,22 +43,21 @@ var toastEle = null, toast = function (message) {
 
 var app = document.querySelector('#app');
 
-var mapRunEle,
-    workoutElement,
+var bubbleStats,
+    compareCalendar,
     header,
-    uploader,
-    logCalendar,
-    planView,
-    settingsElement,
-    rssPrimary,
-    rssSecondary,
-    bubbleStats,
     homeNavigation,
     lapOverview,
-    workoutSummary,
-    logOverview,
+    logCalendar,
+    mapRunEle,
     performanceManagement,
-    compareCalendar;
+    planView,
+    rssPrimary,
+    rssSecondary,
+    settingsElement,
+    uploader,
+    workoutElement,
+    workoutSummary;
 
 var firstLoad = true;
 var forceLoad = false;
@@ -69,25 +68,23 @@ var currentID = null;
 app.addEventListener('dom-change', () => {
     console.log('Stryd is ready to rock!');
 
-    homeNavigation = document.querySelector('home-navigation');
-    mapRunEle = document.querySelector('#map-run');
-    workoutElement = document.querySelector('#workout-element');
-    uploader = document.querySelector('#uploader');
-    logCalendar = document.querySelector('log-calendar');
-    toastEle = document.querySelector('#toast');
-    header = document.querySelector('header-element');
-    planView = document.querySelector('plan-view');
-    settingsElement = document.querySelector('stryd-settings');
     bubbleStats = document.querySelector('bubble-stats');
+    compareCalendar = document.querySelector('compare-calendar');
+    header = document.querySelector('header-element');
+    homeNavigation = document.querySelector('home-navigation');
+    lapOverview = document.querySelector('lap-overview');
+    logCalendar = document.querySelector('log-calendar');
+    app.logOption = document.querySelector('log-options');
+    mapRunEle = document.querySelector('#map-run');
+    performanceManagement = document.querySelector('performance-management');
+    planView = document.querySelector('plan-view');
     rssPrimary = document.querySelector('#rss-primary');
     rssSecondary = document.querySelector('#rss-secondary');
-    lapOverview = document.querySelector('lap-overview');
+    settingsElement = document.querySelector('stryd-settings');
+    toastEle = document.querySelector('#toast');
+    uploader = document.querySelector('#uploader');
+    workoutElement = document.querySelector('#workout-element');
     workoutSummary = document.querySelector('workout-summary');
-    compareCalendar = document.querySelector('compare-calendar');
-    logOverview = document.querySelector('log-overview');
-    performanceManagement = document.querySelector('performance-management');
-    
-    app.logOption = document.querySelector('log-options');
 
     app.home = 'analysis';
     app.route = 'profile';
@@ -231,8 +228,6 @@ app.addEventListener('dom-change', () => {
         mapRunEle.resizeMap();
         workoutElement.classList.remove('hidden');
         lapOverview.classList.remove('hidden');
-        // planView.chartToggle(false);
-        // planView.classList.remove('hasWorkout');
 
         if (firstLoad) {
             urlManager.setNavigation(app.params.id, 0);
@@ -390,12 +385,10 @@ app.checkUserFeatures = function () {
     if (!jwt.hasToken) {
         logCalendar.classList.add('hidden');
         uploader.classList.add('hidden');
-        logOverview.classList.add('hidden');
         performanceManagement.classList.add('hidden');
     } else {
         logCalendar.classList.remove('hidden');
         uploader.classList.remove('hidden');
-        logOverview.classList.remove('hidden');
         performanceManagement.classList.remove('hidden');
     }
 };
@@ -536,4 +529,16 @@ app.lapProcessing = function (id, lapMarker) {
 
 app.addGuide = function (from, to, zone) {
     workoutElement.addGuide(from, to, zone);
+};
+
+app.clearChildren = function (parent) {
+    while (Polymer.dom(parent).firstChild) {
+        Polymer.dom(
+            parent
+        ).removeChild(
+            Polymer.dom(
+                parent
+            ).firstChild
+        );
+    }
 };

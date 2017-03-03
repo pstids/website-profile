@@ -79,7 +79,7 @@
 				<div class="layout horizontal">
 					<table>
 						<thead>
-							<tr>
+							<tr id="lapf">
 								<th>Lap</th>
 								<th>Power</th>
 								<th>Time</th>
@@ -97,7 +97,7 @@
 			<div class="layout vertical flex">
 				<h1 class="header" style="padding: 20px;">Lap <span>{{lap_number}}</span></h1>
 				<div class="layout horizontal center center-justified flex">
-					<svg id="tiz233"></svg>
+					<time-in-zone data-property="tiz" id="tiz"></time-in-zone>
 				</div>
 			</div>
 		</div>
@@ -125,6 +125,42 @@
 			});
 			this.lap_number = 1;
 			this.laps = [];
+
+			this.elements = [
+				{
+					key: 'lap',
+					unit: '',
+					header: 'Lap'
+				}, {
+					key: 'power',
+					unit: 'watts',
+					header: 'Power'
+				}, {
+					key: 'time',
+					unit: '',
+					header: 'Time'
+				}, {
+					key: 'distance',
+					unit: 'meters',
+					header: 'Distance'
+				}, {
+					key: 'pace',
+					unit: '',
+					header: 'Pace'
+				}, {
+					key: 'formPower',
+					unit: 'watts',
+					header: 'Form Power'
+				}, {
+					key: 'legSpring',
+					unit: 'kN/m',
+					header: 'Leg Spring'
+				}, {
+					key: 'rss',
+					unit: '',
+					header: 'RSS'
+				}
+			];
 		},
 		eleTap: function (e) {
 			var target = e.target;
@@ -135,7 +171,8 @@
 					this.lap_number = target.dataset.lap;
 					var lapIdx = (+target.dataset.lap)-1;
 					var lap = this.laps[lapIdx];
-					this.tiz(lap.tiz, lap.rss);
+					this.$.tiz.setData(lap.tiz, lap.rss);
+					// this.tiz(lap.tiz, lap.rss);
 					// app.addGuide(lap.startTimestamp, lap.endTimestamp, lapIdx);
 
 					Polymer.dom(target.classList.add('active'));
@@ -154,138 +191,46 @@
 		},
 		displayLaps: function (laps) {
 			this.laps = laps;
-			while (Polymer.dom(this.$.laps).firstChild) {
-				Polymer.dom(
-					this.$.laps
-				).removeChild(
-					Polymer.dom(
-						this.$.laps
-					).firstChild
-				);
-			}
+			app.clearChildren(this.$.laps);
+			app.clearChildren(this.$.lapf);
+			var availables = this.createHeader(laps[0]);
 			for (var lap of laps) {
-				var row = this.createRow(lap);
+				var row = this.createRow(lap, availables);
 				Polymer.dom(this.$.laps).appendChild(row);
 			}
-			this.tiz(this.laps[0].tiz, this.laps[0].rss);
+			this.$.tiz.setData(this.laps[0].tiz, this.laps[0].rss);
 		},
-		createRow: function (row) {
-			var elements = [
-				{
-					key: 'lap',
-					unit: ''
-				}, {
-					key: 'power',
-					unit: 'watts',
-				}, {
-					key: 'time',
-					unit: ''
-				}, {
-					key: 'distance',
-					unit: 'meters'
-				}, {
-					key: 'pace',
-					unit: ''
-				}, {
-					key: 'formPower',
-					unit: 'watts'
-				}, {
-					key: 'legSpring',
-					unit: 'kN/m'
-				}, {
-					key: 'rss',
-					unit: ''
+		createHeader: function (row) {
+			var availables = [];
+			for (var ele of this.elements) {
+				var value = row[ele.key];
+				if (value !== null && !isNaN(value)) {
+					availables.push(ele.key);
+
+					var th = document.createElement('th');
+					Polymer.dom(th).textContent = ele.header;
+					Polymer.dom(this.$.lapf).appendChild(th);
 				}
-			];
+			}
+			return availables;
+		},
+		createRow: function (row, availables) {
 			var tr = document.createElement('tr');
 			tr.dataset.lap = row.lap;
-			for (var ele of elements) {
+			for (var ele of this.elements) {
 				var td = document.createElement('td');
-				var value = row[ele.key];
-				if (typeof(value) === 'number') {
-					value = value.toFixed(0);
+				if (availables.indexOf(ele.key) > -1) {
+					var value = row[ele.key];
+					if (ele.key === 'formPower' || ele.key === 'legSpring') {
+						value = value.toFixed(1);
+					} else if (typeof(value) === 'number') {
+						value = value.toFixed(0);
+					}
+					Polymer.dom(td).textContent = `${value} ${ele.unit}`;
+					Polymer.dom(tr).appendChild(td);
 				}
-				Polymer.dom(td).textContent = `${value} ${ele.unit}`;
-				Polymer.dom(tr).appendChild(td);
 			}
 			return tr;
-		},
-		tiz: function (tizs, rss) {
-			var data = [];
-			var total = tizs.reduce((a, b) => {
-				return a + b;
-			}, 0);
-			for (var i = 0; i < tizs.length; i++) {
-				var tiz = tizs[i];
-				data.push({
-					zone: i+1,
-					tiz: tiz,
-					percentage: tiz/total
-				});
-			}
-			var width = 330, height = 230, radius = 110;
-			var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
-			var arc = d3.svg.arc()
-				.outerRadius(radius-40)
-				.innerRadius(radius-60);
-			var pie = d3.layout.pie()
-				.sort(null)
-				.value((d) => {
-					return d.tiz;
-				});
-			d3.select('#tiz233')
-				.selectAll('*')
-				.remove();
-			var svg = d3.select('#tiz233')
-				.attr('width', width)
-				.attr('height', height)
-				.append('g')
-					.attr('transform', `translate(${radius}, ${radius})`);
-			var g = svg.selectAll('.arc')
-				.data(pie(data))
-				.enter()
-				.append('g')
-					.attr('class', 'arc');
-			g.append('path')
-				.attr('d', arc)
-				.style('fill', (d) => {
-					return color(d.data.zone);
-				});
-			g.append('rect')
-				.attr('width', 20)
-				.attr('height', 20)
-				.attr('transform', (d) => {
-					return `translate(${radius}, ${d.data.zone*25-radius+15})`;
-				})
-				.attr('fill', (d) => {
-					return color(d.data.zone);
-				});
-			g.append('text')
-				.attr('transform', (d) => {
-					return `translate(${radius+25}, ${d.data.zone*25-radius+30})`;
-				})
-				.style('text-anchor', 'start')
-				.attr('font-size', 16)
-				.text((d) => {
-					var percentage = (d.data.percentage * 100).toFixed(0);
-					return `Z${d.data.zone} ${percentage}%`;
-				});
-			svg.append('text')
-				.attr('x', 0)
-				.attr('y', 0)
-				.attr('font-size', 25)
-				.attr('font-weight', '400')
-				.attr('fill', '#FFFFFF')
-				.style('text-anchor', 'middle')
-				.text('RSS');
-			svg.append('text')
-				.attr('x', 0)
-				.attr('y', 25)
-				.attr('font-size', 25)
-				.attr('font-weight', 'bolder')
-				.attr('fill', '#FFFFFF')
-				.style('text-anchor', 'middle')
-				.text(rss.toFixed(0));
 		}
 	});
 	</script>

@@ -311,7 +311,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="layout horizontal stats">
+					<div class="layout horizontal stats" style="height: 200px;">
 						<div class="layout horizontal stat flex-3">
 							<div class="layout vertical values">
 								<div class="layout vertical value">
@@ -334,9 +334,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="breakdown flex">
-							<svg id="tiz242"></svg>
-						</div>
+						<time-in-zone data-property="tiz3" id="tiz" class="breakdown flex"></time-in-zone>
 					</div>
 				</div>
 				<div class="layout horizontal bottom">
@@ -425,7 +423,8 @@
 			this.statTime = secToDuration(time);
 			this.statPower = max_power.toFixed(1);
 
-			this.createTIZ(tiz);
+			// this.createTIZ(tiz);
+			this.$.tiz.setData(tiz, this.statRSS);
 			this.createCommitChart(frequency);
 			this.createRSSProgression(weeks, names);
 			this.$.dialog.open();
@@ -874,78 +873,6 @@
 					var first = -x(i)+2*x(3);
 					return `translate(${first}, 0)`;
 				});
-		},
-		createTIZ: function (zones) {
-			var data = [];
-			var total = 0;
-			if (zones !== null) {
-				total = zones.reduce((a, b) => {
-					return a + b;
-				}, 0);
-			}
-			for (var i = 0; i < zones.length; i++) {
-				var tiz = zones[i];
-				data.push({
-					zone: i+1,
-					tiz: tiz,
-					percentage: tiz/total
-				});
-			}
-			var width = 330, height = 200, radius = 110;
-			var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
-			var arc = d3.svg.arc()
-				.outerRadius(radius-40)
-				.innerRadius(radius-60);
-			var pie = d3.layout.pie()
-				.sort(null)
-				.value((d) => {
-					return d.tiz;
-				});
-			d3.select('#tiz242')
-				.selectAll('*')
-				.remove();
-			var svg = d3.select('#tiz242')
-				.attr('width', width)
-				.attr('height', height)
-				.append('g')
-					.attr('transform', `translate(${radius}, ${radius})`);
-			var g = svg.selectAll('.arc')
-				.data(pie(data))
-				.enter()
-				.append('g')
-					.attr('class', 'arc');
-			g.append('path')
-				.attr('d', arc)
-				.style('fill', (d) => {
-					return color(d.data.zone);
-				});
-			g.append('rect')
-				.attr('width', 20)
-				.attr('height', 20)
-				.attr('transform', (d) => {
-					return `translate(${radius}, ${d.data.zone*25-radius+15})`;
-				})
-				.attr('fill', (d) => {
-					return color(d.data.zone);
-				});
-			g.append('text')
-				.attr('transform', (d) => {
-					return `translate(${radius+25}, ${d.data.zone*25-radius+30})`;
-				})
-				.style('text-anchor', 'start')
-				.attr('font-size', 16)
-				.text((d) => {
-					var percentage = (d.data.percentage * 100).toFixed(0);
-					return `Z${d.data.zone} ${percentage}%`;
-				});
-			svg.append('text')
-				.attr('x', 0)
-				.attr('y', 10)
-				.attr('font-size', 20)
-				.attr('font-weight', '400')
-				.attr('fill', '#FFFFFF')
-				.style('text-anchor', 'middle')
-				.text('ZONES');
 		}
 	});
 	</script>

@@ -701,7 +701,20 @@
                 this.$.descriptionDisplay.classList.remove('hidden');
             }
 
-            this.data = data;
+            var steps = 1;
+            if (data.length > 1000) {
+                steps = parseInt(data.length / 1000);
+                if (steps < 1) {
+                    steps = 1;
+                }
+            }
+
+            var abridged = [];
+            for (var i = 0; i < data.length; i += steps) {
+                abridged.push(data[i]);
+            }
+
+            this.data = abridged;
             this.availableMetrics = [];
             this.startTime = this.data[0].date;
             for (var val of activityMetrics) {

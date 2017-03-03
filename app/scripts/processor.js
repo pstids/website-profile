@@ -36,7 +36,7 @@ class ColorInterpolate {
         return hex.length === 1 ? '0' + hex : hex;
     }
     rgbToHex(r, g, b) {
-        return '#' + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+        return `#${this.componentToHex(r)}${this.componentToHex(g)}${this.componentToHex(b)}`;
     }
     getRGB(relativePower, thresholdRange) {
         var r = this.interpolate(
@@ -119,83 +119,151 @@ var getDateHash = function (timestamp) {
     return moment.unix(timestamp).format('YYYYMMDD');
 };
 
+var averageChartData = function (id, average_period) {
+    console.log(id, average_period);
+    console.log('average chart data');
+
+    // var chartData = [];
+
+    // var steps = 1;
+
+    // var movingAverages = {
+    //     heartRate: 0,
+    //     speed: 0,
+    //     power: ,
+    //     formPower: 0,
+    //     cadence: 0,
+    //     vertOsc: 0,
+    //     legSpring: 0,
+    //     groundTime: 0
+    // };
+};
+
 var createChartData = function (workout) {
     var chartData = [];
     var lastEntry = {}, entry = {};
     var suuntoDrop = true;
 
-    var steps = 1;
-    if (workout.total_power_list.length > 1000) {
-        steps = parseInt(workout.total_power_list.length / 1000);
-    }
-    if (steps < 1) {
-        steps = 1;
-    }
-
-    for (var i = 0; i < workout.total_power_list.length; i += steps) {
+    for (var i = 0; i < workout.total_power_list.length; i += 1) {
         suuntoDrop = true;
         entry = {};
 
         if ('timestamp_list' in workout) {
-            entry.date = setDate(workout.timestamp_list[i]);
+            if (i < workout.timestamp_list.length) {
+                entry.date = setDate(workout.timestamp_list[i]);
+            } else {
+                entry.date = 0;
+            }
         }
         if ('heart_rate_list' in workout) {
-            entry.heartRate = workout.heart_rate_list[i];
+            if (i < workout.heart_rate_list.length) {
+                entry.heartRate = workout.heart_rate_list[i];
+            } else {
+                entry.heartRate = 0;
+            }
             if (entry.heartRate !== 0) {
                 suuntoDrop = false;
             }
         }
         if ('speed_list' in workout && workout.speed_list !== null) {
-            entry.pace = workout.speed_list[i];
+            if (i < workout.speed_list.length) {
+                entry.pace = workout.speed_list[i];
+            } else {
+                entry.pace = 0;
+            }
         }
         if ('speed_device_list' in workout && workout.speed_device_list !== null) {
-            entry.devicePace = workout.speed_device_list[i];
+            if (i < workout.speed_device_list.length) {
+                entry.devicePace = workout.speed_device_list[i];
+            } else {
+                entry.devicePace = 0;
+            }
         }
         if ('total_power_list' in workout) {
-            entry.power = workout.total_power_list[i];
+            if (i < workout.total_power_list.length) {
+                entry.power = workout.total_power_list[i];
+            } else {
+                entry.power = 0;
+            }
             if (entry.power !== 0) {
                 suuntoDrop = false;
             }
         }
         if ('vertical_power_list' in workout && workout.vertical_power_list !== null) {
-            entry.formPower = workout.vertical_power_list[i];
+            if (i < workout.vertical_power_list.length) {
+                entry.formPower = workout.vertical_power_list[i];
+            } else {
+                entry.formPower = 0;
+            }
             if (entry.power !== 0) {
                 suuntoDrop = false;
             }
         }
         if ('cadence_list' in workout) {
-            entry.cadence = workout.cadence_list[i];
+            if (i < workout.cadence_list.length) {
+                entry.cadence = workout.cadence_list[i];
+            } else {
+                entry.cadence = 0;
+            }
             if (entry.cadence !== 0) {
                 suuntoDrop = false;
             }
         }
         if ('elevation_list' in workout && workout.elevation_list !== null) {
-            entry.elevation = Math.round(workout.elevation_list[i] * 10) / 10;
+            if (i < workout.elevation_list.length) {
+                entry.elevation = Math.round(workout.elevation_list[i] * 10) / 10;
+            } else {
+                entry.elevation = 0;
+            }
             if (entry.elevation !== 0) {
                 suuntoDrop = false;
             }
         }
         if ('oscillation_list' in workout && workout.oscillation_list !== null && i < workout.oscillation_list.length) {
-            entry.vertOsc = workout.oscillation_list[i];
+            if (i < workout.oscillation_list.length) {
+                entry.vertOsc = workout.oscillation_list[i];
+            } else {
+                entry.vertOsc = 0;
+            }
         }
         if ('leg_spring_list' in workout && workout.leg_spring_list !== null && i < workout.leg_spring_list.length) {
-            entry.legSpring = workout.leg_spring_list[i];
+            if (i < workout.leg_spring_list.length) {
+                entry.legSpring = workout.leg_spring_list[i];
+            } else {
+                entry.legSpring = 0;
+            }
         }
         if ('ground_time_list' in workout && workout.ground_time_list !== null && i < workout.ground_time_list.length) {
-            entry.groundTime = workout.ground_time_list[i];
+            if (i < workout.ground_time_list.length) {
+                entry.groundTime = workout.ground_time_list[i];
+            } else {
+                entry.groundTime = 0;
+            }
         }
         if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
-            entry.deviceElevation = Math.round(workout.elevation_device_list[i] * 10) / 10;     
+            if (i < workout.elevation_device_list.length) {
+                entry.deviceElevation = Math.round(workout.elevation_device_list[i] * 10) / 10;
+            } else {
+                entry.deviceElevation = 0;
+            }
         }
         if ('stress_list' in workout && workout.stress_list !== null) {
-            if (workout.stress_list[i] === undefined) {
+            if (i >= workout.stress_list.length || workout.stress_list[i] === undefined) {
                 entry.rss = 0;
             } else {
                 entry.rss = +workout.stress_list[i].toFixed(1);
             }
         }
         if ('distance_list' in workout && workout.distance_list !== null) {
-            entry.distance = workout.distance_list[i];
+            if (i < workout.distance_list.length) {
+                entry.distance = workout.distance_list[i];
+            } else {
+                if (lastEntry !== {}) {
+                    entry.distance = lastEntry.distance;
+                } else {
+                    entry.distance = 0;
+                }
+            }
         }
 
         if (suuntoDrop && i !== 0) {
@@ -251,15 +319,6 @@ var workoutProcessing = function (workout, id) {
         pace: 0
     };
 
-    // Limit displayed records to prevent browser slugginess
-    var steps = 1;
-    if (workout.total_power_list.length > 1000) {
-        steps = parseInt(workout.total_power_list.length / 1000);
-    }
-    if (steps < 1) {
-        steps = 1;
-    }
-
     var mapRunData = [];
     var availableMetrics = ['power'];
     var sum = 0;
@@ -273,62 +332,83 @@ var workoutProcessing = function (workout, id) {
     if ('speed_list' in workout && workout.speed_list !== null) {
         // sum = workout.speed_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('pace');
+        availableMetrics.push('pace');
         // }
     }
     if ('speed_device_list' in workout && workout.speed_device_list !== null) {
         // sum = workout.speed_device_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('devicePace');
+        availableMetrics.push('devicePace');
         // }
     }
     if ('vertical_power_list' in workout && workout.vertical_power_list !== null) {
         // sum = workout.vertical_power_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('formPower');
+        availableMetrics.push('formPower');
         // }
     }
     if ('cadence_list' in workout && workout.cadence_list !== null) {
         // sum = workout.cadence_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('cadence');
+        availableMetrics.push('cadence');
         // }
     }
     if ('oscillation_list' in workout && workout.oscillation_list !== null) {
         // sum = workout.oscillation_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('vertOsc');
+        availableMetrics.push('vertOsc');
         // }
     }
     if ('leg_spring_list' in workout && workout.leg_spring_list !== null) {
         // sum = workout.leg_spring_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('legSpring');
+        availableMetrics.push('legSpring');
         // }
     }
     if ('ground_time_list' in workout && workout.ground_time_list !== null) {
         // sum = workout.ground_time_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('groundTime');
+        availableMetrics.push('groundTime');
         // }
     }
     if ('elevation_list' in workout && workout.elevation_list !== null) {
         // sum = workout.elevation_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('elevation');
+        availableMetrics.push('elevation');
         // }
     }
     if ('elevation_device_list' in workout && workout.elevation_device_list !== null) {
         // sum = workout.elevation_device_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('deviceElevation');
+        availableMetrics.push('deviceElevation');
         // }  
     }
     if ('stress_list' in workout && workout.stress_list !== null) {
         // sum = workout.stress_list.slice(0, 10).reduce(add, 0);
         // if (sum > 0) {
-            availableMetrics.push('rss'); 
+        availableMetrics.push('rss'); 
         // }
+    }
+
+    // Limit displayed records to prevent browser slugginess
+    var steps = 1;
+    if (workout.total_power_list.length > 500) {
+        steps = parseInt(workout.total_power_list.length / 500);
+    }
+    if (steps < 1) {
+        steps = 1;
+    }
+
+    var hasLocList = ('loc_list' in workout && workout.loc_list !== null);
+    var lastSegment = {
+        lat: 0,
+        lng: 0,
+    };
+    if (hasLocList) {
+        lastSegment = {
+            lat: workout.loc_list[0].Lat,
+            lng: workout.loc_list[0].Lng,
+        };
     }
 
     for (var i = 0; i < workout.total_power_list.length; i += steps) {
@@ -340,11 +420,7 @@ var workoutProcessing = function (workout, id) {
         }
 
         /* Assemble map data */
-        if (
-            i > 0 &&
-            'loc_list' in workout &&
-            workout.loc_list !== null
-        ) {
+        if (i > 0 && hasLocList) {
             var relativePower;
             if (threshold.range === 0) {
                 threshold.range = 1;
@@ -357,20 +433,16 @@ var workoutProcessing = function (workout, id) {
                 relativePower = power - threshold.low;
             }
             var hex = colorInterpolate.HEX(relativePower, threshold.range);
+            var newSegment = {
+                lat: workout.loc_list[i].Lat,
+                lng: workout.loc_list[i].Lng,
+            };
             var graphSegment = {
                 hex: hex,
-                location: [
-                    {
-                        lat: workout.loc_list[i-steps].Lat,
-                        lng: workout.loc_list[i-steps].Lng,
-                    },
-                    {
-                        lat: workout.loc_list[i].Lat,
-                        lng: workout.loc_list[i].Lng,
-                    }
-                ]
+                location: [lastSegment, newSegment]
             };
             mapRunData.push(graphSegment);
+            lastSegment = JSON.parse(JSON.stringify(newSegment));
         }
     }
     avgs.power = avgs.power / avgs.powerCount;
@@ -1034,6 +1106,7 @@ var calcLaps = function (type, activityID, zones, userUnit) {
         calcAverage('formPower', entry.formPower);
         calcAverage('legSpring', entry.legSpring);
 
+        // add to time in zones
         if (zones !== null) {
             for (var o = 0; o < 5; o++) {
                 if (power > zones[o].power_low && power < zones[o].power_high) {
@@ -1064,14 +1137,15 @@ var calcLaps = function (type, activityID, zones, userUnit) {
                 lapSwitch = true;
             }
         }
-        if (!lapSwitch && i === activity.length-1) {
+        // if we are at the end, create a lap
+        if (i === activity.length-1) {
             lapSwitch = true;
         }
         if (lapSwitch) {
             var meters = entry.distance - lastDistance;
             lap.distance = meters;
             // sets distance to marker distance to prevent customer confusion
-            if (type === 'mi' && lap.distance > 1609) {
+            if (type === 'mi' && lap.distance > 1609.34) {
                 lap.distance = unit.metersPerMile;
             } else if (type === 'km' && lap.distance > 1000) {
                 lap.distance = unit.metersPerKM;
@@ -1084,7 +1158,6 @@ var calcLaps = function (type, activityID, zones, userUnit) {
             lap.rss = entry.rss - lastRSS;
             lap.startTimestamp = lastTimestamp;
             lap.endTimestamp = entry.date;
-            console.log(lap);
 
             lastDistance = entry.distance;
             lastTimestamp = entry.date;

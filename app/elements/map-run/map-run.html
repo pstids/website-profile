@@ -93,10 +93,8 @@
                     );
                     this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
                     this.map.setMapTypeId(this.strydDarkId);
-                    this.setDataReady();
-                } else {
-                    this.setDataReady();
                 }
+                this.setDataReady();
             },
             setDataReady: function () {
                 if (this.data === null || this.data === undefined) {
@@ -107,7 +105,7 @@
                     this.mapObjs[i].setMap(null);
                 }
                 var bounds = new google.maps.LatLngBounds();
-                for (i = 0; i < this.data.length; i+=5) {
+                for (i = 0; i < this.data.length; i++) {
                     // Set segments on map
                     graphSegment = this.data[i];
                     path = new google.maps.Polyline({
