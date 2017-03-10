@@ -560,9 +560,7 @@
                 this.$.zones.appendChild(zoneEntry);
             },
             clearZones: function () {
-                while (this.$.zones.hasChildNodes()) {
-                    this.$.zones.removeChild(this.$.zones.childNodes[0]);
-                }
+                app.clearChildren(this.$.zones);
             },
             saveZones: function () {
                 var zones = [];

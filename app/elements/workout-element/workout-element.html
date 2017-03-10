@@ -322,6 +322,7 @@
             this.activity = null;
             this.descriptionText = '';
             this.guide = {};
+            this.steps = 1;
             this.$.descriptionInput.addEventListener(
                 'blur',
                 () => {
@@ -708,6 +709,7 @@
                     steps = 1;
                 }
             }
+            this.steps = steps;
 
             var abridged = [];
             for (var i = 0; i < data.length; i += steps) {
@@ -838,8 +840,8 @@
 
             this.chart.addListener('zoomed', (e) => {
                 app.calcMetrics(
-                    e.startIndex,
-                    e.endIndex + 1,
+                    this.data[e.startIndex].date,
+                    this.data[e.endIndex].date,
                     this.activity.id,
                     user.data.units
                 );

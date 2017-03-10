@@ -94,7 +94,7 @@
 					</table>
 				</div>
 			</div>
-			<div class="layout vertical flex">
+			<div class="layout vertical flex" id="tizContainer">
 				<h1 class="header" style="padding: 20px;">Lap <span>{{lap_number}}</span></h1>
 				<div class="layout horizontal center center-justified flex">
 					<time-in-zone data-property="tiz" id="tiz"></time-in-zone>
@@ -171,7 +171,12 @@
 					this.lap_number = target.dataset.lap;
 					var lapIdx = (+target.dataset.lap)-1;
 					var lap = this.laps[lapIdx];
-					this.$.tiz.setData(lap.tiz, lap.rss);
+					var success = this.$.tiz.setData(lap.tiz, lap.rss);
+					if (!success) {
+						this.$.tizContainer.classList.add('hidden');
+					} else {
+						this.$.tizContainer.classList.remove('hidden');
+					}
 					// this.tiz(lap.tiz, lap.rss);
 					// app.addGuide(lap.startTimestamp, lap.endTimestamp, lapIdx);
 
@@ -198,13 +203,18 @@
 				var row = this.createRow(lap, availables);
 				Polymer.dom(this.$.laps).appendChild(row);
 			}
-			this.$.tiz.setData(this.laps[0].tiz, this.laps[0].rss);
+			var success = this.$.tiz.setData(this.laps[0].tiz, this.laps[0].rss);
+			if (!success) {
+				this.$.tizContainer.classList.add('hidden');
+			} else {
+				this.$.tizContainer.classList.remove('hidden');
+			}
 		},
 		createHeader: function (row) {
 			var availables = [];
 			for (var ele of this.elements) {
 				var value = row[ele.key];
-				if (value !== null && !isNaN(value)) {
+				if (value !== null && value === value) {
 					availables.push(ele.key);
 
 					var th = document.createElement('th');

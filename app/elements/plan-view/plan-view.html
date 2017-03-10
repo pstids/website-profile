@@ -102,16 +102,7 @@ Polymer({
             this.day_title = trainingDay.workout_title;
             this.day_description = trainingDay.workout_desc;
 
-            // Clear previous segments
-            while (Polymer.dom(this.planSegments).firstChild) {
-                Polymer.dom(
-                    this.planSegments
-                ).removeChild(
-                    Polymer.dom(
-                        this.planSegments
-                    ).firstChild
-                );
-            }
+            app.clearChildren(this.planSegments);
 
             // Populate new segments
             for (var block of trainingDay.blocks) {
@@ -300,11 +291,7 @@ Polymer({
                             if (segment.segment_desc === undefined) {
                                 return '';
                             }
-                            while (this.planDescription.firstChild) {
-                                this.planDescription.removeChild(
-                                    this.planDescription.firstChild
-                                );
-                            }
+                            app.clearChildren(this.planDescription.firstChild);
                             this.planDescription.insertAdjacentHTML('beforeend', `${title}<p style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;'>${segment.segment_desc}</p>`);
                             return `${title}`;
                         }

@@ -255,15 +255,15 @@ var createChartData = function (workout) {
             }
         }
         if ('distance_list' in workout && workout.distance_list !== null) {
-            if (i < workout.distance_list.length) {
+            //if (i < workout.distance_list.length) {
                 entry.distance = workout.distance_list[i];
-            } else {
-                if (lastEntry !== {}) {
-                    entry.distance = lastEntry.distance;
-                } else {
-                    entry.distance = 0;
-                }
-            }
+            // } else {
+            //     if (lastEntry !== {}) {
+            //         entry.distance = lastEntry.distance;
+            //     } else {
+            //         entry.distance = 0;
+            //     }
+            // }
         }
 
         if (suuntoDrop && i !== 0) {
@@ -850,35 +850,33 @@ var resetMetrics = function () {
     };
 };
 
-var calcMetrics = function (start, end, activityID, userUnit) {
+var calcMetrics = function (startTime, endTime, activityID, userUnit) {
     resetMetrics();
     var activity = seriesMemory[activityID];
 
-    if (end === 0) {
+    var start = 0;
+    var end = activity.length-1;
+
+    var hasStartIdx = false;
+    var hasEndIdx = false;
+    for (var i = 0; i < activity.length; i++) {
+        if (!hasStartIdx && activity[i].date >= startTime) {
+            hasStartIdx = true;
+            start = i;
+        }
+        if (!hasEndIdx && activity[i].date >= endTime) {
+            hasEndIdx = true;
+            end = i;
+        }
+    }
+    if (!hasStartIdx) {
+        start = 0;
+    }
+    if (!hasEndIdx) {
         end = activity.length-1;
     }
 
-    var total = end - start;
-
-    var distance = 0;
-    if ('distance' in activity[start]) {
-        distance = activity[end-1].distance - activity[start].distance;
-    }
-    var milliseconds = activity[end-1].date - activity[start].date;
-    var seconds = milliseconds / 1000;
-
-    var paceUnit = unit.speedUnit(userUnit);
-    var distanceUnit = unit.distanceUnit(userUnit);
-    var distanceDisplay = unit.distanceValue(distance, userUnit);
-    var distanceValue = unit.distanceValueRaw(distance, userUnit);
-
-    metrics.time.totalTime.value = hmsTime(milliseconds);
-    metrics.pace.pace.unit = paceUnit;
-    metrics.pace.maxPace.unit = paceUnit;
-    metrics.power.rss.unit = activity.stress;
-    metrics.misc.distance.unit = distanceUnit;
-
-    for (var i = start; i < end; i++) {
+    for (i = start; i < end; i++) {
         var entry = activity[i];
 
         var timeSectionMSeconds = 1000;
@@ -960,6 +958,26 @@ var calcMetrics = function (start, end, activityID, userUnit) {
             }
         }
     }
+
+    var total = end - start;
+
+    var distance = 0;
+    if ('distance' in activity[start]) {
+        distance = activity[end].distance - activity[start].distance;
+    }
+    var milliseconds = activity[end].date - activity[start].date;
+    var seconds = milliseconds / 1000;
+
+    var paceUnit = unit.speedUnit(userUnit);
+    var distanceUnit = unit.distanceUnit(userUnit);
+    var distanceDisplay = unit.distanceValue(distance, userUnit);
+    var distanceValue = unit.distanceValueRaw(distance, userUnit);
+
+    metrics.time.totalTime.value = hmsTime(milliseconds);
+    metrics.pace.pace.unit = paceUnit;
+    metrics.pace.maxPace.unit = paceUnit;
+    metrics.power.rss.unit = activity.stress;
+    metrics.misc.distance.unit = distanceUnit;
 
     var elapsedMinutes = seconds / 60;
     var movingMinutes = metrics.time.time.moving / 1000 / 60;

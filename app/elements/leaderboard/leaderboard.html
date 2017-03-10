@@ -491,14 +491,8 @@
 			});
 			Promise.all([stress, cp, today])
 				.then(values => {
-					if (values.indexOf(null) !== -1) {
-						return;
-					}
 					// sets maximum entries to show after user
 					var max = 5;
-					if (values[0].user.rank <= 28 || values[1].user.rank <= 28 || values[2].user.rank <= 28) {
-						max = 5;
-					}
 					if (values[0] !== null) {
 						this.processEntries(max, 'rss', values[0]);
 					}
@@ -512,15 +506,7 @@
 		},
 		processEntries: function (max, highlight, entries) {
 			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			while (Polymer.dom(rssContainer).firstChild) {
-				Polymer.dom(
-					rssContainer
-				).removeChild(
-					Polymer.dom(
-						rssContainer
-					).firstChild
-				);
-			}
+			app.clearChildren(rssContainer);
 
 			var i = 0;
 			var entry = {};

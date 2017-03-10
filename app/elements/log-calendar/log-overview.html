@@ -165,15 +165,8 @@
 				});
 			},
 			createCalendar: function () {
-				while (Polymer.dom(this.$.container).firstChild) {
-					Polymer.dom(
-						this.$.container
-					).removeChild(
-						Polymer.dom(
-							this.$.container
-						).firstChild
-					);
-				}
+				app.clearChildren(this.$.container);
+
 				var past = moment().subtract(3, 'weeks').day('Monday');
 				var today = moment().add(1, 'days');
 				var activities = calendarManager.getLOActivities(past, today);

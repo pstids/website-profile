@@ -6,6 +6,7 @@ bower_components
 copy
 app/example.html
 transfer.sh
+transfer2.sh
 .DS_STORE
 app/scripts/plan-ex.js
 app/scripts/plan.json

@@ -532,13 +532,8 @@ app.addGuide = function (from, to, zone) {
 };
 
 app.clearChildren = function (parent) {
-    while (Polymer.dom(parent).firstChild) {
-        Polymer.dom(
-            parent
-        ).removeChild(
-            Polymer.dom(
-                parent
-            ).firstChild
-        );
+    var pparent = Polymer.dom(parent);
+    while (pparent.firstChild) {
+        pparent.removeChild(pparent.firstChild);
     }
 };

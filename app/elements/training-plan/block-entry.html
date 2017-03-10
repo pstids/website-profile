@@ -76,10 +76,7 @@
             },
             ready: function () {
                 this.segmentCount = 0;
-                let segmentNode = Polymer.dom(this.$.segments);
-                while (segmentNode.firstChild) {
-                    segmentNode.removeChild(segmentNode.firstChild);
-                }
+                app.clearChildren(this.$.segments);
                 this.$.repeatcount.style.visibility = 'hidden';
             },
             data: function () {
@@ -97,10 +94,7 @@
             },
             setData: function (blockData) {
                 console.log('block data: ', blockData);
-                let segmentNode = Polymer.dom(this.$.segments);
-                while (segmentNode.firstChild) {
-                    segmentNode.removeChild(segmentNode.firstChild);
-                }
+                app.clearChildren(this.$.segments);
                 if (Object.keys(blockData).length <= 0) {
                     return;
                 }

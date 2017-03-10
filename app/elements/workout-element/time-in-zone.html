@@ -21,6 +21,9 @@
 			this.querySelector('svg').id = this.selector;
 		},
 		setData: function (tizs, rss) {
+			if (isNaN(rss)) {
+				rss = null;
+			}
 			var data = [];
 			var total = 0;
 			if (tizs !== null) {
@@ -30,7 +33,7 @@
 			}
 			if (total === 0 || isNaN(total) || total === null) {
 				this.classList.add('hidden');
-				return;
+				return false;
 			} else {
 				this.classList.remove('hidden');
 			}
@@ -89,22 +92,25 @@
 					var percentage = (d.data.percentage * 100).toFixed(0);
 					return `Z${d.data.zone} ${percentage}%`;
 				});
-			svg.append('text')
-				.attr('x', 0)
-				.attr('y', 0)
-				.attr('font-size', 25)
-				.attr('font-weight', '400')
-				.attr('fill', '#FFFFFF')
-				.style('text-anchor', 'middle')
-				.text('RSS');
-			svg.append('text')
-				.attr('x', 0)
-				.attr('y', 25)
-				.attr('font-size', 25)
-				.attr('font-weight', 'bolder')
-				.attr('fill', '#FFFFFF')
-				.style('text-anchor', 'middle')
-				.text(rss.toFixed(0));
+			if (rss !== null) {
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 0)
+					.attr('font-size', 25)
+					.attr('font-weight', '400')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text('RSS');
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 25)
+					.attr('font-size', 25)
+					.attr('font-weight', 'bolder')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text(rss.toFixed(0));
+			}
+			return true;
 		}
 	});
 	</script>

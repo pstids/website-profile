@@ -135,10 +135,7 @@
                 this.planTitle = '';
                 this.planDesc = '';
                 this.blockCount = 0;
-                let blockNode = Polymer.dom(this.$.blocks);
-                while (blockNode.firstChild) {
-                    blockNode.removeChild(blockNode.firstChild);
-                }
+                app.clearChildren(this.$.blocks);
 
                 this.week = week;
                 this.day = day;
