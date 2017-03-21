@@ -58,9 +58,20 @@
 		svg {
 			width: 330px;
 		}
+
+		#container {
+			@apply(--layout);
+			@apply(--layout-horizontal);
+		}
+
+		@media (max-width: 1000px) {
+			#container {
+				@apply(--layout-vertical);
+			}
+		}
 	</style>
 	<template>
-		<div class="layout horizontal" id="container">
+		<div id="container">
 			<div class="layout vertical flex-3">
 				<div class="layout horizontal title">
 					<div class="flex">

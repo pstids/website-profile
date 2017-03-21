@@ -8,6 +8,11 @@
 			margin: 20px;
 			flex: 1;
 		}
+		@media (max-width: 1000px) {
+			:host {
+				display: none;
+			}
+		}
 		table {
 			border-collapse: collapse;
 			margin: 0;
@@ -165,7 +170,9 @@
 				});
 			},
 			createCalendar: function () {
-				app.clearChildren(this.$.container);
+				while (Polymer.dom(this.$.container).firstChild) {
+					Polymer.dom(this.$.container).removeChild(Polymer.dom(this.$.container).firstChild);
+				}
 
 				var past = moment().subtract(3, 'weeks').day('Monday');
 				var today = moment().add(1, 'days');

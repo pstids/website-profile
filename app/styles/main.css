@@ -237,3 +237,14 @@ a[href="https://www.google.com/intl/en-US_US/help/terms_maps.html"] {
   background: -o-linear-gradient(#262626, #1C1C1C);
   background: linear-gradient(#262626, #1C1C1C);
 }
+
+.workout-element-holder {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 800px) {
+  .workout-element-holder {
+    flex-direction: column;
+  }
+}

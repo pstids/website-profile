@@ -1,7 +1,7 @@
 <dom-module id="plan-view">
 <style>
     :host {
-        flex: 1;
+        @apply(--layout-flex);
         @apply(--layout-horizontal);
         @apply(--layout-center);
         @apply(--layout-center-justified);
@@ -61,7 +61,6 @@
         <h1 class="header">{{day_title}}</h1>
         <h1 class="header">RSS: <span>{{day_rss}}</span></h1>
         <p>{{day_description}}</p>
-        <div data-tp="segments" style="display: none;"></div>
         <div data-tp="description"></div>
     </div>
 </template>
@@ -74,7 +73,6 @@ Polymer({
         this.day_rss = '';
 
         this.planList = this.querySelector('[data-tp="plan"]');
-        this.planSegments = this.querySelector('[data-tp="segments"]');
         this.planChart = this.querySelector('[data-tp="chart"]');
         this.planDescription = this.querySelector('[data-tp="description"]');
 
@@ -94,7 +92,7 @@ Polymer({
         this.planList.scrollTop = 0;
         Ps.update(this.planList);
 
-        this.planDescription.insertAdjacentHTML('beforeend', '');
+        // this.planDescription.insertAdjacentHTML('beforeend', '');
 
         var trainingDay = trainingPlan.getDay(this.dateHash);
         if (trainingDay !== null) {
@@ -102,34 +100,36 @@ Polymer({
             this.day_title = trainingDay.workout_title;
             this.day_description = trainingDay.workout_desc;
 
-            app.clearChildren(this.planSegments);
+            // while (Polymer.dom(this.$.segments).firstChild) {
+            //     Polymer.dom(this.$.segments).removeChild(Polymer.dom(this.$.segments).firstChild);
+            // }
 
             // Populate new segments
-            for (var block of trainingDay.blocks) {
-                var horizontalDiv = document.createElement('div');
-                Polymer.dom(horizontalDiv).classList.add('layout', 'horizontal', 'block');
+            // for (var block of trainingDay.blocks) {
+            //     var horizontalDiv = document.createElement('div');
+            //     Polymer.dom(horizontalDiv).classList.add('layout', 'horizontal', 'block');
 
-                var repeatIndicator = document.createElement('div');
-                Polymer.dom(repeatIndicator).classList.add('repeat');
-                if (block.block_repeat === 0) {
-                    block.block_repeat = 1;
-                }
-                repeatIndicator.textContent = `${block.block_repeat}x`;
-                Polymer.dom(horizontalDiv).appendChild(repeatIndicator);
+            //     var repeatIndicator = document.createElement('div');
+            //     Polymer.dom(repeatIndicator).classList.add('repeat');
+            //     if (block.block_repeat === 0) {
+            //         block.block_repeat = 1;
+            //     }
+            //     repeatIndicator.textContent = `${block.block_repeat}x`;
+            //     Polymer.dom(horizontalDiv).appendChild(repeatIndicator);
 
-                var verticalDiv = document.createElement('div');
-                Polymer.dom(verticalDiv).classList.add('layout', 'vertical', 'flex');
+            //     var verticalDiv = document.createElement('div');
+            //     Polymer.dom(verticalDiv).classList.add('layout', 'vertical', 'flex');
 
-                for (var segment of block.segments) {
-                    var segmentDom = document.createElement('plan-segment');
-                    segmentDom.setData(segment);
-                    Polymer.dom(verticalDiv).appendChild(segmentDom);
-                }
+            //     for (var segment of block.segments) {
+            //         var segmentDom = document.createElement('plan-segment');
+            //         segmentDom.setData(segment);
+            //         Polymer.dom(verticalDiv).appendChild(segmentDom);
+            //     }
 
-                Polymer.dom(horizontalDiv).appendChild(verticalDiv);
+            //     Polymer.dom(horizontalDiv).appendChild(verticalDiv);
 
-                Polymer.dom(this.planSegments).appendChild(horizontalDiv);
-            }
+            //     Polymer.dom(this.$.segments).appendChild(horizontalDiv);
+            // }
         } else {
             this.classList.add('hidden');
         }
@@ -291,7 +291,9 @@ Polymer({
                             if (segment.segment_desc === undefined) {
                                 return '';
                             }
-                            app.clearChildren(this.planDescription.firstChild);
+                            while (Polymer.dom(this.planDescription).firstChild) {
+                                Polymer.dom(this.planDescription).removeChild(Polymer.dom(this.planDescription).firstChild);
+                            }
                             this.planDescription.insertAdjacentHTML('beforeend', `${title}<p style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;'>${segment.segment_desc}</p>`);
                             return `${title}`;
                         }

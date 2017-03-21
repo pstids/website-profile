@@ -36,6 +36,14 @@
                 border-color: var(--warning-color);
                 color: var(--warning-color);
             }
+            @media (max-width: 1000px) {
+                .authenticate {
+                    @apply(--layout-vertical);
+                }
+                .authenticate > div {
+                    margin-top: 20px;
+                }
+            }
             /*.authenticate div button[data-toggle="off"] {
             }*/
         </style>
@@ -55,13 +63,7 @@
                     </a>
                     <button is="stryd-button" data-suunto="connect">Connect</button>
                     <div data-suunto="authStep" class="hidden">
-                        <paper-input
-                            no-label-float
-                            type="text"
-                            placeholder="Email"
-                            name="email"
-                            data-suunto="email">
-                        </paper-input>
+                        <paper-input no-label-float type="text" placeholder="Email" name="email" data-suunto="email"></paper-input>
                         <button is="stryd-button" data-suunto="auth">Connect to Movescount</button>
                     </div>
                     <a is="stryd-button" data-suunto="confirm" href="http://www.movescount.com/settings#connections" class="hidden" target="_blank">Visit Movescount to Confirm</a>

@@ -74,7 +74,7 @@
             }
             ul.navigation li a {
                 line-height: 110px;
-                font-size: 1.1vw;
+                font-size: calc(12px + 0.4vw);
                 font-weight: 500;
                 color: inherit;
                 display: inline-block;
@@ -97,7 +97,7 @@
                 border-bottom: 2px solid var(--accent-background-color);
             }
 
-            div.insights {
+            .insights {
                 @apply(--layout-flex-5);
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
@@ -106,7 +106,7 @@
                 color: #FFFFFF;
                 border-bottom: 2px solid var(--accent-background-color);
             }
-            div.insights-header {
+            .insights-header {
                 @apply(--layout-flex);
                 @apply(--layout-vertical);
                 @apply(--layout-center);
@@ -118,10 +118,10 @@
                 border-top: 1px solid var(--accent-background-color);
                 border-bottom: 1px solid var(--accent-background-color);
             }
-            div.insights-header .title {
+            .insights-header .title {
                 font-size: 1.4vw;
             }
-            div.insights-header .subtitle {
+            .insights-header .subtitle {
                 font-size: 0.6vw;
                 font-weight: 700;
             }
@@ -200,7 +200,7 @@
                 display: block;
                 padding: 1em;
                 height: 1em;
-                font-size: 1vw;
+                font-size: 15px;
                 font-weight: 500;
             }
             .profile a:hover {
@@ -216,6 +216,11 @@
             }
             .training div {
                 padding-left: 20px;
+            }
+            @media (max-width: 800px) {
+                .logo, .space-taker, .insights, .profile {
+                    display: none;
+                }
             }
         </style>
         <header>

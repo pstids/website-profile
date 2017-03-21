@@ -878,7 +878,6 @@ var calcMetrics = function (startTime, endTime, activityID, userUnit) {
 
     for (i = start; i < end; i++) {
         var entry = activity[i];
-
         var timeSectionMSeconds = 1000;
         if (i !== end - 1) {
             timeSectionMSeconds = activity[i+1].date - activity[i].date;

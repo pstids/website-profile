@@ -7,9 +7,12 @@
 		color: #fff;
 	}
 
-	.main {
+	.leaderboard-main {
 		background: -webkit-linear-gradient(top, #262626, #1C1C1C);
 		background: linear-gradient(to bottom, #262626, #1C1C1C);
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+		@apply(--layout-around-justified);
 	}
 
 	iron-icon {
@@ -19,11 +22,21 @@
 	}
 
 	.leaderboard {
-		width: 26%;
 		background: #262626;
 		height: 100%;
-		margin: 0 0 0 5.5%;
+		width: 26%;
 	}
+
+	@media (max-width: 1000px) {
+		.leaderboard-main {
+			@apply(--layout-vertical);
+			margin: 0 20px;
+		}
+		.leaderboard {
+			width: 100%;
+		}
+	}
+
 	.leaderboard h1 {
 		@apply(--layout-horizontal);
 		@apply(--layout-center);
@@ -284,16 +297,16 @@
 				</ul>
 			</div>
 		</div>
-		<div class="layout horizontal main">
-			<div class="leaderboard">
+		<div class="leaderboard-main">
+			<div class="leaderboard" data-parent="rss">
 				<h1>I Am Dedicated</h1>
 				<ol data-leaderboard="rss"></ol>
 			</div>
-			<div class="leaderboard">
+			<div class="leaderboard" data-parent="cp">
 				<h1>I Am Powerful</h1>
 				<ol data-leaderboard="cp"></ol>
 			</div>
-			<div class="leaderboard">
+			<div class="leaderboard" data-parent="eff">
 				<h1>I Am Active</h1>
 				<ol data-leaderboard="eff"></ol>
 			</div>
@@ -494,19 +507,30 @@
 					// sets maximum entries to show after user
 					var max = 5;
 					if (values[0] !== null) {
+						this.querySelector('[data-parent="rss"]').classList.remove('hidden');
 						this.processEntries(max, 'rss', values[0]);
+					} else {
+						this.querySelector('[data-parent="rss"]').classList.add('hidden');
 					}
 					if (values[1] !== null) {
+						this.querySelector('[data-parent="cp"]').classList.remove('hidden');
 						this.processEntries(max, 'cp', values[1]);
+					} else {
+						this.querySelector('[data-parent="cp"]').classList.add('hidden');
 					}
 					if (values[2] !== null) {
+						this.querySelector('[data-parent="eff"]').classList.remove('hidden');
 						this.processEntries(max, 'eff', values[2]);
+					} else {
+						this.querySelector('[data-parent="eff"]').classList.add('hidden');
 					}
 				});
 		},
 		processEntries: function (max, highlight, entries) {
 			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			app.clearChildren(rssContainer);
+			while (Polymer.dom(rssContainer).firstChild) {
+				Polymer.dom(rssContainer).removeChild(Polymer.dom(rssContainer).firstChild);
+			}
 
 			var i = 0;
 			var entry = {};

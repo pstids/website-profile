@@ -59,6 +59,13 @@
 		}
 		.stats {
 			padding: 20px;
+			@apply(--layout-horizontal);
+		}
+		@media (max-width: 800px) {
+			.stats {
+				padding: 20px;
+				@apply(--layout-vertical);
+			}
 		}
 		.stats h2 {
 			margin: 0;
@@ -74,7 +81,7 @@
 			text-align: center;
 		}
 		.stats .stat {
-			@apply(--layout-flex);
+			flex: 1 1 200px;
 		}
 		.values {
 			@apply(--layout-flex);
@@ -125,7 +132,7 @@
 				<iron-icon icon="icons:autorenew"></iron-icon>
 			</div>
 		</div>
-		<div class="layout horizontal stats">
+		<div class="stats">
 			<div class="layout horizontal stat">
 				<div class="layout vertical values">
 					<div class="layout vertical value">

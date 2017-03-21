@@ -114,7 +114,7 @@
 				objc: Object
 			},
 			listeners: {
-				'click': 'bubblePop'
+				'tap': 'bubblePop'
 			},
 			setMode: function (opt) {
 				var activeKeys = this.objects.active;
@@ -144,6 +144,8 @@
 				}
 			},
 			setData: function (objs) {
+				Polymer.dom(this.querySelector(`[data-bubble="2"]`)).classList.remove('hidden');
+				Polymer.dom(this.querySelector(`[data-bubble="3"]`)).classList.remove('hidden');
 				this.objects = objs;
 				var props = ['a', 'b', 'c'];
 				var i = 0;
@@ -165,16 +167,19 @@
 							this.set(`obj${prop}.title`, obj.title);
 							this.set(`obj${prop}.value`, obj.value);
 						}
-						i++;
+						i+=1;
 					}
 				}
 				if (i === 0) {
 					this.classList.add('hidden');
 				}
-				// If there are less than three objects, hide the remaining bubbles.
-				for (; i < 3; i++) {
-					this.querySelector(`[data-bubble="${i+1}"]`).classList.add('hidden');
+				if (i === 2) {
+					Polymer.dom(this.querySelector(`[data-bubble="3"]`)).classList.add('hidden');
 				}
+				if (i === 1) {
+					Polymer.dom(this.querySelector(`[data-bubble="2"]`)).classList.add('hidden');
+				}
+				// If there are less than three objects, hide the remaining bubbles.
 			},
 			ready: function () {
 				this.obja = {};
