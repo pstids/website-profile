@@ -1,0 +1,185 @@
+<dom-module id="heat-duration">
+<style>
+	:host {
+		width: 100%;
+		height: 600px;
+		@apply(--layout);
+		@apply(--layout-horizontal);
+		position: relative;
+	}
+	#heatcontainer {
+		height: 600px;
+		width: 100%:;
+	}
+</style>
+<template>
+	<div id="heatcontainer">
+		<canvas style="width: 960px; height: 500px; position: absolute;" id="heatcanvas"></canvas>
+	</div>
+	<script src=""></script>
+</template>
+<script>
+Polymer({
+	is: 'heat-duration',
+	ready: function () {
+		this.width = 960;
+		this.height = 500;
+		this.data = {};
+		superagent
+			.get('/powercenter/scripts/heat.json')
+			.send()
+			.set('Accept', 'application/json')
+			.end((err, res) => {
+				if (res.ok) {
+					console.log(res, err);
+					this.data = res.body;
+					this.draw();
+					this.createChart();
+				} else {
+					console.log('Error: cannot fetch data');
+				}
+			});
+	},
+	createChart: function () {
+		console.log(this.data);
+		this.dx = this.data.heatmaps[0].length;
+		this.dy = this.data.heatmaps.length;
+
+		var x = d3.scale.linear()
+			.domain([0, this.dx])
+			.range([0, this.width]);
+		var y = d3.scale.linear()
+			.domain([0, this.dy])
+			.range([this.height, 0]);
+
+		var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient('top')
+			.tickFormat((d) => {
+				var unit = ' secs';
+				var val = this.data.windows[d-1];
+				if (val > 60) {
+					val /= 60;
+					unit = ' mins';
+				}
+				return [`${val}${unit}`];
+			})
+			.ticks(10);
+
+		var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient('right')
+			.tickFormat((d) => {
+				return this.data.powers[d];
+			});
+
+		// d3.select('#heatcontainer')
+		// 	.append('canvas')
+		// 	.style('position', 'absolute')
+		// 	.attr('width', this.dx)
+		// 	.attr('height', this.dy)
+		// 	.style('width', `${this.width}px`)
+		// 	.style('height', `${this.height}px`)
+		// 	.call(this.draw.bind(this))
+		// 		.append('g')
+		// 		.attr('transform', 'translate(0, 0)');
+
+		var svg = d3.select('#heatcontainer')
+			.append('svg')
+			.style('position', 'absolute')
+			.attr('width', this.width)
+			.attr('height', this.height)
+				.append('g')
+				.attr('transform', 'translate(0, 0)');
+
+		var line = d3.svg.line()
+			/* unused: d */
+			.x((d, i) => {
+				return x(i);
+			})
+			.y((d) => {
+				return y(d);
+			});
+
+		svg.append('path')
+			.datum(this.data.maxs)
+			.attr('class', 'line')
+			.attr('d', line)
+			.attr('stroke', '#f4931f')
+			.attr('stroke-width', 4)
+			.attr('border', '')
+			.attr('fill', 'rgba(0, 0, 0, 0)');
+
+		svg.append('g')
+			.attr('class', 'x axis')
+			.attr('transform', `translate(0, ${this.height})`)
+			.call(xAxis)
+			.call(this.removeZero)
+				.append('text')
+				.attr('transform', `translate(${this.width/2}, -50)`)
+				.attr('dy', '0.71em')
+				.attr('fill', '#fff')
+				.text('Duration');
+
+		svg.append('g')
+			.attr('class', 'y axis')
+			.call(yAxis)
+			.call(this.removeZero)
+				.append('text')
+				.attr('transform', `rotate(-90), translate(${this.height*2}, 50)`)
+				.attr('dy', '0.71em')
+				.attr('fill', '#fff')
+				.text('Power (W)');
+	},
+	/* globals HeatCanvas:true */
+	draw: function () {
+
+		// console.log(this.dx, this.dy);
+		// var context = canvas.node().getContext('2d');
+		// var image = context.createImageData(this.dx, this.dy);
+		// var p = 0;
+		// for (var y = 0; y < this.dy; y++) {
+		// 	for (var x = 0; x < this.dx; x++) {
+		// 		var c = d3.rgb(this.color(this.data.heatmaps[y][x]));
+		// 		image.data[p++] = c.r;
+		// 		image.data[p++] = c.g;
+		// 		image.data[p++] = c.b;
+		// 		image.data[p++] = 255;
+		// 	}
+		// }
+		// context.putImageData(image, 0, 0);
+
+		var heatmap = new HeatCanvas(this.$.heatcanvas);
+		for (var y = 0; y < this.dy; y++) {
+			for (var x = 0; x < this.dx; x++) {
+				var pt = this.getXY(x, y);
+				var it = this.getIntensity(this.data.heatmaps[y][x]);
+				heatmap.add(pt.x, pt.y, it);
+			}
+		}
+		heatmap.render();
+	},
+	getXY: function (xi, yi, xm, ym) {
+		var width = 960;
+		var height = 500;
+		var partx = width / xm;
+		var party = height / ym;
+		return {
+			x: partx * xi + (partx/2),
+			y: party * yi + (party/2)
+		};
+	},
+	getIntensity: function (value) {
+		//var low = 0;
+		var high = 210;
+		return value/high;
+	},
+	removeZero: function (axis) {
+		axis.selectAll('g')
+			.filter((d) => {
+				return !d;
+			}).remove();
+	}
+});
+</script>
+</dom-module>

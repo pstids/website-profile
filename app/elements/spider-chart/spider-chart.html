@@ -1,0 +1,67 @@
+<dom-module id="spider-chart">
+<style>
+	:host {
+		width: 100%;
+		height: 600px;
+		@apply(--layout);
+		@apply(--layout-horizontal);
+		position: relative;
+	}
+	#spider {
+		height: 600px;
+		width: 100%;
+	}
+</style>
+<template>
+	<div id="spider"></div>
+</template>
+<script>
+Polymer({
+	is: 'spider-chart',
+	ready: function () {
+		this.chart = null;
+		this.createChart();
+	},
+	createChart: function () {
+		this.chart = AmCharts.makeChart(
+			this.$.spider,
+			{
+				type: 'radar',
+				theme: 'stryd',
+				valueAxes: [{
+					axisTitle: 40,
+					minimum: 0,
+					maximum: 100,
+					axisAlpha: 1,
+					dashLength: 0,
+					labelsEnabled: false
+				}],
+				colors: ['#F5A214'],
+				startDuration: 2,
+				graphs: [{
+					balloonText: '[[value]] points',
+					bullet: 'round',
+					bulletSize: 12,
+					lineThickness: 7,
+					valueField: 'units'
+				}],
+				categoryField: 'category',
+				dataProvider: [{
+					category: 'Fatigue',
+					units: 52
+				}, {
+					category: 'Muscle Condition',
+					units: 55
+				}, {
+					category: 'Power Rank',
+					units: 45
+				}, {
+					category: 'Endurance Ability',
+					units: 80
+				}]
+			}
+		);
+	}
+});
+</script>
+</dom-module>

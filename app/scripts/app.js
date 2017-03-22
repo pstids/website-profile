@@ -186,6 +186,11 @@ app.addEventListener('dom-change', () => {
         }
     });
 
+    page('/weakness', () => {
+        app.route = 'weakness';
+        header.toggleActive('weakness');
+    });
+
     page('/run/:idPrimary/run/:idSecondary', (data) => {
         app.route = 'profile';
         app.params = data.params;
