@@ -783,7 +783,7 @@ var resetMetrics = function () {
         },
         heartRate: {
             active: ['formPower', 'legSpring', 'heartRate'],
-                formPower: {
+            formPower: {
                 icon: 'places:hot-tub',
                 title: 'Form Power',
                 elapsed: 0,
@@ -975,8 +975,12 @@ var calcMetrics = function (startTime, endTime, activityID, userUnit) {
     metrics.time.totalTime.value = hmsTime(milliseconds);
     metrics.pace.pace.unit = paceUnit;
     metrics.pace.maxPace.unit = paceUnit;
-    metrics.power.rss.unit = activity.stress;
     metrics.misc.distance.unit = distanceUnit;
+    if (activity.stress) {
+        metrics.power.rss.value = activity.stress;
+    } else {
+        delete metrics.power.rss;
+    }
 
     var elapsedMinutes = seconds / 60;
     var movingMinutes = metrics.time.time.moving / 1000 / 60;
@@ -990,9 +994,6 @@ var calcMetrics = function (startTime, endTime, activityID, userUnit) {
 
     metrics.power.power.moving = (metrics.power.power.moving / metrics.power.power.mTotal).stat();
     metrics.power.power.elapsed = (metrics.power.power.elapsed / total).stat();
-
-    metrics.heartRate.heartRate.moving = (metrics.heartRate.heartRate.moving / metrics.heartRate.heartRate.mTotal).stat();
-    metrics.heartRate.heartRate.elapsed = (metrics.heartRate.heartRate.elapsed / total).stat();
 
     metrics.time.time.elapsed = hmsTime(metrics.time.time.elapsed);
     metrics.time.time.moving = hmsTime(metrics.time.time.moving);
@@ -1022,6 +1023,13 @@ var calcMetrics = function (startTime, endTime, activityID, userUnit) {
         delete metrics.dynamics.vertOsc;
     }
 
+    if (metrics.heartRate.heartRate.elapsed !== 0) {
+        metrics.heartRate.heartRate.moving = (metrics.heartRate.heartRate.moving / metrics.heartRate.heartRate.mTotal).stat();
+        metrics.heartRate.heartRate.elapsed = (metrics.heartRate.heartRate.elapsed / total).stat();
+    } else {
+        delete metrics.heartRate.heartRate;
+    }
+
     if (metrics.heartRate.formPower.elapsed !== 0) {
         metrics.heartRate.formPower.moving = (metrics.heartRate.formPower.moving / metrics.heartRate.formPower.mTotal).stat();
         metrics.heartRate.formPower.elapsed = (metrics.heartRate.formPower.elapsed / total).stat();
@@ -1036,9 +1044,9 @@ var calcMetrics = function (startTime, endTime, activityID, userUnit) {
         delete metrics.heartRate.legSpring;
     }
 
-    delete metrics.heartRate.movingHR;
-
     data.metrics = metrics;
+
+    console.log(data.metrics);
 
     postMessage(data);
 };

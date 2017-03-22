@@ -118,12 +118,12 @@ app.addEventListener('dom-change', () => {
         }
         if ('chartData' in event.data) {
             workoutSummary.setData(event.data.workout);
-            app.calcMetrics(
-                0,
-                0,
-                event.data.chartDescription.id,
-                user.data.units
-            );
+            // app.calcMetrics(
+            //     0,
+            //     0,
+            //     event.data.chartDescription.id,
+            //     user.data.units
+            // );
             workoutElement.setChartData(
                 event.data.chartData,
                 event.data.chartDescription,

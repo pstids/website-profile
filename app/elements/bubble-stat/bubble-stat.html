@@ -144,8 +144,9 @@
 				}
 			},
 			setData: function (objs) {
-				Polymer.dom(this.querySelector(`[data-bubble="2"]`)).classList.remove('hidden');
-				Polymer.dom(this.querySelector(`[data-bubble="3"]`)).classList.remove('hidden');
+				for (var x = 1; x <= 3; x++) {
+					Polymer.dom(this.querySelector(`[data-bubble="${x}"]`)).classList.remove('hidden');
+				}
 				this.objects = objs;
 				var props = ['a', 'b', 'c'];
 				var i = 0;
@@ -172,14 +173,12 @@
 				}
 				if (i === 0) {
 					this.classList.add('hidden');
+				} else {
+					this.classList.remove('hidden');
 				}
-				if (i === 2) {
-					Polymer.dom(this.querySelector(`[data-bubble="3"]`)).classList.add('hidden');
+				for (; i < 3; i++) {
+					Polymer.dom(this.querySelector(`[data-bubble="${i+1}"]`)).classList.add('hidden');
 				}
-				if (i === 1) {
-					Polymer.dom(this.querySelector(`[data-bubble="2"]`)).classList.add('hidden');
-				}
-				// If there are less than three objects, hide the remaining bubbles.
 			},
 			ready: function () {
 				this.obja = {};
