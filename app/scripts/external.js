@@ -53,7 +53,7 @@ var HeatCanvas = function(canvas){
         return null;
     }
     
-    this.worker = new Worker(HeatCanvas.getPath()+'heatcanvas-worker.js');
+    this.worker = new Worker('/powercenter/scripts/heat-canvas.js');
     
     this.width = this.canvas.width;
     this.height = this.canvas.height;
@@ -123,7 +123,7 @@ HeatCanvas.prototype._render = function(f_value_color){
     var ctx = this.canvas.getContext("2d");
     ctx.clearRect(0, 0, this.width, this.height);
 
-    defaultColor = this.bgcolor || [0, 0, 0, 255];
+    defaultColor = [0, 0, 0, 0];
     var canvasData = ctx.createImageData(this.width, this.height);
     for (var i=0; i<canvasData.data.length; i+=4){
         canvasData.data[i] = defaultColor[0]; // r

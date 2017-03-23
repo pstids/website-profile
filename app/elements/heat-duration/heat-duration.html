@@ -11,12 +11,16 @@
 		height: 600px;
 		width: 100%:;
 	}
+	#heatcanvas {
+		width: 960px;
+		height: 500px;
+		position: absolute;
+	}
 </style>
 <template>
 	<div id="heatcontainer">
-		<canvas style="width: 960px; height: 500px; position: absolute;" id="heatcanvas"></canvas>
+		<canvas width="960" height="500" id="heatcanvas"></canvas>
 	</div>
-	<script src=""></script>
 </template>
 <script>
 Polymer({
@@ -31,9 +35,7 @@ Polymer({
 			.set('Accept', 'application/json')
 			.end((err, res) => {
 				if (res.ok) {
-					console.log(res, err);
 					this.data = res.body;
-					this.draw();
 					this.createChart();
 				} else {
 					console.log('Error: cannot fetch data');
@@ -41,7 +43,6 @@ Polymer({
 			});
 	},
 	createChart: function () {
-		console.log(this.data);
 		this.dx = this.data.heatmaps[0].length;
 		this.dy = this.data.heatmaps.length;
 
@@ -73,17 +74,6 @@ Polymer({
 				return this.data.powers[d];
 			});
 
-		// d3.select('#heatcontainer')
-		// 	.append('canvas')
-		// 	.style('position', 'absolute')
-		// 	.attr('width', this.dx)
-		// 	.attr('height', this.dy)
-		// 	.style('width', `${this.width}px`)
-		// 	.style('height', `${this.height}px`)
-		// 	.call(this.draw.bind(this))
-		// 		.append('g')
-		// 		.attr('transform', 'translate(0, 0)');
-
 		var svg = d3.select('#heatcontainer')
 			.append('svg')
 			.style('position', 'absolute')
@@ -113,6 +103,9 @@ Polymer({
 		svg.append('g')
 			.attr('class', 'x axis')
 			.attr('transform', `translate(0, ${this.height})`)
+			.attr('stroke', '#FFFFFF')
+			.attr('fill', '#FFFFFF')
+			.attr('color', '#FFFFFF')
 			.call(xAxis)
 			.call(this.removeZero)
 				.append('text')
@@ -123,6 +116,9 @@ Polymer({
 
 		svg.append('g')
 			.attr('class', 'y axis')
+			.attr('stroke', '#FFFFFF')
+			.attr('fill', '#FFFFFF')
+			.attr('color', '#FFFFFF')
 			.call(yAxis)
 			.call(this.removeZero)
 				.append('text')
@@ -130,34 +126,29 @@ Polymer({
 				.attr('dy', '0.71em')
 				.attr('fill', '#fff')
 				.text('Power (W)');
+
+		this.draw();
 	},
 	/* globals HeatCanvas:true */
 	draw: function () {
-
-		// console.log(this.dx, this.dy);
-		// var context = canvas.node().getContext('2d');
-		// var image = context.createImageData(this.dx, this.dy);
-		// var p = 0;
-		// for (var y = 0; y < this.dy; y++) {
-		// 	for (var x = 0; x < this.dx; x++) {
-		// 		var c = d3.rgb(this.color(this.data.heatmaps[y][x]));
-		// 		image.data[p++] = c.r;
-		// 		image.data[p++] = c.g;
-		// 		image.data[p++] = c.b;
-		// 		image.data[p++] = 255;
-		// 	}
-		// }
-		// context.putImageData(image, 0, 0);
-
 		var heatmap = new HeatCanvas(this.$.heatcanvas);
 		for (var y = 0; y < this.dy; y++) {
 			for (var x = 0; x < this.dx; x++) {
-				var pt = this.getXY(x, y);
+				var pt = this.getXY(x, y, this.dx, this.dy);
 				var it = this.getIntensity(this.data.heatmaps[y][x]);
-				heatmap.add(pt.x, pt.y, it);
+				heatmap.push(Math.round(pt.x), Math.round(pt.y), it);
 			}
 		}
-		heatmap.render();
+		heatmap.render(null, null, (value) => {
+			var h = (1 - value);
+			var s = 0.8;
+			var l = value * 0.6;
+			var a = 1;
+			if (value < 0.3) {
+				a = value * (10/3);
+			}
+			return [h, s, l, a];
+		});
 	},
 	getXY: function (xi, yi, xm, ym) {
 		var width = 960;
@@ -170,9 +161,11 @@ Polymer({
 		};
 	},
 	getIntensity: function (value) {
-		//var low = 0;
+		if (value === 0) {
+			return 0;
+		}
 		var high = 210;
-		return value/high;
+		return ((value/high)*30) + 20;
 	},
 	removeZero: function (axis) {
 		axis.selectAll('g')
