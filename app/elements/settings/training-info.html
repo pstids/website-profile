@@ -1,811 +1,849 @@
 <dom-module id="training-info">
-    <style>
-        .title {
-            @apply(--header);
-        }
-        h3 {
-            font-size: 20px;
-            color: #FFFFFF;
-            font-weight: 700;
-            text-align: center
-        }
-        p {
-            color: white;
-            line-height: 28px;
-        }
-        paper-input input {
-            text-align: center !important;
-        }
+<style>
+	.title {
+		@apply(--header);
+	}
+	h3 {
+		font-size: 20px;
+		color: #FFFFFF;
+		font-weight: 700;
+		text-align: center
+	}
+	p {
+		color: white;
+		line-height: 28px;
+	}
+	paper-input input {
+		text-align: center !important;
+	}
 
-        paper-dropdown-menu.test-selector {
-            min-width: 20vw;
+	paper-dropdown-menu {
+		min-width: 20vw;
 
-            --paper-input-container-label: {
-                color: white;
-                font-weight: bold;
-            };
-            --paper-input-container-input: {
-                color: white;
-                font-style: normal;
-            };
-            /* no underline */
-            --paper-input-container-underline: {
-                color: white;
-            };
-        }
+		--paper-input-container-label: {
+			color: white;
+			font-weight: bold;
+		};
+		--paper-input-container-input: {
+			color: white;
+			font-style: normal;
+		};
+		/* no underline */
+		--paper-input-container-underline: {
+			color: white;
+		};
+	}
 
-        paper-icon-button {
-            color: white;
-        }
+	paper-icon-button {
+		color: white;
+	}
 
-        .container {
-            -webkit-transition: max-height 0.8s;
-            -moz-transition: max-height 0.8s;
-            transition: max-height 0.8s;
-            @apply(--layout-vertical);
-            @apply(--layout-center);
-        }
-        .test-input {
-            @apply(--layout-horizontal);
-            @apply(--layout-around-justified);
-            @apply(--layout-center);
-        }
-        .subtest-input {
-            padding-left: 5vw;
-            padding-right: 5vw;
-            @apply(--layout-vertical);
-            @apply(--layout-around-justified);
-            @apply(--layout-center);
-        }
-        .subtest-input .label {
-            font-weight: normal;
-            color: white;
-        }
-        .test-desc {
-            color: white;
-            @apply(--layout-vertical);
-            line-height: 200%;
-            padding: 0 8vw;
-            font-weight: lighter;
-        }
+	.container {
+		-webkit-transition: max-height 0.8s;
+		-moz-transition: max-height 0.8s;
+		transition: max-height 0.8s;
+		@apply(--layout-vertical);
+		@apply(--layout-center);
+	}
+	.test-input {
+		@apply(--layout-horizontal);
+		@apply(--layout-around-justified);
+		@apply(--layout-center);
+	}
+	.subtest-input {
+		padding-left: 5vw;
+		padding-right: 5vw;
+		@apply(--layout-vertical);
+		@apply(--layout-around-justified);
+		@apply(--layout-center);
+	}
+	.subtest-input .label {
+		font-weight: normal;
+		color: white;
+	}
+	.test-desc {
+		color: white;
+		@apply(--layout-vertical);
+		line-height: 200%;
+		padding: 0 8vw;
+		font-weight: lighter;
+	}
 
-        #bubbles {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-around-justified);
-            min-height: 15vw;
-            width: 60%;
-        }
-        bubble-stat {
-            --bubble-stat-wrap: {
-                width: 12vw;
-                height: 12vw;
-                position: relative;
-            };
-            --bubble-stat-border: {
-                width: 10vw;
-                height: 10vw;
-            };
-            --bubble-stat-icon: {
-                width: 1.5vw;
-                height: 1.5vw;
-            };
-        }
+	#bubbles {
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+		@apply(--layout-around-justified);
+		min-height: 15vw;
+		width: 60%;
+	}
+	bubble-stat {
+		--bubble-stat-wrap: {
+			width: 12vw;
+			height: 12vw;
+			position: relative;
+		};
+		--bubble-stat-border: {
+			width: 10vw;
+			height: 10vw;
+		};
+		--bubble-stat-icon: {
+			width: 1.5vw;
+			height: 1.5vw;
+		};
+	}
 
-        #zone-titles {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-around-justified);
-            width: 85%;
-        }
-        #zone-titles .title {
-            margin: 5px 20px;
-        }
-        .zones {
-            @apply(--layout-vertical);
-            width: 85%;
-        }
-        .zones zone-entry:nth-of-type(odd) {
-            background-color: rgba(20, 20, 20, 0.5);
-        }
-        .zone {
-            @apply(--layout-flex);
-            border-radius: 30px;
-            border: 1px solid white;
-            margin: 20px 0px 20px 20px;
-            padding: 20px;
-        }
-        .zone:first-child {
-            margin-left: 0px;
-        }
-        .zone.titles {
-            @apply(--layout-flex);
-        }
+	#zone-titles {
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+		@apply(--layout-around-justified);
+		width: 85%;
+	}
+	#zone-titles .title {
+		margin: 5px 20px;
+	}
+	.zones {
+		@apply(--layout-vertical);
+		width: 85%;
+	}
+	.zones zone-entry:nth-of-type(odd) {
+		background-color: rgba(20, 20, 20, 0.5);
+	}
+	.zone {
+		@apply(--layout-flex);
+		border-radius: 30px;
+		border: 1px solid white;
+		margin: 20px 0px 20px 20px;
+		padding: 20px;
+	}
+	.zone:first-child {
+		margin-left: 0px;
+	}
+	.zone.titles {
+		@apply(--layout-flex);
+	}
 
-        .entry paper-input[name] {
-            margin-left: 0;
-        }
+	.entry paper-input[name] {
+		margin-left: 0;
+	}
 
-        .entry {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            margin-top: 20px;
-        }
-        .entry paper-input {
-            @apply(--layout-flex-2);
-            font-size: 20px;
-            font-weight: 700;
-            text-align: center;
-        }
+	.entry {
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+		margin-top: 20px;
+	}
+	.entry paper-input {
+		@apply(--layout-flex-2);
+		font-size: 20px;
+		font-weight: 700;
+		text-align: center;
+	}
 
-        .save {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            @apply(--layout-horizontal);
-            @apply(--layout-end-justified);
-            @apply(--layout-center);
-            cursor: pointer;
-            background-color: #262626;
-            padding: 0 0 0 30px;
-            border-radius: 40px;
-            border: 2px solid var(--paper-fab-background);
-        }
-        .save p {
-            color: white;
-            font-size: 14px;
-            margin-right: 15px;
-        }
-        .save-line {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(38, 38, 38, 0.4);
-            width: 100vw;
-            height: 100px;
-        }
-    </style>
-    <template>
-    <div data-zone="container">
-        <div id="calculate" class="container" style="margin: 5vh auto;">
-            <h1 class="title">Critical Power Test</h1>
-            <div class="layout horizontal center" style="padding: 2vw">
-                <paper-dropdown-menu class="test-selector" label="Critical Power Test Method" no-animations>
-                    <paper-menu class="dropdown-content" selected="{{selected}}">
-                        <paper-item>3-6 laps test</paper-item>
-                        <paper-item>3-9 minutes test</paper-item>
-                        <paper-item>5k estimation</paper-item>
-                        <paper-item>10k estimation</paper-item>
-                        <!--<paper-item>1 hour estimation</paper-item>-->
-                    </paper-menu>
-                </paper-dropdown-menu>
-            </div>
-            <p class="hidden hint">
-                <!--http://club.stryd.com/t/coach-mike-ricci-and-his-team-do-the-critical-power-test/1592-->
-                <a href="http://club.stryd.com/t/a-protocol-for-establishing-critical-power-in-running/574">
-                </a>
-            </p>
-            <div>
-                <iron-pages selected="{{selected}}">
-                    <div class="test-input">
-                        <div class="subtest-input">
-                            <p class="label">2 laps result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{lapTestResult.lap2Power}}">
-                            </paper-input>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelDuration}}" value="{{lapTestResult.lap2Duration}}">
-                            </paper-input>
-                        </div>
-                        <div class="subtest-input">
-                            <p class="label">3 laps result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{lapTestResult.lap3Power}}">
-                            </paper-input>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelDuration}}" value="{{lapTestResult.lap3Duration}}">
-                            </paper-input>
-                        </div>
-                        <div class="subtest-input">
-                            <p class="label">6 laps result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{lapTestResult.lap6Power}}">
-                            </paper-input>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelDuration}}" value="{{lapTestResult.lap6Duration}}">
-                            </paper-input>
-                        </div>
-                    </div>
-                    <div class="test-input">
-                        <div class="subtest-input">
-                            <p class="label">3 minutes result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{minuteTestResult.min3Power}}">
-                            </paper-input>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelPace}}" value="{{minuteTestResult.min3Pace}}">
-                            </paper-input>
-                        </div>
-                        <div class="subtest-input">
-                            <p class="label">9 minutes result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{minuteTestResult.min9Power}}">
-                            </paper-input>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelPace}}" value="{{minuteTestResult.min9Pace}}">
-                            </paper-input>
-                        </div>
-                    </div>
+	.save {
+		position: fixed;
+		bottom: 30px;
+		right: 30px;
+		@apply(--layout-horizontal);
+		@apply(--layout-end-justified);
+		@apply(--layout-center);
+		cursor: pointer;
+		background-color: #262626;
+		padding: 0 0 0 30px;
+		border-radius: 40px;
+		border: 2px solid var(--paper-fab-background);
+	}
+	.save p {
+		color: white;
+		font-size: 14px;
+		margin-right: 15px;
+	}
+	.save-line {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: rgba(38, 38, 38, 0.4);
+		width: 100vw;
+		height: 100px;
+	}
+</style>
+<template>
+	<div data-zone="container">
+		<div id="calculate" class="container" style="margin: 5vh auto;">
+			<h1 class="title">Critical Power Test</h1>
+			<div class="layout horizontal center" style="padding: 2vw">
+				<paper-dropdown-menu label="Critical Power Test Method" no-animations>
+					<paper-menu class="dropdown-content" selected="{{selected}}">
+						<paper-item>3-6 laps test</paper-item>
+						<paper-item>3-9 minutes test</paper-item>
+						<paper-item>5k estimation</paper-item>
+						<paper-item>10k estimation</paper-item>
+					</paper-menu>
+				</paper-dropdown-menu>
+			</div>
+			<div>
+				<iron-pages selected="{{selected}}">
+					<div class="test-input">
+						<div class="subtest-input">
+							<p class="label">2 laps result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}" label="{{labelPower}}" value="{{lapTestResult.lap2Power}}">
+							</paper-input>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelDuration}}" value="{{lapTestResult.lap2Duration}}">
+							</paper-input>
+						</div>
+						<div class="subtest-input">
+							<p class="label">3 laps result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}" label="{{labelPower}}" value="{{lapTestResult.lap3Power}}">
+							</paper-input>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelDuration}}" value="{{lapTestResult.lap3Duration}}">
+							</paper-input>
+						</div>
+						<div class="subtest-input">
+							<p class="label">6 laps result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}" label="{{labelPower}}" value="{{lapTestResult.lap6Power}}">
+							</paper-input>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelDuration}}" value="{{lapTestResult.lap6Duration}}">
+							</paper-input>
+						</div>
+					</div>
 
-                    <div class="test-input">
-                        <div class="subtest-input">
-                            <p class="label">5k result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelDuration5K}}" value="{{distanceTestResult.fiveKDuration}}">
-                            </paper-input>
-                        </div>
-                    </div>
+					<div class="test-input">
+						<div class="subtest-input">
+							<p class="label">3 minutes result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}" label="{{labelPower}}" value="{{minuteTestResult.min3Power}}">
+							</paper-input>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelPace}}" value="{{minuteTestResult.min3Pace}}">
+							</paper-input>
+						</div>
+						<div class="subtest-input">
+							<p class="label">9 minutes result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}" label="{{labelPower}}" value="{{minuteTestResult.min9Power}}">
+							</paper-input>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelPace}}" value="{{minuteTestResult.min9Pace}}">
+							</paper-input>
+						</div>
+					</div>
 
-                    <div class="test-input">
-                        <div class="subtest-input">
-                            <p class="label">10k result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelDuration10K}}" value="{{distanceTestResult.tenKDuration}}">
-                            </paper-input>
-                        </div>
-                    </div>
+					<div class="test-input">
+						<div class="subtest-input">
+							<p class="label">5k result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelDuration5K}}" value="{{distanceTestResult.fiveKDuration}}">
+							</paper-input>
+						</div>
+					</div>
 
-                    <div class="test-input">
-                        <div class="subtest-input">
-                            <p class="label">Customized result</p>
-                            <paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}"
-                            label="{{labelPower}}" value="{{customTestResult.power}}">
-                            </paper-input>
-                            <paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}"
-                            label="{{labelPace}}" value="{{customTestResult.pace}}">
-                            </paper-input>
-                        </div>
-                    </div>
-                </iron-pages>
-            </div>
+					<div class="test-input">
+						<div class="subtest-input">
+							<p class="label">10k result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelDuration10K}}" value="{{distanceTestResult.tenKDuration}}">
+							</paper-input>
+						</div>
+					</div>
 
-            <button is="stryd-button" on-click="calculateTrainingInfo" style="min-width: 25vw; margin: 5vh auto;">Calculate</button>
+					<div class="test-input">
+						<div class="subtest-input">
+							<p class="label">Customized result</p>
+							<paper-input required auto-validate allowed-pattern="[0-9]" error-message="{{errMsgPower}}" label="{{labelPower}}" value="{{customTestResult.power}}">
+							</paper-input>
+							<paper-input required auto-validate allowed-pattern="[0-9]|:" error-message="{{errMsgPace}}" label="{{labelPace}}" value="{{customTestResult.pace}}">
+							</paper-input>
+						</div>
+					</div>
+				</iron-pages>
+			</div>
 
-            <div class="test-desc">
-                <h3>Instructions</h3>
-                <iron-pages selected="{{selected}}">
-                    <div>
-                        <div>
-                            1. <b>Warm up for 5 minutes</b>. Do two to three 100-meter strides at approximately 80% maximum
-                            effort during warm up to enhance the blood circulation and ready your muscle for intense use.
-                        </div>
-                        <div>
-                            2. <b>800 meters Easy-pace run</b>. Two laps on a 400-meter track, please use the
-                            innermost lane. Run at an easy pace, such that you can comfortably maintain conversation.
-                        </div>
-                        <div>
-                            3. <b>Warm up for another 5 minutes</b>.
-                        </div>
-                        <div>
-                            4. <b>1200 meters Maximum-effort run</b>. Run at a consistent pace throughout the test, but
-                            so that you are nearly exhausted at the end of the test.
-                        </div>
-                        <div>
-                            5. <b>Recovery for 30 minutes</b>. Throughout the 30-minute recovery period, the runner
-                            should walk or jog slowly.
-                        </div>
-                        <div>
-                            6. <b>2400 meters Maximum-effort run</b>. As was the case for the three-lap run, it is
-                            important to maintain a consistent pace during this run instead of dramatically changing
-                            pace (and effort) during the run.
-                        </div>
-                        <div>
-                            7. <b>Cool down</b>.
-                        </div>
-                        <div>
-                            Please refer to this
-                            <a href="http://club.stryd.com/t/learn-your-performance-baseline-using-the-critical-power-test/1608">white paper</a>
-                            for more information.
-                        </div>
-                    </div>
-                    <div>
-                        <div>
-                            1. <b>Warm up for 10 minutes</b>. Do five 100-meter strides at approximately 80% maximum
-                            effort during warm up to enhance the blood circulation and ready your muscle for intense use.
-                        </div>
-                        <div>
-                            2. <b>Maximum distance run for 3 minutes</b>. Run at a consistent pace throughout the
-                            three-minute test, but to be nearly exhausted at the end of the test.
-                        </div>
-                        <div>
-                            3. <b>Recovery for 30 minutes</b>. Throughout the 30-minute recovery period, the runner
-                            should walk or jog slowly.
-                        </div>
-                        <div>
-                            4. <b>Maximum distance run for 9 minutes</b>. Again, maintain a consistent pace during this
-                            run instead of dramatically changing pace (and effort) during the run.
-                        </div>
-                        <div>
-                            5. <b>Cool down</b>.
-                        </div>
-                        <div>
-                            Please refer to this
-                            <a href="http://club.stryd.com/t/a-protocol-for-establishing-critical-power-in-running/574">white paper</a>
-                            for more information.
-                        </div>
-                    </div>
-                    <div>
-                        Please input your 5k time to get the estimated critical power.
-                    </div>
-                    <div>
-                        Please input your 10k time to get the estimated critical power.
-                    </div>
-                    <div>
-                        Please run for 1 hour at all out effort to get the estimated critical power.
-                    </div>
-                </iron-pages>
-            </div>
-        </div>
+			<button is="stryd-button" on-click="calculateTrainingInfo" style="min-width: 25vw; margin: 5vh auto;">Calculate</button>
 
-        <div id="info" class="container" style="margin: 10vh 0;">
-            <div id="bubbles">
-                <bubble-stat type="power"></bubble-stat>
-                <bubble-stat type="pace"></bubble-stat>
-            </div>
-            <div id="zone-titles">
-                <div class="title flex-1">
-                    <h3>Zones</h3>
-                </div>
-                <div class="title flex-1">
-                    <h3>Power (WATTS)</h3>
-                </div>
-                <div class="title flex-1">
-                    <h3>Pace (<span>{{paceUnit}}</span>)</h3>
-                </div>
-            </div>
-            <div class="zones" id="zones">
-            </div>
-            <button is="stryd-button" on-click="saveZones" style="min-width: 25vw;">Save</button>
-        </div>
+			<div class="test-desc">
+				<h3>Instructions</h3>
+				<iron-pages selected="{{selected}}">
+					<div>
+						<div>
+							1. <b>Warm up for 5 minutes</b>. Do two to three 100-meter strides at approximately 80% maximum
+							effort during warm up to enhance the blood circulation and ready your muscle for intense use.
+						</div>
+						<div>
+							2. <b>800 meters Easy-pace run</b>. Two laps on a 400-meter track, please use the
+							innermost lane. Run at an easy pace, such that you can comfortably maintain conversation.
+						</div>
+						<div>
+							3. <b>Warm up for another 5 minutes</b>.
+						</div>
+						<div>
+							4. <b>1200 meters Maximum-effort run</b>. Run at a consistent pace throughout the test, but
+							so that you are nearly exhausted at the end of the test.
+						</div>
+						<div>
+							5. <b>Recovery for 30 minutes</b>. Throughout the 30-minute recovery period, the runner
+							should walk or jog slowly.
+						</div>
+						<div>
+							6. <b>2400 meters Maximum-effort run</b>. As was the case for the three-lap run, it is
+							important to maintain a consistent pace during this run instead of dramatically changing
+							pace (and effort) during the run.
+						</div>
+						<div>
+							7. <b>Cool down</b>.
+						</div>
+						<div>
+							Please refer to this
+							<a href="http://club.stryd.com/t/learn-your-performance-baseline-using-the-critical-power-test/1608">white paper</a>
+							for more information.
+						</div>
+					</div>
+					<div>
+						<div>
+							1. <b>Warm up for 10 minutes</b>. Do five 100-meter strides at approximately 80% maximum
+							effort during warm up to enhance the blood circulation and ready your muscle for intense use.
+						</div>
+						<div>
+							2. <b>Maximum distance run for 3 minutes</b>. Run at a consistent pace throughout the
+							three-minute test, but to be nearly exhausted at the end of the test.
+						</div>
+						<div>
+							3. <b>Recovery for 30 minutes</b>. Throughout the 30-minute recovery period, the runner
+							should walk or jog slowly.
+						</div>
+						<div>
+							4. <b>Maximum distance run for 9 minutes</b>. Again, maintain a consistent pace during this
+							run instead of dramatically changing pace (and effort) during the run.
+						</div>
+						<div>
+							5. <b>Cool down</b>.
+						</div>
+						<div>
+							Please refer to this
+							<a href="http://club.stryd.com/t/a-protocol-for-establishing-critical-power-in-running/574">white paper</a>
+							for more information.
+						</div>
+					</div>
+					<div>
+						Please input your 5k time to get the estimated critical power.
+					</div>
+					<div>
+						Please input your 10k time to get the estimated critical power.
+					</div>
+					<div>
+						Please run for 1 hour at all out effort to get the estimated critical power.
+					</div>
+				</iron-pages>
+			</div>
+		</div>
 
-        <paper-dialog id="invalid">
-            <h1>Some of your test result input are wrong. Please double check, correct it and re-calculate.</h1>
-            <div class="buttons">
-                <paper-button dialog-confirm autofocus>Okay</paper-button>
-            </div>
-        </paper-dialog>
-    </div>
-    </template>
+		<div id="info" class="container" style="margin: 10vh 0;">
+			<div id="bubbles">
+				<bubble-stat type="power"></bubble-stat>
+				<bubble-stat type="pace"></bubble-stat>
+			</div>
+			<div id="zone-titles">
+				<div class="title flex-1">
+					<h3>Zones</h3>
+				</div>
+				<div class="title flex-1">
+					<h3>Power (WATTS)</h3>
+				</div>
+				<div class="title flex-1">
+					<h3>Pace (<span>{{paceUnit}}</span>)</h3>
+				</div>
+			</div>
+			<div class="zones" id="zones"></div>
+			<button is="stryd-button" on-click="saveZones" style="min-width: 25vw;">Save</button>
+		</div>
 
-    <script>
-        Polymer({
-            is: 'training-info',
-            properties: {
-                trainingInfo: {
-                    type: Object,
-                    notify: true
-                },
-                paceUnit: {
-                    type: String,
-                    notify: true
-                },
-                selected: {
-                    type: Number,
-                    notify: true
-                },
-                errMsgPower: {
-                    type: String,
-                    readOnly: true,
-                    value: 'Invalid power input!'
-                },
-                errMsgPace: {
-                    type: String,
-                    readOnly: true,
-                    value: 'Invalid pace input!'
-                },
-                labelPower: {
-                    type: String,
-                    readOnly: true,
-                    value: 'Power (W)'
-                },
-                labelPace: {
-                    type: String,
-                    readOnly: true,
-                    value: 'Pace (e.g. 5:40)'
-                },
-                labelDuration: {
-                    type: String,
-                    readOnly: true,
-                    value: 'Duration (e.g. 5:40)'
-                },
-                labelDuration5K: {
-                    type: String,
-                    readOnly: true,
-                    value: 'Duration (e.g. 23:00)'
-                },
-                labelDuration10K: {
-                    type: String,
-                    readOnly: true,
-                    value: 'Duration (e.g. 50:40)'
-                },
-                keyTraining: {
-                    type: String,
-                    readOnly: true,
-                    value: 'training'
-                },
-                keyCPTest: {
-                    type: String,
-                    readOnly: true,
-                    value: 'cpTest'
-                },
-                keyLastTest: {
-                    type: String,
-                    readOnly: true,
-                    value: 'lastTest'
-                },
-                lapTestResult: {
-                    type: Object,
-                    notify: true,
-                    value: function () {
-                        return {};
-                    }
-                },
-                minuteTestResult: {
-                    type: Object,
-                    notify: true,
-                    value: function () {
-                        return {};
-                    }
-                },
-                distanceTestResult: {
-                    type: Object,
-                    notify: true,
-                    value: function () {
-                        return {};
-                    }
-                },
-                customTestResult: {
-                    type: Object,
-                    notify: true,
-                    value: function () {
-                        return {};
-                    }
-                },
-            },
-            ready: function () {
-                if (!jwt.hasToken) {
-                    return;
-                }
+		<paper-dialog id="invalid">
+			<h1>Some of your test result input are wrong. Please double check, correct it and re-calculate.</h1>
+			<div class="buttons">
+				<paper-button dialog-confirm autofocus>Okay</paper-button>
+			</div>
+		</paper-dialog>
+	</div>
+</template>
+<script>
+Polymer({
+	is: 'training-info',
+	properties: {
+		trainingInfo: {
+			type: Object,
+			notify: true
+		},
+		paceUnit: {
+			type: String,
+			notify: true
+		},
+		selected: {
+			type: Number,
+			notify: true
+		},
+		errMsgPower: {
+			type: String,
+			readOnly: true,
+			value: 'Invalid power input!'
+		},
+		errMsgPace: {
+			type: String,
+			readOnly: true,
+			value: 'Invalid pace input!'
+		},
+		labelPower: {
+			type: String,
+			readOnly: true,
+			value: 'Power (W)'
+		},
+		labelPace: {
+			type: String,
+			readOnly: true,
+			value: 'Pace (e.g. 5:40)'
+		},
+		labelDuration: {
+			type: String,
+			readOnly: true,
+			value: 'Duration (e.g. 5:40)'
+		},
+		labelDuration5K: {
+			type: String,
+			readOnly: true,
+			value: 'Duration (e.g. 23:00)'
+		},
+		labelDuration10K: {
+			type: String,
+			readOnly: true,
+			value: 'Duration (e.g. 50:40)'
+		},
+		keyTraining: {
+			type: String,
+			readOnly: true,
+			value: 'training'
+		},
+		keyCPTest: {
+			type: String,
+			readOnly: true,
+			value: 'cpTest'
+		},
+		keyLastTest: {
+			type: String,
+			readOnly: true,
+			value: 'lastTest'
+		},
+		lapTestResult: {
+			type: Object,
+			notify: true,
+			value: function () {
+				return {};
+			}
+		},
+		minuteTestResult: {
+			type: Object,
+			notify: true,
+			value: function () {
+				return {};
+			}
+		},
+		distanceTestResult: {
+			type: Object,
+			notify: true,
+			value: function () {
+				return {};
+			}
+		},
+		customTestResult: {
+			type: Object,
+			notify: true,
+			value: function () {
+				return {};
+			}
+		},
+	},
+	ready: function () {
+		if (!jwt.hasToken) {
+			return;
+		}
 
-                // Get unit
-                if (user.data === null) {
-                    user.fetchDetails(this.ready.bind(this));
-                    return;
-                }
-                if (user.data.units === 'feet') {
-                    this.paceUnit = 'MIN/MILE';
-                } else {
-                    this.paceUnit = 'MIN/KM';
-                }
+		// Get unit
+		if (user.data === null) {
+			user.fetchDetails(this.ready.bind(this));
+			return;
+		}
+		if (user.data.units === 'feet') {
+			this.paceUnit = 'MIN/MILE';
+		} else {
+			this.paceUnit = 'MIN/KM';
+		}
 
-                // Plot zone table
-                const names = ['Easy/Long', 'Marathon', 'Threshold', 'Interval', 'Repetition'];
-                for (var i = 0; i < 5; i++) {
-                    this.addZone({
-                        name: names[i]
-                    });
-                }
-                this.loadTestResult();
-                this.fetchTraining();
-                this.parseTrainingInfo(this.trainingInfo);
+		// Plot zone table
+		const names = ['Easy/Long', 'Marathon', 'Threshold', 'Interval', 'Repetition'];
+		for (var name of names) {
+			this.addZone({
+				name: name
+			});
+		}
+		this.loadTestResult();
+		this.fetchTraining();
+		this.parseTrainingInfo(this.trainingInfo);
 
-                let s = localStorage.getItem(this.keyLastTest);
-                let testSelected = parseInt(s);
-                if (isNaN(testSelected)) {
-                    this.selected = 0;
-                } else {
-                    this.selected = testSelected;
-                }
-            },
+		let testSelected = parseInt(localStorage.getItem(this.keyLastTest));
+		if (isNaN(testSelected)) {
+			this.selected = 0;
+		} else {
+			this.selected = testSelected;
+		}
+	},
+	fetchTraining: function () {
+		var storage = localStorage.getItem(this.keyTraining);
+		if (
+			storage &&
+			storage !== 'null' &&
+			storage !== 'undefined'
+		) {
+			this.trainingInfo = JSON.parse(storage);
+		}
+		superagent
+			.get('/b/api/v1/training')
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				var text;
+				if (res.ok) {
+					switch (res.status) {
+						case 200:
+							text = 'Your training information is up-to-date!';
+							this.trainingInfo = res.body;
+							localStorage.setItem(
+								this.keyTraining,
+								JSON.stringify(this.trainingInfo)
+							);
+							this.parseTrainingInfo(this.trainingInfo);
+							this.$.info.hidden = false;
+							break;
+						case 204:
+							text = 'No training information found.';
+							this.$.info.hidden = true;
+							break;
+					}
+				} else {
+					text = 'Your information has not been updated. Please try again.';
+				}
+				//toast(text);
+			});
+	},
 
-            fetchTraining: function () {
-                var storage = localStorage.getItem(this.keyTraining);
-                if (storage !== null && storage !== 'null' && storage !== undefined && storage !== 'undefined') {
-                    this.trainingInfo = JSON.parse(storage);
-                }
-                superagent
-                    .get('/b/api/v1/training')
-                    .set('Accept', 'application/json')
-                    .set('Authorization', `Bearer: ${jwt.token}`)
-                    .end((err, res) => {
-                        var text;
-                        if (res.ok) {
-                            switch (res.status) {
-                                case 200:
-                                    text = 'Your training information is up-to-date!';
-                                    this.trainingInfo = res.body;
-                                    localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
-                                    this.parseTrainingInfo(this.trainingInfo);
-                                    this.$.info.hidden = false;
-                                    break;
-                                case 204:
-                                    text = 'No training information found.';
-                                    this.$.info.hidden = true;
-                                    break;
-                            }
-                        } else {
-                            text = 'Your information has not been updated. Please try again.';
-                        }
-                        //toast(text);
-                    });
-            },
+	loadTestResult: function () {
+		let r = localStorage.getItem(this.keyCPTest);
+		if (
+			!r ||
+			r === 'null' ||
+			r === 'undefined'
+		) {
+			return;
+		}
+		let result = JSON.parse(r);
+		this.lapTestResult = result.lap;
+		this.distanceTestResult = result.distance;
+		this.minuteTestResult = result.minute;
+		this.customTestResult = result.custom;
+	},
 
-            loadTestResult: function () {
-                let r = localStorage.getItem(this.keyCPTest);
-                if (r === null || r === 'null' || r === undefined || r === 'undefined') {
-                    return;
-                }
-                let result = JSON.parse(r);
-                console.log(result);
-                this.lapTestResult = result.lap;
-                this.distanceTestResult = result.distance;
-                this.minuteTestResult = result.minute;
-                this.customTestResult = result.custom;
-            },
+	addZone: function (zone) {
+		var zoneEntry = document.createElement('zone-entry');
+		zoneEntry.import(zone);
+		this.$.zones.appendChild(zoneEntry);
+	},
+	clearZones: function () {
+		app.clearChildren(this.$.zones);
+	},
+	saveZones: function () {
+		var zones = [];
+		for (var child of this.$.zones.children) {
+			zones.push(child.export(user.data.units));
+		}
 
-            addZone: function (zone) {
-                var zoneEntry = document.createElement('zone-entry');
-                zoneEntry.import(zone);
-                this.$.zones.appendChild(zoneEntry);
-            },
-            clearZones: function () {
-                app.clearChildren(this.$.zones);
-            },
-            saveZones: function () {
-                var zones = [];
-                for (var i = 0; i < this.$.zones.children.length; i++) {
-                    zones.push(this.$.zones.children[i].export(user.data.units));
-                }
-                console.log('zones are', zones);
+		user.data.training_info.training_zones = zones;
+		user.updateData(user.data);
 
-                user.data.training_info.training_zones = zones;
-                user.updateData(user.data);
+		superagent
+			.put('/b/api/v1/training/zone')
+			.send(zones)
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				var text;
+				if (res.ok) {
+					this.trainingInfo = res.body;
+					localStorage.setItem(
+						this.keyTraining,
+						JSON.stringify(this.trainingInfo)
+					);
+					text = 'Your training information is up-to-date!';
+				} else {
+					text = 'Your information has not been updated. Please try again.';
+				}
+				toast(text);
+			});
+	},
+	calculateTrainingInfo: function () {
+		let results = [];
+		let keys = [];
+		let speedCoeff = 1;
+		if (user.data.units === 'feet') {
+			speedCoeff *= 1.61;
+		}
+		localStorage.setItem(
+			this.keyLastTest,
+			this.selected.toString()
+		);
+		switch (this.selected) {
+			case 0:
+				keys = Object.keys(this.lapTestResult);
+				var invalidKeys = [
+					'lap2Power',
+					'lap2Duration',
+					'lap3Power',
+					'lap3Duration',
+					'lap6Power',
+					'lap6Duration'
+				];
+				if (!arraysEqual(keys, invalidKeys)) {
+					break;
+				}
+				let duration2 = durationToSec(this.lapTestResult.lap2Duration);
+				let duration3 = durationToSec(this.lapTestResult.lap3Duration);
+				let duration6 = durationToSec(this.lapTestResult.lap6Duration);
+				if (
+					duration2 === -1 ||
+					duration3 === -1 ||
+					duration6 === -1
+				) {
+					break;
+				}
+				results = [
+					{
+						label: '2laps',
+						power: parseInt(this.lapTestResult.lap2Power),
+						speed: 800 / duration2,
+						duration: duration2
+					},
+					{
+						label: '3laps',
+						power: parseInt(this.lapTestResult.lap3Power),
+						speed: 1200 / duration3,
+						duration: duration3
+					},
+					{
+						label: '6laps',
+						power: parseInt(this.lapTestResult.lap6Power),
+						speed: 2400 / duration6,
+						duration: duration6
+					}
+				];
+				break;
+			case 1:
+				keys = Object.keys(this.minuteTestResult);
+				var invalidKeys2 = [
+					'min3Power',
+					'min3Pace',
+					'min9Power',
+					'min9Pace'
+				];
+				if (!arraysEqual(keys, invalidKeys2)) {
+					break;
+				}
+				let pace3 = durationToSec(this.minuteTestResult.min3Pace);
+				let pace9 = durationToSec(this.minuteTestResult.min9Pace);
+				if (
+					pace3 === -1 ||
+					pace9 === -1
+				) {
+					break;
+				}
+				results = [
+					{
+						label: '3mins',
+						power: parseInt(this.minuteTestResult.min3Power),
+						speed: 1000 / pace3 * speedCoeff,
+						duration: 180
+					},
+					{
+						label: '9mins',
+						power: parseInt(this.minuteTestResult.min9Power),
+						speed: 1000 / pace9 * speedCoeff,
+						duration: 540
+					}
+				];
+				break;
+			case 2:
+				keys = Object.keys(this.distanceTestResult);
+				if (keys.indexOf('fiveKDuration') === -1) {
+					break;
+				}
+				let duration5k = durationToSec(this.distanceTestResult.fiveKDuration);
+				if (duration5k === -1) {
+					break;
+				}
+				results = [
+					{
+						label: '5k',
+						speed: 5000 / duration5k,
+						duration: duration5k
+					},
+				];
+				break;
+			case 3:
+				keys = Object.keys(this.distanceTestResult);
+				if (keys.indexOf('tenKDuration') === -1) {
+					break;
+				}
+				let duration10k = durationToSec(this.distanceTestResult.tenKDuration);
+				if (duration10k === -1) {
+					break;
+				}
+				results = [
+					{
+						label: '10k',
+						speed: 10000 / duration10k,
+						duration: duration10k
+					}
+				];
+				break;
+			case 4:
+				keys = Object.keys(this.customTestResult);
+				var invalidKeys3 = [
+					'power',
+					'pace'
+				];
+				if (!arraysEqual(keys, invalidKeys3)) {
+					break;
+				}
+				let pace = durationToSec(this.customTestResult.pace);
+				if (pace === -1) {
+					break;
+				}
+				results = [
+					{
+						label: 'custom',
+						power: parseInt(this.customTestResult.power),
+						speed: 1000 / pace * speedCoeff,
+						duration: 0
+					}
+				];
+				break;
+		}
+		if (results.length === 0) {
+			this.$.invalid.open();
+			return;
+		}
 
-                superagent
-                    .put('/b/api/v1/training/zone')
-                    .send(zones)
-                    .set('Accept', 'application/json')
-                    .set('Authorization', `Bearer: ${jwt.token}`)
-                    .end((err, res) => {
-                        var text;
-                        if (res.ok) {
-                            this.trainingInfo = res.body;
-                            localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
-                            text = 'Your training information is up-to-date!';
-                        } else {
-                            text = 'Your information has not been updated. Please try again.';
-                        }
-                        toast(text);
-                    });
-            },
-            calculateTrainingInfo: function () {
-                let results = [];
-                let keys = [];
-                let speedCoeff = 1;
-                if (user.data.units === 'feet') {
-                    speedCoeff *= 1.61;
-                }
-                localStorage.setItem(this.keyLastTest, this.selected.toString());
-                console.log(this.selected);
-                switch (this.selected) {
-                    case 0:
-                        keys = Object.keys(this.lapTestResult);
-                        if (!arraysEqual(keys, ['lap2Power', 'lap2Duration', 'lap3Power', 'lap3Duration', 'lap6Power', 'lap6Duration'])) {
-                            break;
-                        }
-                        let duration2 = durationToSec(this.lapTestResult.lap2Duration);
-                        let duration3 = durationToSec(this.lapTestResult.lap3Duration);
-                        let duration6 = durationToSec(this.lapTestResult.lap6Duration);
-                        if (duration2 === -1 || duration3 === -1 || duration6 === -1) {
-                            break;
-                        }
-                        results = [
-                            {
-                                label: '2laps',
-                                power: parseInt(this.lapTestResult.lap2Power),
-                                speed: 800 / duration2,
-                                duration: duration2
-                            },
-                            {
-                                label: '3laps',
-                                power: parseInt(this.lapTestResult.lap3Power),
-                                speed: 1200 / duration3,
-                                duration: duration3
-                            },
-                            {
-                                label: '6laps',
-                                power: parseInt(this.lapTestResult.lap6Power),
-                                speed: 2400 / duration6,
-                                duration: duration6
-                            }
-                        ];
-                        break;
-                    case 1:
-                        keys = Object.keys(this.minuteTestResult);
-                        if (!arraysEqual(keys, ['min3Power', 'min3Pace', 'min9Power', 'min9Pace'])) {
-                            break;
-                        }
-                        let pace3 = durationToSec(this.minuteTestResult.min3Pace);
-                        let pace9 = durationToSec(this.minuteTestResult.min9Pace);
-                        if (pace3 === -1 || pace9 === -1) {
-                            break;
-                        }
-                        results = [
-                            {
-                                label: '3mins',
-                                power: parseInt(this.minuteTestResult.min3Power),
-                                speed: 1000 / pace3 * speedCoeff,
-                                duration: 180
-                            },
-                            {
-                                label: '9mins',
-                                power: parseInt(this.minuteTestResult.min9Power),
-                                speed: 1000 / pace9 * speedCoeff,
-                                duration: 540
-                            }
-                        ];
-                        break;
-                    case 2:
-                        keys = Object.keys(this.distanceTestResult);
-                        if (keys.indexOf('fiveKDuration') === -1) {
-                            break;
-                        }
-                        let duration5k = durationToSec(this.distanceTestResult.fiveKDuration);
-                        if (duration5k === -1) {
-                            break;
-                        }
-                        results = [
-                            {
-                                label: '5k',
-                                speed: 5000 / duration5k,
-                                duration: duration5k
-                            },
-                        ];
-                        break;
-                    case 3:
-                        keys = Object.keys(this.distanceTestResult);
-                        if (keys.indexOf('tenKDuration') === -1) {
-                            break;
-                        }
-                        let duration10k = durationToSec(this.distanceTestResult.tenKDuration);
-                        console.log(duration10k);
-                        if (duration10k === -1) {
-                            break;
-                        }
-                        results = [
-                            {
-                                label: '10k',
-                                speed: 10000 / duration10k,
-                                duration: duration10k
-                            }
-                        ];
-                        break;
-                    case 4:
-                        keys = Object.keys(this.customTestResult);
-                        if (!arraysEqual(keys, ['power', 'pace'])) {
-                            break;
-                        }
-                        let pace = durationToSec(this.customTestResult.pace);
-                        if (pace === -1) {
-                            break;
-                        }
-                        results = [
-                            {
-                                label: 'custom',
-                                power: parseInt(this.customTestResult.power),
-                                speed: 1000 / pace * speedCoeff,
-                                duration: 0
-                            }
-                        ];
-                        break;
-                }
-                if (results.length === 0) {
-                    this.$.invalid.open();
-                    return;
-                }
+		superagent
+			.post('/b/api/v1/training')
+			.send({
+				'cptest_result': results
+			})
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				var text;
+				if (res.ok) {
+					// Save locally since to sync with Server
+					localStorage.setItem(
+						this.keyCPTest,
+						JSON.stringify({
+							'lap': this.lapTestResult,
+							'minute': this.minuteTestResult,
+							'distance': this.distanceTestResult,
+							'custom': this.customTestResult
+						})
+					);
+					this.trainingInfo = res.body;
+					localStorage.setItem(
+						this.keyTraining,
+						JSON.stringify(this.trainingInfo)
+					);
+					this.parseTrainingInfo(this.trainingInfo);
+					text = 'Your training zones are updated.';
+					window.scroll(
+						0,
+						this.$.info.getBoundingClientRect().top
+					);
+				} else {
+					text = 'Your information is not accepted by server. Please try again.';
+				}
+				toast(text);
+			});
+	},
+	parseTrainingInfo: function (info) {
+		if (
+			!info ||
+			info === 'null' ||
+			info === 'undefined' ||
+			!('training_zones' in info)
+		) {
+			return;
+		}
+		// Fill the zones
+		this.clearZones();
+		let zones = info.training_zones;
+		if (zones === null || zones === undefined) {
+			return;
+		}
+		for (var zone of zones) {
+			zone.power_low = Math.round(zone.power_low);
+			zone.power_high = Math.round(zone.power_high);
+			zone.pace_low = unit.speedValue(zone.speed_low, user.data.units)+unit.speedUnit(user.data.units);
+			zone.pace_high = unit.speedValue(zone.speed_high, user.data.units)+unit.speedUnit(user.data.units);
+			this.addZone(zone);
+		}
 
-                superagent
-                    .post('/b/api/v1/training')
-                    .send({'cptest_result':results})
-                    .set('Authorization', `Bearer: ${jwt.token}`)
-                    .end((err, res) => {
-                        var text;
-                        if (res.ok) {
-                            // Save locally since to sync with Server
-                            localStorage.setItem(this.keyCPTest, JSON.stringify({
-                                    'lap': this.lapTestResult, 'minute': this.minuteTestResult,
-                                    'distance': this.distanceTestResult, 'custom': this.customTestResult
-                                })
-                            );
-                            this.trainingInfo = res.body;
-                            localStorage.setItem(this.keyTraining, JSON.stringify(this.trainingInfo));
-                            this.parseTrainingInfo(this.trainingInfo);
-                            text = 'Your training zones are updated.';
-                            window.scroll(0, this.$.info.getBoundingClientRect().top);
-                        } else {
-                            text = 'Your information is not accepted by server. Please try again.';
-                        }
-                        toast(text);
-                    });
-            },
-            parseTrainingInfo: function (info) {
-                if (info === null || info === 'null' || info === undefined || info === 'undefined') {
-                    return;
-                }
-                if (!('training_zones' in info)) {
-                    return;
-                }
-                // Fill the zones
-                this.clearZones();
-                let zones = info.training_zones;
-                if (zones === null || zones === undefined) {
-                    return;
-                }
-                let zone;
-                for (var i = 0; i < zones.length; i++) {
-                    zone = zones[i];
-                    zone.power_low = Math.round(zone.power_low);
-                    zone.power_high = Math.round(zone.power_high);
-                    zone.pace_low = unit.speedValue(zone.speed_low, user.data.units)+unit.speedUnit(user.data.units);
-                    zone.pace_high = unit.speedValue(zone.speed_high, user.data.units)+unit.speedUnit(user.data.units);
-                    this.addZone(zone);
-                }
+		// Show critical power/pace in bubble
+		var pace = {
+			active: ['not-pace'],
+			pace: {
+				icon: 'maps:directions-run',
+				title: 'Critical Pace',
+				value: unit.speedValue(info.critical_speed, user.data.units),
+				unit: this.paceUnit
+			}
+		};
+		var power = {
+			active: ['not-power'],
+			power: {
+				icon: 'image:flash-on',
+				title: 'Critical Power',
+				value: Math.round(info.critical_power),
+				unit: 'Watts'
+			}
+		};
+		this.querySelector('[type="pace"]').setData(pace);
+		this.querySelector('[type="power"]').setData(power);
 
-                // Show critical power/pace in bubble
-                var pace = {
-                    active: ['not-pace'],
-                    pace: {
-                        icon: 'maps:directions-run',
-                        title: 'Critical Pace',
-                        value: unit.speedValue(info.critical_speed, user.data.units)+unit.speedUnit(user.data.units),
-                        unit: this.paceUnit
-                    }
-                };
-                var power = {
-                    active: ['not-power'],
-                    power: {
-                        icon: 'image:flash-on',
-                        title: 'Critical Power',
-                        value: Math.round(info.critical_power),
-                        unit: 'Watts'
-                    }
-                };
-                this.querySelector('[type="pace"]').setData(pace);
-                this.querySelector('[type="power"]').setData(power);
-
-                // For now we only update 3/6 laps test result because it's the only test whose result
-                // could come from outside source
-                let result = info.cptest_result;
-                if (result === null || result === 'null' || result === undefined || result === 'undefined') {
-                    return;
-                }
-                let resultSize = result.length;
-                if (resultSize === 3) {
-                    if ('2laps' === result[0].label && '3laps' === result[1].label && '6laps' === result[2].label) {
-                        this.lapTestResult = {
-                            lap2Power: result[0].power,
-                            lap2Duration: secToDuration(result[0].duration),
-                            lap3Power: result[1].power,
-                            lap3Duration: secToDuration(result[1].duration),
-                            lap6Power: result[2].power,
-                            lap6Duration: secToDuration(result[2].duration)
-                        };
-                        this.selected = 0;
-                        localStorage.setItem(this.keyLastTest, this.selected.toString());
-                    }
-                }
-            }
-        });
-    </script>
+		// For now we only update 3/6 laps test result because it's the only test whose result
+		// could come from outside source
+		let result = info.cptest_result;
+		if (
+			!result ||
+			result === 'null' ||
+			result === 'undefined'
+		) {
+			return;
+		}
+		let resultSize = result.length;
+		if (resultSize === 3) {
+			if (
+				'2laps' === result[0].label &&
+				'3laps' === result[1].label &&
+				'6laps' === result[2].label
+			) {
+				this.lapTestResult = {
+					lap2Power: result[0].power,
+					lap2Duration: secToDuration(result[0].duration),
+					lap3Power: result[1].power,
+					lap3Duration: secToDuration(result[1].duration),
+					lap6Power: result[2].power,
+					lap6Duration: secToDuration(result[2].duration)
+				};
+				this.selected = 0;
+				localStorage.setItem(
+					this.keyLastTest,
+					this.selected.toString()
+				);
+			}
+		}
+	}
+});
+</script>
 </dom-module>

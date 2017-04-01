@@ -29,9 +29,9 @@
 
 	<script>
 		var wcSupported = (
-			'registerElement' in document
-			&& 'import' in document.createElement('link')
-			&& 'content' in document.createElement('template')
+			'registerElement' in document &&
+			'import' in document.createElement('link') &&
+			'content' in document.createElement('template')
 		);
 
 		if (!wcSupported) {
@@ -52,16 +52,13 @@
 	</script>
 
 	<link rel="stylesheet" href="/powercenter/styles/main.css">
-	<!-- will be replaced with elements/elements.vulcanized.html -->
 	<link rel="import" href="/powercenter/elements/elements.html">
-	<!-- endreplace-->
 </head>
 
 <body unresolved class="fullbleed layout vertical">
 <span id="browser-sync-binding"></span>
 
 <template is="dom-bind" id="app">
-	<!-- Main Content -->
 	<div class="content">
 		<header-element></header-element>
 		<iron-pages attr-for-selected="data-route" selected="{{route}}">
@@ -70,7 +67,7 @@
 					<workout-summary></workout-summary>
 					<log-overview></log-overview>
 				</div>
-				<div class="layout vertical max-width" style="margin: 20px; position: relative;" id="workout-holder">
+				<div class="layout vertical max-width" id="workout-holder">
 					<home-navigation></home-navigation>
 					<iron-pages attr-for-selected="data-home" selected="{{home}}" class="flex-auto">
 						<section data-home="comparison">
@@ -98,7 +95,6 @@
 						</section>
 					</iron-pages>
 				</div>
-				<performance-management></performance-management>
 				<log-calendar></log-calendar>
 			</section>
 
@@ -106,30 +102,19 @@
 				<social-leaderboard></social-leaderboard>
 			</section>
 
-			<section data-route="connect">
-				<platform-connect></platform-connect>
-				<div class="uploader" id="uploader">
-					<h1 class="title">Upload</h1>
-					<form class="dropzone" id="file">
-						<div class="dz-message" data-dz-message>
-							<span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
-						</div>
-					</form>
-				</div>
-			</section>
-
 			<section data-route="settings">
 				<stryd-settings></stryd-settings>
 			</section>
 
-			<section data-route="weakness">
+			<section data-route="improve">
+				<improve-stone></improve-stone>
 				<spider-chart></spider-chart>
 				<heat-duration></heat-duration>
+				<performance-management></performance-management>
 			</section>
 
 			<section data-route="*"></section>
 		</iron-pages>
-
 		<footer-element></footer-element>
 	</div>
 	<log-options></log-options>

@@ -4,17 +4,26 @@
 			@apply(--layout-vertical);
 			@apply(--layout-center);
 			font-family: "Stryd", sans-serif;
-			background-color: #222222;
+			background-color: var(--dark-background-color);
 			padding: 20px;
 			--paper-slider-knob-color: #F7A017;
 			min-width: 860px;
 			overflow-x: auto;
+		}
+		:host.blurred {
+			-webkit-filter: blur(2px);
+			-moz-filter: blur(2px);
+			-ms-filter: blur(2px);
+			-o-filter: blur(2px);
+			filter: blur(2px);
 		}
 		#management {
 			position: relative;
 		}
 		h1.header {
 			@apply(--header);
+			text-align: center;
+			padding: 15px 0;
 		}
 		.title {
 			padding: 20px;
@@ -110,6 +119,7 @@
 		}
 	</style>
 	<template>
+		<h1 class="header">Manage Training Load</h1>
 		<div class="layout vertical holder active" data-holder="stress">
 			<svg id="stress"></svg>
 			<div class="layout horizontal title">
@@ -185,8 +195,7 @@
 			this.grabData();
 		},
 		grabData: function () {
-			var activities = calendarManager.getPMActivities();
-			this.processData(activities);
+			this.processData(calendarManager.getPMActivities());
 			window.addEventListener('gotActivities', () => {
 				this.processData(calendarManager.getPMActivities());
 			});

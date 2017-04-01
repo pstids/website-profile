@@ -118,6 +118,17 @@
                             <div class="settings">Settings</div>
                         </div>
                     </li>
+                    <li class="setting" on-click="router" data-view="connect">
+                        <div class="icon-border">
+                            <div class="icon">
+                                <iron-icon icon="icons:cached"></iron-icon>
+                            </div>
+                        </div>
+                        <div class="text">
+                            <div class="type">Connect</div>
+                            <div class="settings">Sync Data</div>
+                        </div>
+                    </li>
                     <li class="setting" on-click="router" data-view="zone">
                         <div class="icon-border">
                             <div class="icon">
@@ -147,6 +158,9 @@
                     <section data-route="profile">
                         <user-info></user-info>
                     </section>
+                    <section data-route="connect">
+                        <platform-connect></platform-connect>
+                    </section>
                     <section data-route="zone">
                         <training-info></training-info>
                     </section>
@@ -154,6 +168,7 @@
                         <training-plan-info></training-plan-info>
                     </section>
                 </iron-pages>
+                <file-upload></file-upload>
             </div>
         </div>
     </template>
@@ -172,7 +187,6 @@
                     target = target.parentElement;
                 }
                 this.toggle(target.dataset.view);
-                this.route = target.dataset.view;
             }
             toggle(active) {
                 var anchor = this.querySelector(`[data-view='${active}']`);
@@ -181,6 +195,7 @@
                     current.classList.remove('active');
                 }
                 anchor.classList.add('active');
+                this.route = active;
             }
         }
         Polymer(StrydSetting);

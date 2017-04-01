@@ -1,34 +1,253 @@
 <dom-module id="heat-duration">
 <style>
 	:host {
-		width: 100%;
-		height: 600px;
 		@apply(--layout);
-		@apply(--layout-horizontal);
+		@apply(--layout-vertical);
+		font-family: "Stryd", sans-serif;
 		position: relative;
+		background-color: #222222;
+		min-width: 960px;
+		padding: 20px;
+		height: 700px;
 	}
-	#heatcontainer {
+	:host.blurred {
+		-webkit-filter: blur(2px);
+		-moz-filter: blur(2px);
+		-ms-filter: blur(2px);
+		-o-filter: blur(2px);
+		filter: blur(2px);
+	}
+	h1.header {
+		@apply(--header);
+		text-align: center;
+		padding: 15px 0;
+	}
+	.charts {
+		position: relative;
+		width: 1000px;
+		height: 550px;
+	}
+	.sidecharts {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
 		height: 600px;
-		width: 100%:;
 	}
 	#heatcanvas {
-		width: 960px;
-		height: 500px;
 		position: absolute;
+	}
+	#heatline {
+		position: absolute;
+	}
+	#heatbars {
+		flex: 0 1 200px;
+	}
+
+	.info {
+		@apply(--layout-vertical);
+		border: 1px solid #4D4D4D;
+		flex: 0 1 270px;
+		margin: 0 20px 20px 20px;
+	}
+	.top {
+		background-color: #222222;
+		border-bottom: 1px solid #4D4D4D;
+		height: 70px;
+	}
+	.title {
+		@apply(--layout-horizontal);
+		@apply(--layout-flex);
+	}
+	.stats {
+		padding: 20px;
+		@apply(--layout-horizontal);
+	}
+	@media (max-width: 800px) {
+		.stats {
+			@apply(--layout-vertical);
+		}
+	}
+	.stats p {
+		color: white;
+		padding: 10px;
+		line-height: 1.7;
+		margin: 0;
+	}
+	.floater {
+		position: absolute;
+		background: #262626;
+		-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		padding: 10px;
+		border: 1px solid #4D4D4D;
+	}
+	.floater .titles {
+		padding: 10px;
+	}
+	.floater .titles p {
+		color: white;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+	.floater .values {
+		padding: 10px;
+	}
+	.floater .values p {
+		color: white;
 	}
 </style>
 <template>
-	<div id="heatcontainer">
-		<canvas width="960" height="500" id="heatcanvas"></canvas>
+	<h1 class="header">Find Race Intensity</h1>
+	<div class="sidecharts">
+		<div id="heatbars"></div>
+		<div class="charts" id="heatlistener">
+			<svg id="heatline"></svg>
+			<canvas id="heatcanvas"></canvas>
+			<div class="floater hidden layout horizontal" id="floater">
+				<div class="layout vertical titles">
+					<p>Runs</p>
+					<p>Power</p>
+					<p>Duration</p>
+				</div>
+				<div class="layout vertical values">
+					<p id="fruns"></p>
+					<p id="fpower"></p>
+					<p id="fduration"></p>
+				</div>
+			</div>
+		</div>
+		<!-- <div class="info">
+			<div class="layout horizontal top">
+				<div class="title">
+					<h1>How To Use</h1>
+				</div>
+			</div>
+			<div class="stats">
+				<p>Determine at what intensities you can train further at to improve your race times and distances.</p>
+			</div>
+		</div> -->
 	</div>
 </template>
 <script>
 Polymer({
 	is: 'heat-duration',
 	ready: function () {
-		this.width = 960;
+		this.width = 860;
 		this.height = 500;
+		this.padding = 30;
 		this.data = {};
+
+		this.data2 = null;
+
+		this.colors = ['#f8a116', '#c55300'];
+
+		var mouseX = 0;
+		var mouseY = 0;
+		var boxX = 0;
+		var boxY = 0;
+		var lTimer = null;
+		var update = function () {
+			var speedX, distanceX, speedY, distanceY;
+			distanceX = Math.abs(mouseX - boxX);
+			distanceY = Math.abs(mouseY - boxY);
+			if (distanceX > 100 || distanceX < 1 || distanceY > 100 || distanceY < 1) {
+				boxX = mouseX;
+				boxY = mouseY;
+			} else {
+				speedX = Math.round( distanceX / 10, 0 );
+				boxX = (boxX < mouseX) ? boxX + speedX : boxX - speedX;
+				speedY = Math.round( distanceY / 10, 0 );
+				boxY = (boxY < mouseY) ? boxY + speedY : boxY - speedY;
+			}
+
+			if ('heatmaps' in this.data) {
+				var coors = this.getXY2(boxX, boxY);
+				var runsValue = this.data.heatmaps[coors.y][coors.x];
+				var powerValue = this.data.powers[this.data.powers.length - coors.y];
+				var timeValue = this.data.windows[coors.x];
+				if (
+					runsValue !== null &&
+					powerValue !== null &&
+					timeValue !== null &&
+					runsValue !== undefined &&
+					powerValue !== undefined &&
+					timeValue !== undefined
+				) {
+					this.$.fruns.textContent = runsValue/15;
+					this.$.fpower.textContent =  powerValue + ' watts';
+					var timeUnit = ' secs';
+					if (timeValue > 60) {
+						timeValue /= 60;
+						timeUnit = ' mins';
+					}
+					this.$.fduration.textContent = `${timeValue}${timeUnit}`;
+					this.$.floater.style.left = (boxX+30) + 'px';
+					this.$.floater.style.top = (boxY+30) + 'px';
+					this.$.floater.classList.remove('hidden');
+				} else {
+					this.$.floater.classList.add('hidden');
+				}
+			}
+		};
+
+		// var bisectWindow = d3.bisector((d) => {
+		// 	return d.window;
+		// }).left;
+
+		this.$.heatlistener.addEventListener('mouseout', () => {
+			// Hover box
+			clearTimeout(lTimer);
+			boxX = 0;
+			boxY = 0;
+			this.$.floater.style.left = boxX + 'px';
+			this.$.floater.style.top = boxY + 'px';
+			this.$.floater.classList.add('hidden');
+			// Line point
+			// if ('focus' in this) {
+			// 	this.focus.style('display', 'none');
+			// }
+		});
+
+		this.$.heatlistener.addEventListener('mouseover', () => {
+			// Hover box
+			boxX = mouseX;
+			boxY = mouseY;
+			this.$.floater.style.left = boxX + 'px';
+			this.$.floater.style.top = boxY + 'px';
+			this.$.floater.classList.remove('hidden');
+			lTimer = setInterval(update.bind(this), 10);
+			// Line point
+			// if ('focus' in this) {
+			// 	this.focus.style('display', null);
+			// }
+		});
+
+		this.$.heatlistener.addEventListener('mousemove', (e) => {
+			// Hover box
+			if (e.target.tagName === 'CANVAS') {
+				mouseX = e.layerX;
+				mouseY = e.layerY;
+			}
+			// Line point
+			// if (this.data2 !== null) {
+			// 	var x0 = this.x.invert(e.layerX),
+			// 		i = bisectWindow(this.data2, x0, 1),
+			// 		d0 = this.data2[i - 1],
+			// 		d1 = this.data2[i];
+			// 	var d;
+			// 	if (x0 - d0.window > d1.window - x0) {
+			// 		d = d1;
+			// 	} else {
+			// 		d = d0;
+			// 	}
+			// 	this.focus.attr('transform', `translate(${this.x(i)}, ${this.y(d.max)})`);
+			// 	this.focus.select('text').text(d.max);
+			// }
+		});
+	},
+	attached: function () {
 		superagent
 			.get('/powercenter/scripts/heat.json')
 			.send()
@@ -41,21 +260,29 @@ Polymer({
 					console.log('Error: cannot fetch data');
 				}
 			});
+		//this.createZone(2, 3, 1);
+		for (var i = 5; i > 0; i--) {
+			var yPer = Math.floor(Math.random() * 70 + 30);
+			var pPer = Math.floor(Math.random() * 70 + 30);
+			this.createZone(i, yPer, pPer);
+		}
 	},
 	createChart: function () {
 		this.dx = this.data.heatmaps[0].length;
 		this.dy = this.data.heatmaps.length;
 
-		var x = d3.scale.linear()
+		this.x = d3.scale.linear()
 			.domain([0, this.dx])
 			.range([0, this.width]);
-		var y = d3.scale.linear()
+		this.y = d3.scale.linear()
 			.domain([0, this.dy])
 			.range([this.height, 0]);
 
 		var xAxis = d3.svg.axis()
-			.scale(x)
-			.orient('top')
+			.scale(this.x)
+			.tickSize(1)
+			.tickPadding(10)
+			.orient('bottom')
 			.tickFormat((d) => {
 				var unit = ' secs';
 				var val = this.data.windows[d-1];
@@ -65,30 +292,34 @@ Polymer({
 				}
 				return [`${val}${unit}`];
 			})
+			.innerTickSize(-this.height)
+			.outerTickSize(0)
 			.ticks(10);
 
 		var yAxis = d3.svg.axis()
-			.scale(y)
-			.orient('right')
+			.scale(this.y)
+			.orient('left')
 			.tickFormat((d) => {
 				return this.data.powers[d];
-			});
+			})
+			.outerTickSize(0)
+			.tickPadding(10)
+			.tickSize(1);
 
-		var svg = d3.select('#heatcontainer')
-			.append('svg')
-			.style('position', 'absolute')
-			.attr('width', this.width)
-			.attr('height', this.height)
-				.append('g')
-				.attr('transform', 'translate(0, 0)');
+		var svg = d3.select('#heatline')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+				.append('svg:g')
+				.attr('transform', `translate(${this.padding}, ${this.padding})`);
 
-		var line = d3.svg.line()
+		var line = d3.svg.area()
 			/* unused: d */
 			.x((d, i) => {
-				return x(i);
+				return this.x(i);
 			})
-			.y((d) => {
-				return y(d);
+			.y0(this.height-30)
+			.y1((d) => {
+				return this.y(d);
 			});
 
 		svg.append('path')
@@ -98,48 +329,71 @@ Polymer({
 			.attr('stroke', '#f4931f')
 			.attr('stroke-width', 4)
 			.attr('border', '')
-			.attr('fill', 'rgba(0, 0, 0, 0)');
+			.attr('transform', `translate(${this.padding}, 0)`)
+			.attr('fill', '#f4931f');
 
 		svg.append('g')
 			.attr('class', 'x axis')
-			.attr('transform', `translate(0, ${this.height})`)
-			.attr('stroke', '#FFFFFF')
-			.attr('fill', '#FFFFFF')
-			.attr('color', '#FFFFFF')
+			.attr('transform', `translate(${this.padding}, ${this.height-this.padding})`)
 			.call(xAxis)
 			.call(this.removeZero)
 				.append('text')
-				.attr('transform', `translate(${this.width/2}, -50)`)
-				.attr('dy', '0.71em')
-				.attr('fill', '#fff')
+				.attr('transform', `translate(${this.width/2}, ${this.padding + 20})`)
 				.text('Duration');
 
 		svg.append('g')
 			.attr('class', 'y axis')
-			.attr('stroke', '#FFFFFF')
-			.attr('fill', '#FFFFFF')
-			.attr('color', '#FFFFFF')
+			.attr('transform', `translate(${this.padding}, 0)`)
 			.call(yAxis)
 			.call(this.removeZero)
 				.append('text')
-				.attr('transform', `rotate(-90), translate(${this.height*2}, 50)`)
-				.attr('dy', '0.71em')
-				.attr('fill', '#fff')
+				.attr('y', -10)
 				.text('Power (W)');
+
+		// this.focus = svg.append('g')
+		// 	.attr('class', 'focus')
+		// 	.style('display', 'none');
+
+		// this.focus.append('circle')
+		// 	.attr('r', 4.5);
+
+		// this.focus.append('text')
+		// 	.attr('x', 9)
+		// 	.attr('dy', '.35em');
+
+		// this.data2 = [];
+		// for (var i = 0; i < this.data.maxs.length; i++) {
+		// 	this.data2.push({
+		// 		max: this.data.maxs[i],
+		// 		window: this.data.windows[i]
+		// 	});
+		// }
 
 		this.draw();
 	},
 	/* globals HeatCanvas:true */
 	draw: function () {
+		this.$.heatcanvas.width = this.width + this.padding * 2;
+		this.$.heatcanvas.height = this.height + this.padding * 2;
 		var heatmap = new HeatCanvas(this.$.heatcanvas);
 		for (var y = 0; y < this.dy; y++) {
 			for (var x = 0; x < this.dx; x++) {
-				var pt = this.getXY(x, y, this.dx, this.dy);
+				var pt = this.getXY(x, y);
 				var it = this.getIntensity(this.data.heatmaps[y][x]);
 				heatmap.push(Math.round(pt.x), Math.round(pt.y), it);
 			}
 		}
-		heatmap.render(null, null, (value) => {
+		// var old = (value) => {
+		// 	var h = (3 + (100 * value))/100;
+		// 	var s = (49.4 + (39.4 * value))/100;
+		// 	var l = (47.3 + (10.5 * value))/100;
+		// 	var a = 1;
+		// 	if (value < 0.3) {
+		// 		a = value * (10/3);
+		// 	}
+		// 	return [h, s, l, a];
+		// };
+		var old = (value) => {
 			var h = (1 - value);
 			var s = 0.8;
 			var l = value * 0.6;
@@ -148,16 +402,23 @@ Polymer({
 				a = value * (10/3);
 			}
 			return [h, s, l, a];
-		});
+		};
+		heatmap.render(null, null, old);
 	},
-	getXY: function (xi, yi, xm, ym) {
-		var width = 960;
-		var height = 500;
-		var partx = width / xm;
-		var party = height / ym;
+	getXY: function (xi, yi) {
+		var partx = this.width / this.dx;
+		var party = this.height / this.dy;
 		return {
-			x: partx * xi + (partx/2),
-			y: party * yi + (party/2)
+			x: partx * xi + (partx/2) + (this.padding*2),
+			y: party * yi + (party/2) + this.padding
+		};
+	},
+	getXY2: function (x, y) {
+		var partx = this.width / this.dx;
+		var party = this.height / this.dy;
+		return {
+			x: Math.floor((x  - (partx/2) - (this.padding*2)) / partx),
+			y: Math.floor((y - (party/2) - this.padding) / party)
 		};
 	},
 	getIntensity: function (value) {
@@ -172,6 +433,162 @@ Polymer({
 			.filter((d) => {
 				return !d;
 			}).remove();
+	},
+	/* unused: d */
+	createZone: function (zone, yPer, pPer) {
+		var data = [
+			{
+				name: '5K Plan',
+				value: yPer,
+				display: `${yPer}%`
+			},
+			{
+				name: 'Gus',
+				value: pPer,
+				display: `${pPer}%`
+			}
+		];
+		var margin = {
+			top: 0,
+			bottom: 0,
+			left: 80,
+			right: 0
+		};
+		var width = 200 - margin.left - margin.right;
+		var height = 92 - margin.top - margin.bottom;
+		var numTicks = 0;
+
+		var xScale = d3.scale.linear()
+			.range([0, width]);
+		var yScale = d3.scale.ordinal()
+			.rangeBands([0, height]);
+
+		// var xAxis = d3.svg.axis()
+		// 	.scale(xScale)
+		// 	.orient('top')
+		// 	.tickSize(-height)
+		// 	.ticks(numTicks);
+
+		var svg = d3.select('#heatbars')
+			.append('svg')
+			.attr('width', width + margin.left + margin.right)
+			.attr('height', height + margin.top + margin.bottom)
+			.attr('class', 'base-svg')
+			.style('border-bottom', '1px solid white');
+		if (zone === 5) {
+			svg.style('border-top', '1px solid white');
+		}
+
+		var barSvg = svg.append('g')
+			.attr('transform', `translate(${margin.left}, ${margin.top})`)
+			.attr('class','bar-svg');
+
+		// var x = barSvg.append('g')
+		// 	.attr('class', 'x-axis');
+
+		var xMin = 0;
+		var xMax = d3.max(data, (d) => {
+			return d.value;
+		});
+
+		xScale.domain([xMin, xMax]);
+		yScale.domain(data.map((d) => {
+			return d.name;
+		}));
+
+		svg.append('text')
+			.attr('x', 0)
+			.attr('y', height/2)
+			.attr('text-anchor', 'start')
+			.text(`Zone ${zone}`)
+			.attr('class', 'title');
+
+		var groups = barSvg.append('g')
+			.attr('class', 'labels')
+			.selectAll('text')
+			.data(data)
+			.enter()
+			.append('g');
+
+		// groups.append('text')
+		// 	.attr('x', '0')
+		// 	.attr('y', (d) => {
+		// 		return yScale(d.name);
+		// 	})
+		// 	.text((d) => {
+		// 		return d.name;
+		// 	})
+		// 	.attr('text-anchor', 'end')
+		// 	.attr('dy', '.9em')
+		// 	.attr('dx', '-.32em')
+		// 	.attr('id', (d,i) => {
+		// 		return 'label'+i;
+		// 	});
+
+		groups.attr('class', 'bars')
+			.append('rect')
+			.attr('width', (d) => {
+				return xScale(d.value);
+			})
+			.attr('height', 36)
+			.attr('x', (d) => {
+				return width-xScale(d.value);
+			})
+			.attr('y', (d) => {
+				return yScale(d.name);
+			})
+			.attr('fill', (d, i) => {
+				return this.colors[i];
+			})
+			.attr('id', (d, i) => {
+				return 'bar'+i;
+			});
+
+		groups.append('text')
+			.attr('x', (d) => {
+				return width-xScale(d.value);
+			})
+			.attr('y', (d) => {
+				return yScale(d.name);
+			})
+			.text((d) => {
+				return d.display;
+			})
+			.attr('text-anchor', 'end')
+			.attr('dy', '1.2em')
+			.attr('dx', '.32em')
+			.attr('id', 'precise-value');
+
+		// bars
+		// 	.on('mouseover', () => {
+		// 		var currentGroup = d3.select(this.parentNode);
+		// 		currentGroup.select('rect').style('fill', 'brown');
+		// 		currentGroup.select('text').style('font-weight', 'bold');
+		// 	})
+		// 	.on('mouseout', () => {
+		// 		var currentGroup = d3.select(this.parentNode);
+		// 		currentGroup.select('rect').style('fill', 'steelblue');
+		// 		currentGroup.select('text').style('font-weight', 'normal');
+		// 	});
+
+		// x.call(xAxis);
+		var grid = xScale.ticks(numTicks);
+		barSvg.append('g').attr('class', 'grid')
+			.selectAll('line')
+			.data(grid, (d) => {
+				return d;
+			})
+			.enter()
+				.append('line')
+				.attr('y1', 0)
+				.attr('y2', height+margin.bottom)
+				.attr('x1', (d) => {
+					return xScale(d);
+				})
+				.attr('x2', (d) => {
+					return xScale(d);
+				})
+				.attr('stroke', 'white');
 	}
 });
 </script>

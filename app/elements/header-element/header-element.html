@@ -221,6 +221,22 @@
                 display: none;
             }
         }
+        .ticker {
+            position: relative;
+            background: inherit;
+            border-bottom: 2px solid #F5A214;
+            width: 250px;
+            @apply(--layout);
+            @apply(--layout-horizontal);
+        }
+        .ticker .bar {
+            transform: skewX(-20deg);
+            border-left: 3px solid #F5A214;
+            width: 30px;
+        }
+        .ticker .content {
+            width: 190px;
+        }
     </style>
     <template>
         <header>
@@ -233,30 +249,16 @@
             </div>
             <ul class="navigation">
                 <li>
-                    <a data-selector="profile"
-                    href="/powercenter/">Analysis</a>
+                    <a data-selector="profile" href="/powercenter/">Analyze</a>
                 </li>
                 <li>
-                    <a data-selector="leaderboard"
-                    href="/powercenter/leaderboard">Leaderboard</a>
+                    <a data-selector="improve" href="/powercenter/improve">Improve</a>
                 </li>
                 <li>
-                    <a data-selector="connect"
-                    href="/powercenter/connect"
-                    data-step="2"
-                    data-intro="Connect your other training platforms for easy synchronization.">Connect</a>
+                    <a data-selector="leaderboard" href="/powercenter/leaderboard">Compete</a>
                 </li>
                 <li>
-                    <a data-selector="settings"
-                    href="/powercenter/settings"
-                    data-step="3"
-                    data-intro="Configure your profile.">Settings</a>
-                </li>
-                <li>
-                    <a data-selector="weakness"
-                    href="/powercenter/weakness"
-                    data-step="3"
-                    data-intro="Configure your profile.">Weakness</a>
+                    <a data-selector="settings" href="/powercenter/settings">Settings</a>
                 </li>
             </ul>
             <div class="space-taker"></div>
@@ -296,6 +298,15 @@
                     </div>
                 </div>
 
+                <div class="ticker">
+                    <div class="bar"></div>
+                    <div class="content">
+                        <h1 style="margin: 0;">IMPROVE</h1>
+                        <p style="font-size: 10px; color: white; padding-top: 0; margin-top: 0;">Find the opportunity to improve your specific run skills. Visit 'IMPROVE' tab.</p>
+                    </div>
+                    <div class="bar"></div>
+                </div>
+
                 <div class="profile">
                     <div class="text">
                         <div class="hello">Hello</div>
@@ -329,7 +340,7 @@
                     </paper-radio-button>
                 </paper-radio-group>
                 <div id="datecontainer" style="display: flex; justify-content: center; opacity: 0; height: 0;">
-                    <paper-date-picker id="datepicker" date="February 20, 2017"></paper-date-picker>
+                    <paper-date-picker id="datepicker" date="March 29, 2017"></paper-date-picker>
                 </div>
             </div>
             <div class="buttons">
