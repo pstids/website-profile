@@ -1,6 +1,6 @@
 /*jshint -W079 */
 /*jshint unused:false*/
-/*global Dexie*/
+/*global Dexie, FeatureManagement*/
 
 /*
 processor is a webworker than handles workout fetching.
@@ -96,6 +96,8 @@ app.addEventListener('dom-change', () => {
 
 	app.loadMap();
 	app.suuntoProcessing();
+
+	var featureManagement = new FeatureManagement();
 
 	processor.onmessage = (event) => {
 		if ('error' in event.data && event.data.error === true) {
@@ -269,10 +271,16 @@ app.addEventListener('dom-change', () => {
 	});
 
 	page('/connect', () => {
+		// if (jwt.hasToken) {
+		// 	app.route = 'settings';
+		// 	header.toggleActive('settings');
+		// 	settingsElement.toggle('zone');
+		// } else {
+		// 	document.location = '/signin';
+		// }
 		if (jwt.hasToken) {
-			app.route = 'settings';
-			header.toggleActive('settings');
-			settingsElement.toggle('zone');
+			app.route = 'connect';
+			header.toggleActive('connect');
 		} else {
 			document.location = '/signin';
 		}

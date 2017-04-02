@@ -129,6 +129,10 @@
 			</div>
 		</div> -->
 	</div>
+	<div class="layout horizontal flex">
+		<h1>Last <span>{{timeRange}}</span> weeks</h1>
+		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
+	</div>
 </template>
 <script>
 Polymer({
@@ -250,16 +254,28 @@ Polymer({
 	attached: function () {
 		superagent
 			.get('/powercenter/scripts/heat.json')
-			.send()
-			.set('Accept', 'application/json')
-			.end((err, res) => {
-				if (res.ok) {
-					this.data = res.body;
-					this.createChart();
-				} else {
-					console.log('Error: cannot fetch data');
-				}
-			});
+		.send()
+		.set('Accept', 'application/json')
+		.end((err, res) => {
+			if (res.ok) {
+				this.data = res.body;
+				this.createChart();
+			} else {
+				console.log('Error: cannot fetch data');
+			}
+		});
+		// superagent
+		// 	.get('/b/api/v1/users/powerduration?srtDate=02-01-17&endDate=04-01-17')
+		// 	.send()
+		// 	.set('Accept', 'application/json')
+		// 	.end((err, res) => {
+		// 		if (res.ok) {
+		// 			this.data = res.body;
+		// 			this.createChart();
+		// 		} else {
+		// 			console.log('Error: cannot fetch data');
+		// 		}
+		// 	});
 		//this.createZone(2, 3, 1);
 		for (var i = 5; i > 0; i--) {
 			var yPer = Math.floor(Math.random() * 70 + 30);

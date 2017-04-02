@@ -627,3 +627,41 @@ class CalendarManager {
 }
 
 var calendarManager = new CalendarManager();
+
+class FeatureManagement {
+	constructor() {
+		this.usernames = [
+			'angus',
+			'angus-nelson',
+			'kun',
+			'jamie',
+			'wyatt',
+			'adamheaney',
+			'emelie',
+			'test12',
+			'test11',
+			'test',
+			'firegirlred',
+			'gus-pernetz'
+		];
+		this.hasFeatures = false;
+		this.addFeatures();
+	}
+	addFeatures() {
+		if ('data' in user && 'user_name' in user.data) {
+			if (this.usernames.indexOf(user.data.user_name.toLowerCase()) !== -1) {
+				this.hasFeatures = true;
+				header.enable();
+				// var dataReveal = document.querySelector('[data-reveal]');
+				// dataReveal.classList.remove('hidden');
+				// document.querySelector('header-element').enable('profile');
+				// dataReveal.appendChild(
+				// 	document.querySelector('log-calendar')
+				// );
+				// dataReveal.appendChild(
+				// 	document.querySelector('#uploader')
+				// );
+			}
+		}
+	}
+}

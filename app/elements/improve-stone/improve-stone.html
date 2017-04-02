@@ -247,10 +247,14 @@ Polymer({
 			aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
 		}
 		var targetRaceIdx = 0;
+		var hasTargetRaceIdx = 0;
 		if ('target_race' in user.data) {
 			targetRaceIdx = this.targetRace.indexOf(user.data.target_race);
 			if (targetRaceIdx < 0) {
 				targetRaceIdx = 0;
+				hasTargetRaceIdx = false;
+			} else {
+				hasTargetRaceIdx = true;
 			}
 		}
 		this.userLocal = {
@@ -271,7 +275,8 @@ Polymer({
 				user.data.birth.month,
 				user.data.birth.day
 			),
-			targetRaceIdx: targetRaceIdx
+			targetRaceIdx: targetRaceIdx,
+			hasTargetRaceIdx: hasTargetRaceIdx
 		};
 	},
 	getAge: function (year, month, day) {
@@ -363,15 +368,16 @@ Polymer({
 			});
 	},
 	checkAvailables: function () {
-		// if (
-		// 	user.data.birth.year === 0 ||
-		// 	user.data.gender === ''
-		// ) {
-		// 	this.availables.push('personal');
-		// }
-		// if (user.data.training_info.critical_power === 0) {
-		// 	this.availables.push('baseline');
-		// }
+		if (
+			this.userLocal.birth_year === 0 ||
+			this.userLocal.gender === '' ||
+			this.userLocal.hasTargetRaceIdx
+		) {
+			this.availables.push('personal');
+		}
+		if (user.data.training_info.critical_power === 0) {
+			this.availables.push('baseline');
+		}
 		// this.availables.push('personal');
 		// this.availables.push('baseline');
 		this.activateAvailables();

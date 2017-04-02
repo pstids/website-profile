@@ -75,6 +75,7 @@ gulp.task('jshint', function () {
         'durationToSec',
         'ga',
         'google',
+        'header',
         'hmsTime',
         'hrTime',
         'jwt',

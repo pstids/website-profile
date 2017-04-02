@@ -249,13 +249,16 @@
             </div>
             <ul class="navigation">
                 <li>
-                    <a data-selector="profile" href="/powercenter/">Analyze</a>
+                    <a data-selector="profile" href="/powercenter/">Analysis</a>
                 </li>
-                <li>
+                <li class="hidden" id="improve">
                     <a data-selector="improve" href="/powercenter/improve">Improve</a>
                 </li>
                 <li>
-                    <a data-selector="leaderboard" href="/powercenter/leaderboard">Compete</a>
+                    <a data-selector="leaderboard" href="/powercenter/leaderboard">Leaderboard</a>
+                </li>
+                <li>
+                    <a data-selector="connect" href="/powercenter/connect">Connect</a>
                 </li>
                 <li>
                     <a data-selector="settings" href="/powercenter/settings">Settings</a>
@@ -263,7 +266,7 @@
             </ul>
             <div class="space-taker"></div>
             <template is="dom-if" if="{{user.available}}">
-                <div class="insights hidden">
+                <div class="insights">
                     <div class="insight">
                         <iron-icon icon="image:timer"></iron-icon>
                         <div class="info">
@@ -298,7 +301,7 @@
                     </div>
                 </div>
 
-                <div class="ticker">
+                <div class="ticker hidden">
                     <div class="bar"></div>
                     <div class="content">
                         <h1 style="margin: 0;">IMPROVE</h1>
@@ -394,7 +397,8 @@
             });
         },
         enable: function () {
-            this.querySelector('[data-profile]').classList.remove('hidden');
+            console.log(this.$.improve);
+            this.$.improve.classList.remove('hidden');
         },
         logout: function () {
             jwt.logout();
