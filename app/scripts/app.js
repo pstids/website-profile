@@ -97,8 +97,6 @@ app.addEventListener('dom-change', () => {
 	app.loadMap();
 	app.suuntoProcessing();
 
-	var featureManagement = new FeatureManagement();
-
 	processor.onmessage = (event) => {
 		if ('error' in event.data && event.data.error === true) {
 			toast('Cannot load workout! Visit the calendar to select another.');

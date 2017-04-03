@@ -3,6 +3,11 @@
 /*global CryptoJS*/
 /*global processor*/
 
+var isLocal = false;
+if (window.location.hostname === 'stryd.dev') {
+	isLocal = true;
+}
+
 class JWT {
 	constructor() {
 		this.token = localStorage.getItem('token');
@@ -172,7 +177,7 @@ class TrainingPlan {
 
 		/* Check for local plan and store in user account */
 		var trainingSelected;
-		if (window.location.hostname !== 'stryd.dev') {
+		if (isLocal) {
 			trainingSelected = localStorage.getItem('training-selected');
 			var trainingStarted = localStorage.getItem('training-started');
 			var trainingParsed = moment(trainingStarted, 'YYYYMMDD').format('X');
@@ -193,7 +198,7 @@ class TrainingPlan {
 			}
 		}
 
-		if (window.location.hostname === 'stryd.dev') {
+		if (isLocal) {
 			trainingSelected = localStorage.getItem('training-selected');
 			if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
 				this.targetDateHash = localStorage.getItem('training-started');
@@ -642,7 +647,8 @@ class FeatureManagement {
 			'test11',
 			'test',
 			'firegirlred',
-			'gus-pernetz'
+			'gus-pernetz',
+			'mcbevil'
 		];
 		this.hasFeatures = false;
 		this.addFeatures();
@@ -651,7 +657,6 @@ class FeatureManagement {
 		if ('data' in user && 'user_name' in user.data) {
 			if (this.usernames.indexOf(user.data.user_name.toLowerCase()) !== -1) {
 				this.hasFeatures = true;
-				header.enable();
 				// var dataReveal = document.querySelector('[data-reveal]');
 				// dataReveal.classList.remove('hidden');
 				// document.querySelector('header-element').enable('profile');
@@ -665,3 +670,5 @@ class FeatureManagement {
 		}
 	}
 }
+
+var featureManagement = new FeatureManagement();

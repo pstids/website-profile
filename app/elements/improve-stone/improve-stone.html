@@ -222,12 +222,18 @@ Polymer({
 		}
 	},
 	ready: function () {
+		if (!featureManagement.hasFeatures) {
+			return;
+		}
 		this.selected = 0;
 		this.currentStep = 0;
 		this.availables = [];
 		this.targetRaces = ['5k', '10k', 'half marathon', 'marathon'];
 	},
 	attached: function () {
+		if (!featureManagement.hasFeatures) {
+			return;
+		}
 		if (jwt.hasToken) {
 			if (Object.keys(user.data).length === 0) {
 				user.fetchDetails(() => {
@@ -409,14 +415,26 @@ Polymer({
 	},
 	/* global heatDuration, spiderChart, performanceManagement */
 	addBlur: function () {
-		heatDuration.classList.add('blurred');
-		spiderChart.classList.add('blurred');
-		performanceManagement.classList.add('blurred');
+		if (heatDuration) {
+			heatDuration.classList.add('blurred');
+		}
+		if (spiderChart) {
+			spiderChart.classList.add('blurred');
+		}
+		if (performanceManagement) {
+			performanceManagement.classList.add('blurred');
+		}
 	},
 	removeBlur: function () {
-		heatDuration.classList.remove('blurred');
-		spiderChart.classList.remove('blurred');
-		performanceManagement.classList.remove('blurred');
+		if (heatDuration) {
+			heatDuration.classList.remove('blurred');
+		}
+		if (spiderChart) {
+			spiderChart.classList.remove('blurred');
+		}
+		if (performanceManagement) {
+			performanceManagement.classList.remove('blurred');
+		}
 	}
 });
 </script>

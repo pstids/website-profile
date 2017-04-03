@@ -54,7 +54,7 @@
 	}
 	.descs {
 		padding: 20px;
-		@apply(--layout-horizontal);
+		@apply(--layout-vertical);
 	}
 	.descs p {
 		color: white;
@@ -70,10 +70,9 @@
 		<div class="info">
 			<div class="layout horizontal top">
 				<paper-tabs selected="{{selected}}">
-					<paper-tab>Fatigue</paper-tab>
-					<paper-tab>Muscle Condition</paper-tab>
-					<paper-tab>Power Rank</paper-tab>
-					<paper-tab>Endurance</paper-tab>
+					<paper-tab>Metabolic Fitness</paper-tab>
+					<paper-tab>Muscle Power</paper-tab>
+					<paper-tab>Muscle Endurance</paper-tab>
 				</paper-tabs>
 			</div>
 			<div class="descs">
@@ -87,14 +86,11 @@
 					<section data-page="2">
 						<p>In physics, power is the rate of doing work. It is the amount of energy consumed per unit time. Having no direction, it is a scalar quantity. In the SI system, the unit of power is the joule per second (J/s), known as the watt in honour of James Watt, the eighteenth-century developer of the steam engine.</p>
 					</section>
-					<section data-page="3">
-						<p>Endurance (also related to sufferance, resilience, constitution, fortitude, and hardiness) is the ability of an organism to exert itself and remain active for a long period of time, as well as its ability to resist, withstand, recover from, and have immunity to trauma, wounds, or fatigue. It is usually used in aerobic or anaerobic exercise. The definition of long varies according to the type of exertion – minutes for high intensity anaerobic exercise, hours or days for low intensity aerobic exercise. Training for endurance can have a negative impact on the ability to exert strength[1] unless an individual also undertakes resistance training to counteract this effect.</p>
-					</section>
 				</iron-pages>
 			</div>
 		</div>
 	</div>
-	<div class="layout horizontal flex">
+	<div class="layout horizontal flex hidden">
 		<h1>Last <span>{{timeRange}}</span> weeks</h1>
 		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
 	</div>
@@ -103,12 +99,50 @@
 Polymer({
 	is: 'spider-chart',
 	ready: function () {
+		if (!featureManagement.hasFeatures) {
+			return;
+		}
 		this.chart = null;
 		this.selected = 0;
-		this.createChart();
+
 		this.makeData();
 		this.title = this.spiders.fatigue.title;
 		this.desc = this.spiders.fatigue.desc;
+
+		this.mapping = {
+			metobolic_fitness: 'Metabolic Fitness',
+			muscle_endurance: 'Muscle Endurance',
+			muscle_power: 'Muscle Power'
+		};
+
+		this.chartData = [];
+
+		var path = '/b/api/v1/users/runnerprofile?srtDate=02-01-2017&endDate=04-01-2017';
+		if (isLocal) {
+			path = '/powercenter/scripts/spider.json';
+		}
+		superagent
+			.get(path)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					this.data = res.body;
+					this.processData();
+					this.createChart();
+				} else {
+					console.log('Error: cannot fetch data');
+				}
+			});
+	},
+	processData: function () {
+		for (var key of Object.keys(this.data)) {
+			this.chartData.push({
+				category: this.mapping[key],
+				units: Math.floor(this.data[key] * 100)
+			});
+		}
 	},
 	createChart: function () {
 		this.chart = AmCharts.makeChart(
@@ -136,19 +170,7 @@ Polymer({
 					valueField: 'units'
 				}],
 				categoryField: 'category',
-				dataProvider: [{
-					category: 'Fatigue',
-					units: 52
-				}, {
-					category: 'Muscle Condition',
-					units: 55
-				}, {
-					category: 'Power Rank',
-					units: 45
-				}, {
-					category: 'Endurance Ability',
-					units: 80
-				}]
+				dataProvider: this.chartData
 			}
 		);
 		// this.chart.addListener('clickGraph', (e) => {

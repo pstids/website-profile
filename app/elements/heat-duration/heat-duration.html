@@ -129,7 +129,7 @@
 			</div>
 		</div> -->
 	</div>
-	<div class="layout horizontal flex">
+	<div class="layout horizontal flex hidden">
 		<h1>Last <span>{{timeRange}}</span> weeks</h1>
 		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
 	</div>
@@ -138,6 +138,9 @@
 Polymer({
 	is: 'heat-duration',
 	ready: function () {
+		if (!featureManagement.hasFeatures) {
+			return;
+		}
 		this.width = 860;
 		this.height = 500;
 		this.padding = 30;
@@ -168,9 +171,18 @@ Polymer({
 
 			if ('heatmaps' in this.data) {
 				var coors = this.getXY2(boxX, boxY);
-				var runsValue = this.data.heatmaps[coors.y][coors.x];
-				var powerValue = this.data.powers[this.data.powers.length - coors.y];
-				var timeValue = this.data.windows[coors.x];
+				var runsValue = null;
+				if (coors.y > 0 && coors.y < this.data.heatmaps.length) {
+					runsValue = this.data.heatmaps[coors.y][coors.x];
+				}
+				var powerValue = null;
+				if (coors.y > 0 && coors.y < this.data.heatmaps.length) {
+					powerValue = this.data.powers[this.data.powers.length - coors.y];
+				}
+				var timeValue = null;
+				if (coors.x > 0 && coors.x < this.data.heatmaps[0].length) {
+					timeValue = this.data.windows[coors.x];
+				}
 				if (
 					runsValue !== null &&
 					powerValue !== null &&
@@ -179,7 +191,7 @@ Polymer({
 					powerValue !== undefined &&
 					timeValue !== undefined
 				) {
-					this.$.fruns.textContent = runsValue/15;
+					this.$.fruns.textContent = runsValue;
 					this.$.fpower.textContent =  powerValue + ' watts';
 					var timeUnit = ' secs';
 					if (timeValue > 60) {
@@ -251,31 +263,36 @@ Polymer({
 			// }
 		});
 	},
-	attached: function () {
-		superagent
-			.get('/powercenter/scripts/heat.json')
-		.send()
-		.set('Accept', 'application/json')
-		.end((err, res) => {
-			if (res.ok) {
-				this.data = res.body;
-				this.createChart();
-			} else {
-				console.log('Error: cannot fetch data');
+	transpose: function (a) {
+		return Object.keys(a[0]).map(function (c) {
+				return a.map(function (r) {
+					return r[c];
+				});
 			}
-		});
-		// superagent
-		// 	.get('/b/api/v1/users/powerduration?srtDate=02-01-17&endDate=04-01-17')
-		// 	.send()
-		// 	.set('Accept', 'application/json')
-		// 	.end((err, res) => {
-		// 		if (res.ok) {
-		// 			this.data = res.body;
-		// 			this.createChart();
-		// 		} else {
-		// 			console.log('Error: cannot fetch data');
-		// 		}
-		// 	});
+		);
+	},
+	attached: function () {
+		if (!featureManagement.hasFeatures) {
+			return;
+		}
+		var path = '/b/api/v1/users/powerduration?srtDate=02-01-2017&endDate=04-01-2017';
+		if (isLocal) {
+			path = '/powercenter/scripts/heat.json';
+		}
+		superagent
+			.get(path)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					this.data = res.body;
+					this.data.heatmaps.reverse();
+					this.createChart();
+				} else {
+					console.log('Error: cannot fetch data');
+				}
+			});
 		//this.createZone(2, 3, 1);
 		for (var i = 5; i > 0; i--) {
 			var yPer = Math.floor(Math.random() * 70 + 30);
@@ -331,11 +348,12 @@ Polymer({
 		var line = d3.svg.area()
 			/* unused: d */
 			.x((d, i) => {
+				console.log(this.x(i));
 				return this.x(i);
 			})
 			.y0(this.height-30)
 			.y1((d) => {
-				return this.y(d);
+				return this.y((d-100)/10);
 			});
 
 		svg.append('path')

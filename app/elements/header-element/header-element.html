@@ -395,6 +395,10 @@
                 }
                 this.startday = start_date.format('MMM Do YYYY');
             });
+
+            if (featureManagement.hasFeatures) {
+                this.enable();
+            }
         },
         enable: function () {
             console.log(this.$.improve);
