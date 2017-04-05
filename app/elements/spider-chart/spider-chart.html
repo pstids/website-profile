@@ -4,6 +4,8 @@
 		height: 100%;
 		@apply(--layout);
 		@apply(--layout-vertical);
+		@apply(--layout-center);
+		@apply(--layout-center-justified);
 		padding: 20px;
 	}
 	:host.blurred {
@@ -23,96 +25,272 @@
 	}
 	#spider {
 		height: 600px;
-		width: 100%;
-		flex: 4;
+		min-width: 700px;
+		flex: 2;
 	}
-/*	.info {
-		flex: 1;
-		border: 1px solid #F7A017;
-	}*/
-/*	.descs {
-		flex: 1;
-		color: white;
-		font-size: 16px;
-		line-height: 1.6;
-		width: 500px;
-	}*/
 
-	.info {
-		@apply(--layout-vertical);
+	table {
 		border: 1px solid #4D4D4D;
-		flex: 1;
-		margin: 20px;
-	}
-	.top {
-		background-color: #222222;
-		border-bottom: 1px solid #4D4D4D;
-	}
-	.title {
-		@apply(--layout-horizontal);
-		@apply(--layout-flex);
-	}
-	.descs {
-		padding: 20px;
-		@apply(--layout-vertical);
-	}
-	.descs p {
 		color: white;
+		line-height: 2;
+		font-size: 17px;
+		text-align: center;
+		border-collapse: collapse;
+		cursor: pointer;
+		flex: 1;
+	}
+	table thead th {
+		font-weight: 700;
+	}
+	table .highlight {
+		background: orange;
+	}
+	table tr:last-child td {
+		border-bottom: 0;
+	}
+	table td, table th {
+		border-right: 1px solid #4D4D4D;
+		border-bottom: 1px solid #4D4D4D;
+		padding: 8px;
+	}
+	table tbody td:last-child {
+		border-right: 0;
+	}
+	table tr.active td, table tr.active th {
+		border-bottom: 2px solid #F7A017;
+	}
+	table tr td:first-child, table tr th:first-child {
+		width: 230px;
+	}
+	table tr.active th {
+		background: #393939;
+	}
+	table tr {
+		order: 2;
+	}
+	table tr.active {
+		order: 1;
+	}
+	table th {
+		background: #393939;
+	}
+	table th.active {
+		background: #393939;
+		border-bottom: 2px solid #F7A017;
+	}
+	.setButton {
+		width: 250px;
 		padding: 10px;
-		line-height: 1.7;
-		margin: 0;
+		margin-bottom: 30px;
+	}
+	.targetRace {
+		text-transform: uppercase;
+	}
+	.questionBtn {
+		margin-top: 0;
+		margin-left: 20px;
 	}
 </style>
 <template>
-	<h1 class="header">Strength Your Skills</h1>
-	<div class="layout horizontal">
+	<div class="layout horizontal center center-justified">
+		<h1 class="header">Strengthen Your Skills</h1>
+		<button is="stryd-button" class="questionBtn" on-click="callQuestion">?</button>
+	</div>
+	<button is="stryd-button" on-click="changeRace" class="setButton">Update My Race (<span class="targetRace">{{raceKey}}</span>)</button>
+	<div class="layout horizontal" style="margin-top: 20px;">
 		<div id="spider"></div>
-		<div class="info">
-			<div class="layout horizontal top">
-				<paper-tabs selected="{{selected}}">
-					<paper-tab>Metabolic Fitness</paper-tab>
-					<paper-tab>Muscle Power</paper-tab>
-					<paper-tab>Muscle Endurance</paper-tab>
-				</paper-tabs>
-			</div>
-			<div class="descs">
-				<iron-pages selected="{{selected}}" attr-for-selected="data-page">
-					<section data-page="0">
-						<p>Fatigue (also called exhaustion, tiredness, languidness, languor, lassitude, and listlessness) is a subjective feeling of tiredness which is distinct from weakness, and has a gradual onset. Unlike weakness, fatigue can be alleviated by periods of rest. Fatigue can have physical or mental causes. Physical fatigue is the transient inability of a muscle to maintain optimal physical performance, and is made more severe by intense physical exercise.</p>
-					</section>
-					<section data-page="1">
-						<p>Muscle is a soft tissue found in most animals. Muscle cells contain protein filaments of actin and myosin that slide past one another, producing a contraction that changes both the length and the shape of the cell. Muscles function to produce force and motion. They are primarily responsible for maintaining and changing posture, locomotion, as well as movement of internal organs, such as the contraction of the heart and the movement of food through the digestive system via peristalsis.</p>
-					</section>
-					<section data-page="2">
-						<p>In physics, power is the rate of doing work. It is the amount of energy consumed per unit time. Having no direction, it is a scalar quantity. In the SI system, the unit of power is the joule per second (J/s), known as the watt in honour of James Watt, the eighteenth-century developer of the steam engine.</p>
-					</section>
-				</iron-pages>
-			</div>
-		</div>
+		<table>
+			<thead>
+				<tr>
+					<td>Workouts</td>
+					<th data-category="metobolic_fitness">Metabolic Fitness</th>
+					<th data-category="muscle_endurance">Muscle Endurance</th>
+					<th data-category="muscle_power">Muscle Power</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr data-workout="speed">
+					<th>Speed/VO2 Max Repeat</th>
+					<td class="highlight" data-highlight="metobolic_fitness"></td>
+					<td></td>
+					<td class="highlight" data-highlight="muscle_power"></td>
+				</tr>
+				<tr data-workout="lactate">
+					<th>Lactate Threshold Runs</th>
+					<td class="highlight" data-highlight="metobolic_fitness"></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr data-workout="easy">
+					<th>High Volume Easy Run</th>
+					<td class="highlight" data-highlight="metobolic_fitness"></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr data-workout="aerobic">
+					<th>Aerobic Threshold Runs</th>
+					<td class="highlight" data-highlight="metobolic_fitness"></td>
+					<td class="highlight" data-highlight="muscle_endurance"></td>
+					<td></td>
+				</tr>
+				<tr data-workout="race">
+					<th>Race Specific</th>
+					<td class="highlight" data-highlight="metobolic_fitness"></td>
+					<td class="highlight" data-highlight="muscle_endurance"></td>
+					<td></td>
+				</tr>
+				<tr data-workout="long">
+					<th>Long Run</th>
+					<td></td>
+					<td class="highlight" data-highlight="muscle_endurance"></td>
+					<td></td>
+				</tr>
+				<tr data-workout="hill">
+					<th>Hill/Track Sprint</th>
+					<td></td>
+					<td></td>
+					<td class="highlight" data-highlight="muscle_power"></td>
+				</tr>
+				<tr data-workout="pylo">
+					<th>Pylometric Exercises</th>
+					<td></td>
+					<td></td>
+					<td class="highlight" data-highlight="muscle_power"></td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 	<div class="layout horizontal flex hidden">
 		<h1>Last <span>{{timeRange}}</span> weeks</h1>
 		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
 	</div>
+	<paper-dialog id="workoutDialog" style="max-width: 600px;">
+		<h1>{{workoutTitle}}</h1>
+		<div class="layout vertical">
+			<p>{{workoutDescription}}</p>
+		</div>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="questionDialog" style="max-width: 600px;">
+		<h1>Running Optimization Tool</h1>
+		<p>Your <b>Running Optimization Tool</b> allows you to quickly identify your strengths and limiters based on your goal distance and other runners like you.  Use the tool to determine how you should spend your time when training.</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
 </template>
 <script>
 Polymer({
 	is: 'spider-chart',
+	listeners: {
+		tap: 'eleTap'
+	},
+	eleTap: function (e) {
+		var target = e.target;
+		while (true) {
+			if (target === this) {
+				return;
+			} else if ('workout' in target.dataset) {
+				var recommendation = this.recommendations[target.dataset.workout];
+				this.workoutDescription = recommendation.desc;
+				this.workoutTitle = recommendation.title;
+				this.$.workoutDialog.open();
+				return;
+			} else if ('category' in target.dataset) {
+				var category = this.categories[target.dataset.category];
+				this.workoutDescription = category.desc;
+				this.workoutTitle = category.title;
+				this.$.workoutDialog.open();
+			}
+			if ('parentNode' in target && target.parentNode !== null) {
+				target = target.parentNode;
+			} else {
+				return;
+			}
+		}
+	},
+	callQuestion: function () {
+		this.$.questionDialog.open();
+	},
+	changeRace: function () {
+		var improveStone = document.querySelector('improve-stone');
+		if (improveStone) {
+			improveStone.changeRace();
+		}
+	},
 	ready: function () {
 		if (!featureManagement.hasFeatures) {
 			return;
 		}
 		this.chart = null;
-		this.selected = 0;
 
-		this.makeData();
-		this.title = this.spiders.fatigue.title;
-		this.desc = this.spiders.fatigue.desc;
+		this.workoutDescription = '';
+		this.workoutTitle = '';
 
 		this.mapping = {
 			metobolic_fitness: 'Metabolic Fitness',
 			muscle_endurance: 'Muscle Endurance',
 			muscle_power: 'Muscle Power'
+		};
+
+		this.recKeys = ['metobolic_fitness', 'muscle_endurance', 'muscle_power'];
+		this.categories = {
+			metobolic_fitness: {
+				title: 'Metabolic Fitness',
+				desc: 'Your overall fitness. This considers both your metabolic endurance and current aerobic baseline.  While it is possible to build up to your fitness ceiling in a relatively short time, it is important to remember that you can also slowly improve your overall fitness ceiling over time.'
+			},
+			muscle_endurance: {
+				title: 'Muscle Endurance',
+				desc: 'Run long! Your ability to keep running.  Your ability to run long should be improved slowly.  Research recommends increasing by ~10% each week, and a single long run should not be more than 20-25% of your total weekly load.'
+			},
+			muscle_power: {
+				title: 'Muscle Power',
+				desc: 'Run Fast! Your instantaneous power.  Muscular power is directly linked to running economy.  By improving the strength of your muscles, the stiffness of your tendons, your technique, and your coordination, to get the most out of each and every step.'
+			}
+		};
+		this.recommendations = {
+			race: {
+				features: [true, true, false],
+				desc: 'Workouts performed at your race pace, designed to increase your efficiency and/or your resistance to fatigue at your goal race pace.',
+				title: 'Race Specific Training'
+			},
+			long: {
+				features: [false, true, false],
+				desc: 'A long, sustained run completed once per week. This run typically comprises of roughly 20-30% of total weekly volume. Your overall endurance improves and promotes the use of fate as a fuel source.',
+				title: 'Long Run'
+			},
+			hill: {
+				features: [false , false, true],
+				desc: 'Short, intense uphill runs lasting between 8-15 seconds with longer recovery periods. Your neuromuscular capabilities, overall strength, and leg spring stiffness improves. These skills lead to improved running economy.',
+				title: 'Hill/Track Sprint'
+			},
+			pylo: {
+				features: [false, false, true],
+				desc: 'Improves muscle recruitment patterns, allowing you to run with more power and coordination. Should be used incrementally focussing on lower impact routines first. Form Drills - Strengthens key running muscles, improves functional range of motion, improves neuromuscular communication, and increases mindfulness of good running form. Heavy Weights Lifting - The optimal number of repetitions for increasing strength and endurance is 5-6. Not only does it translate to a more powerful stride, but it also promotes good posture and muscle stiffness which also improves efficiency.',
+				title: 'Pylometric Exercises',
+			},
+			speed: {
+				features: [true, false, true],
+				desc: '3 to 5 min bouts of Zone 4 running with short rest. The goal is to stress your aerobic capacity to a greater degree than could be accomplished with a single, continuous run.',
+				title: 'Speed/VO2 Max Repeat'
+			},
+			lactate: {
+				features: [true, false, false],
+				desc: '20-60 min of Zone 3/Zone 4 running. Often described as comfortably hard. Run at a slightly higher intensity than an Aerobic Threshold Run - targeting your lactate clearing system.',
+				title: 'Lactate Threshold Tempo'
+			},
+			easy: {
+				features: [true, false, false],
+				desc: 'Zone 1 running strengthens the heart muscle, increases vascularization, promotes healing, and oxygen delivery at the cellular level.',
+				title: 'High Volume Easy Run'
+			},
+			aerobic: {
+				features: [true, true, false],
+				desc: '20-60 min of Zone 3 running. Often described as comfortably hard. Run faster than an easy run, but less intense than an LT Tempo Run. Designed to stress the aerobic system with limited lactate build up.',
+				title: 'Aerobic Threshold Tempo Runs'
+			}
 		};
 
 		this.chartData = [];
@@ -131,10 +309,81 @@ Polymer({
 					this.data = res.body;
 					this.processData();
 					this.createChart();
+					//this.findHighlights(this.data);
+					this.findShading();
 				} else {
 					console.log('Error: cannot fetch data');
 				}
 			});
+
+		this.raceKey = '5k';
+		if ('race' in user.data && user.data.race !== '') {
+			this.raceKey = user.data.race;
+		}
+	},
+	findShading: function () {
+		for (var skill of Object.keys(this.data)) {
+			var opacity = (1.4-this.data[skill]);
+			var tiles = document.querySelectorAll(`[data-highlight="${skill}"]`);
+			for (var tile of tiles) {
+				tile.style.opacity = opacity;
+			}
+		}
+	},
+	findRecs: function (highlights) {
+		// recommendation rows to highlight
+		var highlightRecs = [];
+		// look for recommendations corresponding to categories
+		for (var highlight of highlights) {
+			// look at each recommendation
+			for (var recKey of Object.keys(this.recommendations)) {
+				var recommendation = this.recommendations[recKey];
+				// find if this recommendation is in the category
+				var highlightIdx = this.recKeys.indexOf(highlight.key);
+				if (recommendation.features[highlightIdx]) {
+					highlightRecs.push(recKey);
+				}
+			}
+		}
+		this.highlightRecs(highlightRecs, highlights);
+	},
+	highlightRecs: function (highlightRecs, highlights) {
+		for (var rec of highlightRecs) {
+			this.querySelector(`[data-workout="${rec}"]`).classList.add('active');
+		}
+		for (var highlight of highlights) {
+			console.log(highlight.key);
+			this.querySelector(`[data-category="${highlight.key}"]`).classList.add('active');
+		}
+	},
+	findHighlights: function (profile) {
+		var profileArr = [];
+		for (var key of Object.keys(profile)) {
+			profileArr.push({
+				key: key,
+				value: profile[key]
+			});
+		}
+		profileArr.sort((a, b) => {
+			return a.value - b.value;
+		});
+		var below30Threshold = false;
+		var below60Threshold = false;
+		var highlights = [];
+		for (var obj of profileArr) {
+			if (obj.value < 0.30) {
+				below30Threshold = true;
+				highlights.push(obj);
+			} else if (obj.value < 0.60) {
+				below60Threshold = true;
+			}
+		}
+
+		if (!below30Threshold && below60Threshold) {
+			highlights.push(profileArr[0]);
+		}
+
+		this.findRecs(highlights);
 	},
 	processData: function () {
 		for (var key of Object.keys(this.data)) {
@@ -144,65 +393,97 @@ Polymer({
 			});
 		}
 	},
+	createLabels: function () {
+		var labels = [{
+			align: 'center',
+			text: 'Metabolic Fitness',
+			color: 'white',
+			x: '0%',
+			y: 0,
+			size: 20,
+			bold: true
+		}, {
+			align: 'center',
+			text: 'Muscle Endurance',
+			color: 'white',
+			x: '-35%',
+			y: 430,
+			size: 20,
+			bold: true
+		}, {
+			align: 'center',
+			text: 'Muscle Power',
+			color: 'white',
+			x: '40%',
+			y: 430,
+			size: 20,
+			bold: true
+		}];
+
+		var profileArr = [];
+		for (let key of Object.keys(this.data)) {
+			profileArr.push({
+				key: key,
+				value: this.data[key]
+			});
+		}
+		profileArr.sort((a, b) => {
+			return a.value - b.value;
+		});
+
+		var i = 0;
+		for (let key of this.recKeys) {
+			var label = JSON.parse(JSON.stringify(labels[i]));
+			label.y += 20;
+			label.text = Math.floor(this.data[key] * 100) + '%';
+			label.size = 20;
+			label.bold = false;
+			labels.push(label);
+			i++;
+		}
+		return labels;
+	},
 	createChart: function () {
+		var labels = this.createLabels();
+		console.log(labels);
 		this.chart = AmCharts.makeChart(
 			this.$.spider,
 			{
 				type: 'radar',
 				theme: 'stryd',
 				valueAxes: [{
-					axisTitle: 40,
+					axisTitle: 50,
 					minimum: 0,
 					maximum: 100,
 					axisAlpha: 1,
 					dashLength: 0,
-					labelsEnabled: false,
-					fontSize: 18,
-					id: 'pts'
+					labelsEnabled: true,
+					fontSize: 20,
+					id: 'pts',
+					axisTitleOffset: 50,
+					autoWrap: true,
+					labelOffset: 20,
+					radarCategoriesEnabled: false,
+					gridThickness: 3
 				}],
-				colors: ['#F5A214'],
-				startDuration: 2,
+				fontFamily: 'Roboto',
+				allLabels: labels,
+				colors: ['#F7A017'],
+				startDuration: 1,
+				startEffect: 'easeInSine',
+				marginTop: 10,
 				graphs: [{
-					balloonText: '[[value]] points',
+					balloonText: '[[value]]%',
 					bullet: 'round',
 					bulletSize: 30,
 					lineThickness: 10,
 					valueField: 'units'
 				}],
 				categoryField: 'category',
+				radius: '40%',
 				dataProvider: this.chartData
 			}
 		);
-		// this.chart.addListener('clickGraph', (e) => {
-		// 	console.log(e);
-		// });
-		// this.chart.addListener('clickGraphItem', (e) => {
-		// 	console.log(e);
-		// });
-		// console.log(this.chart.getValueAxisById('pts'));
-		// this.chart.getValueAxisById('pts').addListener('clickGuide', (e) => {
-		// 	console.log(e);
-		// });
-	},
-	makeData: function () {
-		this.spiders = {
-			fatigue: {
-				title: 'Fatigue',
-				desc: 'Fatigue (also called exhaustion, tiredness, languidness, languor, lassitude, and listlessness) is a subjective feeling of tiredness which is distinct from weakness, and has a gradual onset. Unlike weakness, fatigue can be alleviated by periods of rest. Fatigue can have physical or mental causes. Physical fatigue is the transient inability of a muscle to maintain optimal physical performance, and is made more severe by intense physical exercise.'
-			},
-			muscle: {
-				title: 'Muscle Condition',
-				desc: 'Muscle is a soft tissue found in most animals. Muscle cells contain protein filaments of actin and myosin that slide past one another, producing a contraction that changes both the length and the shape of the cell. Muscles function to produce force and motion. They are primarily responsible for maintaining and changing posture, locomotion, as well as movement of internal organs, such as the contraction of the heart and the movement of food through the digestive system via peristalsis.'
-			},
-			power: {
-				title: 'Power Rank',
-				desc: 'In physics, power is the rate of doing work. It is the amount of energy consumed per unit time. Having no direction, it is a scalar quantity. In the SI system, the unit of power is the joule per second (J/s), known as the watt in honour of James Watt, the eighteenth-century developer of the steam engine.'
-			},
-			endurance: {
-				title: 'Endurance',
-				desc: 'Endurance (also related to sufferance, resilience, constitution, fortitude, and hardiness) is the ability of an organism to exert itself and remain active for a long period of time, as well as its ability to resist, withstand, recover from, and have immunity to trauma, wounds, or fatigue. It is usually used in aerobic or anaerobic exercise. The definition of long varies according to the type of exertion – minutes for high intensity anaerobic exercise, hours or days for low intensity aerobic exercise. Training for endurance can have a negative impact on the ability to exert strength[1] unless an individual also undertakes resistance training to counteract this effect.'
-			}
-		};
 	}
 });
 </script>

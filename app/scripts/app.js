@@ -346,6 +346,12 @@ app.addEventListener('dom-change', () => {
 	page({
 		hashbang: false
 	});
+
+	if (featureManagement.hasFeatures) {
+		document.querySelector('[data-route="improve"]').appendChild(
+			document.querySelector('performance-management')
+		);
+	}
 });
 
 app.logout = function () {

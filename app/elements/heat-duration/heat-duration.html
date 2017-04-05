@@ -1,14 +1,13 @@
 <dom-module id="heat-duration">
 <style>
 	:host {
-		@apply(--layout);
-		@apply(--layout-vertical);
 		font-family: "Stryd", sans-serif;
 		position: relative;
-		background-color: #222222;
+		/*background-color: #222222;*/
 		min-width: 960px;
 		padding: 20px;
-		height: 700px;
+		padding-bottom: 100px;
+		display: block;
 	}
 	:host.blurred {
 		-webkit-filter: blur(2px);
@@ -25,14 +24,12 @@
 	.charts {
 		position: relative;
 		width: 1000px;
-		height: 550px;
+		height: 560px;
 	}
 	.sidecharts {
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
-		align-items: center;
-		height: 600px;
 	}
 	#heatcanvas {
 		position: absolute;
@@ -40,8 +37,16 @@
 	#heatline {
 		position: absolute;
 	}
-	#heatbars {
-		flex: 0 1 200px;
+	.heatbars {
+		flex: 0 1 300px;
+		border: 1px solid #4D4D4D;
+		margin: 10px;
+	}
+	.heatmaps {
+		border: 1px solid #4D4D4D;
+		margin: 10px;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.info {
@@ -51,9 +56,10 @@
 		margin: 0 20px 20px 20px;
 	}
 	.top {
-		background-color: #222222;
+		background-color: #262626;
 		border-bottom: 1px solid #4D4D4D;
 		height: 70px;
+		margin-bottom: 10px;
 	}
 	.title {
 		@apply(--layout-horizontal);
@@ -97,42 +103,98 @@
 	.floater .values p {
 		color: white;
 	}
+	#heatlay {
+		z-index: 9;
+		position: relative;
+	}
+	.block {
+		width: 14px;
+		height: 14px;
+		padding: 3px;
+	}
+	[data-block="plan"] {
+		background: #f8a116;
+
+	}
+	[data-block="personal"] {
+		background: #c55300;
+	}
+	.text {
+		font-size: 14px;
+		line-height: 14px;
+		padding: 3px 15px 3px 3px;
+		color: white;
+	}
+	.setButton {
+		width: 250px;
+		padding: 10px;
+		margin-bottom: 30px;
+	}
+	.targetRace {
+		text-transform: uppercase;
+	}
+	.questionBtn {
+		margin-top: 0;
+		margin-left: 20px;
+	}
 </style>
 <template>
-	<h1 class="header">Find Race Intensity</h1>
-	<div class="sidecharts">
-		<div id="heatbars"></div>
-		<div class="charts" id="heatlistener">
-			<svg id="heatline"></svg>
-			<canvas id="heatcanvas"></canvas>
-			<div class="floater hidden layout horizontal" id="floater">
-				<div class="layout vertical titles">
-					<p>Runs</p>
-					<p>Power</p>
-					<p>Duration</p>
+	<div class="layout horizontal center center-justified">
+		<h1 class="header">Find Race Intensity</h1>
+		<button is="stryd-button" on-click="showEducation" class="questionBtn">?</button>
+	</div>
+	<div class="layout horizontal center center-justified">
+		<button is="stryd-button" on-click="changeRace" class="setButton">Update My Race (<span class="targetRace">{{raceKey}}</span>)</button>
+	</div>
+	<div class="sidecharts center">
+		<div class="heatbars">
+			<div class="layout vertical" style="margin-bottom: 20px;">
+				<div class="top">
+					<h1><span class="targetRace">{{raceKey}}</span> Plan Breakdown</h1>
 				</div>
-				<div class="layout vertical values">
-					<p id="fruns"></p>
-					<p id="fpower"></p>
-					<p id="fduration"></p>
+				<div class="layout horizontal" style="padding: 10px;">
+					<div class="block" data-block="plan"></div>
+					<div class="text">Plan</div>
+					<div class="block" data-block="personal"></div>
+					<div class="text">Your Training</div>
+				</div>
+			</div>
+			<div id="heatbars"></div>
+		</div>
+		<div class="heatmaps">
+			<div class="top">
+				<h1>Power Heatmap</h1>
+			</div>
+			<div class="charts">
+				<svg id="heatline"></svg>
+				<canvas id="heatcanvas"></canvas>
+				<svg id="heatlay"></svg>
+				<div class="floater hidden layout horizontal" id="floater">
+					<div class="layout vertical titles">
+						<p>Runs</p>
+						<p>Power</p>
+						<p>Duration</p>
+						<p>Potential</p>
+					</div>
+					<div class="layout vertical values">
+						<p id="fruns"></p>
+						<p id="fpower"></p>
+						<p id="fduration"></p>
+						<p id="fpotential"></p>
+					</div>
 				</div>
 			</div>
 		</div>
-		<!-- <div class="info">
-			<div class="layout horizontal top">
-				<div class="title">
-					<h1>How To Use</h1>
-				</div>
-			</div>
-			<div class="stats">
-				<p>Determine at what intensities you can train further at to improve your race times and distances.</p>
-			</div>
-		</div> -->
 	</div>
-	<div class="layout horizontal flex hidden">
-		<h1>Last <span>{{timeRange}}</span> weeks</h1>
-		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
-	</div>
+	<paper-dialog id="dialogEducation">
+		<h1>Heatmap & Power Duration</h1>
+		<div class="layout vertical">
+			<p>This is a description on how to use the heatmap and power duration.</p>
+		</div>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
 </template>
 <script>
 Polymer({
@@ -146,130 +208,80 @@ Polymer({
 		this.padding = 30;
 		this.data = {};
 
-		this.data2 = null;
-
 		this.colors = ['#f8a116', '#c55300'];
 
-		var mouseX = 0;
-		var mouseY = 0;
-		var boxX = 0;
-		var boxY = 0;
-		var lTimer = null;
-		var update = function () {
-			var speedX, distanceX, speedY, distanceY;
-			distanceX = Math.abs(mouseX - boxX);
-			distanceY = Math.abs(mouseY - boxY);
-			if (distanceX > 100 || distanceX < 1 || distanceY > 100 || distanceY < 1) {
-				boxX = mouseX;
-				boxY = mouseY;
-			} else {
-				speedX = Math.round( distanceX / 10, 0 );
-				boxX = (boxX < mouseX) ? boxX + speedX : boxX - speedX;
-				speedY = Math.round( distanceY / 10, 0 );
-				boxY = (boxY < mouseY) ? boxY + speedY : boxY - speedY;
-			}
+		this.mouseX = 0;
+		this.mouseY = 0;
+		this.boxX = 0;
+		this.boxY = 0;
+		this.lTimer = null;
 
-			if ('heatmaps' in this.data) {
-				var coors = this.getXY2(boxX, boxY);
-				var runsValue = null;
-				if (coors.y > 0 && coors.y < this.data.heatmaps.length) {
-					runsValue = this.data.heatmaps[coors.y][coors.x];
-				}
-				var powerValue = null;
-				if (coors.y > 0 && coors.y < this.data.heatmaps.length) {
-					powerValue = this.data.powers[this.data.powers.length - coors.y];
-				}
-				var timeValue = null;
-				if (coors.x > 0 && coors.x < this.data.heatmaps[0].length) {
-					timeValue = this.data.windows[coors.x];
-				}
-				if (
-					runsValue !== null &&
-					powerValue !== null &&
-					timeValue !== null &&
-					runsValue !== undefined &&
-					powerValue !== undefined &&
-					timeValue !== undefined
-				) {
-					this.$.fruns.textContent = runsValue;
-					this.$.fpower.textContent =  powerValue + ' watts';
-					var timeUnit = ' secs';
-					if (timeValue > 60) {
-						timeValue /= 60;
-						timeUnit = ' mins';
-					}
-					this.$.fduration.textContent = `${timeValue}${timeUnit}`;
-					this.$.floater.style.left = (boxX+30) + 'px';
-					this.$.floater.style.top = (boxY+30) + 'px';
-					this.$.floater.classList.remove('hidden');
-				} else {
-					this.$.floater.classList.add('hidden');
-				}
-			}
-		};
-
-		// var bisectWindow = d3.bisector((d) => {
-		// 	return d.window;
-		// }).left;
-
-		this.$.heatlistener.addEventListener('mouseout', () => {
-			// Hover box
-			clearTimeout(lTimer);
-			boxX = 0;
-			boxY = 0;
-			this.$.floater.style.left = boxX + 'px';
-			this.$.floater.style.top = boxY + 'px';
-			this.$.floater.classList.add('hidden');
-			// Line point
-			// if ('focus' in this) {
-			// 	this.focus.style('display', 'none');
-			// }
-		});
-
-		this.$.heatlistener.addEventListener('mouseover', () => {
-			// Hover box
-			boxX = mouseX;
-			boxY = mouseY;
-			this.$.floater.style.left = boxX + 'px';
-			this.$.floater.style.top = boxY + 'px';
-			this.$.floater.classList.remove('hidden');
-			lTimer = setInterval(update.bind(this), 10);
-			// Line point
-			// if ('focus' in this) {
-			// 	this.focus.style('display', null);
-			// }
-		});
-
-		this.$.heatlistener.addEventListener('mousemove', (e) => {
-			// Hover box
-			if (e.target.tagName === 'CANVAS') {
-				mouseX = e.layerX;
-				mouseY = e.layerY;
-			}
-			// Line point
-			// if (this.data2 !== null) {
-			// 	var x0 = this.x.invert(e.layerX),
-			// 		i = bisectWindow(this.data2, x0, 1),
-			// 		d0 = this.data2[i - 1],
-			// 		d1 = this.data2[i];
-			// 	var d;
-			// 	if (x0 - d0.window > d1.window - x0) {
-			// 		d = d1;
-			// 	} else {
-			// 		d = d0;
-			// 	}
-			// 	this.focus.attr('transform', `translate(${this.x(i)}, ${this.y(d.max)})`);
-			// 	this.focus.select('text').text(d.max);
-			// }
-		});
+		this.raceKey = '';
 	},
-	transpose: function (a) {
-		return Object.keys(a[0]).map(function (c) {
-				return a.map(function (r) {
-					return r[c];
-				});
+	showEducation: function () {
+		this.$.dialogEducation.open();
+	},
+	changeRace: function () {
+		var improveStone = document.querySelector('improve-stone');
+		if (improveStone) {
+			improveStone.changeRace();
+		}
+	},
+	moveFloat: function () {
+		var distanceX = Math.abs(this.mouseX - this.boxX);
+		var distanceY = Math.abs(this.mouseY - this.boxY);
+		if (distanceX > 100 || distanceX < 1 || distanceY > 100 || distanceY < 1) {
+			this.boxX = this.mouseX;
+			this.boxY = this.mouseY;
+		} else {
+			var speedX = Math.round(distanceX / 10, 0);
+			this.boxX = (this.boxX < this.mouseX) ? this.boxX + speedX : this.boxX - speedX;
+			var speedY = Math.round(distanceY / 10, 0);
+			this.boxY = (this.boxY < this.mouseY) ? this.boxY + speedY : this.boxY - speedY;
+		}
+
+		if ('heatmaps' in this.data) {
+			var coors = this.getXY2(this.boxX, this.boxY);
+			var runsValue = null;
+			if (coors.y >= 0 && coors.y < this.data.heatmaps.length) {
+				runsValue = this.data.heatmaps[coors.y][coors.x];
 			}
-		);
+			var powerValue = null;
+			if (coors.y >= 0 && coors.y < this.data.heatmaps.length) {
+				powerValue = this.data.powers[this.data.powers.length - coors.y];
+			}
+			var timeValue = null;
+			if (coors.x >= 0 && coors.x < this.data.heatmaps[0].length) {
+				timeValue = this.data.windows[coors.x];
+			}
+			var potentialValue = null;
+			if (coors.x >= 0 && coors.x < this.data.heatmaps[0].length) {
+				potentialValue = Math.floor(this.data.maxs[coors.x]);
+			}
+			if (
+				runsValue !== null &&
+				powerValue !== null &&
+				timeValue !== null &&
+				runsValue !== undefined &&
+				powerValue !== undefined &&
+				timeValue !== undefined
+			) {
+				this.$.fruns.textContent = runsValue;
+				this.$.fpower.textContent =  `${powerValue} watts`;
+				var timeUnit = ' secs';
+				if (timeValue > 60) {
+					timeValue /= 60;
+					timeUnit = ' mins';
+				}
+				this.$.fduration.textContent = `${timeValue}${timeUnit}`;
+				this.$.fpotential.textContent = `${potentialValue} watts`;
+				this.$.floater.style.left = `${this.boxX+10}px`;
+				this.$.floater.style.top = `${this.boxY+10}px`;
+				this.$.floater.classList.remove('hidden');
+			} else {
+				this.$.floater.classList.add('hidden');
+			}
+		}
 	},
 	attached: function () {
 		if (!featureManagement.hasFeatures) {
@@ -287,18 +299,117 @@ Polymer({
 			.end((err, res) => {
 				if (res.ok) {
 					this.data = res.body;
-					this.data.heatmaps.reverse();
+					this.data.maxs.splice(0, 2);
+					this.data.windows.splice(0, 2);
+					for (let i = 0; i < this.data.heatmaps.length; i++) {
+						this.data.heatmaps[i].splice(0, 2);
+					}
+					var max = this.data.maxs[0];
+					for (let i = 0; i < this.data.powers.length; i++) {
+						var power = this.data.powers[i];
+						if (power > max) {
+							this.data.powers.splice(i);
+							this.data.heatmaps.splice(
+								0,
+								this.data.heatmaps.length-i
+							);
+						}
+					}
+					var lastMax = 0;
+					for (let o = 0; o < this.data.maxs.length; o++) {
+						if (this.data.maxs[o] === 0) {
+							this.data.maxs[o] = lastMax;
+						} else {
+							lastMax = this.data.maxs[o];
+						}
+					}
 					this.createChart();
 				} else {
 					console.log('Error: cannot fetch data');
 				}
 			});
-		//this.createZone(2, 3, 1);
-		for (var i = 5; i > 0; i--) {
-			var yPer = Math.floor(Math.random() * 70 + 30);
-			var pPer = Math.floor(Math.random() * 70 + 30);
-			this.createZone(i, yPer, pPer);
-		}
+
+		this.getZones();
+	},
+	getZones: function () {
+		app.clearChildren(this.$.heatbars);
+		var planPercentage = new Promise(resolve => {
+			this.raceKey = '5k';
+			if ('race' in user.data && user.data.race !== '') {
+				this.raceKey = user.data.race;
+			}
+			var path = `/b/internal/plan/zoneproportion?race=${this.raceKey}`;
+			if (isLocal) {
+				path = '/powercenter/scripts/zoneproportion.json';
+			}
+			superagent
+				.get(path)
+				.send()
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res.ok) {
+						resolve(res.body);
+					} else {
+						resolve(0);
+						console.log('Error: cannot fetch data');
+					}
+				});
+		});
+		var personPercentage = new Promise(resolve => {
+			var srtDate = '02-01-2017';
+			var endDate = '04-01-2017';
+			var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+			var zones = [0, 0, 0, 0, 0];
+			var addFun = (a, i) => a + zones[i];
+			superagent
+				.get(activityEndPoint)
+				.send()
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res.ok) {
+						if (res.body !== null && res.body.activities !== null) {
+							for (var activity of res.body.activities) {
+								if (activity.seconds_in_zones !== null) {
+									zones = activity.seconds_in_zones.map(addFun);
+								}
+							}
+						}
+						resolve(zones);
+					} else {
+						resolve(0);
+						console.log('Error: failure on grabLogs', err, res);
+					}
+				});
+		});
+		Promise.all([planPercentage, personPercentage])
+			.then(values => {
+				var planTotals = [0, 0, 0, 0, 0];
+				var persTotals = [0, 0, 0, 0, 0];
+				var planPers = [];
+				var persPers = [];
+				var total = 1;
+				var i = 0;
+				if (values[0]) {
+					planTotals = values[0];
+					total = planTotals.reduce((a, b) => a + b, 1);
+					for (i = 0; i < 5; i++) {
+						planPers.push(Math.round(planTotals[i]/total*100));
+					}
+				}
+				if (values[1]) {
+					persTotals = values[1];
+					total = persTotals.reduce((a, b) => a + b, 1);
+					for (i = 0; i < 5; i++) {
+						persPers.push(Math.round(persTotals[i]/total*100));
+					}
+				}
+				var max = Math.max.apply(null, planPers.concat(persPers));
+				for (i = 5; i > 0; i--) {
+					this.createZone(i, planPers[i-1], persPers[i-1], max);
+				}
+			});
 	},
 	createChart: function () {
 		this.dx = this.data.heatmaps[0].length;
@@ -348,12 +459,15 @@ Polymer({
 		var line = d3.svg.area()
 			/* unused: d */
 			.x((d, i) => {
-				console.log(this.x(i));
-				return this.x(i);
+				return +this.x(i);
 			})
-			.y0(this.height-30)
+			.y0(this.height)
 			.y1((d) => {
-				return this.y((d-100)/10);
+				var y = +this.y((d-100)/10);
+				if (y > this.height) {
+					y = this.height;
+				}
+				return y;
 			});
 
 		svg.append('path')
@@ -367,8 +481,8 @@ Polymer({
 			.attr('fill', '#f4931f');
 
 		svg.append('g')
-			.attr('class', 'x axis')
-			.attr('transform', `translate(${this.padding}, ${this.height-this.padding})`)
+			.attr('class', 'x axis2')
+			.attr('transform', `translate(${this.padding}, ${this.height})`)
 			.call(xAxis)
 			.call(this.removeZero)
 				.append('text')
@@ -376,7 +490,7 @@ Polymer({
 				.text('Duration');
 
 		svg.append('g')
-			.attr('class', 'y axis')
+			.attr('class', 'y axis2')
 			.attr('transform', `translate(${this.padding}, 0)`)
 			.call(yAxis)
 			.call(this.removeZero)
@@ -384,24 +498,91 @@ Polymer({
 				.attr('y', -10)
 				.text('Power (W)');
 
-		// this.focus = svg.append('g')
-		// 	.attr('class', 'focus')
-		// 	.style('display', 'none');
+		var focus = d3.select('#heatlay')
+			.append('g')
+			.style('display', 'none');
 
-		// this.focus.append('circle')
-		// 	.attr('r', 4.5);
+		focus.append('line')
+			.attr('id', 'focusLineX')
+			.attr('class', 'focusLine')
+			.attr('stroke', 'orange')
+			.attr('stroke-width', '0.5px');
+		focus.append('line')
+			.attr('id', 'focusLineY')
+			.attr('class', 'focusLine')
+			.attr('stroke', 'orange')
+			.attr('stroke-width', '0.5px');
+		focus.append('circle')
+			.attr('id', 'focusCircle')
+			.attr('fill', 'orange')
+			.attr('r', 10)
+			.attr('class', 'circle focusCircle');
 
-		// this.focus.append('text')
-		// 	.attr('x', 9)
-		// 	.attr('dy', '.35em');
+		var that = this;
 
-		// this.data2 = [];
-		// for (var i = 0; i < this.data.maxs.length; i++) {
-		// 	this.data2.push({
-		// 		max: this.data.maxs[i],
-		// 		window: this.data.windows[i]
-		// 	});
-		// }
+		d3.select('#heatlay')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+			.append('g')
+			.append('rect')
+			.attr('class', 'overlay')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+			.on('mouseover', () => {
+				this.boxX = this.mouseX;
+				this.boxY = this.mouseY;
+				this.$.floater.style.left = `${this.boxX}px`;
+				this.$.floater.style.top = `${this.boxY}px`;
+				this.$.floater.classList.remove('hidden');
+				this.lTimer = setInterval(this.moveFloat.bind(this), 10);
+				
+				focus.style('display', null);
+			})
+			.on('mouseout', () => {
+				clearTimeout(this.lTimer);
+				this.boxX = 0;
+				this.boxY = 0;
+				this.$.floater.style.left = `${this.boxX}px`;
+				this.$.floater.style.top = `${this.boxY}px`;
+				this.$.floater.classList.add('hidden');
+				
+				focus.style('display', 'none');
+			})
+			.on('mousemove', function () {
+				var mouse = d3.mouse(this);
+
+				that.mouseX = mouse[0];
+				that.mouseY = mouse[1];
+
+				var mouseDate = that.x.invert(mouse[0]-30);
+				var i = Math.floor(mouseDate);
+
+				var d0 = that.data.windows[i - 1];
+				var d1 = that.data.windows[i];
+				// work out which date value is closest to the mouse
+				var d = mouseDate - d0 > d1 - mouseDate ? i : i-1;
+
+				var x = that.mouseX;
+				var y = that.y((that.data.maxs[d]-100)/10);
+
+				if (y > that.height) {
+					y = that.height;
+				}
+
+				if (isNaN(x) || isNaN(y)) {
+					return;
+				}
+
+				focus.select('#focusCircle')
+					.attr('cx', x)
+					.attr('cy', y+that.padding);
+				focus.select('#focusLineX')
+					.attr('x1', x).attr('y1', that.padding)
+					.attr('x2', x).attr('y2', that.height+that.padding);
+				focus.select('#focusLineY')
+					.attr('x1', that.padding).attr('y1', y+that.padding)
+					.attr('x2', that.width+that.padding).attr('y2', y+that.padding);
+			});
 
 		this.draw();
 	},
@@ -417,17 +598,7 @@ Polymer({
 				heatmap.push(Math.round(pt.x), Math.round(pt.y), it);
 			}
 		}
-		// var old = (value) => {
-		// 	var h = (3 + (100 * value))/100;
-		// 	var s = (49.4 + (39.4 * value))/100;
-		// 	var l = (47.3 + (10.5 * value))/100;
-		// 	var a = 1;
-		// 	if (value < 0.3) {
-		// 		a = value * (10/3);
-		// 	}
-		// 	return [h, s, l, a];
-		// };
-		var old = (value) => {
+		heatmap.render(null, null, (value) => {
 			var h = (1 - value);
 			var s = 0.8;
 			var l = value * 0.6;
@@ -436,8 +607,7 @@ Polymer({
 				a = value * (10/3);
 			}
 			return [h, s, l, a];
-		};
-		heatmap.render(null, null, old);
+		});
 	},
 	getXY: function (xi, yi) {
 		var partx = this.width / this.dx;
@@ -459,6 +629,7 @@ Polymer({
 		if (value === 0) {
 			return 0;
 		}
+		value *= 10;
 		var high = 210;
 		return ((value/high)*30) + 20;
 	},
@@ -469,7 +640,7 @@ Polymer({
 			}).remove();
 	},
 	/* unused: d */
-	createZone: function (zone, yPer, pPer) {
+	createZone: function (zone, yPer, pPer, max) {
 		var data = [
 			{
 				name: '5K Plan',
@@ -488,37 +659,26 @@ Polymer({
 			left: 80,
 			right: 0
 		};
-		var width = 200 - margin.left - margin.right;
-		var height = 92 - margin.top - margin.bottom;
+		var width = 300 - margin.left - margin.right;
+		var height = 94 - margin.top - margin.bottom;
 		var numTicks = 0;
 
+		var adjWidth = Math.max(yPer/max, pPer/max);
 		var xScale = d3.scale.linear()
-			.range([0, width]);
+			.range([0, adjWidth*width]);
 		var yScale = d3.scale.ordinal()
 			.rangeBands([0, height]);
-
-		// var xAxis = d3.svg.axis()
-		// 	.scale(xScale)
-		// 	.orient('top')
-		// 	.tickSize(-height)
-		// 	.ticks(numTicks);
 
 		var svg = d3.select('#heatbars')
 			.append('svg')
 			.attr('width', width + margin.left + margin.right)
 			.attr('height', height + margin.top + margin.bottom)
-			.attr('class', 'base-svg')
-			.style('border-bottom', '1px solid white');
-		if (zone === 5) {
-			svg.style('border-top', '1px solid white');
-		}
+			.attr('class', 'base-svg');
+		svg.style('border-top', '1px solid #4D4D4D');
 
 		var barSvg = svg.append('g')
 			.attr('transform', `translate(${margin.left}, ${margin.top})`)
 			.attr('class','bar-svg');
-
-		// var x = barSvg.append('g')
-		// 	.attr('class', 'x-axis');
 
 		var xMin = 0;
 		var xMax = d3.max(data, (d) => {
@@ -531,7 +691,7 @@ Polymer({
 		}));
 
 		svg.append('text')
-			.attr('x', 0)
+			.attr('x', 10)
 			.attr('y', height/2)
 			.attr('text-anchor', 'start')
 			.text(`Zone ${zone}`)
@@ -544,27 +704,12 @@ Polymer({
 			.enter()
 			.append('g');
 
-		// groups.append('text')
-		// 	.attr('x', '0')
-		// 	.attr('y', (d) => {
-		// 		return yScale(d.name);
-		// 	})
-		// 	.text((d) => {
-		// 		return d.name;
-		// 	})
-		// 	.attr('text-anchor', 'end')
-		// 	.attr('dy', '.9em')
-		// 	.attr('dx', '-.32em')
-		// 	.attr('id', (d,i) => {
-		// 		return 'label'+i;
-		// 	});
-
 		groups.attr('class', 'bars')
 			.append('rect')
 			.attr('width', (d) => {
 				return xScale(d.value);
 			})
-			.attr('height', 36)
+			.attr('height', 46)
 			.attr('x', (d) => {
 				return width-xScale(d.value);
 			})
@@ -575,12 +720,12 @@ Polymer({
 				return this.colors[i];
 			})
 			.attr('id', (d, i) => {
-				return 'bar'+i;
+				return `bar${i}`;
 			});
 
 		groups.append('text')
 			.attr('x', (d) => {
-				return width-xScale(d.value);
+				return width-xScale(d.value)-10;
 			})
 			.attr('y', (d) => {
 				return yScale(d.name);
@@ -589,23 +734,10 @@ Polymer({
 				return d.display;
 			})
 			.attr('text-anchor', 'end')
-			.attr('dy', '1.2em')
+			.attr('dy', '1.5em')
 			.attr('dx', '.32em')
 			.attr('id', 'precise-value');
 
-		// bars
-		// 	.on('mouseover', () => {
-		// 		var currentGroup = d3.select(this.parentNode);
-		// 		currentGroup.select('rect').style('fill', 'brown');
-		// 		currentGroup.select('text').style('font-weight', 'bold');
-		// 	})
-		// 	.on('mouseout', () => {
-		// 		var currentGroup = d3.select(this.parentNode);
-		// 		currentGroup.select('rect').style('fill', 'steelblue');
-		// 		currentGroup.select('text').style('font-weight', 'normal');
-		// 	});
-
-		// x.call(xAxis);
 		var grid = xScale.ticks(numTicks);
 		barSvg.append('g').attr('class', 'grid')
 			.selectAll('line')

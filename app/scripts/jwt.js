@@ -154,6 +154,7 @@ class User {
 					if (callback) {
 						if (typeof callback === 'object') {
 							callback();
+							return;
 						}
 						location.reload();
 					}
@@ -660,9 +661,6 @@ class FeatureManagement {
 				// var dataReveal = document.querySelector('[data-reveal]');
 				// dataReveal.classList.remove('hidden');
 				// document.querySelector('header-element').enable('profile');
-				// dataReveal.appendChild(
-				// 	document.querySelector('log-calendar')
-				// );
 				// dataReveal.appendChild(
 				// 	document.querySelector('#uploader')
 				// );

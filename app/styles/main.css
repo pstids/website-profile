@@ -225,13 +225,13 @@ a[href="https://www.google.com/intl/en-US_US/help/terms_maps.html"] {
 	position: relative;
 }
 
-heat-duration .axis path, heat-duration .axis line {
+heat-duration .axis2 path, heat-duration .axis2 line {
     fill: none;
     stroke: #2D2D2D;
     shape-rendering: crispEdges;
 }
 
-heat-duration .axis text {
+heat-duration .axis2 text {
 	fill: white;
 	color: white;
 	font-size: 16px;

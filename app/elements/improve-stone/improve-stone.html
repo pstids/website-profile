@@ -93,7 +93,7 @@
 							class="editable"
 							name="birth_month"
 							auto-validate
-							pattern="^([1-9]|[0-1][0-2])$" 
+							pattern="^([1-9]|[0-1][0-9])$" 
 							error-message="01 - 12"
 							value="{{userLocal.birth_month::input}}">
 						</paper-input>
@@ -243,9 +243,7 @@ Polymer({
 			}
 			this.setUserLocal();
 		}
-		// this.addBlur();
 		this.checkAvailables();
-		// this.hide();
 	},
 	setUserLocal: function () {
 		var aboutStr = user.data.about_me;
@@ -253,9 +251,9 @@ Polymer({
 			aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
 		}
 		var targetRaceIdx = 0;
-		var hasTargetRaceIdx = 0;
-		if ('target_race' in user.data) {
-			targetRaceIdx = this.targetRace.indexOf(user.data.target_race);
+		var hasTargetRaceIdx = false;
+		if ('race' in user.data) {
+			targetRaceIdx = this.targetRaces.indexOf(user.data.race);
 			if (targetRaceIdx < 0) {
 				targetRaceIdx = 0;
 				hasTargetRaceIdx = false;
@@ -298,7 +296,7 @@ Polymer({
 		return today.getFullYear() - birth.getFullYear();
 	},
 	savePersonal: function () {
-		var updateParams = '?fields=gender,birth,target_race';
+		var updateParams = '?fields=gender,birth,race';
 
 		var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
 		superagent
@@ -310,7 +308,7 @@ Polymer({
 					month: parseInt(this.userLocal.birth_month),
 					day: parseInt(this.userLocal.birth_day)
 				},
-				target_race: target_race
+				race: target_race
 			})
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
@@ -319,6 +317,8 @@ Polymer({
 				if (res.ok) {
 					text = 'Your information is updated!';
 					user.updateData(res.body);
+					heatDuration.getZones();
+					spiderChart.ready();
 				} else {
 					text = 'Your information is not updated. Please try again.';
 				}
@@ -377,15 +377,19 @@ Polymer({
 		if (
 			this.userLocal.birth_year === 0 ||
 			this.userLocal.gender === '' ||
-			this.userLocal.hasTargetRaceIdx
+			!this.userLocal.hasTargetRaceIdx
 		) {
 			this.availables.push('personal');
 		}
 		if (user.data.training_info.critical_power === 0) {
 			this.availables.push('baseline');
 		}
-		// this.availables.push('personal');
-		// this.availables.push('baseline');
+		this.activateAvailables();
+	},
+	changeRace: function () {
+		this.currentStep = 0;
+		this.availables = ['personal'];
+		this.show();
 		this.activateAvailables();
 	},
 	activateAvailables: function () {
@@ -395,6 +399,8 @@ Polymer({
 		} else {
 			this.removeBlur();
 			this.hide();
+			this.availables = [];
+			this.currentStep = 0;
 		}
 	},
 	nextAvailable: function () {
