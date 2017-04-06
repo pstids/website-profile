@@ -6,7 +6,7 @@
 			font-family: "Stryd", sans-serif;
 			background-color: var(--dark-background-color);
 			padding: 20px;
-			--paper-slider-knob-color: #F7A017;
+			--paper-slider-knob-color: #F5A214;
 			min-width: 860px;
 			overflow-x: auto;
 		}
@@ -99,8 +99,8 @@
 			padding-left: 10px;
 		}
 		[data-toggle="on"][data-stat="stress"] .circle {
-			background-color: #F7A017;
-			border-color: #F7A017;
+			background-color: #F5A214;
+			border-color: #F5A214;
 			-webkit-box-shadow: 0px 0px 20px 0px #F7A017;
 			-moz-box-shadow: 0px 0px 20px 0px #F7A017;
 			box-shadow: 0px 0px 20px 0px #F7A017;
@@ -267,7 +267,7 @@
 			var msg2 = '';
 			if (this.state === 'stress') {
 				this.data = this.getTimeType('stress', time, idx);
-				mColor = '#f7a017';
+				mColor = '#F5A214';
 				msg2 = 'Running Stress Score';
 				this.max = d3.max(this.data) + 10;
 			} else if (this.state === 'distance') {

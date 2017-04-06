@@ -29,8 +29,16 @@
 		flex: 2;
 	}
 
+	.spider-holder {
+		@apply(--layout-horizontal);
+	}
+	@media (max-width: 1250px) {
+		.spider-holder {
+			@apply(--layout-vertical);
+		}
+	}
+
 	table {
-		border: 1px solid #4D4D4D;
 		color: white;
 		line-height: 2;
 		font-size: 17px;
@@ -38,12 +46,17 @@
 		border-collapse: collapse;
 		cursor: pointer;
 		flex: 1;
+		border-top: 1px solid #4D4D4D;
 	}
-	table thead th {
+	table thead th, table thead td {
 		font-weight: 700;
 	}
 	table .highlight {
-		background: orange;
+		background: #4D4D4D;
+	}
+	table .highlight.active {
+		background: #F5A214;
+		border-bottom: #F5A214;
 	}
 	table tr:last-child td {
 		border-bottom: 0;
@@ -56,27 +69,20 @@
 	table tbody td:last-child {
 		border-right: 0;
 	}
-	table tr.active td, table tr.active th {
-		border-bottom: 2px solid #F7A017;
-	}
 	table tr td:first-child, table tr th:first-child {
 		width: 230px;
 	}
+	table tbody tr:last-child th {
+		border-bottom: 0;
+	}
 	table tr.active th {
-		background: #393939;
-	}
-	table tr {
-		order: 2;
-	}
-	table tr.active {
-		order: 1;
+		background: #262626;
 	}
 	table th {
-		background: #393939;
+		background: #262626;
 	}
-	table th.active {
-		background: #393939;
-		border-bottom: 2px solid #F7A017;
+	table td:hover, table th:hover {
+		opacity: 1;
 	}
 	.setButton {
 		width: 250px;
@@ -90,80 +96,167 @@
 		margin-top: 0;
 		margin-left: 20px;
 	}
+	[data-category] {
+		width: 80px;
+	}
+	.holder {
+		border: 1px solid #4D4D4D;
+		@apply(--layout-vertical);
+		margin: 10px;
+	}
+	.top {
+		background-color: #262626;
+		border-bottom: 1px solid #4D4D4D;
+		height: 100px;
+		flex: 0 1 100px;
+		margin-bottom: 10px;
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+		margin-bottom: 0;
+	}
+	.raindrop {
+		flex: 0 1;
+		border-left: 1px solid #4D4D4D;
+		@apply(--layout);
+		@apply(--layout-end-justified);
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+	.raindrop iron-icon {
+		width: 34px;
+		height: 34px;
+		fill: #F5A214;
+		padding: 0 20px;
+	}
+	.block {
+		width: 20px;
+		height: 20px;
+		padding: 3px;
+	}
+	[data-block="active"] {
+		background: #F5A214;
+
+	}
+	[data-block="inactive"] {
+		background: #4D4D4D;
+	}
+	.text {
+		font-size: 20px;
+		line-height: 20px;
+		padding: 3px 15px 3px 10px;
+		color: white;
+	}
+	p {
+		font-size: 18px;
+		line-height: 1.45;
+	}
 </style>
 <template>
+	<!-- Title -->
 	<div class="layout horizontal center center-justified">
 		<h1 class="header">Strengthen Your Skills</h1>
-		<button is="stryd-button" class="questionBtn" on-click="callQuestion">?</button>
 	</div>
-	<button is="stryd-button" on-click="changeRace" class="setButton">Update My Race (<span class="targetRace">{{raceKey}}</span>)</button>
-	<div class="layout horizontal" style="margin-top: 20px;">
-		<div id="spider"></div>
-		<table>
-			<thead>
-				<tr>
-					<td>Workouts</td>
-					<th data-category="metobolic_fitness">Metabolic Fitness</th>
-					<th data-category="muscle_endurance">Muscle Endurance</th>
-					<th data-category="muscle_power">Muscle Power</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr data-workout="speed">
-					<th>Speed/VO2 Max Repeat</th>
-					<td class="highlight" data-highlight="metobolic_fitness"></td>
-					<td></td>
-					<td class="highlight" data-highlight="muscle_power"></td>
-				</tr>
-				<tr data-workout="lactate">
-					<th>Lactate Threshold Runs</th>
-					<td class="highlight" data-highlight="metobolic_fitness"></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr data-workout="easy">
-					<th>High Volume Easy Run</th>
-					<td class="highlight" data-highlight="metobolic_fitness"></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr data-workout="aerobic">
-					<th>Aerobic Threshold Runs</th>
-					<td class="highlight" data-highlight="metobolic_fitness"></td>
-					<td class="highlight" data-highlight="muscle_endurance"></td>
-					<td></td>
-				</tr>
-				<tr data-workout="race">
-					<th>Race Specific</th>
-					<td class="highlight" data-highlight="metobolic_fitness"></td>
-					<td class="highlight" data-highlight="muscle_endurance"></td>
-					<td></td>
-				</tr>
-				<tr data-workout="long">
-					<th>Long Run</th>
-					<td></td>
-					<td class="highlight" data-highlight="muscle_endurance"></td>
-					<td></td>
-				</tr>
-				<tr data-workout="hill">
-					<th>Hill/Track Sprint</th>
-					<td></td>
-					<td></td>
-					<td class="highlight" data-highlight="muscle_power"></td>
-				</tr>
-				<tr data-workout="pylo">
-					<th>Pylometric Exercises</th>
-					<td></td>
-					<td></td>
-					<td class="highlight" data-highlight="muscle_power"></td>
-				</tr>
-			</tbody>
-		</table>
+	<!-- Spiders -->
+	<div class="spider-holder" style="margin-top: 20px;">
+		<div class="holder flex-3" style="width: 800px;">
+			<div class="top">
+				<h1>Stryd Runner Profile</h1>
+				<div class="raindrop" on-click="profileQuestion">
+					<iron-icon icon="icons:help-outline"></iron-icon>
+				</div>
+			</div>
+			<div id="spider"></div>
+		</div>
+		<div class="holder flex-2" style="width: 540px;">
+			<div class="top">
+				<h1>Training Optimizer</h1>
+				<div class="raindrop" on-click="recommendationQuestion">
+					<iron-icon icon="icons:help-outline"></iron-icon>
+				</div>
+			</div>
+			<div data-improve="recommendations" class="hidden">
+				<h1>We recommend more:</h1>
+				<div data-improve="list" id="list"></div>
+			</div>
+			<div class="recommendation hidden" id="tables" data-recommendation="closed">See All Recommendations</div>
+			<div data-improve="table">
+				<div class="layout horizontal" style="margin: 20px;">
+					<div class="block" data-block="active"></div>
+					<div class="text">Most Potential</div>
+					<div class="block" data-block="inactive"></div>
+					<div class="text">Improvement Available</div>
+				</div>
+				<div class="text" style="margin: 20px 20px 20px 10px; line-height: 1.45;">Focus on the highlighted workouts to improve your skills. Click on the table to learn more.</div>
+				<table>
+					<thead>
+						<tr>
+							<th>Workouts</th>
+							<th data-category="metobolic_fitness">Metabolic Fitness</th>
+							<th data-category="muscle_endurance">Muscle Endurance</th>
+							<th data-category="muscle_power">Muscle Power</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-workout="speed">
+							<th>Speed/VO2 Max Repeat</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_power"></td>
+						</tr>
+						<tr data-workout="lactate">
+							<th>Lactate Threshold Runs</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr data-workout="easy">
+							<th>High Volume Easy Run</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr data-workout="aerobic">
+							<th>Aerobic Threshold Runs</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td class="highlight" data-highlight="muscle_endurance"></td>
+							<td></td>
+						</tr>
+						<tr data-workout="race">
+							<th>Race Specific</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td class="highlight" data-highlight="muscle_endurance"></td>
+							<td></td>
+						</tr>
+						<tr data-workout="long">
+							<th>Long Run</th>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_endurance"></td>
+							<td></td>
+						</tr>
+						<tr data-workout="hill">
+							<th>Hill/Track Sprint</th>
+							<td></td>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_power"></td>
+						</tr>
+						<tr data-workout="pylo">
+							<th>Pylometric Exercises</th>
+							<td></td>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_power"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</div>
+	<!-- Range selector -->
 	<div class="layout horizontal flex hidden">
 		<h1>Last <span>{{timeRange}}</span> weeks</h1>
 		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
 	</div>
+	<!-- Dialogs -->
 	<paper-dialog id="workoutDialog" style="max-width: 600px;">
 		<h1>{{workoutTitle}}</h1>
 		<div class="layout vertical">
@@ -173,9 +266,16 @@
 			<paper-button dialog-dismiss>Close</paper-button>
 		</div>
 	</paper-dialog>
-	<paper-dialog id="questionDialog" style="max-width: 600px;">
-		<h1>Running Optimization Tool</h1>
-		<p>Your <b>Running Optimization Tool</b> allows you to quickly identify your strengths and limiters based on your goal distance and other runners like you.  Use the tool to determine how you should spend your time when training.</p>
+	<paper-dialog id="profileDialog" style="max-width: 600px;">
+		<h1>Stryd Runner Profile</h1>
+		<p>All athletes have strengths and weaknesses. The Stryd Runner Profile analyzes your training in order to identify your dominant running traits. Compare your individual characteristics to similar runners with the same target race so that you can quickly understand the most beneficial adjustments to make to your training.</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="recommendationDialog" style="max-width: 600px;">
+		<h1>Training Optimizer</h1>
+		<p>Based on your Stryd Runner Profile, identify the types of workout to incorporate into your training. The brightest boxes hold the keys to the biggest improvements. Gradually shift your training to incorporate some of these types of training. Select the labels to learn more about how they will help you to improve.</p>
 		<div class="buttons">
 			<paper-button dialog-dismiss>Close</paper-button>
 		</div>
@@ -211,14 +311,11 @@ Polymer({
 			}
 		}
 	},
-	callQuestion: function () {
-		this.$.questionDialog.open();
+	profileQuestion: function () {
+		this.$.profileDialog.open();
 	},
-	changeRace: function () {
-		var improveStone = document.querySelector('improve-stone');
-		if (improveStone) {
-			improveStone.changeRace();
-		}
+	recommendationQuestion: function () {
+		this.$.recommendationDialog.open();
 	},
 	ready: function () {
 		if (!featureManagement.hasFeatures) {
@@ -258,7 +355,7 @@ Polymer({
 			},
 			long: {
 				features: [false, true, false],
-				desc: 'A long, sustained run completed once per week. This run typically comprises of roughly 20-30% of total weekly volume. Your overall endurance improves and promotes the use of fate as a fuel source.',
+				desc: 'A long, sustained run completed once per week. This run typically comprises of roughly 20-30% of total weekly volume. Your overall endurance improves and promotes the use of fat as a fuel source.',
 				title: 'Long Run'
 			},
 			hill: {
@@ -309,8 +406,8 @@ Polymer({
 					this.data = res.body;
 					this.processData();
 					this.createChart();
-					//this.findHighlights(this.data);
-					this.findShading();
+					this.findHighlights(this.data);
+					// this.findShading();
 				} else {
 					console.log('Error: cannot fetch data');
 				}
@@ -334,7 +431,7 @@ Polymer({
 		// recommendation rows to highlight
 		var highlightRecs = [];
 		// look for recommendations corresponding to categories
-		for (var highlight of highlights) {
+		for (let highlight of highlights) {
 			// look at each recommendation
 			for (var recKey of Object.keys(this.recommendations)) {
 				var recommendation = this.recommendations[recKey];
@@ -345,17 +442,46 @@ Polymer({
 				}
 			}
 		}
-		this.highlightRecs(highlightRecs, highlights);
+		var nKeys = [];
+		for (let highlight of highlights) {
+			nKeys.push(highlight.key);
+		}
+		this.highlightRecs(highlightRecs, nKeys);
 	},
 	highlightRecs: function (highlightRecs, highlights) {
-		for (var rec of highlightRecs) {
-			this.querySelector(`[data-workout="${rec}"]`).classList.add('active');
+		console.log(highlightRecs);
+		// for (var rec of highlightRecs) {
+		// 	this.querySelector(`[data-workout="${rec}"]`).classList.add('active');
+		// }
+		console.log(highlights, 'highlights');
+		for (var key of this.recKeys) {
+			if (highlights.indexOf(key) > -1) {
+				let eles = this.querySelectorAll(`[data-highlight="${key}"]`);
+				for (let ele of eles) {
+					ele.classList.add('active');
+				}
+			} else {
+				let eles = this.querySelectorAll(`[data-highlight="${key}"]`);
+				for (let ele of eles) {
+					ele.classList.remove('active');
+				}
+			}
 		}
-		for (var highlight of highlights) {
-			console.log(highlight.key);
-			this.querySelector(`[data-category="${highlight.key}"]`).classList.add('active');
-		}
+		// for (var highlight of highlights) {
+		// 	console.log(highlight.key);
+		// 	this.querySelector(`[data-highlight="${highlight.key}"]`).classList.add('active');
+		// }
 	},
+	// highlightRecs2: function (highlightRecs) {
+	// 	app.clearChildren(this.$.list);
+	// 	for (var highlight of highlightRecs) {
+	// 		var div = document.createElement('div');
+	// 		div.dataset.workout = highlight;
+	// 		Polymer.dom(div).classList.add('recommendation'); 
+	// 		Polymer.dom(div).textContent = this.recommendations[highlight].title;
+	// 		Polymer.dom(this.$.list).appendChild(div);
+	// 	}
+	// },
 	findHighlights: function (profile) {
 		var profileArr = [];
 		for (var key of Object.keys(profile)) {
@@ -458,17 +584,24 @@ Polymer({
 					axisAlpha: 1,
 					dashLength: 0,
 					labelsEnabled: true,
-					fontSize: 20,
+					fontSize: 17,
 					id: 'pts',
 					axisTitleOffset: 50,
-					autoWrap: true,
 					labelOffset: 20,
-					radarCategoriesEnabled: false,
-					gridThickness: 3
+					// radarCategoriesEnabled: false,
+					gridThickness: 3,
+					autoWrap: true,
+					// centerLabels: true,
+					// inside: true,
+					offset: -100,
+					// pointPosition: 'middle',
+					// position: 'top',
+					// stackType: '3d',
+					titleRotation: 20
 				}],
 				fontFamily: 'Roboto',
-				allLabels: labels,
-				colors: ['#F7A017'],
+				// allLabels: labels,
+				colors: ['#F5A214'],
 				startDuration: 1,
 				startEffect: 'easeInSine',
 				marginTop: 10,
@@ -480,7 +613,7 @@ Polymer({
 					valueField: 'units'
 				}],
 				categoryField: 'category',
-				radius: '40%',
+				radius: '33%',
 				dataProvider: this.chartData
 			}
 		);

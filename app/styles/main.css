@@ -203,10 +203,11 @@ a[href="https://www.google.com/intl/en-US_US/help/terms_maps.html"] {
 }
 
 [data-route="improve"] {
-	background: -webkit-linear-gradient(#262626, #1C1C1C);
+	/*background: -webkit-linear-gradient(#262626, #1C1C1C);
 	background: -o-linear-gradient(#262626, #1C1C1C);
-	background: linear-gradient(#262626, #1C1C1C);
+	background: linear-gradient(#262626, #1C1C1C);*/
 	position: relative;
+	background: #222222;
 }
 
 .workout-element-holder {

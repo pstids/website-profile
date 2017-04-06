@@ -23,18 +23,16 @@
 	}
 	.charts {
 		position: relative;
-		width: 1000px;
+		width: 860px;
 		height: 560px;
+		z-index: 3;
 	}
 	.sidecharts {
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
 	}
-	#heatcanvas {
-		position: absolute;
-	}
-	#heatline {
+	#heatcanvas, #heatline, #heatline2 {
 		position: absolute;
 	}
 	.heatbars {
@@ -54,12 +52,6 @@
 		border: 1px solid #4D4D4D;
 		flex: 0 1 270px;
 		margin: 0 20px 20px 20px;
-	}
-	.top {
-		background-color: #262626;
-		border-bottom: 1px solid #4D4D4D;
-		height: 70px;
-		margin-bottom: 10px;
 	}
 	.title {
 		@apply(--layout-horizontal);
@@ -90,7 +82,7 @@
 		border: 1px solid #4D4D4D;
 	}
 	.floater .titles {
-		padding: 10px;
+		padding: 5px;
 	}
 	.floater .titles p {
 		color: white;
@@ -98,7 +90,7 @@
 		text-transform: uppercase;
 	}
 	.floater .values {
-		padding: 10px;
+		padding: 5px;
 	}
 	.floater .values p {
 		color: white;
@@ -108,21 +100,21 @@
 		position: relative;
 	}
 	.block {
-		width: 14px;
-		height: 14px;
+		width: 20px;
+		height: 20px;
 		padding: 3px;
 	}
 	[data-block="plan"] {
-		background: #f8a116;
+		background: #F5A214;
 
 	}
 	[data-block="personal"] {
 		background: #c55300;
 	}
 	.text {
-		font-size: 14px;
-		line-height: 14px;
-		padding: 3px 15px 3px 3px;
+		font-size: 20px;
+		line-height: 20px;
+		padding: 3px 15px 3px 10px;
 		color: white;
 	}
 	.setButton {
@@ -131,26 +123,80 @@
 		margin-bottom: 30px;
 	}
 	.targetRace {
-		text-transform: uppercase;
+		text-transform: capitalize;
 	}
 	.questionBtn {
 		margin-top: 0;
 		margin-left: 20px;
 	}
+	.top {
+		background-color: #262626;
+		border-bottom: 1px solid #4D4D4D;
+		height: 100px;
+		flex: 0 1 100px;
+		margin-bottom: 10px;
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+	}
+	.raindrop {
+		flex: 0 1;
+		border-left: 1px solid #4D4D4D;
+		@apply(--layout);
+		@apply(--layout-end-justified);
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+	.raindrop iron-icon {
+		width: 34px;
+		height: 34px;
+		fill: #F5A214;
+		padding: 0 20px;
+	}
+	.gradient {
+		background: hsla(7,80%,59%,1);
+		background: -moz-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: -webkit-gradient(left top, right top, color-stop(0%, hsla(7,80%,59%,1)), color-stop(25%, hsla(62,80%,50%,1)), color-stop(50%, hsla(151,94%,25%,1)), color-stop(75%, hsla(216,80%,24%,1)), color-stop(100%, hsla(266,63%,18%,1)));
+		background: -webkit-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: -o-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: -ms-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: linear-gradient(to right, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ea5643', endColorstr='#2a114b', GradientType=1);
+		height: 15px;
+		width: 100%;
+	}
+	.keys {
+		position: relative;
+		height: 100%;
+		color: white;
+	}
+	[data-key="top"] {
+		bottom: 5px;
+		left: 0;
+		position: absolute;
+	}
+	[data-key="bottom"] {
+		bottom: 5px;
+		right: 0;
+		position: absolute;
+	}
+	p {
+		font-size: 18px;
+		line-height: 1.45;
+	}
 </style>
 <template>
 	<div class="layout horizontal center center-justified">
-		<h1 class="header">Find Race Intensity</h1>
-		<button is="stryd-button" on-click="showEducation" class="questionBtn">?</button>
+		<h1 class="header">Improve Training Strategy</h1>
 	</div>
-	<div class="layout horizontal center center-justified">
-		<button is="stryd-button" on-click="changeRace" class="setButton">Update My Race (<span class="targetRace">{{raceKey}}</span>)</button>
-	</div>
-	<div class="sidecharts center">
+	<div class="sidecharts center" style="margin-top: 20px;">
 		<div class="heatbars">
 			<div class="layout vertical" style="margin-bottom: 20px;">
 				<div class="top">
-					<h1><span class="targetRace">{{raceKey}}</span> Plan Breakdown</h1>
+					<h1><span class="targetRace">{{raceKey}}</span> Plan Comparison</h1>
+					<div class="raindrop" on-click="comparisonQuestion" class="questionBtn">
+						<iron-icon icon="icons:help-outline"></iron-icon>
+					</div>
 				</div>
 				<div class="layout horizontal" style="padding: 10px;">
 					<div class="block" data-block="plan"></div>
@@ -163,33 +209,55 @@
 		</div>
 		<div class="heatmaps">
 			<div class="top">
-				<h1>Power Heatmap</h1>
+				<h1>Training Power Heat Map</h1>
+				<div class="raindrop" on-click="heatmapQuestion" class="questionBtn">
+					<iron-icon icon="icons:help-outline"></iron-icon>
+				</div>
 			</div>
-			<div class="charts">
-				<svg id="heatline"></svg>
-				<canvas id="heatcanvas"></canvas>
-				<svg id="heatlay"></svg>
-				<div class="floater hidden layout horizontal" id="floater">
-					<div class="layout vertical titles">
-						<p>Runs</p>
-						<p>Power</p>
-						<p>Duration</p>
-						<p>Potential</p>
+			<div class="layout vertical">
+				<div class="charts">
+					<svg id="heatline"></svg>
+					<canvas id="heatcanvas"></canvas>
+					<svg id="heatline2"></svg>
+					<svg id="heatlay"></svg>
+					<div class="floater hidden layout horizontal" id="floater">
+						<div class="layout vertical titles">
+							<p>Runs</p>
+							<p>Real Power</p>
+							<p>Curve Power</p>
+							<p>Duration</p>
+						</div>
+						<div class="layout vertical values">
+							<p id="fruns"></p>
+							<p id="fpower"></p>
+							<p id="fpotential"></p>
+							<p id="fduration"></p>
+						</div>
 					</div>
-					<div class="layout vertical values">
-						<p id="fruns"></p>
-						<p id="fpower"></p>
-						<p id="fduration"></p>
-						<p id="fpotential"></p>
+				</div>
+				<div class="layout vertical" style="padding: 25px; position: relative; z-index: 2;">
+					<div class="keys">
+						<div data-key="top">High Run Frequency</div>
+						<div data-key="bottom">Low Run Frequency</div>
 					</div>
+					<div class="gradient"></div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<paper-dialog id="dialogEducation">
-		<h1>Heatmap & Power Duration</h1>
+	<paper-dialog id="comparisonDialog" style="max-width: 600px;">
+		<h1>Stryd Plan Comparison</h1>
 		<div class="layout vertical">
-			<p>This is a description on how to use the heatmap and power duration.</p>
+			<p>Compare your training to training plans developed by expert coaches and exercise physiologists.  Make the appropriate changes to align your training for big improvements!  You can compare to a different plan by changing your Target Race Distance on the Settings Page - be sure to refresh your browser!)</p>
+		</div>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="heatmapDialog" style="max-width: 600px;">
+		<h1>Training Power Heatmap</h1>
+		<div class="layout vertical">
+			<p>A visual description of your running history in terms of both intensity (power) and duration.  Bright Red, “hot” areas, indicate combinations of power and duration that you frequently achieve in your training.   Dark blue areas occur less often.  Moving your cursor over different parts of the heat map will reveal the average power, duration, and frequency for that range of power and duration.  The Orange Dot will always display the maximum power that you have achieved for that given duration.  This gives you a sense of what you are able to accomplish in your next race!</p>
 		</div>
 		<div class="buttons">
 			<paper-button dialog-dismiss>Close</paper-button>
@@ -203,12 +271,12 @@ Polymer({
 		if (!featureManagement.hasFeatures) {
 			return;
 		}
-		this.width = 860;
+		this.width = 760;
 		this.height = 500;
 		this.padding = 30;
 		this.data = {};
 
-		this.colors = ['#f8a116', '#c55300'];
+		this.colors = ['#F5A214', '#c55300'];
 
 		this.mouseX = 0;
 		this.mouseY = 0;
@@ -218,14 +286,11 @@ Polymer({
 
 		this.raceKey = '';
 	},
-	showEducation: function () {
-		this.$.dialogEducation.open();
+	comparisonQuestion: function () {
+		this.$.comparisonDialog.open();
 	},
-	changeRace: function () {
-		var improveStone = document.querySelector('improve-stone');
-		if (improveStone) {
-			improveStone.changeRace();
-		}
+	heatmapQuestion: function () {
+		this.$.heatmapDialog.open();
 	},
 	moveFloat: function () {
 		var distanceX = Math.abs(this.mouseX - this.boxX);
@@ -459,13 +524,13 @@ Polymer({
 		var line = d3.svg.area()
 			/* unused: d */
 			.x((d, i) => {
-				return +this.x(i);
+				return +this.x(i)+3;
 			})
-			.y0(this.height)
+			.y0(this.height-3)
 			.y1((d) => {
 				var y = +this.y((d-100)/10);
 				if (y > this.height) {
-					y = this.height;
+					y = this.height-3;
 				}
 				return y;
 			});
@@ -478,7 +543,35 @@ Polymer({
 			.attr('stroke-width', 4)
 			.attr('border', '')
 			.attr('transform', `translate(${this.padding}, 0)`)
-			.attr('fill', '#f4931f');
+			.attr('fill', '#F5A214');
+
+		var svg2 = d3.select('#heatline2')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+				.append('svg:g')
+				.attr('transform', `translate(${this.padding}, ${this.padding})`);
+
+		var line2 = d3.svg.line()
+			/* unused: d */
+			.x((d, i) => {
+				return +this.x(i)+3;
+			})
+			.y((d) => {
+				var y = +this.y((d-100)/10);
+				if (y > this.height) {
+					y = this.height-3;
+				}
+				return y;
+			});
+
+		svg2.append('path')
+			.datum(this.data.maxs)
+			.attr('class', 'line')
+			.attr('d', line2)
+			.attr('stroke', '#f4931f')
+			.attr('stroke-width', 4)
+			.attr('transform', `translate(${this.padding}, 0)`)
+			.attr('fill', 'rgba(0, 0, 0, 0)');
 
 		svg.append('g')
 			.attr('class', 'x axis2')
@@ -505,18 +598,23 @@ Polymer({
 		focus.append('line')
 			.attr('id', 'focusLineX')
 			.attr('class', 'focusLine')
-			.attr('stroke', 'orange')
+			.attr('stroke', '#F5A214')
 			.attr('stroke-width', '0.5px');
 		focus.append('line')
 			.attr('id', 'focusLineY')
 			.attr('class', 'focusLine')
-			.attr('stroke', 'orange')
+			.attr('stroke', '#F5A214')
 			.attr('stroke-width', '0.5px');
 		focus.append('circle')
 			.attr('id', 'focusCircle')
-			.attr('fill', 'orange')
+			.attr('fill', '#F5A214')
 			.attr('r', 10)
 			.attr('class', 'circle focusCircle');
+
+		this.rMaxs = [];
+		for (var max of this.data.maxs) {
+			this.rMaxs.push((max-100)/10);
+		}
 
 		var that = this;
 
@@ -554,16 +652,17 @@ Polymer({
 				that.mouseX = mouse[0];
 				that.mouseY = mouse[1];
 
-				var mouseDate = that.x.invert(mouse[0]-30);
+				var mouseDate = that.x.invert(mouse[0]-60);
 				var i = Math.floor(mouseDate);
 
-				var d0 = that.data.windows[i - 1];
-				var d1 = that.data.windows[i];
+				var d0 = that.rMaxs[i];
+				var d1 = that.rMaxs[i + 1];
 				// work out which date value is closest to the mouse
-				var d = mouseDate - d0 > d1 - mouseDate ? i : i-1;
+				var diffD = that.y(d1) - that.y(d0);
+				var heightD = that.y(d0) + ((mouseDate-i) * diffD);
 
 				var x = that.mouseX;
-				var y = that.y((that.data.maxs[d]-100)/10);
+				var y = heightD;
 
 				if (y > that.height) {
 					y = that.height;
@@ -577,11 +676,17 @@ Polymer({
 					.attr('cx', x)
 					.attr('cy', y+that.padding);
 				focus.select('#focusLineX')
-					.attr('x1', x).attr('y1', that.padding)
-					.attr('x2', x).attr('y2', that.height+that.padding);
+					.attr('x1', x)
+					.attr('y1', that.padding)
+					.attr('x2', x)
+					.attr('y2', that.height+that.padding);
 				focus.select('#focusLineY')
-					.attr('x1', that.padding).attr('y1', y+that.padding)
-					.attr('x2', that.width+that.padding).attr('y2', y+that.padding);
+					.attr('x1', that.padding)
+					//.attr('y1', y+that.padding)
+					.attr('y1', mouse[1])
+					.attr('x2', that.width+that.padding)
+					//.attr('y2', y+that.padding);
+					.attr('y2', mouse[1]);
 			});
 
 		this.draw();
@@ -604,6 +709,9 @@ Polymer({
 			var l = value * 0.6;
 			var a = 1;
 			if (value < 0.3) {
+				// h = (0.8 - value);
+				// s = 0.6;
+				// l = value * 0.5;
 				a = value * (10/3);
 			}
 			return [h, s, l, a];
@@ -660,7 +768,7 @@ Polymer({
 			right: 0
 		};
 		var width = 300 - margin.left - margin.right;
-		var height = 94 - margin.top - margin.bottom;
+		var height = 105 - margin.top - margin.bottom;
 		var numTicks = 0;
 
 		var adjWidth = Math.max(yPer/max, pPer/max);

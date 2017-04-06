@@ -253,6 +253,19 @@
 							</paper-radio-group>
 						</div>
 					</div>
+					<div class="information">
+						<div class="info">
+							<h1>Target Race Distance</h1>
+							<paper-dropdown-menu label="Target Race Distance">
+								<paper-menu class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType">
+									<paper-item>5 Kilometer</paper-item>
+									<paper-item>10 Kilometer</paper-item>
+									<paper-item>Half Marathon</paper-item>
+									<paper-item>Marathon</paper-item>
+								</paper-menu>
+							</paper-dropdown-menu>
+						</div>
+					</div>
 				</form>
 			</div>
 			<div class="prefs">
@@ -283,6 +296,7 @@
 			}
 		},
 		attached: function () {
+			this.targetRaces = ['5k', '10k', 'half marathon', 'marathon'];
 			if (jwt.hasToken) {
 				if (Object.keys(user.data).length === 0) {
 					user.fetchDetails(() => {
@@ -297,6 +311,17 @@
 			var aboutStr = user.data.about_me;
 			if (!aboutStr) {
 				aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
+			}
+			var targetRaceIdx = 0;
+			var hasTargetRaceIdx = false;
+			if ('race' in user.data) {
+				targetRaceIdx = this.targetRaces.indexOf(user.data.race);
+				if (targetRaceIdx < 0) {
+					targetRaceIdx = 0;
+					hasTargetRaceIdx = false;
+				} else {
+					hasTargetRaceIdx = true;
+				}
 			}
 			this.userLocal = {
 				birth_day: user.data.birth.day,
@@ -315,12 +340,14 @@
 					user.data.birth.year,
 					user.data.birth.month,
 					user.data.birth.day
-				)
+				),
+				targetRaceIdx: targetRaceIdx,
+				hasTargetRaceIdx: hasTargetRaceIdx
 			};
 		},
 		saveDetails: function () {
-			var updateParams = '?fields=gender,weight,height,units,city,state,country,about_me,birth';
-
+			var updateParams = '?fields=gender,weight,height,units,city,state,country,about_me,birth,race';
+			var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
 			superagent
 				.put(`/b/api/v1/users/${jwt.data.id}${updateParams}`)
 				.send({
@@ -336,7 +363,8 @@
 						year: parseInt(this.userLocal.birth_year),
 						month: parseInt(this.userLocal.birth_month),
 						day: parseInt(this.userLocal.birth_day)
-					}
+					},
+					race: target_race
 				})
 				.set('Accept', 'application/json')
 				.set('Authorization', `Bearer: ${jwt.token}`)
