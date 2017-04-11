@@ -126,12 +126,15 @@
 			this.first = true;
 			this.lapType = ['mi', 'km', 'split'];
 			this.selected_lap = 0;
+			if (user.data.units !== 'feet') {
+				this.selected_lap = 1;
+			}
 			this.$.lapType.addEventListener('iron-select', () => {
 				if (this.first) {
 					this.first = false;
 					return;
 				}
-				var item = this.lapType[this.$.lapType.selected];
+				var item = this.lapType[this.selected_lap];
 				app.lapProcessing(this.id, item);
 			});
 			this.lap_number = 1;
@@ -203,7 +206,8 @@
 		},
 		getLaps: function (id) {
 			this.id = id;
-			app.lapProcessing(this.id, 'mi');
+			var item = this.lapType[this.selected_lap];
+			app.lapProcessing(this.id, item);
 		},
 		displayLaps: function (laps) {
 			this.laps = laps;

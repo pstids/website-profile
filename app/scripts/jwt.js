@@ -748,7 +748,11 @@ class FeatureManagement {
 			'erichunley',
 			'jcharyk',
 			'andré-lu',
-			'briguy'
+			'briguy',
+			'andre77ab',
+			'emilioeven',
+			'paulreed999-',
+			'paul-reed'
 		];
 		this.hasFeatures = false;
 		this.addFeatures();

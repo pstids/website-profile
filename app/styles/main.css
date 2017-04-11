@@ -120,7 +120,7 @@ plan-list {
 }*/
 
 .bar:hover {
-	opacity: 0.6;
+	opacity: 0.66;
 	transition: 0.5s opacity;
 }
 
@@ -160,6 +160,14 @@ plan-list {
 	left: 0;
 }
 
+.grid .tick {
+	stroke: lightgrey;
+	opacity: 0.7;
+}
+.grid path {
+	stroke-width: 0;
+}
+
 .float-tag {
 	color: #555454;
 	text-transform: uppercase;
@@ -176,7 +184,7 @@ plan-list {
 	display: block;
 	margin-top: 5px;
 	text-align: center;
-	color:rgb(236,176,31);
+	color: rgb(236,176,31);
 	font-size: 12px;
 }
 

@@ -26,7 +26,7 @@
 		}
 	</style>
 	<template>
-		<div class="uploader" id="uploader">
+		<div class="uploader">
 			<h1 class="title">Upload</h1>
 			<form class="dropzone" id="file">
 				<div class="dz-message" data-dz-message>
@@ -42,7 +42,7 @@
 		ready: function () {
 			Dropzone.autoDiscover = false;
 			new Dropzone(
-				this.querySelector('#file'),
+				this.$.file,
 				{
 					paramName: 'file',
 					url: '/b/platform/data/stryd',
@@ -50,23 +50,26 @@
 						'Authorization': `Bearer: ${jwt.token}`
 					},
 					parallelUploads: 1,
-					maxFilesize: 60, // MB
+					maxFilesize: 60,
 					acceptedFiles: '.fit,.tcx,.offline',
 					uploadMultiple: false,
 					addRemoveLinks: true,
 					dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
 					dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
-					/* unused: file */
+					/* unused: file, xhr */
 					accept: (file, done) => {
 						done();
 					},
 					success: (file, message) => {
 						app.addLog(message.activity_id);
 					},
-					error: () => {
-						toast('Workout could not be uploaded');
+					error: (file, message) => {
+						if (message) {
+							toast(message.message);
+						} else {
+							toast('Workout could not be uploaded.');
+						}
 					},
-					/* unused: xhr */
 					sending: (file, xhr, formData) => {
 						var uid = new Date().getUTCMilliseconds();
 						var fileMetaData = {

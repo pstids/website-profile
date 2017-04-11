@@ -81,7 +81,7 @@ app.addEventListener('dom-change', () => {
 	rssSecondary = document.querySelector('#rss-secondary');
 	settingsElement = document.querySelector('stryd-settings');
 	toastEle = document.querySelector('#toast');
-	uploader = document.querySelector('#uploader');
+	uploader = document.querySelector('file-upload');
 	workoutElement = document.querySelector('#workout-element');
 	workoutSummary = document.querySelector('workout-summary');
 	heatDuration = document.querySelector('heat-duration');
@@ -221,6 +221,7 @@ app.addEventListener('dom-change', () => {
 
 		mapRunEle.classList.remove('hidden');
 		mapRunEle.resizeMap();
+		workoutElement.switchMetric('power', 'on');
 		workoutElement.classList.remove('hidden');
 		lapOverview.classList.remove('hidden');
 
@@ -233,8 +234,8 @@ app.addEventListener('dom-change', () => {
 
 		if (currentID !== app.params.id || forceLoad) {
 			workoutElement.setLoading();
-			app.workoutFetching(app.params.id);
 			currentID = app.params.id;
+			app.workoutFetching(currentID);
 			forceLoad = false;
 		}
 		workoutElement.toggleView();

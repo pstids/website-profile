@@ -20,9 +20,6 @@
 		text-align: center;
 		padding: 15px 0;
 	}
-	h2.subtitle {
-		@apply(--subtitle);
-	}
 	#spider {
 		height: 600px;
 		min-width: 700px;
@@ -31,11 +28,19 @@
 
 	.spider-holder {
 		@apply(--layout-horizontal);
+		margin-top: 20px;
 	}
 	@media (max-width: 1250px) {
 		.spider-holder {
 			@apply(--layout-vertical);
 		}
+	}
+
+	.runner-profile {
+		width: 800px;
+	}
+	.training-optimizer {
+		width: 540px;
 	}
 
 	table {
@@ -75,26 +80,8 @@
 	table tbody tr:last-child th {
 		border-bottom: 0;
 	}
-	table tr.active th {
-		background: #262626;
-	}
 	table th {
 		background: #262626;
-	}
-	table td:hover, table th:hover {
-		opacity: 1;
-	}
-	.setButton {
-		width: 250px;
-		padding: 10px;
-		margin-bottom: 30px;
-	}
-	.targetRace {
-		text-transform: uppercase;
-	}
-	.questionBtn {
-		margin-top: 0;
-		margin-left: 20px;
 	}
 	[data-category] {
 		width: 80px;
@@ -129,6 +116,9 @@
 		fill: #F5A214;
 		padding: 0 20px;
 	}
+	.blocks {
+		margin: 20px;
+	}
 	.block {
 		width: 20px;
 		height: 20px;
@@ -151,6 +141,13 @@
 		font-size: 18px;
 		line-height: 1.45;
 	}
+	.help-text {
+		margin: 20px 20px 20px 10px;
+		line-height: 1.45;
+	}
+	#workoutDialog, #profileDialog, #recommendationDialog {
+		max-width: 600px;
+	}
 </style>
 <template>
 	<!-- Title -->
@@ -158,8 +155,8 @@
 		<h1 class="header">Strengthen Your Skills</h1>
 	</div>
 	<!-- Spiders -->
-	<div class="spider-holder" style="margin-top: 20px;">
-		<div class="holder flex-3" style="width: 800px;">
+	<div class="spider-holder">
+		<div class="holder flex-3 runner-profile">
 			<div class="top">
 				<h1>Stryd Runner Profile</h1>
 				<div class="raindrop" on-click="profileQuestion">
@@ -168,7 +165,7 @@
 			</div>
 			<div id="spider"></div>
 		</div>
-		<div class="holder flex-2" style="width: 540px;">
+		<div class="holder flex-2 training-optimizer">
 			<div class="top">
 				<h1>Training Optimizer</h1>
 				<div class="raindrop" on-click="recommendationQuestion">
@@ -181,13 +178,13 @@
 			</div>
 			<div class="recommendation hidden" id="tables" data-recommendation="closed">See All Recommendations</div>
 			<div data-improve="table">
-				<div class="layout horizontal" style="margin: 20px;">
+				<div class="layout horizontal blocks">
 					<div class="block" data-block="active"></div>
 					<div class="text">Most Potential</div>
 					<div class="block" data-block="inactive"></div>
 					<div class="text">Improvement Available</div>
 				</div>
-				<div class="text" style="margin: 20px 20px 20px 10px; line-height: 1.45;">Focus on the highlighted workouts to improve your skills. Click on the table to learn more.</div>
+				<div class="text help-text">Focus on the highlighted workouts to improve your skills. Click on the table to learn more.</div>
 				<table>
 					<thead>
 						<tr>
@@ -199,7 +196,7 @@
 					</thead>
 					<tbody>
 						<tr data-workout="speed">
-							<th>Speed/VO2 Max Repeat</th>
+							<th>VO2 Max Intervals</th>
 							<td class="highlight" data-highlight="metobolic_fitness"></td>
 							<td></td>
 							<td class="highlight" data-highlight="muscle_power"></td>
@@ -241,7 +238,7 @@
 							<td class="highlight" data-highlight="muscle_power"></td>
 						</tr>
 						<tr data-workout="pylo">
-							<th>Pylometric Exercises</th>
+							<th>Supplemental Training</th>
 							<td></td>
 							<td></td>
 							<td class="highlight" data-highlight="muscle_power"></td>
@@ -257,7 +254,7 @@
 		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
 	</div>
 	<!-- Dialogs -->
-	<paper-dialog id="workoutDialog" style="max-width: 600px;">
+	<paper-dialog id="workoutDialog">
 		<h1>{{workoutTitle}}</h1>
 		<div class="layout vertical">
 			<p>{{workoutDescription}}</p>
@@ -266,14 +263,14 @@
 			<paper-button dialog-dismiss>Close</paper-button>
 		</div>
 	</paper-dialog>
-	<paper-dialog id="profileDialog" style="max-width: 600px;">
+	<paper-dialog id="profileDialog">
 		<h1>Stryd Runner Profile</h1>
 		<p>All athletes have strengths and weaknesses. The Stryd Runner Profile analyzes your training in order to identify your dominant running traits. Compare your individual characteristics to similar runners with the same target race so that you can quickly understand the most beneficial adjustments to make to your training.</p>
 		<div class="buttons">
 			<paper-button dialog-dismiss>Close</paper-button>
 		</div>
 	</paper-dialog>
-	<paper-dialog id="recommendationDialog" style="max-width: 600px;">
+	<paper-dialog id="recommendationDialog">
 		<h1>Training Optimizer</h1>
 		<p>Based on your Stryd Runner Profile, identify the types of workout to incorporate into your training. The brightest boxes hold the keys to the biggest improvements. Gradually shift your training to incorporate some of these types of training. Select the labels to learn more about how they will help you to improve.</p>
 		<div class="buttons">
@@ -326,13 +323,6 @@ Polymer({
 		this.workoutDescription = '';
 		this.workoutTitle = '';
 
-		this.mapping = {
-			metobolic_fitness: 'Metabolic Fitness',
-			muscle_endurance: 'Muscle Endurance',
-			muscle_power: 'Muscle Power'
-		};
-
-		this.recKeys = ['metobolic_fitness', 'muscle_endurance', 'muscle_power'];
 		this.categories = {
 			metobolic_fitness: {
 				title: 'Metabolic Fitness',
@@ -361,17 +351,17 @@ Polymer({
 			hill: {
 				features: [false , false, true],
 				desc: 'Short, intense uphill runs lasting between 8-15 seconds with longer recovery periods. Your neuromuscular capabilities, overall strength, and leg spring stiffness improves. These skills lead to improved running economy.',
-				title: 'Hill/Track Sprint'
+				title: 'Hill/Track Repeats'
 			},
 			pylo: {
 				features: [false, false, true],
 				desc: 'Improves muscle recruitment patterns, allowing you to run with more power and coordination. Should be used incrementally focussing on lower impact routines first. Form Drills - Strengthens key running muscles, improves functional range of motion, improves neuromuscular communication, and increases mindfulness of good running form. Heavy Weights Lifting - The optimal number of repetitions for increasing strength and endurance is 5-6. Not only does it translate to a more powerful stride, but it also promotes good posture and muscle stiffness which also improves efficiency.',
-				title: 'Pylometric Exercises',
+				title: 'Supplemental Training',
 			},
 			speed: {
 				features: [true, false, true],
 				desc: '3 to 5 min bouts of Zone 4 running with short rest. The goal is to stress your aerobic capacity to a greater degree than could be accomplished with a single, continuous run.',
-				title: 'Speed/VO2 Max Repeat'
+				title: 'VO2 Max Intervals'
 			},
 			lactate: {
 				features: [true, false, false],
@@ -392,7 +382,11 @@ Polymer({
 
 		this.chartData = [];
 
-		var path = '/b/api/v1/users/runnerprofile?srtDate=02-01-2017&endDate=04-01-2017';
+		var today = moment();
+		var past = moment().subtract(2, 'months');
+		var todayFMT = today.format('MM-DD-YYYY');
+		var pastFMT = past.format('MM-DD-YYYY');
+		var path = `/b/api/v1/users/runnerprofile?srtDate=${pastFMT}&endDate=${todayFMT}`;
 		if (isLocal) {
 			path = '/powercenter/scripts/spider.json';
 		}
@@ -407,7 +401,6 @@ Polymer({
 					this.processData();
 					this.createChart();
 					this.findHighlights(this.data);
-					// this.findShading();
 				} else {
 					console.log('Error: cannot fetch data');
 				}
@@ -418,70 +411,20 @@ Polymer({
 			this.raceKey = user.data.race;
 		}
 	},
-	findShading: function () {
-		for (var skill of Object.keys(this.data)) {
-			var opacity = (1.4-this.data[skill]);
-			var tiles = document.querySelectorAll(`[data-highlight="${skill}"]`);
-			for (var tile of tiles) {
-				tile.style.opacity = opacity;
-			}
-		}
-	},
-	findRecs: function (highlights) {
-		// recommendation rows to highlight
-		var highlightRecs = [];
-		// look for recommendations corresponding to categories
-		for (let highlight of highlights) {
-			// look at each recommendation
-			for (var recKey of Object.keys(this.recommendations)) {
-				var recommendation = this.recommendations[recKey];
-				// find if this recommendation is in the category
-				var highlightIdx = this.recKeys.indexOf(highlight.key);
-				if (recommendation.features[highlightIdx]) {
-					highlightRecs.push(recKey);
-				}
-			}
-		}
-		var nKeys = [];
-		for (let highlight of highlights) {
-			nKeys.push(highlight.key);
-		}
-		this.highlightRecs(highlightRecs, nKeys);
-	},
-	highlightRecs: function (highlightRecs, highlights) {
-		console.log(highlightRecs);
-		// for (var rec of highlightRecs) {
-		// 	this.querySelector(`[data-workout="${rec}"]`).classList.add('active');
-		// }
-		console.log(highlights, 'highlights');
-		for (var key of this.recKeys) {
+	highlightRecs: function (highlights) {
+		for (var key of Object.keys(this.categories)) {
+			var eles = this.querySelectorAll(`[data-highlight="${key}"]`);
 			if (highlights.indexOf(key) > -1) {
-				let eles = this.querySelectorAll(`[data-highlight="${key}"]`);
 				for (let ele of eles) {
 					ele.classList.add('active');
 				}
 			} else {
-				let eles = this.querySelectorAll(`[data-highlight="${key}"]`);
 				for (let ele of eles) {
 					ele.classList.remove('active');
 				}
 			}
 		}
-		// for (var highlight of highlights) {
-		// 	console.log(highlight.key);
-		// 	this.querySelector(`[data-highlight="${highlight.key}"]`).classList.add('active');
-		// }
 	},
-	// highlightRecs2: function (highlightRecs) {
-	// 	app.clearChildren(this.$.list);
-	// 	for (var highlight of highlightRecs) {
-	// 		var div = document.createElement('div');
-	// 		div.dataset.workout = highlight;
-	// 		Polymer.dom(div).classList.add('recommendation'); 
-	// 		Polymer.dom(div).textContent = this.recommendations[highlight].title;
-	// 		Polymer.dom(this.$.list).appendChild(div);
-	// 	}
-	// },
 	findHighlights: function (profile) {
 		var profileArr = [];
 		for (var key of Object.keys(profile)) {
@@ -509,69 +452,22 @@ Polymer({
 			highlights.push(profileArr[0]);
 		}
 
-		this.findRecs(highlights);
+		var highlightKeys = [];
+		for (let highlight of highlights) {
+			highlightKeys.push(highlight.key);
+		}
+
+		this.highlightRecs(highlightKeys);
 	},
 	processData: function () {
 		for (var key of Object.keys(this.data)) {
 			this.chartData.push({
-				category: this.mapping[key],
+				category: this.categories[key].title,
 				units: Math.floor(this.data[key] * 100)
 			});
 		}
 	},
-	createLabels: function () {
-		var labels = [{
-			align: 'center',
-			text: 'Metabolic Fitness',
-			color: 'white',
-			x: '0%',
-			y: 0,
-			size: 20,
-			bold: true
-		}, {
-			align: 'center',
-			text: 'Muscle Endurance',
-			color: 'white',
-			x: '-35%',
-			y: 430,
-			size: 20,
-			bold: true
-		}, {
-			align: 'center',
-			text: 'Muscle Power',
-			color: 'white',
-			x: '40%',
-			y: 430,
-			size: 20,
-			bold: true
-		}];
-
-		var profileArr = [];
-		for (let key of Object.keys(this.data)) {
-			profileArr.push({
-				key: key,
-				value: this.data[key]
-			});
-		}
-		profileArr.sort((a, b) => {
-			return a.value - b.value;
-		});
-
-		var i = 0;
-		for (let key of this.recKeys) {
-			var label = JSON.parse(JSON.stringify(labels[i]));
-			label.y += 20;
-			label.text = Math.floor(this.data[key] * 100) + '%';
-			label.size = 20;
-			label.bold = false;
-			labels.push(label);
-			i++;
-		}
-		return labels;
-	},
 	createChart: function () {
-		var labels = this.createLabels();
-		console.log(labels);
 		this.chart = AmCharts.makeChart(
 			this.$.spider,
 			{
@@ -588,19 +484,12 @@ Polymer({
 					id: 'pts',
 					axisTitleOffset: 50,
 					labelOffset: 20,
-					// radarCategoriesEnabled: false,
 					gridThickness: 3,
 					autoWrap: true,
-					// centerLabels: true,
-					// inside: true,
 					offset: -100,
-					// pointPosition: 'middle',
-					// position: 'top',
-					// stackType: '3d',
 					titleRotation: 20
 				}],
 				fontFamily: 'Roboto',
-				// allLabels: labels,
 				colors: ['#F5A214'],
 				startDuration: 1,
 				startEffect: 'easeInSine',

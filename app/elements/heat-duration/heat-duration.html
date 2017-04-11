@@ -352,7 +352,11 @@ Polymer({
 		if (!featureManagement.hasFeatures) {
 			return;
 		}
-		var path = '/b/api/v1/users/powerduration?srtDate=02-01-2017&endDate=04-01-2017';
+		var today = moment();
+		var past = moment().subtract(2, 'months');
+		var todayFMT = today.format('MM-DD-YYYY');
+		var pastFMT = past.format('MM-DD-YYYY');
+		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;
 		if (isLocal) {
 			path = '/powercenter/scripts/heat.json';
 		}

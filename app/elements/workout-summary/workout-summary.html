@@ -103,7 +103,7 @@
 			text-align: center !important;
 		}
 
-		paper-dropdown-menu.test-selector {
+		paper-dropdown-menu {
 			--paper-input-container-label: {
 				color: white;
 				font-weight: bold;
@@ -127,9 +127,6 @@
 			<div class="title">
 				<h1 class="bold">{{data.date}}</h1>
 				<h1 class="accent hidden">{{data.type}}</h1>
-			</div>
-			<div class="raindrop hidden" on-click="recalculate">
-				<iron-icon icon="icons:autorenew"></iron-icon>
 			</div>
 		</div>
 		<div class="stats">
@@ -157,7 +154,7 @@
 			</div>
 			<time-in-zone data-property="tiz2" id="tiz" class="tiz-container"></time-in-zone>
 			<div class="flex layout vertical center center-justified">
-				<paper-dropdown-menu class="test-selector" label="Workout Type" style="margin-bottom: 50px;">
+				<paper-dropdown-menu label="Workout Type" style="margin-bottom: 50px;">
 					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType">
 						<paper-item>None</paper-item>
 						<paper-item>Easy Run</paper-item>
@@ -173,7 +170,7 @@
 						<paper-item>Critical Test Run</paper-item>
 					</paper-menu>
 				</paper-dropdown-menu>
-				<paper-dropdown-menu class="test-selector" label="Post Run RPE">
+				<paper-dropdown-menu label="Post Run RPE">
 					<paper-menu class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE">
 						<paper-item>None</paper-item>
 						<paper-item>RPE 1</paper-item>
@@ -196,11 +193,6 @@
 			is: 'workout-summary',
 			properties: {
 				data: Object
-			},
-			recalculate: function () {
-                if ('id' in this.activity) {
-                    app.logOption.callRecalculate(this.activity.id);
-                }
 			},
 			ready: function () {
 				this.selected_rpe = 0;
@@ -251,6 +243,7 @@
 			setData: function (activity) {
 				this.hasWorkout = true;
 				this.activity = activity;
+				console.log(this.activity);
 				this.data.date = moment(activity.start_time*1000).format('MMM Do, YYYY');
 				this.notifyPath('data.date');
 
@@ -267,7 +260,8 @@
 				this.data.duration = secToDuration(activity.elapsed_time);
 				this.notifyPath('data.duration');
 
-				this.data.pace = unit.speedValue(activity.average_speed, user.data.units);
+				var speed = activity.distance/activity.elapsed_time;
+				this.data.pace = unit.speedValue(speed, user.data.units);
 				this.data.pace_unit = unit.speedUnit(user.data.units);
 				this.notifyPath('data.pace');
 				this.notifyPath('data.pace_unit');

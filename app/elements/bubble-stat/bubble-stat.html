@@ -116,14 +116,16 @@
 			listeners: {
 				'tap': 'bubblePop'
 			},
-			setMode: function (opt) {
+			setMode: function () {
 				var activeKeys = this.objects.active;
 				for (var i = 0; i < activeKeys.length; i++) {
 					var activeKey = activeKeys[i];
+					if (Object.keys(this.objects).indexOf(activeKey) < 0) {
+						return;
+					}
 					var active = this.objects[activeKey];
-					var title;
-					if (opt === 'moving') {
-						title = active.title;
+					var title = active.title;
+					if (this.opt === 'moving') {
 						if (title !== 'Time') {
 							title = `Average Moving ${active.title}`;
 						} else {
@@ -132,7 +134,6 @@
 						this.set(`obj${active.prop}.title`, title);
 						this.set(`obj${active.prop}.value`, active.moving);
 					} else {
-						title = active.title;
 						if (title !== 'Time') {
 							title = `Average Elapsed ${active.title}`;
 						} else {
@@ -179,12 +180,14 @@
 				for (; i < 3; i++) {
 					Polymer.dom(this.querySelector(`[data-bubble="${i+1}"]`)).classList.add('hidden');
 				}
+				this.setMode();
 			},
 			ready: function () {
 				this.obja = {};
 				this.objb = {};
 				this.objc = {};
 				this.objects = {};
+				this.opt = 'elapsed';
 			},
 			bubblePop: function (e) {
 				var target = e.target;

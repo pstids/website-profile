@@ -17,9 +17,7 @@
 			-o-filter: blur(2px);
 			filter: blur(2px);
 		}
-		#management {
-			position: relative;
-		}
+
 		h1.header {
 			@apply(--header);
 			text-align: center;
@@ -29,46 +27,13 @@
 			padding: 20px;
 			@apply(--layout-end);
 		}
-		.bar:hover {
-			opacity: 0.66;
-		}
-		.grid .tick {
-			stroke: lightgrey;
-			opacity: 0.7;
-		}
-		.grid path {
-			stroke-width: 0;
-		}
-		.d3-tip {
-			line-height: 1;
-			font-weight: bold;
-			padding: 12px;
-			background: rgba(120, 120, 120, 0.8);
-			color: #fff;
-			border-radius: 2px;
-		}
-		.d3-tip:after {
-			box-sizing: border-box;
-			display: inline;
-			font-size: 10px;
-			width: 100%;
-			line-height: 1;
-			color: rgba(120, 120, 120, 0.8);
-			content: '\25BC';
-			position: absolute;
-			text-align: center;
-		}
-		.d3-tip.n:after {
-			margin: -1px 0 0 0;
-			top: 100%;
-			left: 0;
-		}
-		#svg {
-			width: 60vh;
-			margin: 0 auto;
-		}
+
 		#stress {
 			width: 960px;
+			margin: 0 auto;
+		}
+		#management {
+			position: relative;
 		}
 
 		[data-stat] {
@@ -101,8 +66,6 @@
 		[data-toggle="on"][data-stat="stress"] .circle {
 			background-color: #F5A214;
 			border-color: #F5A214;
-			-webkit-box-shadow: 0px 0px 20px 0px #F7A017;
-			-moz-box-shadow: 0px 0px 20px 0px #F7A017;
 			box-shadow: 0px 0px 20px 0px #F7A017;
 		}
 		[data-toggle="on"][data-stat="distance"] .circle {
@@ -113,8 +76,6 @@
 		[data-toggle="on"][data-stat="zones"] .circle {
 			background-color: #fce9d2;
 			border-color: #fce9d2;
-			-webkit-box-shadow: 0px 0px 20px 0px #5ea7a1;
-			-moz-box-shadow: 0px 0px 20px 0px #5ea7a1;
 			box-shadow: 0px 0px 20px 0px #5ea7a1;
 		}
 	</style>
@@ -143,14 +104,6 @@
 				</div>
 			</div>
 		</div>
-		<!-- <div class="layout vertical holder" data-holder="management">
-			<div class="layout horizontal title">
-				<div class="flex">
-					<h1 class="header">Performance Management</h1>
-				</div>
-			</div>
-			<div id="management"></div>
-		</div> -->
 	</template>
 	<script>
 	Polymer({
@@ -159,18 +112,13 @@
 			this.width = 860;
 			this.height = 400;
 
-			this.zBars = 0;
-			this.gMode = 0;
-			this.gCmd = false;
-			this.max = 0;
-
 			this.weekDays = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
 			this.weekIDS = [];
 			this.weekNames = [];
 			this.ids = [];
 
 			this.state = 'stress';
-
+			this.max = 0;
 			this.timeRange = 10;
 
 			this.$.dateSelection.addEventListener('change', (e) => {
@@ -182,6 +130,9 @@
 				}
 			});
 		},
+		attached: function () {
+			this.grabData();
+		},
 		getDayName: function (idx) {
 			return this.weekDays[idx % 7];
 		},
@@ -191,50 +142,26 @@
 		getID: function (idx) {
 			return this.weekIDS[idx];
 		},
-		attached: function () {
-			this.grabData();
-		},
 		grabData: function () {
 			this.processData(calendarManager.getPMActivities());
 			window.addEventListener('gotActivities', () => {
 				this.processData(calendarManager.getPMActivities());
 			});
-			//this.processOverlayData();
 		},
 		processData: function (activities) {
+			if (activities === []) {
+				return;
+			}
 			this.days = {};
-			this.doStress = false;
 			for (var activity of activities) {
 				var hash = moment(activity.timestamp * 1000).format('YYYYMMDD');
-				if (!this.doStress && activity.stress > 0) {
-					this.doStress = true;
+				if (hash in this.days) {
+					this.days[hash].push(activity);
+				} else {
+					this.days[hash] = [activity];
 				}
-				this.days[hash] = activity;
 			}
 			this.fillInit();
-		},
-		resize: function () {
-			//this.updateScales();
-			var width = window.innerWidth - 40;
-			this.x.rangeBands([0, width], 0.04);
-			//this.updateAxes();
-			d3.select('.x.axis').call(this.xAxis);
-			//this.updateBars();
-			var u = d3.selectAll('rect')
-				.data(this.data);
-			u.enter().append('rect');
-			u.exit().remove();
-			/* unused: d */
-			u.attr('x', (d, i) => {
-				return this.xScale(i);
-			})
-			.attr('width', this.xScale.rangeBand())
-			.attr('y', (d) => {
-				return this.yScale(d);
-			})
-			.attr('height', (d) => {
-				return this.yScale(0) - this.yScale(d);
-			});
 		},
 		fillInit: function () {
 			this.graph = d3.select('#stress')
@@ -248,13 +175,7 @@
 			d3.selectAll('[data-stat]')
 				.on('click', this.callFun.bind(this));
 
-			// if (!this.doStress) {
-			// 	this.state = 'distance';
-			// 	this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
-			// 	this.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
-			// }
 			// d3.select(window).on('resize', this.resize.bind(this));
-
 			this.fillBars('weeks');
 		},
 		fillBars: function (time, idx) {
@@ -262,19 +183,19 @@
 				.selectAll('*')
 				.remove();
 
-			this.data = [];
+			this.data = this.getTimeType(this.state, time, idx);
+			this.max = d3.max(this.data);
+
 			var mColor = '';
 			var msg2 = '';
 			if (this.state === 'stress') {
-				this.data = this.getTimeType('stress', time, idx);
 				mColor = '#F5A214';
 				msg2 = 'Running Stress Score';
-				this.max = d3.max(this.data) + 10;
+				this.max += 10;
 			} else if (this.state === 'distance') {
-				this.data = this.getTimeType('distance', time, idx);
 				mColor = '#FFFFFF';
-				msg2 = 'Distance (km)';
-				this.max = d3.max(this.data) + 1;
+				msg2 = `Distance (${unit.distanceUnit(user.data.units)})`;
+				this.max += 1;
 			}
 
 			this.x = d3.scale.ordinal()
@@ -311,22 +232,26 @@
 
 			d3.selectAll('.d3-tip')
 				.remove();
-			
+
 			var tip = d3.tip()
 				.attr('class', 'd3-tip')
 				.offset([-10, 0])
-				.html((d) => {
+				.html((d, i) => {
 					d = parseInt(d);
 					var msg = '';
 					if (this.state === 'stress') {
 						msg = `<div class="float-tag">Stress</div><div class="float-value">${d} RSS</div>`;
 					} else if (this.state === 'distance') {
-						msg = `<div class="float-tag">Distance</div><div class="float-value">${d} KM</div>`;
+						msg = `<div class="float-tag">Distance</div><div class="float-value">${d} ${unit.distanceUnit(user.data.units)}</div>`;
 					}
 					if (time === 'weeks') {
 						return `${msg}<div class="float-action">TAP FOR WEEK</div>`;
 					} else {
-						return `${msg}<div class="float-action">TAP FOR RUN</div>`;
+						var message2 = 'TAP FOR RUN';
+						if (this.ids[i].length > 1) {
+							message2 = 'TAP FOR RUNS';
+						}
+						return `${msg}<div class="float-action">${message2}</div>`;
 					}
 				});
 
@@ -375,17 +300,17 @@
 				.attr('color', '#FFFFFF');
 
 			var bars = vis.selectAll('.bar')
-				.data(this.data);
-
-			//update
-			bars.attr('fill', mColor)
-				.attr('stroke', '#050');
+				.data(this.data)
+				.attr('fill', mColor);
 
 			bars.enter()
 				.append('svg:rect')
 				.attr('class', 'bar')
+				.attr('opacity', 0.8)
 				.attr('fill', mColor)
-				.attr('opacity', 0.8);
+				.attr('width', this.x.rangeBand())
+				.on('mouseover', tip.show)
+				.on('mouseout', tip.hide);
 
 			bars.exit()
 				.attr('fill', mColor)
@@ -413,25 +338,23 @@
 				})
 				/* unused:  d */
 				.attr('transform', (d, i) => {
-					var first = -this.x(i)+2*this.x(3);
+					var first = -this.x(i)+(2*this.x(3));
 					return `translate(${first}, 0)`;
 				});
 
 			if (time === 'weeks') {
 				/* unused: d */
 				bars.on('click', (d, i) => {
-					this.gCmd = true;
 					this.fillBars('days', i);
-				})
-				.on('mouseover', tip.show)
-				.on('mouseout', tip.hide);
+				});
 			} else {
-				/* unused: d */
 				bars.on('click', (d, i) => {
-					page.redirect(`/powercenter/run/${this.ids[i]}`);
-				})
-				.on('mouseover', tip.show)
-				.on('mouseout', tip.hide);
+					if (this.ids[i].length > 1) {
+						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+					} else {
+						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+					}
+				});
 			}
 		},
 		zillBars: function (time, idx) {
@@ -498,7 +421,7 @@
 			d3.selectAll('.d3-tip')
 				.remove();
 
-			var tooltip = d3.tip()
+			var tip = d3.tip()
 				.attr('class', 'd3-tip')
 				.offset([-10, 0])
 				/* unused: i */
@@ -513,16 +436,14 @@
 					var msg = `<div class="float-tag">Zone ${zone} </div><div class="float-value">for ${time}</div>`;
 					if (time === 'days') {
 						var id = this.getID(d.x);
-						return `${msg}<br><a href="/powercenter/run/${id}"><span style="color:rgb(236,176,31)">Click for run</span>`;
+						return `${msg}<br><a href="/powercenter/run/${id}"><span style="color:rgb(236,176,31)">TAP FOR RUN</span>`;
 					} else {
 						return msg;
 					}
 				});
 
 			var vis = d3.select('#barchart');
-
-			vis.call(tooltip);
-
+			vis.call(tip);
 			d3.selectAll('.axis').remove();
 
 			var xAxisText = vis.insert('g', ':first-child')
@@ -560,7 +481,8 @@
 
 			vis.select('.y.axis').selectAll('text')
 				.attr('stroke', '#FFFFFF')
-				.attr('fill', '#FFFFFF');
+				.attr('fill', '#FFFFFF')
+				.attr('color', '#FFFFFF');
 
 			var dataIntermediate = xData.map((c) => {
 				/* unused: d */
@@ -604,8 +526,8 @@
 					return this.y(d.y0) - this.y(d.y + d.y0);
 				})
 				.attr('width', this.x.rangeBand())
-				.on('mouseover', tooltip.show)
-				.on('mouseout', tooltip.hide);
+				.on('mouseover', tip.show)
+				.on('mouseout', tip.hide);
 
 			if (time === 'weeks') {
 				/* unused: d */
@@ -627,7 +549,10 @@
 		callFun: function (a, e) {
 			var vis = d3.select('#barchart');
 			vis.selectAll('.stack').remove();
-			this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+			var on = this.querySelector('[data-toggle="on"]');
+			if (on) {
+				on.dataset.toggle = 'off';
+			}
 
 			if (e === 3) {
 				this.state = 'distance';
@@ -640,7 +565,6 @@
 			} else if (e === 4) {
 				this.state = 'tiz';
 				this.zillBars('weeks');
-				this.zBars = 0;
 				this.querySelector('[data-stat="zones"]').dataset.toggle = 'on';
 			}
 		},
@@ -658,29 +582,8 @@
 				'days'
 			);
 		},
-		getDaysRange: function (weeks) {
-			var movingDay = this.wayBack(weeks);
-
-			var result = [];
-			for (var i = 0; i < weeks; i++) {
-				var subResult = 0;
-				for (var o = 0; o < 7; o++) {
-					var hash = movingDay.format('YYYYMMDD');
-					if (hash in this.days) {
-						subResult = this.getData(hash, null);
-						subResult.empty = false;
-					} else {
-						subResult = {
-							stress: 0,
-							empty: true,
-							timestamp: movingDay.toDate().getTime()/1000
-						};
-					}
-					movingDay.add(1, 'day');
-					result.push(subResult);
-				}
-			}
-			return result;
+		sumFunction: function (a, b) {
+			return a + b;
 		},
 		getDayType: function (dataType, idx) {
 			var movingDay = this.wayBack(this.timeRange);
@@ -691,14 +594,14 @@
 				for (var o = 0; o < 7; o++) {
 					var hash = movingDay.format('YYYYMMDD');
 					if (hash in this.days) {
-						subResult.push(this.getData(hash, dataType));
+						subResult.push(this.getData(hash, dataType).reduce(this.sumFunction));
 						if (idx === i) {
 							this.ids.push(this.getData(hash, 'id'));
 						}
 					} else {
 						subResult.push(0);
 						if (idx === i) {
-							this.ids.push(0);
+							this.ids.push([0]);
 						}
 					}
 					movingDay.add(1, 'day');
@@ -719,7 +622,7 @@
 						this.weekNames.push(movingDay.format('MMM Do'));
 					}
 					if (hash in this.days) {
-						subResult += this.getData(hash, dataType);
+						subResult += this.getData(hash, dataType).reduce(this.sumFunction);
 					}
 					movingDay.add(1, 'day');
 				}
@@ -737,10 +640,12 @@
 					var hash = movingDay.format('YYYYMMDD');
 					if (hash in this.days) {
 						var dup = [0, 0, 0, 0, 0];
-						var tiz = this.getData(hash, 'zones');
-						for (var p = 0; p < 5; p++) {
-							dup[p] = tiz[p]/3600;
-						}
+						var tiz = this.getData(hash, 'zones')[0];
+						// for (let tiz of tizs) {
+							for (var p = 0; p < 5; p++) {
+								dup[p] = tiz[p]/3600;
+							}
+						// }
 						subResult.push(dup);
 						if (idx === i) {
 							this.ids.push(this.getData(hash, 'id'));
@@ -748,7 +653,7 @@
 					} else {
 						subResult.push([0, 0, 0, 0, 0]);
 						if (idx === i) {
-							this.ids.push(0);
+							this.ids.push([0]);
 						}
 					}
 					movingDay.add(1, 'day');
@@ -768,7 +673,7 @@
 						this.weekNames.push(movingDay.format('MMM Do'));
 					}
 					if (hash in this.days) {
-						var tiz = this.getData(hash, 'zones');
+						var tiz = this.getData(hash, 'zones')[0];
 						for (var p = 0; p < 5; p++) {
 							subResult[p] = subResult[p] + tiz[p]/3600;
 						}
@@ -779,341 +684,27 @@
 			}
 			return result;
 		},
-		getData: function (hash, dataType) {
-			if (dataType === 'zones') {
-				dataType = 'seconds_in_zones';
+		getData: function (hash, type) {
+			if (type === 'zones') {
+				type = 'seconds_in_zones';
 			}
-			if (dataType === null) {
-				return this.days[hash];
-			}
-			var value = this.days[hash][dataType];
-			if (dataType === 'stress') {
-				if (value === null) {
-					return 0;
-				}
-				return value;
-			} else if (dataType === 'distance') {
-				return value / 1000; //km
-			} else if (dataType === 'elapsed_time') {
-				return value / 3600;
-			} else if (dataType === 'seconds_in_zones') {
-				if (value === null) {
-					return [0, 0, 0, 0, 0];
-				}
-				return value;
-			} else if (dataType === 'id') {
-				return value;
-			}
-		},
-		processOverlayData2: function () {
-			this.overlayData2 = [];
-			var atl = 0;
-			var ctl = 0;
-			var activities = this.getDaysRange(this.timeRange);
-			var dayNum = 1;
-			for (var activity of activities) {
-				var runData = {};
-				atl = atl + ((activity.stress - atl)/7);
-				ctl = ctl + ((activity.stress - ctl)/42);
-				runData.atl = atl;
-				runData.ctl = ctl;
-				runData.day = dayNum;
-				runData.time = moment(activity.timestamp*1000).toDate();
-				runData.id = activity.id;
-				if (atl !== 0) {
-					this.overlayData2.push(runData);
-				}
-				dayNum += 1;
-			}
-		},
-		processOverlayData: function () {
-			this.processOverlayData2();
-			this.overlayData = [];
-
-			var activities = this.getDaysRange(this.timeRange);
-
-			var wayBack = moment().subtract(this.timeRange, 'weeks');
-			var startDate = wayBack.subtract(
-				parseInt(wayBack.format('d')),
-				'days'
-			);
-
-			var runNum = 1;
-			for (var activity of activities) {
-				if (activity.empty) {
-					continue;
-				}
-				var stress = activity.stress;
-				var dayNum = -startDate.diff(
-					moment(activity.timestamp*1000),
-					'days'
-				);
-				var timeNum = moment(activity.timestamp*1000);
-				var countNum = 1;
-				while (stress > 1) {
-					var runData = {};
-					runData.run = runNum;
-					runData.day = dayNum;
-					runData.id = activity.id;
-					runData.time = moment(timeNum).toDate();
-					if (stress < 0) {
-						stress = 0;
+			let list = this.days[hash];
+			let result = [];
+			for (let item of list) {
+				let value = item[type];
+				if (type === 'distance') {
+					value = unit.distanceValueRaw(value, user.data.units);
+				} else if (type === 'elapsed_time') {
+					value /= 3600;
+				} else if (type === 'seconds_in_zones') {
+					if (value === null) {
+						value = [0, 0, 0, 0, 0];
 					}
-					if (countNum === 1) {
-						runData.run_stress = 0;
-					} else {
-						runData.run_stress = stress;
-						stress = Math.pow(stress, (42-countNum)/42);
-					}
-					if (dayNum < 80) {
-						this.overlayData.push(runData);
-					}
-					countNum += 1;
-					dayNum += 1;
-					timeNum = timeNum.add(1, 'days');
 				}
-				runNum += 1;
+				result.push(value);
 			}
-			this.fillOverlay();
-		},
-		fillOverlay: function () {
-			this.bisectDate = d3.bisector((d) => {
-				return d.time;
-			}).left;
-
-			this.overlayTip = d3.select('#management')
-				.append('div')
-				.attr('class', 'tooltip')
-				.style('opacity', 0);
-
-			this.xTimer = d3.time.scale()
-				.range([0, this.width])
-				.domain(
-					d3.extent(this.overlayData, (d) => {
-						return d.time;
-					})
-				);
-
-			this.yLinear = d3.scale.linear()
-				.range([this.height, 0])
-				.domain([
-					0,
-					d3.max(this.overlayData, (d) => {
-						return Math.max(d.run_stress);
-					})
-				]);
-
-			this.y1Linear = d3.scale.linear()
-				.range([this.height, 0])
-				.domain([
-					0,
-					d3.max(this.overlayData2, (d) => {
-						return Math.max(d.ctl);
-					})
-				]);
-
-			this.runStressLine = d3.svg.line()
-				.x((d) => {
-					return this.xTimer(d.time);
-				})
-				.y((d) => {
-					return this.yLinear(d.run_stress);
-				});
-
-			this.totalStressLine = d3.svg.line()
-				.x((d) => {
-					return this.xTimer(d.time);
-				})
-				.y((d) => {
-					return this.y1Linear(d.ctl);
-				});
-
-			this.overlaySVG = d3.select('#management')
-				.append('svg')
-					.attr('width', this.width + 100)
-					.attr('height', this.height + 100)
-					.append('g')
-						.attr('transform', 'translate(50, 50)');
-
-			this.overlayFocus = this.overlaySVG
-				.append('g')
-				.style('display', 'none');
-
-			this.dataNest = d3.nest()
-				.key((d) => {
-					return d.run;
-				})
-				.entries(this.overlayData);
-
-			this.overlaySVG.append('path')
-				.data([this.overlayData2])
-				.style('stroke', 'red')
-				.style('fill', 'none')
-				.attr('d', this.totalStressLine);
-
-			this.dataNest.forEach((d) => {
-				this.overlaySVG.append('path')
-					.style('fill', '#CC8719')
-					.style('stroke', 'black')
-					.style('opacity', 0.2)
-					.attr('id', `tag${d.key}`)
-					.attr('d', this.runStressLine(d.values));
-			});
-
-			// x grid lines
-			this.overlaySVG.append('g')
-				.attr('fill', 'none')
-				.attr('transform', `translate(0, ${this.height})`)
-				.call(
-					d3.svg.axis()
-						.orient('bottom')
-						.ticks(4)
-						.tickSize(-this.height)
-						.tickFormat('')
-				)
-				.attr('stroke-width', 0);
-
-			// y grid lines
-			this.overlaySVG.append('g')
-				.attr('class', 'grid')
-				.call(
-					d3.svg.axis()
-						.orient('left')
-						.ticks(4)
-						.tickSize(-this.width)
-						.tickFormat('')
-				);
-
-			this.overlayXAxis = d3.svg.axis()
-				.scale(this.xTimer)
-				.orient('bottom')
-				.tickSize(1)
-				.tickPadding(10)
-				.innerTickSize(-this.width);
-
-			// x axis
-			this.overlaySVG.append('g')
-				.attr('transform', `translate(0, ${this.height})`)
-				.call(this.overlayXAxis)
-				.attr('opacity', 1)
-				.attr('stroke-width', 1)
-				.selectAll('text')
-					.attr('opacity', 1)
-					.attr('fill', '#FFFFFF')
-					.attr('stroke-width',0)
-					.attr('transform', 'rotate(0)')
-					.style('text-anchor', 'middle');
-
-			// y axis
-			var ynode = this.overlaySVG.append('g')
-				.call(
-					d3.svg.axis()
-						.scale(this.yLinear)
-						.orient('left')
-				)
-				.attr('opacity', 1)
-				.attr('fill', '#2d2d2d')
-				.attr('stroke', '#CC8719')
-				.attr('stroke-width', 1);
-			ynode.append('text')
-					.attr('y', -10)
-					.attr('x', -10)
-					.text('Daily Stress');
-			ynode.selectAll('text')
-					.attr('opacity', 1)
-					.style('fill', '#CC8719')
-					.attr('stroke-width', 0)
-					.style('transform', 'translate(-20px, 0)')
-					.style('text-anchor', 'middle');
-
-			// y1 axis
-			var y1node = this.overlaySVG.append('g')
-				.attr('transform', `translate(${this.width}, 0)`)
-				.call(
-					d3.svg.axis()
-						.scale(this.y1Linear)
-						.orient('right')
-				)
-				.attr('fill', '#2d2d2d')
-				.attr('stroke', 'red');
-			y1node.append('text')
-					.attr('y', -10)
-					.text('CTL');
-			y1node.selectAll('text')
-					.attr('opacity', 1)
-					.style('fill', 'red')
-					.attr('stroke-width', 0)
-					.attr('transform', 'rotate(0)')
-					.style('transform', 'translate(10px, 0)')
-					.style('text-anchor', 'middle');
-
-			this.overlayFocus.append('circle')
-				.attr('class', 'y')
-				.style('fill', 'none')
-				.style('stroke', 'blue')
-				.attr('r', 4);
-
-			this.overlaySVG.append('rect')
-				.attr('width', this.width)
-				.attr('height', this.height)
-				.style('fill', 'none')
-				.style('pointer-events', 'all')
-				.on('mousemove', () => {
-					this.overlayFocus.style('display', 'none');
-				})
-				.on('mouseout', () => {
-					this.overlayFocus.style('display', 'none');
-				})
-				.on('mousemove', () => {
-					var x0 = this.xTimer.invert(d3.mouse(this)[0]);
-					var i = this.bisectDate(this.overlayData, x0, 1);
-					var d0 = this.overlayData[i - 1];
-					var d1 = this.overlayData[i];
-					var d = x0 - d0.time > d1.time - x0 ? d1 : d0;
-
-					var i2 = this.bisectDate(this.overlayData2, x0, 1);
-					var d20 = this.overlayData2[i2 - 1];
-					var d21 = this.overlayData2[i2];
-					var d2 = x0 - d20.time > d21.time - x0 ? d21 : d20;
-
-					// d3.selectAll('path', '')
-					// 	.transition()
-					// 	.duration(10) 
-					// 	.style('opacity', 1);
-
-					// d3.select(`#tag${d.run}`, '')
-					// 	.transition()
-					// 	.duration(50) 
-					// 	.style('opacity', 1);
-
-					this.overlayFocus.select('circle.y')
-						.attr(
-							'transform',
-							`translate(${this.xTimer(d.time)}, ${this.y1Linear(d.total_stress)})`
-						);
-
-					this.overlayTip.transition()
-						.duration(100)
-						.style('opacity', 0.9);
-
-					var dayOfRun = moment(d.time).format('MMMM Do');
-					this.overlayTip.html(
-						`<a href="/powercenter/run/${d.id}">${dayOfRun}</a><br/><p>Positive Training: ${d2.ctl}</p>`
-					)
-					.style('left', `${d3.event.layerX - 50}px`);
-				});
+			return result;
 		}
-		// router: function (e) {
-		// 	var target = e.target;
-		// 	while (target.dataset.view === undefined) {
-		// 		target = target.parentElement;
-		// 	}
-		// 	this.querySelector('[data-view].active').classList.remove('active');
-		// 	target.classList.add('active');
-
-		// 	this.querySelector('[data-holder].active').classList.remove('active');
-		// 	this.querySelector(`[data-holder="${target.dataset.view}"]`).classList.add('active');
-		// }
 	});
 	</script>
 </dom-module
