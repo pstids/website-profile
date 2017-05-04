@@ -222,18 +222,18 @@ Polymer({
 		}
 	},
 	ready: function () {
-		if (!featureManagement.hasFeatures) {
-			return;
-		}
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
 		this.selected = 0;
 		this.currentStep = 0;
 		this.availables = [];
 		this.targetRaces = ['5k', '10k', 'half marathon', 'marathon'];
 	},
 	attached: function () {
-		if (!featureManagement.hasFeatures) {
-			return;
-		}
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
 		if (jwt.hasToken) {
 			if (Object.keys(user.data).length === 0) {
 				user.fetchDetails(() => {

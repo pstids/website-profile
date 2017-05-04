@@ -270,16 +270,10 @@ app.addEventListener('dom-change', () => {
 	});
 
 	page('/connect', () => {
-		// if (jwt.hasToken) {
-		// 	app.route = 'settings';
-		// 	header.toggleActive('settings');
-		// 	settingsElement.toggle('zone');
-		// } else {
-		// 	document.location = '/signin';
-		// }
 		if (jwt.hasToken) {
-			app.route = 'connect';
-			header.toggleActive('connect');
+			app.route = 'settings';
+			header.toggleActive('settings');
+			settingsElement.toggle('connect');
 		} else {
 			document.location = '/signin';
 		}
@@ -348,11 +342,11 @@ app.addEventListener('dom-change', () => {
 		hashbang: false
 	});
 
-	if (featureManagement.hasFeatures) {
-		document.querySelector('[data-route="improve"]').appendChild(
-			document.querySelector('performance-management')
-		);
-	}
+	// if (featureManagement.hasFeatures) {
+	// 	document.querySelector('[data-route="improve"]').appendChild(
+	// 		document.querySelector('performance-management')
+	// 	);
+	// }
 });
 
 app.logout = function () {

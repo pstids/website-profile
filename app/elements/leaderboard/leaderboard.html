@@ -604,6 +604,9 @@
 		},
 		// Add run entry
 		addEntry: function (image, name, entry, order, active, highlight) {
+			if (name.toLowerCase() === 'djfaithful') {
+				return;
+			}
 			var li = document.createElement('li');
 			if (active) {
 				Polymer.dom(li).classList.add('active');

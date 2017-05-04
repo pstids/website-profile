@@ -755,7 +755,7 @@ class FeatureManagement {
 			'paul-reed'
 		];
 		this.hasFeatures = false;
-		this.addFeatures();
+		// this.addFeatures();
 	}
 	addFeatures() {
 		if ('data' in user && 'user_name' in user.data) {

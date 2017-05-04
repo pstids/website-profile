@@ -268,9 +268,9 @@
 Polymer({
 	is: 'heat-duration',
 	ready: function () {
-		if (!featureManagement.hasFeatures) {
-			return;
-		}
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
 		this.width = 760;
 		this.height = 500;
 		this.padding = 30;
@@ -349,9 +349,9 @@ Polymer({
 		}
 	},
 	attached: function () {
-		if (!featureManagement.hasFeatures) {
-			return;
-		}
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
 		var today = moment();
 		var past = moment().subtract(2, 'months');
 		var todayFMT = today.format('MM-DD-YYYY');
@@ -426,9 +426,11 @@ Polymer({
 				});
 		});
 		var personPercentage = new Promise(resolve => {
-			var srtDate = '02-01-2017';
-			var endDate = '04-01-2017';
-			var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+			var today = moment();
+			var past = moment().subtract(2, 'months');
+			var todayFMT = today.format('MM-DD-YYYY');
+			var pastFMT = past.format('MM-DD-YYYY');
+			var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${pastFMT}&endDate=${todayFMT}&sortBy=StartDate`;
 			var zones = [0, 0, 0, 0, 0];
 			var addFun = (a, i) => a + zones[i];
 			superagent
