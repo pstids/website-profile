@@ -1,0 +1,485 @@
+<dom-module id="power-trend">
+<style>
+	:host {
+		@apply(--layout-vertical);
+		@apply(--layout-center);
+		font-family: "Stryd", sans-serif;
+		background-color: var(--primary-background-color);
+		padding: 20px;
+		--paper-slider-knob-color: #F5A214;
+		min-width: 860px;
+		overflow-x: auto;
+	}
+	:host.blurred {
+		-webkit-filter: blur(2px);
+		-moz-filter: blur(2px);
+		-ms-filter: blur(2px);
+		-o-filter: blur(2px);
+		filter: blur(2px);
+	}
+
+	h1.header {
+		@apply(--header);
+		text-align: center;
+		padding: 15px 0;
+	}
+	.title {
+		padding: 20px;
+		@apply(--layout-end);
+	}
+	#trend {
+		width: 1000px;
+		height: 450px;
+	}
+	#fitness {
+		text-align: right;
+		cursor: pointer;
+	}
+	.holder {
+		border: 1px solid #4D4D4D;
+		@apply(--layout-vertical);
+		margin: 10px;
+	}
+
+
+	[data-stati] {
+		@apply(--layout-center);
+		@apply(--layout-justified);
+		@apply(--layout-horizontal);
+		background-color: var(--primary-background-color);
+		border: 2px solid #FFFFFF;
+		border-radius: 6px;
+		color: #FFFFFF;
+		cursor: pointer;
+		font-size: 1vw;
+		font-weight: 500;
+		margin: 0.5vw 1vw 0 0;
+		padding: 0.8vw 1.1vw;
+		position: relative;
+		text-transform: uppercase;
+		z-index: 5;
+	}
+	[data-stati] .circle {
+		width: 1.3vw;
+		height: 1.3vw;
+		border-radius: 50%;
+		border: 3px #FFFFFF solid;
+		z-index: 2;
+	}
+	[data-stati] .type {
+		padding-left: 10px;
+	}
+	[data-toggle="on"] .circle {
+		background-color: #F5A214;
+		border-color: #F5A214;
+		box-shadow: 0 0 20px 0 #F7A017;
+	}
+
+	.block {
+		width: 20px;
+		height: 20px;
+		padding: 3px;
+	}
+	[data-block="plan"] {
+		background: #F5A214;
+
+	}
+	[data-block="personal"] {
+		background: #c55300;
+	}
+	.text {
+		font-size: 20px;
+		line-height: 20px;
+		padding: 3px 15px 3px 10px;
+		color: white;
+	}
+</style>
+<template>
+	<h1 class="header">Identify Your Trends</h1>
+	<div class="holder">
+		<div class="top">
+			<h1>Fitness Trends</h1>
+			<div class="raindrop" on-click="powerQuestion">
+				<iron-icon icon="icons:help-outline"></iron-icon>
+			</div>
+			<h1 class="flex" id="fitness" on-click="howToUse">How Do I Use <span>{{fitness_type}}</span>?</h1>
+		</div>
+		<div class="layout vertical" style="margin: 20px;">
+			<div id="trend"></div>
+			<div class="layout horizontal title">
+				<div class="layout horizontal" style="padding: 10px;">
+					<div class="block" data-block="plan"></div>
+					<div class="text">Your Training</div>
+					<div class="block" data-block="personal"></div>
+					<div class="text">Your Fitness</div>
+				</div>
+				<div class="flex layout horizontal end-justified">
+					<div data-stati="mf" data-toggle="on">
+						<div class="circle"></div>
+						<div class="type">Metabolic Fitness</div>
+					</div>
+					<div data-stati="mp" data-toggle="off">
+						<div class="circle"></div>
+						<div class="type">Muscle Power</div>
+					</div>
+					<div data-stati="me" data-toggle="off">
+						<div class="circle"></div>
+						<div class="type">Muscle Endurance</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<paper-dialog id="powerDialog" style="max-width: 600px;">
+		<h1>Fitness Trends</h1>
+		<p>Fitness Trends monitors your dominant running traits over time. Compare your individual characteristics over time to see how you are improving. Training represents the workouts that you do. Fitness represents how the training improves your overall status.
+		<ul>
+			<li><b>Metabolic Fitness</b> represents your daily RSS value.</li>
+			<li><b>Muscle Power</b> represents your peak 30 second power each day.</li>
+			<li><b>Muscle Endurance</b> represents the weekly max RSS value.</li>
+		</ul>
+		</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="mfDialog" style="max-width: 600px;">
+		<h1>How To Use Metabolic Fitness</h1>
+		<p>Metabolic Fitness tells you the metabolic stress your body can handle.
+		<ul>
+			<li><b>0-40 Fitness</b> means you are ramping up. Continue to feed training to the Stryd PowerCenter to build your fitness</li>
+			<li><b>41-70 Fitness</b> means you are prepared for a 5K race.</li>
+			<li><b>71-100 Fitness</b> means you are prepared for a 10K race.</li>
+			<li><b>101-130 Fitness</b> means you are prepared for a half marathon race.</li>
+			<li><b>131-160 Fitness</b> means you are prepared for a half marathon race.</li>
+		</ul>
+		</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="mpDialog" style="max-width: 600px;">
+		<h1>How To Use Muscle Power</h1>
+		<p>Muscle Power shows you your peak 30 second power each day. Look at the trend on the graph to see how your leg strength is improving.</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="meDialog" style="max-width: 600px;">
+		<h1>How To Use Muscle Endurance</h1>
+		<p>Muscle Endurance shows you the RSS score of your weekly long run. Look at the trend on the graph to learn your long run potential.</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+</template>
+<script>
+Polymer({
+	is: 'power-trend',
+	listeners: {
+		tap: 'eleTap'
+	},
+	eleTap: function (e) {
+		var target = e.target;
+		while (true) {
+			if ('stati' in target.dataset) {
+				var select = target.dataset.stati;
+				if (this.chart) {
+					this.querySelector(`[data-stati="${this.active}"]`).dataset.toggle = 'off';
+					this.chart.hideGraph(this.chart.getGraphById(`${this.active}v`));
+					this.chart.hideGraph(this.chart.getGraphById(`${this.active}t`));
+					this.chart.showGraph(this.chart.getGraphById(`${select}t`));
+					this.chart.showGraph(this.chart.getGraphById(`${select}v`));
+					this.querySelector(`[data-stati="${select}"]`).dataset.toggle = 'on';
+					this.active = select;
+					this.fitness = this.fitnessers[this.active];
+					this.fitness_type = this.types[this.active];
+				}
+				return;
+			} else if (target === this) {
+				return;
+			}
+			if ('parentNode' in target && target.parentNode !== null) {
+				target = target.parentNode;
+			} else {
+				return;
+			}
+		}
+	},
+	attached: function () {
+		var path = `/b/api/v1/users/runnertrend`;
+		if (isLocal) {
+			path = '/powercenter/scripts/local/runnertrend.json';
+		}
+		superagent
+			.get(path)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					this.data = res.body;
+					this.createData(res.body);
+					this.createChart();
+				} else {
+					console.log('Error: cannot fetch data');
+				}
+			});
+	},
+	ready: function () {
+		this.chart = null;
+		this.data = null;
+		this.active = 'mf';
+		this.multipliers = {
+			mf: 1,
+			me: 1,
+			mp: 1
+		};
+		this.fitnessers = {
+			mf: 1,
+			me: 1,
+			mp: 1
+		};
+		this.types = {
+			mf: 'Metabolic Fitness',
+			me: 'Muscle Endurance',
+			mp: 'Muscle Power'
+		};
+		this.fitness = '';
+		this.fitness_type = this.types[this.active];
+	},
+	powerQuestion: function () {
+		this.$.powerDialog.open();
+	},
+	howToUse: function () {
+		this.$[`${this.active}Dialog`].open();
+	},
+	createData: function (data) {
+		var length = data.metobolic_fitness_value.length;
+		var today = moment().subtract(length, 'days');
+		var hasNonZero = false;
+
+		this.multipliers.mf = Math.max(...data.metobolic_fitness_trend)/Math.max(...data.metobolic_fitness_value);
+		this.multipliers.me = Math.max(...data.muscle_endurance_trend)/Math.max(...data.muscle_endurance_value);
+		this.multipliers.mp = Math.max(...data.muscle_power_trend)/Math.max(...data.muscle_power_value);
+
+		this.data = [];
+		for (var i = 0; i < length; i++) {
+			if (!hasNonZero) {
+				if (
+					data.metobolic_fitness_trend[i] > 0 ||
+					data.muscle_endurance_trend[i] > 0 ||
+					data.muscle_power_trend[i] > 0
+				) {
+					hasNonZero = true;
+				} else {
+					today.add(1, 'days');
+					continue;
+				}
+			}
+			this.data.push({
+				mfv: Math.round(data.metobolic_fitness_value[i]),
+				mft: Math.round(data.metobolic_fitness_trend[i]),
+				mev: Math.round(data.muscle_endurance_value[i]),
+				met: Math.round(data.muscle_endurance_trend[i]),
+				mpv: Math.round(data.muscle_power_value[i]),
+				mpt: Math.round(data.muscle_power_trend[i]),
+				date: today.add(1, 'days').format('MMM Do')
+			});
+			if (i === length - 1) {
+				this.fitnessers.mf = Math.round(data.metobolic_fitness_trend[i]);
+				this.fitnessers.me = Math.round(data.muscle_endurance_trend[i]);
+				this.fitnessers.mp = Math.round(data.muscle_power_trend[i]);
+			}
+		}
+
+		this.fitness = this.fitnessers[this.active];
+	},
+	createChart: function () {
+		var lightOrange = '#F5A214';
+		var darkOrange = '#CD720D';
+		var lineAccent = '#2D2D2D';
+		var bulletColor = '#1C1C1C';
+		var metabolicFitness = 'Metabolic Fitness';
+		var musclePower = 'Muscle Power';
+		var muscleEndurance = 'Muscle Endurance';
+
+		this.chart = AmCharts.makeChart(this.$.trend, {
+			type: 'serial',
+			addClassNames: true,
+			autoTransform: true,
+			theme: 'black',
+			autoMargins: true,
+			marginLeft: 30,
+			marginRight: 8,
+			marginTop: 10,
+			marginBottom: 26,
+			// startDuration: 1,
+			balloon: {
+				adjustBorderColor: false,
+				horizontalPadding: 15,
+				verticalPadding: 15,
+				color: '#FFF',
+				borderAlpha: 0,
+				borderThickness: 0,
+				fillAlpha: 0,
+				fontSize: 16
+			},
+			valueAxes: [{
+				id: 'mfv',
+				axisAlpha: 1,
+				color: lightOrange,
+				axisColor: lineAccent,
+				position: 'left',
+				dashLength: 0,
+				autoGridCount: false,
+				gridCount: 11,
+				fontSize: 16
+			}, {
+				id: 'mft',
+				axisAlpha: 1,
+				color: darkOrange,
+				axisColor: lineAccent,
+				position: 'right',
+				dashLength: 0,
+				synchronizationMultiplier: this.multipliers.mf,
+				synchronizeWith: 'mfv',
+				fontSize: 16
+			}, {
+				id: 'mev',
+				axisAlpha: 1,
+				color: lightOrange,
+				axisColor: lineAccent,
+				position: 'left',
+				dashLength: 0,
+				autoGridCount: false,
+				gridCount: 11,
+				fontSize: 16
+			}, {
+				id: 'met',
+				axisAlpha: 1,
+				color: darkOrange,
+				axisColor: lineAccent,
+				position: 'right',
+				dashLength: 0,
+				synchronizationMultiplier: this.multipliers.me,
+				synchronizeWith: 'mev',
+				fontSize: 16
+			}, {
+				id: 'mpv',
+				axisAlpha: 1,
+				color: lightOrange,
+				axisColor: lineAccent,
+				position: 'left',
+				dashLength: 0,
+				autoGridCount: false,
+				gridCount: 11,
+				fontSize: 16
+			}, {
+				id: 'mpt',
+				axisAlpha: 1,
+				color: '#262626',
+				axisColor: lineAccent,
+				position: 'right',
+				dashLength: 0,
+				synchronizationMultiplier: this.multipliers.mp,
+				synchronizeWith: 'mpv',
+				fontSize: 16
+			}],
+			graphs: [{
+				id: 'mfv',
+				alphaField: 'alpha',
+				balloonText: '<div class="d3-tip2"><div class="float-tag2">Training</div><div class="float-value">[[value]] RSS</div><div class="float-action2">[[title]]</div></div>',
+				fillAlphas: 0.8,
+				lineColor: lightOrange,
+				title: metabolicFitness,
+				type: 'column',
+				valueField: 'mfv',
+				valueAxis: 'mfv'
+			}, {
+				id: 'mft',
+				balloonText: '<div class="d3-tip2"><div class="float-tag3">Fitness</div><div class="float-value">[[value]]</div><div class="float-action2">[[title]]</div></div>',
+				bullet: 'round',
+				lineThickness: 5,
+				bulletSize: 7,
+				bulletBorderAlpha: 1,
+				bulletColor: bulletColor,
+				lineColor: darkOrange,
+				useLineColorForBulletBorder: true,
+				bulletBorderThickness: 2,
+				fillAlphas: 0,
+				lineAlpha: 1,
+				title: metabolicFitness,
+				valueField: 'mft',
+				valueAxis: 'mft'
+			}, {
+				id: 'mev',
+				alphaField: 'alpha',
+				balloonText: '<div class="d3-tip2"><div class="float-tag2">Training</div><div class="float-value">[[value]] RSS</div><div class="float-action2">[[title]]</div></div>',
+				fillAlphas: 0.8,
+				lineColor: lightOrange,
+				title: muscleEndurance,
+				type: 'column',
+				valueField: 'mev',
+				valueAxis: 'mev',
+				hidden: true
+			}, {
+				id: 'met',
+				balloonText: '<div class="d3-tip2"><div class="float-tag3">Fitness</div><div class="float-value">[[value]]</div><div class="float-action2">[[title]]</div></div>',
+				bullet: 'round',
+				lineThickness: 5,
+				bulletSize: 7,
+				bulletBorderAlpha: 1,
+				bulletColor: bulletColor,
+				lineColor: darkOrange,
+				useLineColorForBulletBorder: true,
+				bulletBorderThickness: 2,
+				fillAlphas: 0,
+				lineAlpha: 1,
+				title: muscleEndurance,
+				valueField: 'met',
+				valueAxis: 'met',
+				hidden: true
+			}, {
+				id: 'mpv',
+				alphaField: 'alpha',
+				balloonText: '<div class="d3-tip2"><div class="float-tag2">Training</div><div class="float-value">[[value]] Watts</div><div class="float-action2">[[title]]</div></div>',
+				fillAlphas: 0.8,
+				lineColor: lightOrange,
+				title: musclePower,
+				type: 'column',
+				valueField: 'mpv',
+				valueAxis: 'mpv',
+				hidden: true
+			}, {
+				id: 'mpt',
+				balloonText: '',
+				bullet: 'round',
+				lineThickness: 5,
+				bulletSize: 7,
+				bulletBorderAlpha: 1,
+				bulletColor: bulletColor,
+				lineColor: darkOrange,
+				useLineColorForBulletBorder: true,
+				bulletBorderThickness: 2,
+				fillAlphas: 0,
+				lineAlpha: 1,
+				title: musclePower,
+				valueField: 'mpt',
+				valueAxis: 'mpt',
+				hidden: true
+			}],
+			categoryField: 'date',
+			categoryAxis: {
+				gridPosition: 'start',
+				axisAlpha: 1,
+				tickLength: 0,
+				gridAlpha: 0,
+				fontSize: 16,
+				axisColor: lineAccent
+			},
+			dataProvider: this.data
+		});
+	}
+});
+</script>

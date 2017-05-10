@@ -136,7 +136,21 @@ plan-list {
 	border-radius: 10px;
 
 	background-color: rgb(25, 25, 25);
-	opacity: 0.6;
+	opacity: 1;
+	box-shadow: -1px 1px 1px 0px rgba(0, 0, 0, 0.38),-2px 1px 8px 0px rgba(0, 0, 0, 0.004),1px -1px 0px 0px rgba(255, 255, 255, 0.14);
+}
+
+.d3-tip2 {
+	line-height: 1;
+	font-weight: bold;
+	padding: 12px;
+	color: #fff;
+	border-radius: 10px;
+	width: 240px;
+	display: block;
+
+	background-color: rgb(25, 25, 25);
+	opacity: 1;
 	box-shadow: -1px 1px 1px 0px rgba(0, 0, 0, 0.38),-2px 1px 8px 0px rgba(0, 0, 0, 0.004),1px -1px 0px 0px rgba(255, 255, 255, 0.14);
 }
 
@@ -175,6 +189,20 @@ plan-list {
 	padding-right: 5px;
 }
 
+.float-tag2 {
+	color: #F5A214;
+	text-transform: uppercase;
+	display: inline;
+	padding-right: 5px;
+}
+
+.float-tag3 {
+	color: #CD720D;
+	text-transform: uppercase;
+	display: inline;
+	padding-right: 5px;
+}
+
 .float-value {
 	color: #e2e2e2;
 	display: inline;
@@ -185,6 +213,14 @@ plan-list {
 	margin-top: 5px;
 	text-align: center;
 	color: rgb(236,176,31);
+	font-size: 12px;
+}
+
+.float-action2 {
+	display: block;
+	margin-top: 5px;
+	text-align: center;
+	color: white;
 	font-size: 12px;
 }
 
@@ -211,11 +247,9 @@ a[href="https://www.google.com/intl/en-US_US/help/terms_maps.html"] {
 }
 
 [data-route="improve"] {
-	/*background: -webkit-linear-gradient(#262626, #1C1C1C);
-	background: -o-linear-gradient(#262626, #1C1C1C);
-	background: linear-gradient(#262626, #1C1C1C);*/
 	position: relative;
 	background: #222222;
+
 }
 
 .workout-element-holder {
@@ -262,4 +296,41 @@ heat-duration .axis2 text {
 .focus circle {
 	fill: none;
 	stroke: steelblue;
+}
+
+.amcharts-axis-label {
+	font-family: "Stryd", sans-serif;
+}
+
+.top {
+	background-color: #262626;
+	border-bottom: 1px solid #4D4D4D;
+	height: 100px;
+	flex: 0 1 100px;
+	margin-bottom: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.top .raindrop {
+	flex: 0 1;
+	border-left: 1px solid #4D4D4D;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+    -ms-flex-pack: end;
+    -webkit-justify-content: flex-end;
+    justify-content: flex-end;
+}
+.top .raindrop iron-icon {
+	width: 34px;
+	height: 34px;
+	fill: #F5A214;
+	padding: 0 20px;
+}
+
+ul, li {
+	list-style: none;
 }

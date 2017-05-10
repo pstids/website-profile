@@ -7,6 +7,7 @@
 		@apply(--layout-center);
 		@apply(--layout-center-justified);
 		padding: 20px;
+		background-color: var(--primary-background-color);
 	}
 	:host.blurred {
 		-webkit-filter: blur(2px);
@@ -90,31 +91,6 @@
 		border: 1px solid #4D4D4D;
 		@apply(--layout-vertical);
 		margin: 10px;
-	}
-	.top {
-		background-color: #262626;
-		border-bottom: 1px solid #4D4D4D;
-		height: 100px;
-		flex: 0 1 100px;
-		margin-bottom: 10px;
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		margin-bottom: 0;
-	}
-	.raindrop {
-		flex: 0 1;
-		border-left: 1px solid #4D4D4D;
-		@apply(--layout);
-		@apply(--layout-end-justified);
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-	}
-	.raindrop iron-icon {
-		width: 34px;
-		height: 34px;
-		fill: #F5A214;
-		padding: 0 20px;
 	}
 	.blocks {
 		margin: 20px;
@@ -388,7 +364,7 @@ Polymer({
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/runnerprofile?srtDate=${pastFMT}&endDate=${todayFMT}`;
 		if (isLocal) {
-			path = '/powercenter/scripts/spider.json';
+			path = '/powercenter/scripts/local/runnerprofile.json';
 		}
 		superagent
 			.get(path)

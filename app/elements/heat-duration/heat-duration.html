@@ -4,9 +4,10 @@
 		font-family: "Stryd", sans-serif;
 		position: relative;
 		/*background-color: #222222;*/
+		background-color: var(--dark-background-color);
 		min-width: 960px;
 		padding: 20px;
-		padding-bottom: 100px;
+		padding-bottom: 40px;
 		display: block;
 	}
 	:host.blurred {
@@ -28,8 +29,7 @@
 		z-index: 3;
 	}
 	.sidecharts {
-		display: flex;
-		flex-direction: row;
+		@apply(--layout-horizontal);
 		justify-content: center;
 	}
 	#heatcanvas, #heatline, #heatline2 {
@@ -43,8 +43,7 @@
 	.heatmaps {
 		border: 1px solid #4D4D4D;
 		margin: 10px;
-		display: flex;
-		flex-direction: column;
+		@apply(--layout-vertical);
 	}
 
 	.info {
@@ -128,30 +127,6 @@
 	.questionBtn {
 		margin-top: 0;
 		margin-left: 20px;
-	}
-	.top {
-		background-color: #262626;
-		border-bottom: 1px solid #4D4D4D;
-		height: 100px;
-		flex: 0 1 100px;
-		margin-bottom: 10px;
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-	}
-	.raindrop {
-		flex: 0 1;
-		border-left: 1px solid #4D4D4D;
-		@apply(--layout);
-		@apply(--layout-end-justified);
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-	}
-	.raindrop iron-icon {
-		width: 34px;
-		height: 34px;
-		fill: #F5A214;
-		padding: 0 20px;
 	}
 	.gradient {
 		background: hsla(7,80%,59%,1);
@@ -358,7 +333,7 @@ Polymer({
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;
 		if (isLocal) {
-			path = '/powercenter/scripts/heat.json';
+			path = '/powercenter/scripts/local/powerduration.json';
 		}
 		superagent
 			.get(path)
@@ -409,7 +384,7 @@ Polymer({
 			}
 			var path = `/b/internal/plan/zoneproportion?race=${this.raceKey}`;
 			if (isLocal) {
-				path = '/powercenter/scripts/zoneproportion.json';
+				path = '/powercenter/scripts/local/zoneproportion.json';
 			}
 			superagent
 				.get(path)

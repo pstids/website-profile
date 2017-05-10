@@ -35,6 +35,11 @@
 		#management {
 			position: relative;
 		}
+		.holder {
+			border: 1px solid #4D4D4D;
+			@apply(--layout-vertical);
+			margin: 10px;
+		}
 
 		[data-stat] {
 			@apply(--layout-center);
@@ -82,6 +87,9 @@
 	<template>
 		<h1 class="header">Manage Training Load</h1>
 		<div class="layout vertical holder active" data-holder="stress">
+			<div class="top">
+				<h1>Training Load Bar Chart</h1>
+			</div>
 			<svg id="stress"></svg>
 			<div class="layout horizontal title">
 				<div class="layout horizontal flex">

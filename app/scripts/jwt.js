@@ -193,6 +193,8 @@ class TrainingPlan {
 							localStorage.removeItem('training-started');
 							window.location.reload();
 						} else {
+							localStorage.removeItem('training-selected');
+							localStorage.removeItem('training-started');
 							console.log('Error: failure to set training plan1', err);
 						}
 					});
@@ -204,7 +206,7 @@ class TrainingPlan {
 			if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
 				this.targetDateHash = localStorage.getItem('training-started');
 				superagent
-					.get('/powercenter/scripts/plan.json')
+					.get('/powercenter/scripts/local/plan.json')
 					.set('Accept', 'application/json')
 					.end((err, res) => {
 						if (res !== undefined && res.ok && res.body !== null) {
@@ -453,6 +455,9 @@ class CalendarManager {
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
 			.end((err, res) => {
+				if (this.mode === 'admin') {
+					return;
+				}
 				if (res.ok) {
 					if (res.body !== null && res.body.activities !== null) {
 						this.saveActivities(res.body.activities);
@@ -488,6 +493,9 @@ class CalendarManager {
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
 			.end((err, res) => {
+				if (this.mode === 'user') {
+					return;
+				}
 				if (res.ok) {
 					if (res.body !== null && res.body.activities !== null) {
 						this.activities = {};
