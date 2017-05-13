@@ -93,7 +93,8 @@ gulp.task('jshint', function () {
         'unit',
         'updatedTime',
         'urlManager',
-        'user'
+        'user',
+        'powerTrend'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))

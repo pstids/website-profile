@@ -80,13 +80,16 @@ HeatCanvas.prototype.push = function(x, y, data){
     if (y < 0 || y > this.height) {
         return;
     }
-
-    var id = x+y*this.width;
-    if(this.data[id]){
-        this.data[id] = this.data[id] + data;           
+    if (isNaN(data)) {
+    	console.log(x, y, data);
     } else {
-        this.data[id] = data;
-    }
+	    var id = x+y*this.width;
+	    if(this.data[id]){
+	        this.data[id] = this.data[id] + data;           
+	    } else {
+	        this.data[id] = data;
+	    }
+	}
 };
 
 HeatCanvas.prototype.render = function(step, degree, f_value_color){
@@ -95,7 +98,7 @@ HeatCanvas.prototype.render = function(step, degree, f_value_color){
 
     var self = this;
     this.worker.onmessage = function(e){
-        self.value = e.data.value;
+        self.value = test;
         self.data = {};
         self._render(f_value_color);
         if (self.onRenderingEnd){
@@ -110,11 +113,60 @@ HeatCanvas.prototype.render = function(step, degree, f_value_color){
         'degree': degree,
         'value': self.value
     };
-    this.worker.postMessage(msg);
-    if (this.onRenderingStart){
-        this.onRenderingStart();
+    // this.worker.postMessage(msg);
+    // if (this.onRenderingStart){
+    //     this.onRenderingStart();
+    // }
+    this.value = calc(msg);
+    self.data = {};
+    self._render(f_value_color);
+    if (self.onRenderingEnd){
+        self.onRenderingEnd();
     }
 };
+
+function calc(params) {
+    // value = params.value || {};
+    value = {};
+    degree = params.degree || 1;
+
+    for(var pos in params.data){
+        var data = params.data[pos];
+        var radius = Math.floor(Math.pow((data / params.step), 1/degree));
+        var x = Math.floor(pos%params.width);
+        var y = Math.floor(pos/params.width);
+        // calculate point x.y 
+        for(var scanx=x-radius; scanx<x+radius; scanx+=1){            
+            // out of extend
+            if(scanx<0 || scanx>params.width){
+                continue;
+            }
+            for(var scany=y-radius; scany<y+radius; scany+=1){
+            
+                if(scany<0 || scany>params.height){
+                    continue;
+                }                  
+                
+                var dist = Math.sqrt(Math.pow((scanx-x), 2)+Math.pow((scany-y), 2));
+                if(dist > radius){
+                    continue;
+                } else {
+                    var v = data - params.step * Math.pow(dist, degree);
+                    
+                    var id = scanx+scany*params.width ;
+                
+                    if(value[id]){
+                        value[id] = value[id] + v;           
+                    } else {
+                        value[id] = v;
+                    }
+                }
+            }
+        }        
+    }
+
+    return value;
+}
 
 
 HeatCanvas.prototype._render = function(f_value_color){
@@ -131,13 +183,12 @@ HeatCanvas.prototype._render = function(f_value_color){
         canvasData.data[i+2] = defaultColor[2];
         canvasData.data[i+3] = defaultColor[3];
     }
-    
-    // maximum 
+    // maximum
     var maxValue = 0;
     for(var id in this.value){
         maxValue = Math.max(this.value[id], maxValue);
     }
-    
+    var i = 0;
     for(var pos in this.value){
         var x = Math.floor(pos%this.width);
         var y = Math.floor(pos/this.width);
@@ -148,11 +199,12 @@ HeatCanvas.prototype._render = function(f_value_color){
         
         var color = HeatCanvas.hsla2rgba.apply(
           null, f_value_color(this.value[pos] / maxValue));
+
         canvasData.data[pixelColorIndex] = color[0]; //r
         canvasData.data[pixelColorIndex+1] = color[1]; //g
         canvasData.data[pixelColorIndex+2] = color[2]; //b
         canvasData.data[pixelColorIndex+3] = color[3]; //a
-        }
+    }
 
     ctx.putImageData(canvasData, 0, 0);
     

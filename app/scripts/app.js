@@ -56,7 +56,8 @@ var bubbleStats,
 	workoutElement,
 	workoutSummary,
 	heatDuration,
-	spiderChart;
+	spiderChart,
+	powerTrend;
 
 var firstLoad = true;
 var forceLoad = false;
@@ -86,6 +87,7 @@ app.addEventListener('dom-change', () => {
 	workoutSummary = document.querySelector('workout-summary');
 	heatDuration = document.querySelector('heat-duration');
 	spiderChart = document.querySelector('spider-chart');
+	powerTrend = document.querySelector('power-trend');
 
 	app.home = 'analysis';
 	app.route = 'profile';
@@ -176,6 +178,16 @@ app.addEventListener('dom-change', () => {
 		if (jwt.hasToken) {
 			app.route = 'improve';
 			header.toggleActive('improve');
+		} else {
+			document.location = '/signin';
+		}
+	});
+
+	page('/trends', () => {
+		if (jwt.hasToken) {
+			app.route = 'improve';
+			header.toggleActive('improve');
+			powerTrend.scrollIntoView();
 		} else {
 			document.location = '/signin';
 		}

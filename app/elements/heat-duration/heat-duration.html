@@ -3,8 +3,7 @@
 	:host {
 		font-family: "Stryd", sans-serif;
 		position: relative;
-		/*background-color: #222222;*/
-		background-color: var(--dark-background-color);
+		background-color: var(--primary-background-color);
 		min-width: 960px;
 		padding: 20px;
 		padding-bottom: 40px;
@@ -681,6 +680,9 @@ Polymer({
 			for (var x = 0; x < this.dx; x++) {
 				var pt = this.getXY(x, y);
 				var it = this.getIntensity(this.data.heatmaps[y][x]);
+				// if (x < 10 && y < 10) {
+				// 	console.log(Math.round(pt.x), Math.round(pt.y), it);
+				// }
 				heatmap.push(Math.round(pt.x), Math.round(pt.y), it);
 			}
 		}

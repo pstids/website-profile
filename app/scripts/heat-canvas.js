@@ -19,21 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 onmessage = function(e){
     calc(e.data);
 }
 
 function calc(params) {
-    value = params.value || {};
+    // value = params.value || {};
+    value = {};
     degree = params.degree || 1;
 
     for(var pos in params.data){
         var data = params.data[pos];
         var radius = Math.floor(Math.pow((data / params.step), 1/degree));
-        
         var x = Math.floor(pos%params.width);
         var y = Math.floor(pos/params.width);
-        
         // calculate point x.y 
         for(var scanx=x-radius; scanx<x+radius; scanx+=1){            
             // out of extend
@@ -63,5 +63,6 @@ function calc(params) {
             }
         }        
     }
-    postMessage({'value': value});
+
+    postMessage({value: value});
 }

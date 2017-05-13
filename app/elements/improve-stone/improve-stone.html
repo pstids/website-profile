@@ -430,6 +430,9 @@ Polymer({
 		if (performanceManagement) {
 			performanceManagement.classList.add('blurred');
 		}
+		if (powerTrend) {
+			powerTrend.classList.add('blurred');
+		}
 	},
 	removeBlur: function () {
 		if (heatDuration) {
@@ -440,6 +443,9 @@ Polymer({
 		}
 		if (performanceManagement) {
 			performanceManagement.classList.remove('blurred');
+		}
+		if (powerTrend) {
+			powerTrend.classList.remove('blurred');
 		}
 	}
 });

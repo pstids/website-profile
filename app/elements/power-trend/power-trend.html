@@ -4,7 +4,7 @@
 		@apply(--layout-vertical);
 		@apply(--layout-center);
 		font-family: "Stryd", sans-serif;
-		background-color: var(--primary-background-color);
+		background-color: var(--dark-background-color);
 		padding: 20px;
 		--paper-slider-knob-color: #F5A214;
 		min-width: 860px;
@@ -28,8 +28,9 @@
 		@apply(--layout-end);
 	}
 	#trend {
-		width: 1000px;
+		width: 1100px;
 		height: 450px;
+		align-self: center;
 	}
 	#fitness {
 		text-align: right;
@@ -40,7 +41,6 @@
 		@apply(--layout-vertical);
 		margin: 10px;
 	}
-
 
 	[data-stati] {
 		@apply(--layout-center);
@@ -53,7 +53,7 @@
 		cursor: pointer;
 		font-size: 1vw;
 		font-weight: 500;
-		margin: 0.5vw 1vw 0 0;
+		margin: 0.5vw 1vw 0 1vw;
 		padding: 0.8vw 1.1vw;
 		position: relative;
 		text-transform: uppercase;
@@ -68,6 +68,10 @@
 	}
 	[data-stati] .type {
 		padding-left: 10px;
+	}
+	[data-stati] iron-icon {
+		width: 1.3vw;
+		height: 1.3vw;
 	}
 	[data-toggle="on"] .circle {
 		background-color: #F5A214;
@@ -93,50 +97,82 @@
 		padding: 3px 15px 3px 10px;
 		color: white;
 	}
+
+	.clickable {
+		border: 2px solid #FFFFFF;
+		border-radius: 6px;
+		margin: 0.5vw 1vw 0 0;
+		padding: 0.8vw 1.1vw;
+		text-transform: uppercase;
+		cursor: pointer;
+		font-weight: 500;
+		font-size: 1vw;
+		color: white;
+		position: relative;
+	}
+	.clickable .content {
+		position: relative;
+		z-index: 3;
+	}
+	.clickable .background {
+		position: absolute;
+		z-index: 2;
+	}
+	p, ul, li {
+		font-size: 18px;
+		line-height: 1.45;
+	}
 </style>
 <template>
 	<h1 class="header">Identify Your Trends</h1>
 	<div class="holder">
-		<div class="top">
-			<h1>Fitness Trends</h1>
-			<div class="raindrop" on-click="powerQuestion">
-				<iron-icon icon="icons:help-outline"></iron-icon>
+		<div class="top" style="justify-content: space-between;">
+			<div class="layout horizontal">
+				<h1>Your Trends</h1>
+				<div class="raindrop" on-click="powerQuestion">
+					<iron-icon icon="icons:help-outline"></iron-icon>
+				</div>
 			</div>
-			<h1 class="flex" id="fitness" on-click="howToUse">How Do I Use <span>{{fitness_type}}</span>?</h1>
+			<div class="clickable" id="fitness" on-click="howToUse">
+				<iron-icon icon="icons:help-outline"></iron-icon>
+				<span>How Do I Use <span>{{fitness_type}}</span>?</span>
+			</div>
 		</div>
 		<div class="layout vertical" style="margin: 20px;">
 			<div id="trend"></div>
 			<div class="layout horizontal title">
 				<div class="layout horizontal" style="padding: 10px;">
 					<div class="block" data-block="plan"></div>
-					<div class="text">Your Training</div>
+					<div class="text">Daily Training</div>
 					<div class="block" data-block="personal"></div>
-					<div class="text">Your Fitness</div>
+					<div class="text">Your Trend</div>
 				</div>
 				<div class="flex layout horizontal end-justified">
 					<div data-stati="mf" data-toggle="on">
 						<div class="circle"></div>
 						<div class="type">Metabolic Fitness</div>
 					</div>
-					<div data-stati="mp" data-toggle="off">
-						<div class="circle"></div>
-						<div class="type">Muscle Power</div>
-					</div>
 					<div data-stati="me" data-toggle="off">
 						<div class="circle"></div>
 						<div class="type">Muscle Endurance</div>
+					</div>
+					<div data-stati="mp" data-toggle="off">
+						<div class="circle"></div>
+						<div class="type">Muscle Power</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<paper-dialog id="powerDialog" style="max-width: 600px;">
-		<h1>Fitness Trends</h1>
-		<p>Fitness Trends monitors your dominant running traits over time. Compare your individual characteristics over time to see how you are improving. Training represents the workouts that you do. Fitness represents how the training improves your overall status.
+		<h1>Your Trends</h1>
+		<p>Blood, sweat and tears -- that’s what it’s all about.  That’s why you put in the work every day.  The prizes and accolades are nice, but it's also about the process.  That daily grind.  Everyday you sweat.  Sometimes you bleed.  Occasionally, you even cry (just a little).  There’s that internal satisfaction at the end of the knowing that you are getting closer and closer to your goal.
+
+		But... wouldn’t it be nice if you could see that progress?  
 		<ul>
-			<li><b>Metabolic Fitness</b> represents your daily RSS value.</li>
-			<li><b>Muscle Power</b> represents your peak 30 second power each day.</li>
-			<li><b>Muscle Endurance</b> represents the weekly max RSS value.</li>
+			<li><b>Metabolic Fitness</b> is useful in preparing for a race.</li>
+			<li><b>Muscle Power</b> is useful for telling you how much your running economy is improving.</li>
+			<li><b>Muscle Endurance</b> is useful in gauging how long your weekly long run should be.</li>
 		</ul>
 		</p>
 		<div class="buttons">
@@ -145,13 +181,14 @@
 	</paper-dialog>
 	<paper-dialog id="mfDialog" style="max-width: 600px;">
 		<h1>How To Use Metabolic Fitness</h1>
-		<p>Metabolic Fitness tells you the metabolic stress your body can handle.
+		<p>Metabolic Fitness tells you the metabolic stress your body can handle. This is useful in preparing for your target race distance.
 		<ul>
-			<li><b>0-40 Fitness</b> means you are ramping up. Continue to feed training to the Stryd PowerCenter to build your fitness</li>
-			<li><b>41-70 Fitness</b> means you are prepared for a 5K race.</li>
-			<li><b>71-100 Fitness</b> means you are prepared for a 10K race.</li>
-			<li><b>101-130 Fitness</b> means you are prepared for a half marathon race.</li>
-			<li><b>131-160 Fitness</b> means you are prepared for a half marathon race.</li>
+			<li><b>0-19 Skill</b> means you are ramping up. Continue to feed training to the Stryd PowerCenter to build your fitness</li>
+			<li><b>20-35 Skill</b> means you are prepared for a 5K race.</li>
+			<li><b>30-50 Skill</b> means you are prepared for a 10K race.</li>
+			<li><b>40-65 Skill</b> means you are prepared for a half marathon race.</li>
+			<li><b>55-70 Skill</b> means you are prepared for a marathon race.</li>
+			<li><b>70+ Skill</b> means you are prepared for ultra and endurance race distances</li>
 		</ul>
 		</p>
 		<div class="buttons">
@@ -160,14 +197,14 @@
 	</paper-dialog>
 	<paper-dialog id="mpDialog" style="max-width: 600px;">
 		<h1>How To Use Muscle Power</h1>
-		<p>Muscle Power shows you your peak 30 second power each day. Look at the trend on the graph to see how your leg strength is improving.</p>
+		<p>Muscle Power identifies your peak 10 seconds of power from every run. The orange trend line follows changes in your run economy.</p>
 		<div class="buttons">
 			<paper-button dialog-dismiss>Close</paper-button>
 		</div>
 	</paper-dialog>
 	<paper-dialog id="meDialog" style="max-width: 600px;">
 		<h1>How To Use Muscle Endurance</h1>
-		<p>Muscle Endurance shows you the RSS score of your weekly long run. Look at the trend on the graph to learn your long run potential.</p>
+		<p>Muscle Endurance determines the run with the greatest overall load from each week. The orange trend line provides your capability for a single long run.</p>
 		<div class="buttons">
 			<paper-button dialog-dismiss>Close</paper-button>
 		</div>
@@ -267,9 +304,9 @@ Polymer({
 		for (var i = 0; i < length; i++) {
 			if (!hasNonZero) {
 				if (
-					data.metobolic_fitness_trend[i] > 0 ||
-					data.muscle_endurance_trend[i] > 0 ||
-					data.muscle_power_trend[i] > 0
+					data.metobolic_fitness_trend[i] > 1 ||
+					data.muscle_endurance_trend[i] > 1 ||
+					data.muscle_power_trend[i] > 1
 				) {
 					hasNonZero = true;
 				} else {
@@ -309,9 +346,9 @@ Polymer({
 			addClassNames: true,
 			autoTransform: true,
 			theme: 'black',
-			autoMargins: true,
+			//autoMargins: true,
 			marginLeft: 30,
-			marginRight: 8,
+			marginRight: 120,
 			marginTop: 10,
 			marginBottom: 26,
 			// startDuration: 1,
@@ -334,7 +371,9 @@ Polymer({
 				dashLength: 0,
 				autoGridCount: false,
 				gridCount: 11,
-				fontSize: 16
+				fontSize: 16,
+				title: 'Training (RSS)',
+				titleColor: lightOrange
 			}, {
 				id: 'mft',
 				axisAlpha: 1,
@@ -344,7 +383,9 @@ Polymer({
 				dashLength: 0,
 				synchronizationMultiplier: this.multipliers.mf,
 				synchronizeWith: 'mfv',
-				fontSize: 16
+				fontSize: 16,
+				// title: 'Fitness',
+				titleColor: darkOrange
 			}, {
 				id: 'mev',
 				axisAlpha: 1,
@@ -354,7 +395,9 @@ Polymer({
 				dashLength: 0,
 				autoGridCount: false,
 				gridCount: 11,
-				fontSize: 16
+				fontSize: 16,
+				title: 'Training (RSS)',
+				titleColor: lightOrange
 			}, {
 				id: 'met',
 				axisAlpha: 1,
@@ -364,7 +407,9 @@ Polymer({
 				dashLength: 0,
 				synchronizationMultiplier: this.multipliers.me,
 				synchronizeWith: 'mev',
-				fontSize: 16
+				fontSize: 16,
+				// title: 'Fitness',
+				titleColor: darkOrange
 			}, {
 				id: 'mpv',
 				axisAlpha: 1,
@@ -374,7 +419,9 @@ Polymer({
 				dashLength: 0,
 				autoGridCount: false,
 				gridCount: 11,
-				fontSize: 16
+				fontSize: 16,
+				title: 'Training (Watts)',
+				titleColor: lightOrange
 			}, {
 				id: 'mpt',
 				axisAlpha: 1,
@@ -398,7 +445,7 @@ Polymer({
 				valueAxis: 'mfv'
 			}, {
 				id: 'mft',
-				balloonText: '<div class="d3-tip2"><div class="float-tag3">Fitness</div><div class="float-value">[[value]]</div><div class="float-action2">[[title]]</div></div>',
+				balloonText: '<div class="d3-tip2"><div class="float-value2">[[value]]</div><div class="float-tag3">Trend</div><div class="float-action2">[[title]]</div></div>',
 				bullet: 'round',
 				lineThickness: 5,
 				bulletSize: 7,
@@ -425,7 +472,7 @@ Polymer({
 				hidden: true
 			}, {
 				id: 'met',
-				balloonText: '<div class="d3-tip2"><div class="float-tag3">Fitness</div><div class="float-value">[[value]]</div><div class="float-action2">[[title]]</div></div>',
+				balloonText: '<div class="d3-tip2"><div class="float-tag3">Trend</div><div class="float-value">[[value]] RSS</div><div class="float-action2">[[title]]</div></div>',
 				bullet: 'round',
 				lineThickness: 5,
 				bulletSize: 7,
@@ -443,7 +490,7 @@ Polymer({
 			}, {
 				id: 'mpv',
 				alphaField: 'alpha',
-				balloonText: '<div class="d3-tip2"><div class="float-tag2">Training</div><div class="float-value">[[value]] Watts</div><div class="float-action2">[[title]]</div></div>',
+				balloonText: '<div class="d3-tip2"><div class="float-tag2">Training</div><div class="float-value">[[value]] Watts</div><div class="float-action2">Peak 10 Second [[title]]</div></div>',
 				fillAlphas: 0.8,
 				lineColor: lightOrange,
 				title: musclePower,

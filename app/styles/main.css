@@ -208,6 +208,12 @@ plan-list {
 	display: inline;
 }
 
+.float-value2 {
+	color: #e2e2e2;
+	display: inline;
+	padding-right: 5px;
+}
+
 .float-action {
 	display: block;
 	margin-top: 5px;
@@ -329,6 +335,13 @@ heat-duration .axis2 text {
 	height: 34px;
 	fill: #F5A214;
 	padding: 0 20px;
+}
+
+[icon="icons:help-outline"] {
+	width: 34px;
+	height: 34px;
+	fill: #F5A214;
+	padding: 0 15px 0 0;
 }
 
 ul, li {
