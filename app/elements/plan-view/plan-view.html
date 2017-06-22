@@ -161,6 +161,10 @@ Polymer({
                 });
             }
 
+            if (block.block_repeat === 0) {
+                block.block_repeat = 1;
+            }
+
             for (var p = 0; p < block.block_repeat; p++) {
                 for (var o = 0; o < block.segments.length; o++) {
                     var segment = block.segments[o];
@@ -172,6 +176,9 @@ Polymer({
                             } else {
                                 magnitude = segment.duration_distance * 3;
                             }
+                        }
+                        if (segment.distance_unit_selected === 'km') {
+                            magnitude = segment.duration_distance * 5;
                         }
                         if (segment.distance_unit_selected === 'meter') {
                             magnitude = segment.duration_distance / 100;
@@ -212,7 +219,7 @@ Polymer({
             theme: 'stryd',
             autoResize: true,
             autoMarginOffset: 20,
-            marginBottom: 40,
+            marginBottom: 100,
             valueAxes: [{
                 stackType: 'regular',
                 position: 'left',
