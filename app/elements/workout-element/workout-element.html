@@ -137,7 +137,6 @@
 			margin: 100px auto;
 			width: 40px;
 			height: 40px;
-			-webkit-animation: sk-rotate 2.0s infinite linear;
 			animation: sk-rotate 2.0s infinite linear;
 		}
 		.spinner .dot1, .spinner .dot2 {
@@ -148,30 +147,24 @@
 			top: 0;
 			background-color: var(--primary-icon-color);
 			border-radius: 100%;
-			-webkit-animation: sk-bounce 2.0s infinite ease-in-out;
 			animation: sk-bounce 2.0s infinite ease-in-out;
 		}
 		.spinner .dot2 {
 			top: auto;
 			bottom: 0;
-			-webkit-animation-delay: -1.0s;
 			animation-delay: -1.0s;
 		}
 
-		@-webkit-keyframes sk-rotate { 100% { -webkit-transform: rotate(360deg) }}
-		@keyframes sk-rotate { 100% { transform: rotate(360deg); -webkit-transform: rotate(360deg) }}
-
-		@-webkit-keyframes sk-bounce {
-			0%, 100% { -webkit-transform: scale(0.0) }
-			50% { -webkit-transform: scale(1.0) }
+		@keyframes sk-rotate {
+			100% {
+				transform: rotate(360deg);
+			}
 		}
 		@keyframes sk-bounce {
 			0%, 100% { 
 				transform: scale(0.0);
-				-webkit-transform: scale(0.0);
 			} 50% { 
 				transform: scale(1.0);
-				-webkit-transform: scale(1.0);
 			}
 		}
 
@@ -435,7 +428,6 @@
 						balloonFunction: function (graphDataItem) {
 							return unit.speedValue(graphDataItem.values.value, user.data.units) + unit.speedUnit(user.data.units);
 						},
-						balloonText: '[[value]] Min/Mile',
 						lineColor: '#074a8c',
 						hidden: true
 					}
@@ -501,7 +493,9 @@
 						useLineColorForBulletBorder: true,
 						valueField: 'elevation',
 						type: 'smoothedLine',
-						balloonText: '[[value]] Meters',
+						balloonFunction: function (graphDataItem) {
+							return unit.elevationValue(graphDataItem.values.value, user.data.units) + ' ' + unit.elevationUnit(user.data.units);
+						},
 						lineColor: '#a06a81',
 						hidden: true
 					}

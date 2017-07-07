@@ -1,338 +1,295 @@
 <dom-module id="plan-view">
 <style>
-    :host {
-        @apply(--layout-flex);
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-        @apply(--layout-center-justified);
-        max-width: 100%;
-    }
-    [data-tp="chart"] {
-        color: #ffffff;
-        height: 50vh;
-        padding: 0 0 0 35px;
-        @apply(--layout-flex-3);
-    }
-    [data-tp="plan"] {
-        @apply(--layout-flex);
-        background-color: #262626;
-        color: white;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid #4D4D4D;
-        height: 50vh;
-        max-width: 500px;
-    }
-    [data-tp="plan"] p {
-        font-size: 13px;
-        line-height: 22px;
-        padding: 14px;
-        margin: 0;
-    }
-    [data-tp="segments"] {
-        @apply(--layout-wrap);
-        @apply(--layout-vertical);
-    }
-    [data-tp="description"] {
-        @apply(--layout-wrap);
-        @apply(--layout-vertical);
-    }
-    h1.header {
-        @apply(--header);
-        padding-top: 14px;
-        padding-left: 14px;
-    }
-    .repeat {
-        @apply(--layout);
-        @apply(--layout-center-justified);
-        @apply(--layout-center);
-        background-color: #1C1C1C;
-        width: 50px;
-        font-size: 24px;
-        text-align: center;
-    }
-    .block {
-        border-top: 1px solid #FFFFFF;
-    }
+	:host {
+		@apply(--layout-flex);
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+		@apply(--layout-center-justified);
+		max-width: 100%;
+	}
+	[data-tp="chart"] {
+		color: #ffffff;
+		height: 50vh;
+		padding: 0 0 0 35px;
+		@apply(--layout-flex-3);
+	}
+	[data-tp="plan"] {
+		@apply(--layout-flex);
+		background-color: #262626;
+		color: white;
+		position: relative;
+		overflow: hidden;
+		border: 1px solid #4D4D4D;
+		height: 50vh;
+		max-width: 500px;
+	}
+	[data-tp="plan"] p {
+		font-size: 13px;
+		line-height: 22px;
+		padding: 14px;
+		margin: 0;
+	}
+	[data-tp="description"] {
+		@apply(--layout-wrap);
+		@apply(--layout-vertical);
+	}
+	h1.header {
+		@apply(--header);
+		padding-top: 14px;
+		padding-left: 14px;
+	}
 </style>
 <template>
-    <div data-tp="chart"></div>
-    <div data-tp="plan">
-        <h1 class="header">{{day_title}}</h1>
-        <h1 class="header">RSS: <span>{{day_rss}}</span></h1>
-        <p>{{day_description}}</p>
-        <div data-tp="description"></div>
-    </div>
+	<div data-tp="chart"></div>
+	<div data-tp="plan">
+		<h1 class="header">{{day_title}}</h1>
+		<h1 class="header">RSS: <span>{{day_rss}}</span></h1>
+		<p>{{day_description}}</p>
+		<div data-tp="description"></div>
+	</div>
 </template>
 <script>
 Polymer({
-    is: 'plan-view',
-    ready: function () {
-        this.dateHash = '';
+	is: 'plan-view',
+	ready: function () {
+		this.dateHash = '';
 
-        this.day_rss = '';
+		this.day_rss = '';
 
-        this.planList = this.querySelector('[data-tp="plan"]');
-        this.planChart = this.querySelector('[data-tp="chart"]');
-        this.planDescription = this.querySelector('[data-tp="description"]');
+		this.planList = this.querySelector('[data-tp="plan"]');
+		this.planChart = this.querySelector('[data-tp="chart"]');
+		this.planDescription = this.querySelector('[data-tp="description"]');
 
-        Ps.initialize(this.planList);
-    },
-    setStartTime: function (start_time) {
-        this.dateHash = moment.unix(start_time).format('YYYYMMDD');
-        this.loadTraining();
-        this.processOverview();
-    },
-    setStartHash: function (dateHash) {
-        this.dateHash = dateHash;
-        this.loadTraining();
-        this.processOverview();
-    },
-    loadTraining: function () {
-        this.planList.scrollTop = 0;
-        Ps.update(this.planList);
+		Ps.initialize(this.planList);
+	},
+	setStartTime: function (start_time) {
+		this.dateHash = moment.unix(start_time).format('YYYYMMDD');
+		this.loadTraining();
+		this.processOverview();
+	},
+	setStartHash: function (dateHash) {
+		this.dateHash = dateHash;
+		this.loadTraining();
+		this.processOverview();
+	},
+	loadTraining: function () {
+		this.planList.scrollTop = 0;
+		Ps.update(this.planList);
 
-        // this.planDescription.insertAdjacentHTML('beforeend', '');
+		// this.planDescription.insertAdjacentHTML('beforeend', '');
 
-        var trainingDay = trainingPlan.getDay(this.dateHash);
-        if (trainingDay !== null) {
-            this.classList.remove('hidden');
-            this.day_title = trainingDay.workout_title;
-            this.day_description = trainingDay.workout_desc;
+		var trainingDay = trainingPlan.getDay(this.dateHash);
+		if (trainingDay !== null) {
+			this.classList.remove('hidden');
+			this.day_title = trainingDay.workout_title;
+			this.day_description = trainingDay.workout_desc;
+		} else {
+			this.classList.add('hidden');
+		}
+	},
+	processOverview: function () {
+		this.chartData = [];
 
-            // while (Polymer.dom(this.$.segments).firstChild) {
-            //     Polymer.dom(this.$.segments).removeChild(Polymer.dom(this.$.segments).firstChild);
-            // }
+		var workout = trainingPlan.getDay(this.dateHash);
+		if (workout === null) {
+			return;
+		}
 
-            // Populate new segments
-            // for (var block of trainingDay.blocks) {
-            //     var horizontalDiv = document.createElement('div');
-            //     Polymer.dom(horizontalDiv).classList.add('layout', 'horizontal', 'block');
+		this.day_rss = workout.rss;
 
-            //     var repeatIndicator = document.createElement('div');
-            //     Polymer.dom(repeatIndicator).classList.add('repeat');
-            //     if (block.block_repeat === 0) {
-            //         block.block_repeat = 1;
-            //     }
-            //     repeatIndicator.textContent = `${block.block_repeat}x`;
-            //     Polymer.dom(horizontalDiv).appendChild(repeatIndicator);
+		var blocks = workout.blocks;
+		if (blocks.length === 0) {
+			this.chartToggle(false);
+			return;
+		}
 
-            //     var verticalDiv = document.createElement('div');
-            //     Polymer.dom(verticalDiv).classList.add('layout', 'vertical', 'flex');
+		var iter = 0;
+		for (var i = 0; i < blocks.length; i++) {
+			var block = blocks[i];
+			if (i > 0) {
+				iter++;
+				this.chartData.push({
+					iter: iter,
+					z1: 0
+				});
+			}
 
-            //     for (var segment of block.segments) {
-            //         var segmentDom = document.createElement('plan-segment');
-            //         segmentDom.setData(segment);
-            //         Polymer.dom(verticalDiv).appendChild(segmentDom);
-            //     }
+			if (block.block_repeat === 0) {
+				block.block_repeat = 1;
+			}
 
-            //     Polymer.dom(horizontalDiv).appendChild(verticalDiv);
+			for (var p = 0; p < block.block_repeat; p++) {
+				for (var o = 0; o < block.segments.length; o++) {
+					var segment = block.segments[o];
+					var magnitude = 0;
+					if (segment.duration_type === 'distance') {
+						if (segment.distance_unit_selected === 'km') {
+							magnitude = segment.duration_distance * 5;
+						}
+						if (segment.distance_unit_selected === 'mile') {
+							if (segment.duration_distance > 50) {
+								segment.distance_unit_selected = 'meter';
+							} else {
+								magnitude = segment.duration_distance * 3;
+							}
+							if (user.data.units !== 'feet') {
+								segment.distance_unit_selected = 'km';
+								segment.duration_distance = Math.round10(segment.duration_distance * unit.metersPerMile/unit.metersPerKM, -1);
+							}
+						}
+						if (segment.distance_unit_selected === 'meter') {
+							magnitude = segment.duration_distance / 100;
+						}
+					} else if (segment.duration_type === 'time') {
+						if (segment.duration_time.hour !== 0) {
+							magnitude = segment.duration_time.hour * 5 + segment.duration_time.minute / 12;
+						} else if (segment.duration_time.minute) {
+							magnitude = segment.duration_time.minute * 2;
+						} else {
+							magnitude = segment.duration_time.second / 10;
+						}
+					}
 
-            //     Polymer.dom(this.$.segments).appendChild(horizontalDiv);
-            // }
-        } else {
-            this.classList.add('hidden');
-        }
-    },
-    processOverview: function () {
-        this.chartData = [];
-
-        var workout = trainingPlan.getDay(this.dateHash);
-        if (workout === null) {
-            return;
-        }
-
-        this.day_rss = workout.rss;
-
-        var blocks = workout.blocks;
-        if (blocks.length === 0) {
-            this.chartToggle(false);
-            return;
-        }
-
-        var iter = 0;
-        for (var i = 0; i < blocks.length; i++) {
-            var block = blocks[i];
-            if (i > 0) {
-                iter++;
-                this.chartData.push({
-                    iter: iter,
-                    z1: 0
-                });
-            }
-
-            if (block.block_repeat === 0) {
-                block.block_repeat = 1;
-            }
-
-            for (var p = 0; p < block.block_repeat; p++) {
-                for (var o = 0; o < block.segments.length; o++) {
-                    var segment = block.segments[o];
-                    var magnitude = 0;
-                    if (segment.duration_type === 'distance') {
-                        if (segment.distance_unit_selected === 'mile') {
-                            if (segment.duration_distance > 50) {
-                                segment.distance_unit_selected = 'meter';
-                            } else {
-                                magnitude = segment.duration_distance * 3;
-                            }
-                        }
-                        if (segment.distance_unit_selected === 'km') {
-                            magnitude = segment.duration_distance * 5;
-                        }
-                        if (segment.distance_unit_selected === 'meter') {
-                            magnitude = segment.duration_distance / 100;
-                        }
-                    } else if (segment.duration_type === 'time') {
-                        if (segment.duration_time.hour !== 0) {
-                            magnitude = segment.duration_time.hour * 5 + segment.duration_time.minute / 12;
-                        } else if (segment.duration_time.minute) {
-                            magnitude = segment.duration_time.minute * 2;
-                        } else {
-                            magnitude = segment.duration_time.second / 10;
-                        }
-                    }
-
-                    var zone = segment.zone_selected+1;
-                    for (var q = 0; q < magnitude; q++) {
-                        iter++;
-                        segment.iter = iter;
-                        segment.z1 = zone;
-                        this.chartData.push(segment);
-                    }
-                }
-            }
-        }
-        this.loadOverview();
-    },
-    chartToggle: function (toggle) {
-        if (toggle) {
-            this.planChart.classList.remove('hidden');
-        } else {
-            this.planChart.classList.add('hidden');
-        }
-    },
-    /*global AmCharts*/
-    loadOverview: function () {
-       this.chart = AmCharts.makeChart(this.planChart, {
-            type: 'serial',
-            theme: 'stryd',
-            autoResize: true,
-            autoMarginOffset: 20,
-            marginBottom: 100,
-            valueAxes: [{
-                stackType: 'regular',
-                position: 'left',
-                title: 'ZONE',
-                balloon: {
-                    enabled: false
-                },
-                maximum: 5,
-                minimum: 0,
-                axisThickness: 2,
-                gridAlpha: 0.2,
-                axisColor: '#f7a017',
-                dashLength: 1,
-                autoGridCount: false
-            }],
-            graphs: [{
-                id: 'z1',
-                fillAlphas: 1,
-                title: 'Power',
-                valueField: 'z1',
-                type: 'step',
-                ballon: {
-                    enabled: true
-                },
-                balloonFunction: (e) => {
-                    var a = parseInt(e.category);
-                    for (var i = 0; i < this.chartData.length; i++) {
-                        var segment = this.chartData[i];
-                        if (a === segment.iter) {
-                            return segment.desc;
-                        }
-                    }
-                    return '';
-                },
-                fillColors: ['#f4931f', '#f6a84b', '#f8be78', '#fad3a5', '#fce9d2']
-                
-            }],
-            autoMargins: false,
-            dataDateFormat: 'YYYY-MM-DD',
-            balloon: {
-                borderThickness: 1,
-                shadowAlpha: 0,
-                enabled: false,
-                fillAlpha: 1
-            },
-            plotAreaBorderAlpha: 0,
-            chartCursor: {
-                valueLineEnabled: false,
-                valueLineBalloonEnabled: false,
-                zoomable: false,
-                valueZoomable: true,
-                valueLineAlpha: 0,
-                categoryBalloonEnabled: true,
-                oneBalloonOnly: true,
-                cursorPosition: 'mouse',
-                fontSize: 16,
-                cursorAlpha: 0,
-                categoryBalloonFunction: (a) => {
-                    for (var i = 0; i < this.chartData.length; i++) {
-                        var segment = this.chartData[i];
-                        if (parseInt(a) === segment.iter) {
-                            var title;
-                            if (segment.duration_type === 'time') {
-                                title = `<p class="bold" style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;font-weight:700;'>${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} H:M:S`;
-                            } else {
-                                if (segment.duration_distance > 50 && segment.distance_unit_selected === 'mile') {
-                                    segment.distance_unit_selected = 'meter';
-                                }
-                                title = `<p class="bold" style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;font-weight:700;'>${segment.duration_distance} ${segment.distance_unit_selected}`;
-                            }
-                            if (segment.intensity_type === 'pace') {
-                                title += ` at ${segment.pace_selected.toUpperCase()} PACE</p>`;
-                            } else {
-                                title += ` in ZONE ${segment.z1}</p>`;
-                            }
-                            if (segment.segment_desc === undefined) {
-                                return '';
-                            }
-                            while (Polymer.dom(this.planDescription).firstChild) {
-                                Polymer.dom(this.planDescription).removeChild(Polymer.dom(this.planDescription).firstChild);
-                            }
-                            this.planDescription.insertAdjacentHTML('beforeend', `${title}<p style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;'>${segment.segment_desc}</p>`);
-                            return `${title}`;
-                        }
-                    }
-                    return '';
-                }
-            },
-            legend: {
-                equalWidths: false,
-                periodValueText: 'ZONE',
-                position: 'bottom',
-                valueAlign: 'left',
-                valueWidth: 100,
-                valueText: 'ZONE [[value]]',
-                spacing: 0,
-                align: 'left',
-                enabled: false
-            },
-            categoryField: 'iter',
-            categoryAxis: {
-                axisAlpha: 0,
-                parseDates: false,
-                dashLength: 1,
-                minorGridEnabled: false,
-                startOnAxis: true,
-                axisColor: '#DADADA',
-                fontSize: 0,
-                gridAlpha: 0
-            },
-            dataProvider: this.chartData
-        });
-    }
+					var zone = segment.zone_selected+1;
+					for (var q = 0; q < magnitude; q++) {
+						iter++;
+						segment.iter = iter;
+						segment.z1 = zone;
+						this.chartData.push(segment);
+					}
+				}
+			}
+		}
+		this.loadOverview();
+	},
+	chartToggle: function (toggle) {
+		if (toggle) {
+			this.planChart.classList.remove('hidden');
+		} else {
+			this.planChart.classList.add('hidden');
+		}
+	},
+	/*global AmCharts*/
+	loadOverview: function () {
+	   this.chart = AmCharts.makeChart(this.planChart, {
+			type: 'serial',
+			theme: 'stryd',
+			autoResize: true,
+			autoMarginOffset: 20,
+			marginBottom: 100,
+			valueAxes: [{
+				stackType: 'regular',
+				position: 'left',
+				title: 'ZONE',
+				balloon: {
+					enabled: false
+				},
+				maximum: 5,
+				minimum: 0,
+				axisThickness: 2,
+				gridAlpha: 0.2,
+				axisColor: '#f7a017',
+				dashLength: 1,
+				autoGridCount: false
+			}],
+			graphs: [{
+				id: 'z1',
+				fillAlphas: 1,
+				title: 'Power',
+				valueField: 'z1',
+				type: 'step',
+				ballon: {
+					enabled: true
+				},
+				balloonFunction: (e) => {
+					var a = parseInt(e.category);
+					for (var i = 0; i < this.chartData.length; i++) {
+						var segment = this.chartData[i];
+						if (a === segment.iter) {
+							return segment.desc;
+						}
+					}
+					return '';
+				},
+				fillColors: ['#f4931f', '#f6a84b', '#f8be78', '#fad3a5', '#fce9d2']
+				
+			}],
+			autoMargins: false,
+			dataDateFormat: 'YYYY-MM-DD',
+			balloon: {
+				borderThickness: 1,
+				shadowAlpha: 0,
+				enabled: false,
+				fillAlpha: 1
+			},
+			plotAreaBorderAlpha: 0,
+			chartCursor: {
+				valueLineEnabled: false,
+				valueLineBalloonEnabled: false,
+				zoomable: false,
+				valueZoomable: true,
+				valueLineAlpha: 0,
+				categoryBalloonEnabled: true,
+				oneBalloonOnly: true,
+				cursorPosition: 'mouse',
+				fontSize: 16,
+				cursorAlpha: 0,
+				categoryBalloonFunction: (a) => {
+					for (var i = 0; i < this.chartData.length; i++) {
+						var segment = this.chartData[i];
+						if (parseInt(a) === segment.iter) {
+							var title;
+							if (segment.duration_type === 'time') {
+								title = `<p class="bold" style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;font-weight:700;'>${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()} H:M:S`;
+							} else {
+								if (segment.duration_distance > 50 && segment.distance_unit_selected === 'mile') {
+									segment.distance_unit_selected = 'meter';
+								}
+								title = `<p class="bold" style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;font-weight:700;'>${segment.duration_distance} ${segment.distance_unit_selected}`;
+							}
+							if (segment.intensity_type === 'pace') {
+								title += ` at ${segment.pace_selected.toUpperCase()} PACE</p>`;
+							} else {
+								title += ` in ZONE ${segment.z1}</p>`;
+							}
+							if (segment.segment_desc === undefined) {
+								return '';
+							}
+							while (Polymer.dom(this.planDescription).firstChild) {
+								Polymer.dom(this.planDescription).removeChild(Polymer.dom(this.planDescription).firstChild);
+							}
+							this.planDescription.insertAdjacentHTML('beforeend', `${title}<p style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;'>${segment.segment_desc}</p>`);
+							return `${title}`;
+						}
+					}
+					return '';
+				}
+			},
+			legend: {
+				equalWidths: false,
+				periodValueText: 'ZONE',
+				position: 'bottom',
+				valueAlign: 'left',
+				valueWidth: 100,
+				valueText: 'ZONE [[value]]',
+				spacing: 0,
+				align: 'left',
+				enabled: false
+			},
+			categoryField: 'iter',
+			categoryAxis: {
+				axisAlpha: 0,
+				parseDates: false,
+				dashLength: 1,
+				minorGridEnabled: false,
+				startOnAxis: true,
+				axisColor: '#DADADA',
+				fontSize: 0,
+				gridAlpha: 0
+			},
+			dataProvider: this.chartData
+		});
+	}
 });
 </script>
 </dom-module>

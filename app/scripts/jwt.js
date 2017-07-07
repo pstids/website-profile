@@ -249,8 +249,9 @@ class TrainingPlan {
 	}
 
 	getRSS(workout) {
-		var baseSpd = 6;
-		var relativeIntensities = [0.8, 0.85, 0.95, 1.1 ,1.25];
+		// should be critical speed
+		var baseSpd = 3.5;
+		var relativeIntensities = [0.87, 0.95, 1.02, 1.08, 1.25];
 		var blocks = workout.blocks;
 		var totalStress = 0;
 		var stress = 0;
@@ -291,7 +292,7 @@ class TrainingPlan {
 							segment.duration_time.second = 10;
 						}
 						durationSeconds = segment.duration_time.hour*3600 + segment.duration_time.minute*60 + segment.duration_time.second;
-						distanceMeters = durationSeconds * relativeIntensity * baseSpd;
+						// distanceMeters = durationSeconds * relativeIntensity * baseSpd;
 					} else {
 						if (distanceMeters > 0) {
 							adjSpd = relativeIntensity * baseSpd;
@@ -316,6 +317,11 @@ class TrainingPlan {
 		} else {
 			return null;
 		}
+	}
+
+	mock() {
+		localStorage.setItem('training-started', '20170617');
+		localStorage.setItem('training-selected', true);
 	}
 }
 
@@ -656,114 +662,10 @@ class FeatureManagement {
 			'test11',
 			'test',
 			'gus-pernetz',
-			'mcbevil',
-			'firegirlred',
-			'blue-angel',
-			'sean-olson',
-			'ron-van-megen',
-			'eld0rado',
-			'gus-pernetz',
-			'schinpe',
-			'alang',
-			'nestorreyes3',
-			'spenso',
-			'johnschneider',
-			'mikebisson',
-			'riverlander',
-			'robertjackson',
-			'guido23',
-			'joelmh',
-			'ahardwick',
-			'rinaldo',
-			'felipe-araya',
-			'1shammond',
-			'johnoregan777',
-			'adam-taylor',
-			'sjoerd-mulder',
-			'brian-reeds',
-			'david-juiliano',
-			'imarling',
-			'murph',
-			'runnerizer',
-			'jzahavich',
-			'glen-smetherham',
-			'joseph-eschbach',
-			'torsten-wambold',
-			'a1abdoc',
-			'jeffrey-morgan',
-			'fabregerson',
-			'tomglynn',
-			'drewski-nz',
-			'sascha',
-			'ckonecny',
-			'rommelreno',
-			'changster710',
-			'clive-cartlidge',
-			'ryangoldvine',
-			'mcdaddyof2',
-			'sunrunner',
-			'rkiaer',
-			'krmackin',
-			'michael-on',
-			'3motive',
-			'matthew-schipper',
-			'caleb-smidt',
-			'muness',
-			'markuspfandtgmxde',
-			'kdelios',
-			'wilfried-beaumes',
-			'thomas-tollstedt',
-			'skjeflissimo',
-			'willnewbery',
-			'fondph',
-			'pierpaolomaimone',
-			'dan-hunter',
-			'maeximus',
-			'mzielinski',
-			'der-pate',
-			'john-wadelin',
-			'lexelfr',
-			'jan-mickos',
-			'hesy',
-			'crimez',
-			'justin-kline',
-			'birkeby',
-			'nall',
-			'runnerbean',
-			'tschalpa',
-			'tomhudd',
-			'brentkeel',
-			'kurthian',
-			'erich-grohse-holz',
-			'kdemarc1',
-			'hrh',
-			'miguel-angel-marquez',
-			'caashford',
-			'afeitkne',
-			'chvofa',
-			'rini-lol',
-			'antoniomnp',
-			'henrik-damslund',
-			'tony5',
-			'tstafford',
-			'mojozoom',
-			'teijevp',
-			'oldplodder',
-			'dennis-alvarez',
-			'cpcervelo',
-			'sander-van-der-meer',
-			'patrocle',
-			'erichunley',
-			'jcharyk',
-			'andré-lu',
-			'briguy',
-			'andre77ab',
-			'emilioeven',
-			'paulreed999-',
-			'paul-reed'
+			'mcbevil'
 		];
 		this.hasFeatures = false;
-		// this.addFeatures();
+		this.addFeatures();
 	}
 	addFeatures() {
 		if ('data' in user && 'user_name' in user.data) {

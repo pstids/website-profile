@@ -354,11 +354,12 @@ app.addEventListener('dom-change', () => {
 		hashbang: false
 	});
 
-	// if (featureManagement.hasFeatures) {
-	// 	document.querySelector('[data-route="improve"]').appendChild(
-	// 		document.querySelector('performance-management')
-	// 	);
-	// }
+	if (featureManagement.hasFeatures) {
+		// document.querySelector('[data-route="improve"]').appendChild(
+		// 	document.querySelector('performance-management')
+		// );
+		bubbleStats.giveToggle();
+	}
 });
 
 app.logout = function () {

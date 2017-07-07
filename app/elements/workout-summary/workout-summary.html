@@ -257,10 +257,10 @@
 				this.notifyPath('data.rss');
 				this.notifyPath('data.rss_message');
 
-				this.data.duration = secToDuration(activity.elapsed_time);
+				this.data.duration = secToDuration(activity.moving_time);
 				this.notifyPath('data.duration');
 
-				var speed = activity.distance/activity.elapsed_time;
+				var speed = activity.distance/activity.moving_time;
 				this.data.pace = unit.speedValue(speed, user.data.units);
 				this.data.pace_unit = unit.speedUnit(user.data.units);
 				this.notifyPath('data.pace');

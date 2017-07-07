@@ -191,6 +191,9 @@
 			},
 			bubblePop: function (e) {
 				var target = e.target;
+				if (target.dataset === undefined) {
+					return;
+				}
 				while (!('bubble' in target.dataset)) {
 					target = target.parentNode;
 					if (this === target) {
