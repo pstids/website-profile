@@ -9,7 +9,9 @@
 importScripts('/powercenter/scripts/processor.min.js');
 
 var data = {};
-var token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
+var guestToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
+var token = guestToken;
+
 
 var activeMemory = {};
 var seriesMemory = {};
@@ -505,12 +507,14 @@ var workoutProcessing = function (workout, id) {
 };
 
 var workoutFetchingAJAX = function (workoutID) {
-	if (token === undefined) {
-		token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
+	var endPoint = `/b/api/v1/activities/${workoutID}`;
+	if (token === undefined || token === guestToken) {
+		token = guestToken;
+		endPoint = `/b/activities/${workoutID}`;
 	}
 
 	superagent
-		.get(`/b/api/v1/activities/${workoutID}`)
+		.get(endPoint)
 		.send()
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
@@ -1180,6 +1184,9 @@ var calcLaps = function (type, activityID, zones, userUnit) {
 			lap.pace = unit.speedValue(meters/seconds, userUnit) + unit.speedUnit(userUnit);
 			lap.ratio = (lap.power/lap.formPower).toFixed(1);
 			lap.rss = entry.rss - lastRSS;
+			if (lap.rss < 0) {
+				lap.rss = 0;
+			}
 			lap.startTimestamp = lastTimestamp;
 			lap.endTimestamp = entry.date;
 

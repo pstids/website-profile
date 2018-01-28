@@ -344,7 +344,7 @@
 					</paper-radio-button>
 				</paper-radio-group>
 				<div id="datecontainer" style="display: flex; justify-content: center; opacity: 0; height: 0;">
-					<paper-date-picker id="datepicker" date="March 29, 2017"></paper-date-picker>
+					<paper-date-picker id="datepicker" date="[[date]]"></paper-date-picker>
 				</div>
 			</div>
 			<div class="buttons">
@@ -360,9 +360,12 @@
 		properties: {
 			weekly: Object,
 			units: String,
-			user: Object
+			user: Object,
+			date: String
 		},
 		ready: function () {
+			this.date = moment().add(3, 'months').format('YYYY-MM-DD');
+			console.log(moment().add(3, 'months').format('YYYY-MM-DD'));
 			this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
 			this.username = jwt.data.username;
 			this.user = user.getData();

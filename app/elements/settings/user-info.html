@@ -323,6 +323,14 @@
 					hasTargetRaceIdx = true;
 				}
 			}
+			var age = 0;
+			if ('birth' in user.data) {
+				age = this.getAge(
+					user.data.birth.year,
+					user.data.birth.month,
+					user.data.birth.day
+				);
+			}
 			this.userLocal = {
 				birth_day: user.data.birth.day,
 				birth_month: user.data.birth.month,
@@ -336,11 +344,7 @@
 				profileImg: user.getImage(),
 				about_me: aboutStr,
 				units: user.data.units,
-				age: this.getAge(
-					user.data.birth.year,
-					user.data.birth.month,
-					user.data.birth.day
-				),
+				age: age,
 				targetRaceIdx: targetRaceIdx,
 				hasTargetRaceIdx: hasTargetRaceIdx
 			};
