@@ -1,369 +1,514 @@
 <dom-module id="header-element">
-    <template>
-        <style>
-            :host {
-                display: block;
-                font-size: 10px;
-                min-height: 110px;
-                z-index: 10;
-            }
-            a {
-                text-decoration: none;
-            }
-            a:hover {
-                color: inherit;
-            }
-            header {
-                @apply(--layout-horizontal);
-                background-color: var(--primary-background-color);
-                height: 110px;
-            }
+	<style>
+		:host {
+			display: block;
+			font-size: 10px;
+			min-height: 110px;
+			z-index: 10;
+		}
+		a {
+			text-decoration: none;
+		}
+		a:hover {
+			color: inherit;
+		}
+		header {
+			@apply(--layout-horizontal);
+			background-color: var(--primary-background-color);
+			height: 110px;
+		}
 
-            .logo {
-                background-color: var(--accent-background-color);
-                color: var(--accent-text-color);
-                font-family: "Stryd", sans-serif;
-                @apply(--layout-start-justified);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                border-bottom: 2px solid var(--accent-background-color);
-            }
-            .logo a {
-                @apply(--layout-flex-auto);
-                margin-left: 4em;
-            }
-            .logo h1 {
-                color: var(--accent-text-color);
-                font-weight: 700;
-                display: block;
-                font-size: 2.67vw;
-                margin: 0;
-                padding: 0;
-                letter-spacing: 2px;
-            }
-            .logo p {
-                font-size: 0.8vw;
-                font-weight: 400;
-                color: white;
-                margin: 0;
-                padding: 0;
-            }
-            .logo .slant {
-                @apply(--layout-flex);
-                border-left: 5vw solid transparent;
-                border-bottom: calc(110px - 2px) solid var(--primary-background-color);
-            }
+		.logo {
+			background-color: var(--accent-background-color);
+			color: var(--accent-text-color);
+			font-family: "Stryd", sans-serif;
+			@apply(--layout-start-justified);
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			border-bottom: 2px solid var(--accent-background-color);
+		}
+		.logo a {
+			@apply(--layout-flex-auto);
+			margin-left: 4em;
+		}
+		.logo h1 {
+			color: var(--accent-text-color);
+			font-weight: 700;
+			display: block;
+			font-size: 2.67vw;
+			margin: 0;
+			padding: 0;
+			letter-spacing: 2px;
+		}
+		.logo p {
+			font-size: 0.8vw;
+			font-weight: 400;
+			color: white;
+			margin: 0;
+			padding: 0;
+		}
+		.logo .slant {
+			@apply(--layout-flex);
+			border-left: 5vw solid transparent;
+			border-bottom: calc(110px - 2px) solid var(--primary-background-color);
+		}
 
-            ul.navigation {
-                @apply(--layout-flex-5);
-                @apply(--layout-horizontal);
-                @apply(--layout-around-justified);
-                list-style: none;
-                margin: 0;
-                padding: 0;
-                text-transform: uppercase;
-            }
-            ul.navigation li {
-                @apply(--layout-flex);
-                text-align: center;
-                border-bottom: 2px solid var(--accent-background-color);
-                color: #FFFFFF;
-            }
-            ul.navigation li.active {
-                color: var(--accent-background-color) !important;
-            }
-            ul.navigation li a {
-                line-height: 110px;
-                font-size: 1.1vw;
-                font-weight: 500;
-                color: inherit;
-                display: inline-block;
-            }
-            ul.navigation li.active a {
-                background-size: 100% 60%;
-                background-image: url('/powercenter/images/mountain_filled.png');
-                background-position: center bottom;
-                background-repeat: no-repeat;
-                background-color: var(--primary-background-color);
-                z-index: 2;
-                position: relative;
-            }
-            ul.navigation li:hover {
-                color: var(--accent-background-color);
-            }
+		ul.navigation {
+			@apply(--layout-flex-6);
+			@apply(--layout-horizontal);
+			@apply(--layout-around-justified);
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			text-transform: uppercase;
+		}
+		ul.navigation li {
+			@apply(--layout-flex);
+			text-align: center;
+			border-bottom: 2px solid var(--accent-background-color);
+			color: #FFFFFF;
+		}
+		ul.navigation li.active {
+			color: var(--accent-background-color) !important;
+		}
+		ul.navigation li a {
+			line-height: 110px;
+			font-size: calc(12px + 0.4vw);
+			font-weight: 500;
+			color: inherit;
+			display: inline-block;
+		}
+		ul.navigation li.active a {
+			background-size: 100% 60%;
+			background-image: url('/powercenter/images/mountain_filled.png');
+			background-position: center bottom;
+			background-repeat: no-repeat;
+			background-color: var(--primary-background-color);
+			z-index: 2;
+			position: relative;
+		}
+		ul.navigation li:hover {
+			color: var(--accent-background-color);
+		}
 
-            div.space-taker {
-                @apply(--layout-flex);
-                border-bottom: 2px solid var(--accent-background-color);
-            }
+		div.space-taker {
+			@apply(--layout-flex);
+			border-bottom: 2px solid var(--accent-background-color);
+		}
 
-            div.insights {
-                @apply(--layout-flex-7);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                list-style: none;
-                margin: 0;
-                color: #FFFFFF;
-                border-bottom: 2px solid var(--accent-background-color);
-            }
-            div.insights-header {
-                @apply(--layout-flex);
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-                @apply(--layout-center-justified);
-                padding: 0.3vw 0 0.3vw 0;
-                margin-right: 1vw;
-                color: #efefef;
-                letter-spacing: 2px;
-                border-top: 1px solid var(--accent-background-color);
-                border-bottom: 1px solid var(--accent-background-color);
-            }
-            div.insights-header .title {
-                font-size: 1.4vw;
-            }
-            div.insights-header .subtitle {
-                font-size: 0.6vw;
-                font-weight: 700;
-            }
-            .insight {
-                @apply(--layout-flex-3);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                color: #FFFFFF;
-            }
-            .insight iron-icon {
-                @apply(--layout-flex-3);
-                width: 100%;
-                height: 100%;
-                margin-right: 1vw;
-                color: var(--primary-icon-color);
-                fill: var(--primary-icon-color);
-            }
-            .insight .info {
-                @apply(--layout-flex-8);
-                @apply(--layout-vertical);
-            }
-            .insight .info .title {
-                font-size: 0.67vw;
-                font-weight: 700;
-                text-transform: uppercase;
-            }
-            .insight .value {
-                font-size: 2vw;
-                font-weight: 700;
-                padding-right: 0.2em;
-            }
-            .insight .unit {
-                font-size: 1.5vw;
-                font-weight: 700;
-            }
+		.insights {
+			@apply(--layout-flex-5);
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			list-style: none;
+			margin: 0;
+			color: #FFFFFF;
+			border-bottom: 2px solid var(--accent-background-color);
+		}
+		.insights-header {
+			@apply(--layout-flex);
+			@apply(--layout-vertical);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+			padding: 0.3vw 0 0.3vw 0;
+			margin-right: 1vw;
+			color: #efefef;
+			letter-spacing: 2px;
+			border-top: 1px solid var(--accent-background-color);
+			border-bottom: 1px solid var(--accent-background-color);
+		}
+		.insights-header .title {
+			font-size: 1.4vw;
+		}
+		.insights-header .subtitle {
+			font-size: 0.6vw;
+			font-weight: 700;
+		}
+		.insight {
+			@apply(--layout-flex-2);
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			color: #FFFFFF;
+		}
+		.insight iron-icon {
+			@apply(--layout-flex-3);
+			width: 100%;
+			height: 100%;
+			margin-right: 1vw;
+			color: var(--primary-icon-color);
+			fill: var(--primary-icon-color);
+		}
+		.insight .info {
+			@apply(--layout-flex-8);
+			@apply(--layout-vertical);
+		}
+		.insight .info .title {
+			font-size: 0.67vw;
+			font-weight: 700;
+			text-transform: uppercase;
+		}
+		.insight .value {
+			font-size: 1.7vw;
+			font-weight: 700;
+			padding-right: 0.2em;
+		}
+		.insight .unit {
+			font-size: 1.3vw;
+			font-weight: 700;
+		}
 
-            .profile {
-                @apply(--layout-flex-2);
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                border-bottom: 2px solid var(--accent-background-color);
-                padding-right: 2vw;
-            }
-            .profile .text {
-                @apply(--layout-flex);
-                @apply(--layout-end-justified);
-                text-align: right;
-                margin-right: 1.33vw;
-            }
-            .profile .text .hello {
-                color: var(--primary-header-color);
-                font-size: 0.8vw;
-                font-weight: 400;
-                text-transform: uppercase;
-            }
-            .profile .text .name {
-                font-size: 1.2vw;
-                line-height: 5vh;
-                color: #FFFFFF;
-                font-weight: 700;
-                text-transform: uppercase;
-                white-space: nowrap;
-                overflow: hidden;
-            }
-            .profile .text .logout {
-                font-size: 0.67vw;
-                color: #FFFFFF;
-                cursor: pointer;
-            }
-            .profile img {
-                border-radius: 50%;
-                width: 5.5vw;
-                height: auto;
-            }
-            .profile a {
-                display: block;
-                padding: 1em;
-                height: 1em;
-                font-size: 1vw;
-                font-weight: 500;
-            }
-            .profile a:hover {
-                color: #F5A214;
-            }
-        </style>
-        <header>
-            <div class="logo">
-                <a href="/">
-                    <h1>STRYD</h1>
-                    <p>Running With Power</p>
-                </a>
-                <div class="slant"></div>
-            </div>
-            <ul class="navigation">
-                <li>
-                    <a data-route="home"
-                    href="/powercenter/"
-                    data-step="1"
-                    data-intro="View and analyze your recent runs.">
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a data-route="connect"
-                    href="/powercenter/connect"
-                    data-step="2"
-                    data-intro="Connect your other training platforms for easy synchronization.">
-                        Connect
-                    </a>
-                </li>
-                <li>
-                    <a data-route="settings"
-                    href="/powercenter/settings"
-                    data-step="3"
-                    data-intro="Configure your profile.">
-                        Settings
-                    </a>
-                </li>
-            </ul>
-            <div class="space-taker"></div>
+		.profile {
+			@apply(--layout-flex-2);
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			border-bottom: 2px solid var(--accent-background-color);
+			padding-right: 2vw;
+		}
+		.profile .text {
+			@apply(--layout-flex);
+			@apply(--layout-end-justified);
+			text-align: right;
+			margin-right: 1.33vw;
+		}
+		.profile .text .hello {
+			color: var(--primary-header-color);
+			font-size: 0.8vw;
+			font-weight: 400;
+			text-transform: uppercase;
+		}
+		.profile .text .name {
+			font-size: 1.2vw;
+			line-height: 5vh;
+			color: #FFFFFF;
+			font-weight: 700;
+			text-transform: uppercase;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+		.profile .text .logout {
+			font-size: 0.67vw;
+			color: #FFFFFF;
+			cursor: pointer;
+		}
+		.profile img {
+			border-radius: 50%;
+			width: 5.5vw;
+			height: auto;
+		}
+		.profile a {
+			display: block;
+			padding: 1em;
+			height: 1em;
+			font-size: 15px;
+			font-weight: 500;
+		}
+		.profile a:hover {
+			color: #F5A214;
+		}
+		.training {
+			@apply(--layout);
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			height: 30px;
+			color: white;
+			font-size: 20px;
+		}
+		.training div {
+			padding-left: 20px;
+		}
+		@media (max-width: 800px) {
+			.logo, .space-taker, .insights, .profile {
+				display: none;
+			}
+		}
+		.ticker {
+			position: relative;
+			background: inherit;
+			border-bottom: 2px solid #F5A214;
+			width: 250px;
+			@apply(--layout);
+			@apply(--layout-horizontal);
+		}
+		.ticker .bar {
+			transform: skewX(-20deg);
+			border-left: 3px solid #F5A214;
+			width: 30px;
+		}
+		.ticker .content {
+			width: 175px;
+			@apply(--layout);
+			@apply(--layout-vertical);
+			@apply(--layout-center-justified);
+		}
+	</style>
+	<template>
+		<header>
+			<div class="logo">
+				<a href="/">
+					<h1>STRYD</h1>
+					<p>Running With Power</p>
+				</a>
+				<div class="slant"></div>
+			</div>
+			<ul class="navigation">
+				<li>
+					<a data-selector="profile" href="/powercenter/">Analyze</a>
+				</li>
+				<li id="improve">
+					<a data-selector="improve" href="/powercenter/improve">Improve</a>
+				</li>
+				<li>
+					<a data-selector="leaderboard" href="/powercenter/leaderboard">Compete</a>
+				</li>
+				<li>
+					<a data-selector="settings" href="/powercenter/settings">Settings</a>
+				</li>
+			</ul>
+			<div class="space-taker"></div>
+			<template is="dom-if" if="{{user.available}}">
+				<div class="insights hidden">
+					<div class="insight">
+						<iron-icon icon="image:timer"></iron-icon>
+						<div class="info">
+							<div class="title">Run Time</div>
+							<div class="field">
+								<span class="value">{{weekly.total_time}}</span>
+								<span class="unit">HR</span>
+							</div>
+						</div>
+					</div>
+					<div class="insight">
+						<iron-icon icon="communication:swap-calls"></iron-icon>
+						<div class="info">
+							<div class="title">Distance</div>
+							<div class="field">
+								<span class="value">{{weekly.total_distance}}</span>
+								<span class="unit">{{units}}</span>
+							</div>
+						</div>
+					</div>
+					<div class="insight">
+						<iron-icon icon="image:flash-on"></iron-icon>
+						<div class="info">
+							<div class="title">
+								Avg Power
+							</div>
+							<div class="field">
+								<span class="value">{{weekly.average_power}}</span>
+								<span class="unit">W</span>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            <template is="dom-if" if="{{user.available}}">
-                <div class="insights">
-                    <div class="insight">
-                        <iron-icon icon="image:timer"></iron-icon>
-                        <div class="info">
-                            <div class="title">Run Time</div>
-                            <div class="field">
-                                <span class="value">{{weekly.total_time}}</span>
-                                <span class="unit">HR</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="insight">
-                        <iron-icon icon="communication:swap-calls"></iron-icon>
-                        <div class="info">
-                            <div class="title">Distance</div>
-                            <div class="field">
-                                <span class="value">{{weekly.total_distance}}</span>
-                                <span class="unit">{{units}}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="insight">
-                        <iron-icon icon="image:flash-on"></iron-icon>
-                        <div class="info">
-                            <div class="title">
-                                Avg Power
-                            </div>
-                            <div class="field">
-                                <span class="value">{{weekly.average_power}}</span>
-                                <span class="unit">W</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+				<div class="ticker">
+					<div class="bar"></div>
+					<div class="content">
+						<p style="color: orange; font-size: 11px; margin: 0;">NEW!</p>
+						<h1 style="margin: 0 0 0 0; font-size: 18px;">FINALSURGE SYNC</h1>
+						<p style="font-size: 11px; color: white; padding-top: 0; margin-top: 0;">Auto sync with <a href="http://finalsurge.com/">FinalSurge</a>. Visit 'Settings' tab. <a href="/powercenter/connect">Check it out.</a></p>
+					</div>
+					<div class="bar"></div>
+				</div>
 
-                <div class="profile">
-                    <div class="text">
-                        <div class="hello">Hello</div>
-                        <div class="name">{{username}}</div>
-                        <div class="logout">
-                            <span on-click="logout">Logout?</span>
-                        </div>
-                    </div>
-                    <img src="{{profileImage}}" class="image">
-                </div>
-            </template>
+				<div class="profile">
+					<div class="text">
+						<div class="hello">Hello</div>
+						<div class="name">{{username}}</div>
+						<div class="logout">
+							<span on-click="logout">Logout?</span>
+						</div>
+					</div>
+					<img src="{{profileImage}}" class="image">
+				</div>
+			</template>
 
-            <template is="dom-if" if="{{!user.available}}">
-                <div class="profile">
-                    <div class="text">
-                        <div class="hello">Hello</div>
-                        <div class="name">Unregistered User</div>
-                        <div class="logout">
-                            <a href="/signin">Signup?</a>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </header>
-    </template>
-    <script>
-    /*jshint camelcase: false*/
-    /*global jwt*/
-    /*global superagent*/
-    Polymer({
-        is: 'header-element',
-        properties: {
-            weekly: Object,
-            units: String,
-            user: Object
-        },
-        ready: function () {
-            this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
-            this.username = jwt.data.username;
-            this.user = user.getData();
-            this.grabStats();
-            this.profileImage = user.getImage();
-        },
-        logout: function () {
-            jwt.logout();
-            user.clearData();
-        },
-        toggleActive: function (active) {
-            var current = this.querySelector('.active');
-            if (current) {
-                current.classList.remove('active');
-            }
+			<template is="dom-if" if="{{!user.available}}">
+				<div class="profile">
+					<div class="text">
+						<div class="hello">Hello</div>
+						<div class="name">Visitor</div>
+						<div class="logout">
+							<a href="/signin">Signup?</a>
+						</div>
+					</div>
+				</div>
+			</template>
+		</header>
+		<paper-dialog id="dialogTraining" class="paper-date-picker-dialog">
+			<h1>Start the {{plan_name}} training plan</h1>
+			<div class="layout vertical">
+				<paper-radio-group id="group" selected="next_monday" class="layout vertical">
+					<paper-radio-button name="next_monday">{{plan_next_monday}}</paper-radio-button>
+					<paper-radio-button name="race_date">Select your upcoming race day (Plan starts on: {{startday}})
+					</paper-radio-button>
+				</paper-radio-group>
+				<div id="datecontainer" style="display: flex; justify-content: center; opacity: 0; height: 0;">
+					<paper-date-picker id="datepicker" date="[[date]]"></paper-date-picker>
+				</div>
+			</div>
+			<div class="buttons">
+				<paper-button dialog-dismiss on-click="trainingNo">Leave Plan</paper-button>
+				<paper-button autofocus on-click="trainingYes">Start Plan</paper-button>
+			</div>
+		</paper-dialog>
+	</template>
+	<script>
+	/*jshint camelcase: false*/
+	Polymer({
+		is: 'header-element',
+		properties: {
+			weekly: Object,
+			units: String,
+			user: Object,
+			date: String
+		},
+		ready: function () {
+			this.date = moment().add(3, 'months').format('YYYY-MM-DD');
+			console.log(moment().add(3, 'months').format('YYYY-MM-DD'));
+			this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+			this.username = jwt.data.username;
+			this.user = user.getData();
+			this.grabStats();
+			this.profileImage = user.getImage();
 
-            if (active !== null) {
-                var anchor = this.querySelector(`[data-route=${active}]`);
-                anchor.parentElement.classList.add('active');
-            }
-        },
-        grabStats: function () {
-            if (jwt.hasToken) {
-                superagent
-                    .get('/b/api/v1/activities/weekly-stat')
-                    .send()
-                    .set('Accept', 'application/json')
-                    .set('Authorization', `Bearer: ${jwt.token}`)
-                    .end((err, res) => {
-                        if (res.ok) {
-                            var incomingWeekly = res.body;
-                            incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
-                            if (user.data.units === 'feet') {
-                                incomingWeekly.total_distance = Math.round(meterToKM(res.body.total_distance) * 0.621371);
-                                this.units = 'Mi';
-                            } else {
-                                incomingWeekly.total_distance = meterToKM(res.body.total_distance);
-                                this.units = 'KM';
-                            }
-                            
-                            incomingWeekly.average_power = Math.round(res.body.average_power);
-                            this.weekly = incomingWeekly;
-                        } else {
-                            console.log('failed to get weekly stat');
-                        }
-                    });
-            }
-        }
-    });
-    </script>
+			this.type_selected = 'next_monday';
+
+			this.checkTraining();
+
+			this.$.group.addEventListener('iron-select', () => {
+				if (this.$.group.selected === 'next_monday') {
+					this.$.datecontainer.style.height = 0;
+					this.$.datecontainer.style.opacity = 0;
+					this.type_selected = 'next_monday';
+				} else {
+					this.$.datecontainer.style.height = 'auto';
+					this.$.datecontainer.style.opacity = 1;
+					this.type_selected = 'race_date';
+				}
+			});
+
+			this.startday = moment().format('MMM Do YYYY');
+			this.$.datepicker.addEventListener('change', (e) => {
+				console.log(e.detail.date);
+				var start_date = moment(e.detail.date);
+				if (window.location.hostname === 'www.stryd.com') {
+					start_date.subtract(this.plan.week_duration, 'weeks').add(1, 'days');
+				} else {
+					start_date.subtract(12, 'weeks').add(1, 'days');
+				}
+				this.startday = start_date.format('MMM Do YYYY');
+			});
+
+			// if (featureManagement.hasFeatures) {
+			// 	this.enable();
+			// }
+		},
+		logout: function () {
+			jwt.logout();
+			user.clearData();
+		},
+		toggleActive: function (active) {
+			var current = this.querySelector('.active');
+			if (current) {
+				current.classList.remove('active');
+			}
+
+			if (active !== null) {
+				var anchor = this.querySelector(`[data-selector=${active}]`);
+				anchor.parentElement.classList.add('active');
+			}
+		},
+		grabStats: function () {
+			if (jwt.hasToken) {
+				superagent
+					.get('/b/api/v1/activities/weekly-stat')
+					.send()
+					.set('Accept', 'application/json')
+					.set('Authorization', `Bearer: ${jwt.token}`)
+					.end((err, res) => {
+						if (res.ok) {
+							var incomingWeekly = res.body;
+							incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
+							incomingWeekly.total_distance = unit.distanceValue(res.body.total_distance, user.data.units);
+							this.units = unit.distanceUnit(user.data.units);
+							
+							incomingWeekly.average_power = Math.round(res.body.average_power);
+							this.weekly = incomingWeekly;
+						} else {
+							console.log('failed to get weekly stat');
+						}
+					});
+			}
+		},
+		checkTraining: function () {
+			var trainingPlanID = localStorage.getItem('training-plan');
+			if (trainingPlanID !== null && trainingPlanID !== undefined) {
+				if (
+					moment().day(1).format('MMDD') === moment().format('MMDD')
+				) {
+					this.plan_next_monday = moment().day(1).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
+					this.monday = moment().day(1);
+				} else {
+					this.plan_next_monday = moment().day(1+7).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
+					this.monday = moment().day(1+7);
+				}
+
+				if (window.location.hostname === 'www.stryd.com') {
+					superagent
+						.get(`/b/api/v1/training/plan/${trainingPlanID}`)
+						.set('Accept', 'application/json')
+						.set('Authorization', `Bearer: ${jwt.token}`)
+						.end((err, res) => {
+							if (res !== undefined && res.ok && res.body !== null) {
+								this.plan = res.body.plan;
+								this.plan_name = this.plan.name;
+								this.$.dialogTraining.open();
+							} else {
+								console.log('Error: failure to get training plan', err);
+							}
+						});
+				} else {
+					this.plan_name = 'Testing Plan';
+					this.$.dialogTraining.open();
+				}
+			}
+		},
+		trainingNo: function () {
+			localStorage.removeItem('training-plan');
+		},
+		trainingYes: function () {
+			var trainingStart;
+			if (this.type_selected === 'next_monday') {
+				trainingStart = this.monday.format('X');
+			} else {
+				var finish_date = moment(this.$.datepicker.date);
+				if (window.location.hostname === 'www.stryd.com') {
+					finish_date.subtract(this.plan.week_duration, 'weeks').add(1, 'days');
+				} else {
+					finish_date.subtract(12, 'weeks').add(1, 'days');
+				}
+				localStorage.setItem(
+					'training-started',
+					finish_date.format('YYYYMMDD')
+				);
+				trainingStart = finish_date.format('X');
+			}
+
+			var trainingID = localStorage.getItem('training-plan');
+			superagent
+				.post(`/b/api/v1/users/plan?id=${trainingID}&start_date=${trainingStart}`)
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res !== undefined && res.ok && res.body !== null) {
+						localStorage.removeItem('training-plan');
+						window.location.reload();
+					} else {
+						console.log('Error: failure to set training plan', err);
+					}
+				});
+		}
+	});
+	</script>
 </dom-module>

@@ -14,6 +14,10 @@ AmCharts.themes.stryd = {
 		colors: ["#de4c4f", "#d8854f", "#eea638", "#a7a737", "#86a965", "#00ACEE", "#69c8ff", "#cfd27e", "#9d9888", "#916b8a", "#724887", "#7256bc"]
 	},
 
+	AmPieChart: {
+		colors: ["#F8A116", "#EA8C10", "#DF7B0B", "#D56B07", "#C55400", "#00ACEE", "#69c8ff", "#cfd27e", "#9d9888", "#916b8a", "#724887", "#7256bc"]
+	},
+
 	AmSlicedChart: {
 		outlineAlpha: 1,
 		outlineThickness: 2,

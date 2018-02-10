@@ -252,7 +252,6 @@
     <script src="../../scripts/amcharts/serial.js"></script>
     <script src="../../scripts/amcharts/themes/stryd.js"></script>
     <script>
-        /*global AmCharts*/
         /*jshint camelcase: false */
         Polymer({
             is: 'workout-stream',
@@ -335,8 +334,8 @@
                 var stats = {
                     maxHeartRate: 0,
                     seconds: this.data[end-1].date - this.data[begin].date,
-                    distance: meterToMile(this.data[end-1].distance - this.data[begin].distance, 1),
-                    exactDistance: meterToMile(this.data[end-1].distance - this.data[begin].distance, 8)
+                    distance: unit.metersToMile(this.data[end-1].distance - this.data[begin].distance, 1),
+                    exactDistance: unit.metersToMile(this.data[end-1].distance - this.data[begin].distance, 8)
                 };
                 
                 var step = 0;
@@ -379,7 +378,7 @@
 
                 var minutes = (movingTime) / 60;
                 var pace = (minutes / stats.exactDistance).toFixed(2);
-                avgs.pace = formatPace(pace);
+                avgs.pace = unit.paceFormat(pace);
 
                 this.querySelector('[type="avg_power"]').setAttribute('value', avgs.power.stat());
 

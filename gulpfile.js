@@ -15,6 +15,20 @@ var historyApiFallback = require('connect-history-api-fallback');
 var autoprefixer = require('gulp-autoprefixer');
 var concat = require('gulp-concat');
 
+var externals = [
+  '!app/scripts/external.js',
+  '!app/scripts/dropzone.js',
+  '!app/scripts/external.js',
+  '!app/scripts/superagent.js',
+  '!app/scripts/heat-canvas.js',
+  '!app/scripts/dexie.js',
+  '!app/scripts/moment.js',
+  '!app/scripts/amcharts/**/*',
+  '!app/scripts/d3.js',
+  '!app/scripts/d3.tip.js',
+  '!app/scripts/appmetrics.js'
+];
+
 var styleTask = function (stylesPath, srcs) {
   return gulp.src(srcs.map(function(src) {
       return path.join('app', stylesPath, src);
@@ -41,51 +55,46 @@ gulp.task('elements', function () {
 
 // Lint JavaScript
 gulp.task('jshint', function () {
-  return gulp.src([
-      'app/scripts/**/*.js',
-      '!app/scripts/dropzone.js',
-      '!app/scripts/external.js',
-      '!app/scripts/superagent.js',
-      '!app/scripts/dexie.js',
-      '!app/scripts/amcharts/**/*',
-      'app/elements/**/*.js',
-      'app/elements/**/*.html'
-    ])
+  var base = [
+    'app/scripts/**/*.js',
+    'app/elements/**/*.js',
+    'app/elements/**/*.html'
+  ];
+  return gulp.src(base.concat(externals))
     .pipe($.jshint.extract()) // Extract JS from .html files
     .pipe($.jshint({
       camelcase: false,
       predef: [
-        'jwt',
-        'user',
-        'superagent',
-        'setDate',
-        'speedToPace',
-        'speedToPaceInDecimal',
-        'workoutProcessing',
-        'workoutFetching',
+        'AmCharts',
+        'app',
+        'attribute',
         'arraysEqual',
-        'addLog',
-        'logsProcessing',
-        'logsFetching',
-        'sampleFetching',
-        'truncate',
-        'fillZero',
-        'hmsTime',
-        'google',
-        'meterToKM',
-        'meterToUserUnit',
-        'hrTime',
-        'meterToMile',
-        'speedToPaceForBalloon',
-        'speedToPaceForValueAxis',
+        'calendarManager',
+        'colorInterpolate',
+        'd3',
         'durationToSec',
+        'featureManagement',
+        'ga',
+        'google',
+        'header',
+        'hmsTime',
+        'hrTime',
+        'isLocal',
+        'jwt',
+        'moment',
+        'page',
+        'Ps',
         'secToDuration', 
         'secToDurationFull',
-        'windowFocusEvent',
-        'formatPace',
-        'attribute',
-        'moment',
-        'addLog'
+        'setDate',
+        'superagent',
+        'toast',
+        'trainingPlan',
+        'unit',
+        'updatedTime',
+        'urlManager',
+        'user',
+        'powerTrend'
       ]
     }))
     .pipe($.jshint.reporter('jshint-stylish'))
@@ -112,16 +121,11 @@ gulp.task('clear', function (done) {
 });
 
 gulp.task('js', function () {
-    return gulp.src([
-        'app/**/*.{js,html}',
-        '!app/scripts/external.js',
-        '!app/scripts/dropzone.js',
-        '!app/scripts/superagent.js',
-        '!app/scripts/dexie.js',
-        '!app/scripts/amcharts/**/*',
-    ])
+    var base = ['app/**/*.{js,html,json}'];
+    return gulp.src(base.concat(externals))
     .pipe($.sourcemaps.init())
-    .pipe($.if('*.html', $.crisper())) // Extract JS from .html files
+    // Extract JS from .html files
+    .pipe($.if('*.html', $.crisper()))
     .pipe($.if('*.js', $.babel()))
     .pipe($.sourcemaps.write('.'))
     .pipe(gulp.dest('.tmp/'))
@@ -145,21 +149,19 @@ gulp.task('copy', function () {
   var elements = gulp.src(['app/elements/**/*.html'])
     .pipe(gulp.dest('dist/elements'));
 
-  var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
-    .pipe(gulp.dest('dist/elements/bootstrap'));
-
-  var swToolbox = gulp.src(['bower_components/sw-toolbox/*.js'])
-    .pipe(gulp.dest('dist/sw-toolbox'));
-
   var scripts = gulp.src([
     'app/scripts/dropzone.js',
     'app/scripts/processor.js',
     'app/scripts/superagent.js',
+    'app/scripts/heat-canvas.js',
     'app/scripts/toolbox.js',
     'app/scripts/dexie.js',
-    'app/scripts/external.js'
-  ])
-    .pipe(gulp.dest('dist/scripts'));
+    'app/scripts/external.js',
+    'app/scripts/moment.js',
+    'app/scripts/d3.js',
+    'app/scripts/d3.tip.js',
+    'app/scripts/appmetrics.js'
+  ]).pipe(gulp.dest('dist/scripts'));
 
   var images = gulp.src(['app/images/mountain_outline.svg'])
     .pipe(gulp.dest('dist/images'));
@@ -171,7 +173,11 @@ gulp.task('copy', function () {
     .pipe($.rename('elements.vulcanized.html'))
     .pipe(gulp.dest('dist/elements'));
 
-  return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
+  var vulcanized2 = gulp.src(['app/elements/plan.html'])
+    .pipe($.rename('plan.vulcanized.html'))
+    .pipe(gulp.dest('dist/elements'));
+
+  return merge(app, bower, elements, vulcanized, vulcanized2)
     .pipe($.size({title: 'copy'}));
 });
 
@@ -189,6 +195,7 @@ gulp.task('html', function () {
   return gulp.src(['app/**/*.html', '!app/{elements,test}/**/*.html'])
     // Replace path for vulcanized assets
     .pipe($.if('*.html', $.replace('elements/elements.html', 'elements/elements.vulcanized.html')))
+    .pipe($.if('*.html', $.replace('elements/plan.html', 'elements/plan.vulcanized.html')))
     .pipe(assets)
     // Concatenate And Minify JavaScript
     .pipe($.if('*.js', $.uglify({preserveComments: 'some'}).on('error', function(err) { console.log(err); })))
@@ -213,6 +220,19 @@ gulp.task('vulcanize', function () {
   var DEST_DIR = 'dist/elements';
 
   return gulp.src('dist/elements/elements.vulcanized.html')
+    .pipe($.vulcanize({
+      stripComments: true,
+      inlineCss: true,
+      inlineScripts: true
+    }))
+    .pipe(gulp.dest(DEST_DIR))
+    .pipe($.size({title: 'vulcanize'}));
+});
+// Vulcanize imports
+gulp.task('vulcanize2', function () {
+  var DEST_DIR = 'dist/elements';
+
+  return gulp.src('dist/elements/plan.vulcanized.html')
     .pipe($.vulcanize({
       stripComments: true,
       inlineCss: true,
@@ -292,7 +312,9 @@ gulp.task('serve:dist', ['default'], function () {
     //       will present a certificate warning in the browser.
     // https: true,
     server: 'dist',
-    middleware: [ historyApiFallback() ]
+    middleware: [
+      historyApiFallback()
+    ]
   });
   gulp.watch(['app/**/*.html'], ['default', reload]);
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
@@ -301,22 +323,26 @@ gulp.task('serve:dist', ['default'], function () {
   gulp.watch(['app/images/**/*'], reload);
 });
 
-// gulp.task('concat-styles', function () {
-//   return gulp.src([
-//       '/powercenter/styles/main.css',
-//       '/powercenter/styles/dropzone.min.css',
-//     ])
-//     .pipe(concat('app.css'))
-//     .pipe(gulp.dest('dist/styles'));
-// });
+gulp.task('concat1', function () {
+  return gulp.src([
+      'app/scripts/superagent.js',
+      'app/scripts/toolbox.js',
+      'app/scripts/dexie.js',
+      'app/scripts/moment.js'
+    ])
+    .pipe(concat('processor.min.js'))
+    .pipe(gulp.dest('dist/scripts'));
+});
 
-gulp.task('concat', function () {
-
+gulp.task('concat2', function () {
   return gulp.src([
       'app/scripts/external.js',
-      'dist/scripts/jwt.js',
       'dist/scripts/toolbox.js',
-      'dist/scripts/app.js'
+      'dist/scripts/amcharts/concatenated.js',
+      'dist/scripts/jwt.js',
+      'dist/scripts/app.js',
+      'dist/scripts/d3.js',
+      'dist/scripts/d3.tip.js'
     ])
     .pipe(concat('app.min.js'))
     .pipe(gulp.dest('dist/scripts'));
@@ -329,10 +355,10 @@ gulp.task('default', ['clean'], function (cb) {
     'jshint',
     ['elements', 'js'],
     ['images', 'fonts', 'html'],
-    'vulcanize',
-    'concat',
-    cb);
-    // Note: add , 'precache' , after 'vulcanize', if your are going to use Service Worker
+    ['vulcanize', 'vulcanize2'],
+    ['concat1', 'concat2'],
+    cb
+  );
 });
 
 // Load tasks for web-component-tester
@@ -340,4 +366,8 @@ gulp.task('default', ['clean'], function (cb) {
 require('web-component-tester').gulp.init(gulp);
 
 // Load custom tasks from the `tasks` directory
-try { require('require-dir')('tasks'); } catch (err) {}
+try {
+  require('require-dir')('tasks');
+} catch (err) {
+  
+}

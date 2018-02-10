@@ -1,126 +1,150 @@
 <!doctype html>
-<html lang="">
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Stryd PowerCenter</title>
-    <!-- Place favicon.ico in the `app/` directory -->
-    <link rel="shortcut icon" href="/powercenter/images/favicon.png">
+	<meta charset="utf-8">
+	<meta name="description" content="Stryd PowerCenter">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Stryd PowerCenter</title>
+	<!-- Place favicon.ico in the `app/` directory -->
+	<link rel="shortcut icon" href="/powercenter/images/favicon.png">
 
-    <!-- Chrome for Android theme color -->
-    <meta name="theme-color" content="#303F9F">
+	<!-- Chrome for Android theme color -->
+	<meta name="theme-color" content="#303F9F">
+	<!-- Tile color for Win8 -->
+	<meta name="msapplication-TileColor" content="#3372DF">
+	<!-- Add to homescreen for Chrome on Android -->
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="application-name" content="Stryd PowerCenter">
+	<link rel="icon" sizes="192x192" href="/powercenter/images/favicon.png">
+	<!-- Add to homescreen for Safari on iOS -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Stryd PowerCenter">
+	<link rel="apple-touch-icon" href="/powercenter/images/favicon.png">
+	<!-- Tile icon for Win8 (144x144) -->
+	<meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
 
-    <!-- Web Application Manifest -->
-    <link rel="manifest" href="manifest.json">
+	<!-- Web Application Manifest -->
+	<!-- link rel="manifest" href="manifest.json"> -->
 
-    <!-- Tile color for Win8 -->
-    <meta name="msapplication-TileColor" content="#3372DF">
+	<script>
+		var wcSupported = (
+			'registerElement' in document &&
+			'import' in document.createElement('link') &&
+			'content' in document.createElement('template')
+		);
 
-    <!-- Add to homescreen for Chrome on Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Stryd">
-    <link rel="icon" sizes="192x192" href="/powercenter/images/favicon.png">
+		if (!wcSupported) {
+			var wcPoly = document.createElement('script');
+			wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
+			document.head.appendChild(wcPoly);
+		}
+	</script>
 
-    <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
-    <link rel="apple-touch-icon" href="/powercenter/images/favicon.png">
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    <!-- Tile icon for Win8 (144x144) -->
-    <meta name="msapplication-TileImage" content="/powercenter/images/favicon.png">
+		ga('create', 'UA-56986987-1', 'auto');
+		ga('send', 'pageview');
+	</script>
 
-    <!-- <link rel="stylesheet" href="/powercenter/styles/app.css"> -->
-    <link rel="stylesheet" href="/powercenter/styles/main.css">
-    <link rel="stylesheet" href="/powercenter/styles/dropzone.min.css">
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1692308661008752');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1692308661008752&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,300" rel="stylesheet" type="text/css">
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js"></script>
-
-    <!-- will be replaced with elements/elements.vulcanized.html -->
-    <link rel="import" href="/powercenter/elements/elements.html">
-    <!-- endreplace-->
+	<link rel="stylesheet" href="/powercenter/styles/main.css">
+	<link rel="import" href="/powercenter/elements/elements.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">
-<div class="tooltip hidden" data-tooltip>
-    <div class="description" id="description">Description</div>
-</div>
 <span id="browser-sync-binding"></span>
 
 <template is="dom-bind" id="app">
-    <!-- Main Content -->
-    <div class="content">
-        <header-element></header-element>
-        <iron-pages attr-for-selected="data-route" selected="{{route}}">
-            <section data-route="home">
-                <div class="layout horizontal" style="display: relative">
-                    <map-run id="map-run" class="flex-4"></map-run>
-                    <workout-shared id="workout-shared"></workout-shared>
-                </div>
-                <workout-element id="workout-element"></workout-element>
-                <log-calendar></log-calendar>
-                <div class="uploader"
-                    data-step="9"
-                    data-intro="Have FIT and TCX files? Upload them here."
-                    id="uploader">
-                    <h1 class="title">Upload</h1>
-                    <form class="dropzone" id="file">
-                        <div class="dz-message" data-dz-message>
-                            <span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
-                        </div>
-                    </form>
-                </div>
-            </section>
+	<div class="content">
 
-            <section data-route="connect">
-                <div class="connect">
-                    <platform-connect></platform-connect>
-                </div>
-            </section>
+		<header-element></header-element>
 
-            <section data-route="settings">
-                <stryd-settings></stryd-settings>
-            </section>
+		<iron-pages attr-for-selected="data-route" selected="{{route}}">
+			<section data-route="profile">
+				<div class="layout horizontal">
+					<workout-summary></workout-summary>
+					<log-overview></log-overview>
+				</div>
+				<div class="layout vertical max-width" id="workout-holder">
+					<home-navigation></home-navigation>
+					<iron-pages attr-for-selected="data-home" selected="{{home}}" class="flex-auto">
+						<section data-home="comparison">
+							<div class="layout vertical max-width">
+								<rss-comparison id="rss-primary" class="flex" data-property="primary"></rss-comparison>
+								<rss-comparison id="rss-secondary" class="flex" data-property="secondary"></rss-comparison>
+							</div>
+						</section>
+						<section data-home="analysis">
+							<div class="layout vertical" data-analysis>
+								<bubble-stats></bubble-stats>
+								<div class="max-width flex workout-element-holder">
+									<workout-element id="workout-element" class="flex-3"></workout-element>
+									<map-run id="map-run" class="flex"></map-run>
+								</div>
+								<lap-overview class="hidden"></lap-overview>
+							</div>
+						</section>
+						<section data-home="training">
+							<div class="layout vertical">
+								<div class="layout horizontal max-width flex">
+									<plan-view id="plan-view" class="flex"></plan-view>
+								</div>
+							</div>
+						</section>
+					</iron-pages>
+				</div>
+				<log-calendar></log-calendar>
+			</section>
 
-            <section data-route="plan">
-                <plan-list></plan-list>
-            </section>
+			<section data-route="leaderboard">
+				<social-leaderboard></social-leaderboard>
+			</section>
 
-            <section data-route="new-plan">
-                <plan-entry id="plan-entry" plan-id="{{planID}}"></plan-entry>
-            </section>
+			<section data-route="settings">
+				<stryd-settings></stryd-settings>
+			</section>
 
-            <section data-route="plan-detail">
-                <plan-detailview id="plan-detailview" plan-id="{{planID}}"></plan-detailview>
-            </section>
+			<section data-route="improve">
+				<improve-stone></improve-stone>
+				<spider-chart></spider-chart>
+				<power-trend></power-trend>
+				<heat-duration></heat-duration>
+				<performance-management></performance-management>
+			</section>
 
-            <section data-route="welcome" class="welcome">
-                <h1>Welcome to the Stryd PowerCenter!</h1>
-                <p>Stryd is the world’s first wearable power meter for running. Power is the most direct measure of your training effort, running efficiency, and calorie use. Worn on the chest, Stryd provides real-time feedback via smartphone or sports watch, to guide improvement in your run form, efficiency, and pacing. Whether you’re out for a casual run or racing your next Ironman, Stryd will help you discover the best runner within you.</p>
-                <a href="/">Learn more</a>
-                <a href="/order">Buy Stryd</a>
-                <a href="/signin">Create a PowerCenter Account</a>
-            </section>
+			<section data-route="*"></section>
+		</iron-pages>
 
-            <section data-route="*">
-            </section>
-        </iron-pages>
+		<footer-elementa></footer-elementa>
 
-        <log-options></log-options>
-        <footer-element></footer-element>
-        <paper-toast duration="1000000" text="You are viewing sample data. Visit settings to associate your platform account." id="sample"></paper-toast>
-        <paper-toast id="toast" duration="5000" style="z-index: 999999;"></paper-toast>
-        <iframe id="dlFrame" style="display:none;">
-    </div>
-
-    <google-analytics code="UA-56986987-2"></google-analytics>
+	</div>
+	<log-options></log-options>
+	<paper-toast id="toast" duration="5000"></paper-toast>
+	<div class="tooltip hidden" data-tooltip>
+		<div class="description" id="description">Description</div>
+	</div>
+	<iframe id="dlFrame" class="hidden">
 </template>
-
 <script src="/powercenter/scripts/app.min.js"></script>
-
 </body>
-
 </html>

@@ -1,0 +1,488 @@
+<dom-module id="spider-chart">
+<style>
+	:host {
+		height: 100%;
+		@apply(--layout);
+		@apply(--layout-vertical);
+		@apply(--layout-center);
+		@apply(--layout-center-justified);
+		padding: 20px;
+		background-color: var(--primary-background-color);
+	}
+	:host.blurred {
+		-webkit-filter: blur(2px);
+		-moz-filter: blur(2px);
+		-ms-filter: blur(2px);
+		-o-filter: blur(2px);
+		filter: blur(2px);
+	}
+	h1.header {
+		@apply(--header);
+		text-align: center;
+		padding: 15px 0;
+	}
+	#spider {
+		height: 600px;
+		min-width: 700px;
+		flex: 2;
+	}
+
+	.spider-holder {
+		@apply(--layout-horizontal);
+		margin-top: 20px;
+	}
+	@media (max-width: 1250px) {
+		.spider-holder {
+			@apply(--layout-vertical);
+		}
+	}
+
+	.runner-profile {
+		width: 800px;
+	}
+	.training-optimizer {
+		width: 540px;
+	}
+
+	table {
+		color: white;
+		line-height: 2;
+		font-size: 17px;
+		text-align: center;
+		border-collapse: collapse;
+		cursor: pointer;
+		flex: 1;
+		border-top: 1px solid #4D4D4D;
+	}
+	table thead th, table thead td {
+		font-weight: 700;
+	}
+	table .highlight {
+		background: #4D4D4D;
+	}
+	table .highlight.active {
+		background: #F5A214;
+		border-bottom: #F5A214;
+	}
+	table tr:last-child td {
+		border-bottom: 0;
+	}
+	table td, table th {
+		border-right: 1px solid #4D4D4D;
+		border-bottom: 1px solid #4D4D4D;
+		padding: 8px;
+	}
+	table tbody td:last-child {
+		border-right: 0;
+	}
+	table tr td:first-child, table tr th:first-child {
+		width: 230px;
+	}
+	table tbody tr:last-child th {
+		border-bottom: 0;
+	}
+	table th {
+		background: #262626;
+	}
+	[data-category] {
+		width: 80px;
+	}
+	.holder {
+		border: 1px solid #4D4D4D;
+		@apply(--layout-vertical);
+		margin: 10px;
+	}
+	.blocks {
+		margin: 20px;
+	}
+	.block {
+		width: 20px;
+		height: 20px;
+		padding: 3px;
+	}
+	[data-block="active"] {
+		background: #F5A214;
+
+	}
+	[data-block="inactive"] {
+		background: #4D4D4D;
+	}
+	.text {
+		font-size: 20px;
+		line-height: 20px;
+		padding: 3px 15px 3px 10px;
+		color: white;
+	}
+	p {
+		font-size: 18px;
+		line-height: 1.45;
+	}
+	.help-text {
+		margin: 20px 20px 20px 10px;
+		line-height: 1.45;
+	}
+	#workoutDialog, #profileDialog, #recommendationDialog {
+		max-width: 600px;
+	}
+</style>
+<template>
+	<!-- Title -->
+	<div class="layout horizontal center center-justified">
+		<h1 class="header">Strengthen Your Skills</h1>
+	</div>
+	<!-- Spiders -->
+	<div class="spider-holder">
+		<div class="holder flex-3 runner-profile">
+			<div class="top">
+				<h1>Stryd Runner Profile</h1>
+				<div class="raindrop" on-click="profileQuestion">
+					<iron-icon icon="icons:help-outline"></iron-icon>
+				</div>
+			</div>
+			<div id="spider"></div>
+		</div>
+		<div class="holder flex-2 training-optimizer">
+			<div class="top">
+				<h1>Training Optimizer</h1>
+				<div class="raindrop" on-click="recommendationQuestion">
+					<iron-icon icon="icons:help-outline"></iron-icon>
+				</div>
+			</div>
+			<div data-improve="recommendations" class="hidden">
+				<h1>We recommend more:</h1>
+				<div data-improve="list" id="list"></div>
+			</div>
+			<div class="recommendation hidden" id="tables" data-recommendation="closed">See All Recommendations</div>
+			<div data-improve="table">
+				<div class="layout horizontal blocks">
+					<div class="block" data-block="active"></div>
+					<div class="text">Most Potential</div>
+					<div class="block" data-block="inactive"></div>
+					<div class="text">Improvement Available</div>
+				</div>
+				<div class="text help-text">Focus on the highlighted workouts to improve your skills. Click on the table to learn more.</div>
+				<table>
+					<thead>
+						<tr>
+							<th>Workouts</th>
+							<th data-category="metobolic_fitness">Metabolic Fitness</th>
+							<th data-category="muscle_endurance">Muscle Endurance</th>
+							<th data-category="muscle_power">Muscle Power</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-workout="speed">
+							<th>VO2 Max Intervals</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_power"></td>
+						</tr>
+						<tr data-workout="lactate">
+							<th>Lactate Threshold Runs</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr data-workout="easy">
+							<th>High Volume Easy Run</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr data-workout="aerobic">
+							<th>Aerobic Threshold Runs</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td class="highlight" data-highlight="muscle_endurance"></td>
+							<td></td>
+						</tr>
+						<tr data-workout="race">
+							<th>Race Specific</th>
+							<td class="highlight" data-highlight="metobolic_fitness"></td>
+							<td class="highlight" data-highlight="muscle_endurance"></td>
+							<td></td>
+						</tr>
+						<tr data-workout="long">
+							<th>Long Run</th>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_endurance"></td>
+							<td></td>
+						</tr>
+						<tr data-workout="hill">
+							<th>Hill/Track Sprint</th>
+							<td></td>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_power"></td>
+						</tr>
+						<tr data-workout="pylo">
+							<th>Supplemental Training</th>
+							<td></td>
+							<td></td>
+							<td class="highlight" data-highlight="muscle_power"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- Range selector -->
+	<div class="layout horizontal flex hidden">
+		<h1>Last <span>{{timeRange}}</span> weeks</h1>
+		<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
+	</div>
+	<!-- Dialogs -->
+	<paper-dialog id="workoutDialog">
+		<h1>{{workoutTitle}}</h1>
+		<div class="layout vertical">
+			<p>{{workoutDescription}}</p>
+		</div>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="profileDialog">
+		<h1>Stryd Runner Profile</h1>
+		<p>All athletes have strengths and weaknesses. The Stryd Runner Profile analyzes your training in order to identify your dominant running traits. Compare your individual characteristics to similar runners with the same target race so that you can quickly understand the most beneficial adjustments to make to your training.</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="recommendationDialog">
+		<h1>Training Optimizer</h1>
+		<p>Based on your Stryd Runner Profile, identify the types of workout to incorporate into your training. The brightest boxes hold the keys to the biggest improvements. Gradually shift your training to incorporate some of these types of training. Select the labels to learn more about how they will help you to improve.</p>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+</template>
+<script>
+Polymer({
+	is: 'spider-chart',
+	listeners: {
+		tap: 'eleTap'
+	},
+	eleTap: function (e) {
+		var target = e.target;
+		while (true) {
+			if (target === this) {
+				return;
+			} else if ('workout' in target.dataset) {
+				var recommendation = this.recommendations[target.dataset.workout];
+				this.workoutDescription = recommendation.desc;
+				this.workoutTitle = recommendation.title;
+				this.$.workoutDialog.open();
+				return;
+			} else if ('category' in target.dataset) {
+				var category = this.categories[target.dataset.category];
+				this.workoutDescription = category.desc;
+				this.workoutTitle = category.title;
+				this.$.workoutDialog.open();
+			}
+			if ('parentNode' in target && target.parentNode !== null) {
+				target = target.parentNode;
+			} else {
+				return;
+			}
+		}
+	},
+	profileQuestion: function () {
+		this.$.profileDialog.open();
+	},
+	recommendationQuestion: function () {
+		this.$.recommendationDialog.open();
+	},
+	ready: function () {
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
+		this.chart = null;
+
+		this.workoutDescription = '';
+		this.workoutTitle = '';
+
+		this.categories = {
+			metobolic_fitness: {
+				title: 'Metabolic Fitness',
+				desc: 'Your overall fitness. This considers both your metabolic endurance and current aerobic baseline.  While it is possible to build up to your fitness ceiling in a relatively short time, it is important to remember that you can also slowly improve your overall fitness ceiling over time.'
+			},
+			muscle_endurance: {
+				title: 'Muscle Endurance',
+				desc: 'Run long! Your ability to keep running.  Your ability to run long should be improved slowly.  Research recommends increasing by ~10% each week, and a single long run should not be more than 20-25% of your total weekly load.'
+			},
+			muscle_power: {
+				title: 'Muscle Power',
+				desc: 'Run Fast! Your instantaneous power.  Muscular power is directly linked to running economy.  By improving the strength of your muscles, the stiffness of your tendons, your technique, and your coordination, to get the most out of each and every step.'
+			}
+		};
+		this.recommendations = {
+			race: {
+				features: [true, true, false],
+				desc: 'Workouts performed at your race pace, designed to increase your efficiency and/or your resistance to fatigue at your goal race pace.',
+				title: 'Race Specific Training'
+			},
+			long: {
+				features: [false, true, false],
+				desc: 'A long, sustained run completed once per week. This run typically comprises of roughly 20-30% of total weekly volume. Your overall endurance improves and promotes the use of fat as a fuel source.',
+				title: 'Long Run'
+			},
+			hill: {
+				features: [false , false, true],
+				desc: 'Short, intense uphill runs lasting between 8-15 seconds with longer recovery periods. Your neuromuscular capabilities, overall strength, and leg spring stiffness improves. These skills lead to improved running economy.',
+				title: 'Hill/Track Repeats'
+			},
+			pylo: {
+				features: [false, false, true],
+				desc: 'Improves muscle recruitment patterns, allowing you to run with more power and coordination. Should be used incrementally focussing on lower impact routines first. Form Drills - Strengthens key running muscles, improves functional range of motion, improves neuromuscular communication, and increases mindfulness of good running form. Heavy Weights Lifting - The optimal number of repetitions for increasing strength and endurance is 5-6. Not only does it translate to a more powerful stride, but it also promotes good posture and muscle stiffness which also improves efficiency.',
+				title: 'Supplemental Training',
+			},
+			speed: {
+				features: [true, false, true],
+				desc: '3 to 5 min bouts of Zone 4 running with short rest. The goal is to stress your aerobic capacity to a greater degree than could be accomplished with a single, continuous run.',
+				title: 'VO2 Max Intervals'
+			},
+			lactate: {
+				features: [true, false, false],
+				desc: '20-60 min of Zone 3/Zone 4 running. Often described as comfortably hard. Run at a slightly higher intensity than an Aerobic Threshold Run - targeting your lactate clearing system.',
+				title: 'Lactate Threshold Tempo'
+			},
+			easy: {
+				features: [true, false, false],
+				desc: 'Zone 1 running strengthens the heart muscle, increases vascularization, promotes healing, and oxygen delivery at the cellular level.',
+				title: 'High Volume Easy Run'
+			},
+			aerobic: {
+				features: [true, true, false],
+				desc: '20-60 min of Zone 3 running. Often described as comfortably hard. Run faster than an easy run, but less intense than an LT Tempo Run. Designed to stress the aerobic system with limited lactate build up.',
+				title: 'Aerobic Threshold Tempo Runs'
+			}
+		};
+
+		this.chartData = [];
+
+		var today = moment();
+		var past = moment().subtract(2, 'months');
+		var todayFMT = today.format('MM-DD-YYYY');
+		var pastFMT = past.format('MM-DD-YYYY');
+		var path = `/b/api/v1/users/runnerprofile?srtDate=${pastFMT}&endDate=${todayFMT}`;
+		if (isLocal) {
+			path = '/powercenter/scripts/local/runnerprofile.json';
+		}
+		superagent
+			.get(path)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					this.data = res.body;
+					this.processData();
+					this.createChart();
+					this.findHighlights(this.data);
+				} else {
+					console.log('Error: cannot fetch data');
+				}
+			});
+
+		this.raceKey = '5k';
+		if ('race' in user.data && user.data.race !== '') {
+			this.raceKey = user.data.race;
+		}
+	},
+	highlightRecs: function (highlights) {
+		for (var key of Object.keys(this.categories)) {
+			var eles = this.querySelectorAll(`[data-highlight="${key}"]`);
+			if (highlights.indexOf(key) > -1) {
+				for (let ele of eles) {
+					ele.classList.add('active');
+				}
+			} else {
+				for (let ele of eles) {
+					ele.classList.remove('active');
+				}
+			}
+		}
+	},
+	findHighlights: function (profile) {
+		var profileArr = [];
+		for (var key of Object.keys(profile)) {
+			profileArr.push({
+				key: key,
+				value: profile[key]
+			});
+		}
+		profileArr.sort((a, b) => {
+			return a.value - b.value;
+		});
+		var below30Threshold = false;
+		var below60Threshold = false;
+		var highlights = [];
+		for (var obj of profileArr) {
+			if (obj.value < 0.30) {
+				below30Threshold = true;
+				highlights.push(obj);
+			} else if (obj.value < 0.60) {
+				below60Threshold = true;
+			}
+		}
+
+		if (!below30Threshold && below60Threshold) {
+			highlights.push(profileArr[0]);
+		}
+
+		var highlightKeys = [];
+		for (let highlight of highlights) {
+			highlightKeys.push(highlight.key);
+		}
+
+		this.highlightRecs(highlightKeys);
+	},
+	processData: function () {
+		for (var key of Object.keys(this.data)) {
+			this.chartData.push({
+				category: this.categories[key].title,
+				units: Math.floor(this.data[key] * 100)
+			});
+		}
+	},
+	createChart: function () {
+		this.chart = AmCharts.makeChart(
+			this.$.spider,
+			{
+				type: 'radar',
+				theme: 'stryd',
+				valueAxes: [{
+					axisTitle: 50,
+					minimum: 0,
+					maximum: 100,
+					axisAlpha: 1,
+					dashLength: 0,
+					labelsEnabled: true,
+					fontSize: 17,
+					id: 'pts',
+					axisTitleOffset: 50,
+					labelOffset: 20,
+					gridThickness: 3,
+					autoWrap: true,
+					offset: -100,
+					titleRotation: 20
+				}],
+				fontFamily: 'Roboto',
+				colors: ['#F5A214'],
+				startDuration: 1,
+				startEffect: 'easeInSine',
+				marginTop: 10,
+				graphs: [{
+					balloonText: '[[value]]%',
+					bullet: 'round',
+					bulletSize: 30,
+					lineThickness: 10,
+					valueField: 'units'
+				}],
+				categoryField: 'category',
+				radius: '33%',
+				dataProvider: this.chartData
+			}
+		);
+	}
+});
+</script>
+</dom-module>

@@ -2,18 +2,14 @@
     <style>
         #map {
             width: 100%;
-            height: 75vh;
+            height: calc(50vh - 30px);
+            margin-top: 15px;
         }
     </style>
     <template>
-        <div id="map"
-            data-step="5"
-            data-intro="Retrace your steps and find where you hit your stride. Red areas indicate high power output. Green areas indicate lower power output."></div>
-        <!-- <map-summary></map-summary> -->
+        <div id="map"></div>
     </template>
     <script>
-        /*global mapReadyTrigger*/
-
         Polymer({
             is: 'map-run',
             ready: function () {
@@ -22,6 +18,15 @@
                     lng: 0
                 };
                 this.mapObjs = [];
+                this.data = null;
+                this.hasMap = false;
+                this.ready = false;
+            },
+            setReady: function () {
+                this.ready = true;
+                if (this.data !== null) {
+                    this.setMap();
+                } 
             },
             setData: function (data) {
                 if (data.length === 0) {
@@ -31,73 +36,78 @@
                     this.classList.remove('hidden');
                 }
                 this.data = data;
-                if (mapReadyTrigger) {
+                if (this.ready) {
                     this.setMap();
-                    this.setDataReady(data);
-                } else {
-                    window.addEventListener('MapReady', () => {
-                        this.setMap();
-                        this.setDataReady(this.data);
-                    });
+                }
+            },
+            resizeMap: function () {
+                if ('map' in this) {
+                    google.maps.event.trigger(this.map, 'resize');
                 }
             },
             setMap: function () {
-                this.strydDarkId = 'strydDarkStyle';
-                this.strydDarkStyle = new google.maps.StyledMapType([
-                    {
-                        'featureType': 'All',
-                        'elementType': 'All'
-                    },
-                    {
-                        'featureType': 'All',
-                        'elementType': 'All',
-                        'stylers': [
-                            { 'lightness': -50 },
-                            { 'hue': '#1f1f1f' },
-                            { 'saturation': -80 },
-                            { 'weight': 1.3 },
-                            { 'visibility': 'simplified' },
-                            { 'gamma': 0.63 }
-                        ]
-                    },
-                    {
-                        'elementType': 'labels.text',
-                        'stylers': [
-                            { 'visibility': 'off' }
-                        ]
-                    }
-                ], { name: 'Power Map' });
-
-                this.map = new google.maps.Map(
-                    this.$.map,
-                    {
-                        center: {
-                            lat: 40.0274,
-                            lng: -105.2519
+                if (!this.hasMap) {
+                    this.hasMap = true;
+                    this.strydDarkId = 'strydDarkStyle';
+                    this.strydDarkStyle = new google.maps.StyledMapType([
+                        {
+                            featureType: 'All',
+                            elementType: 'All'
                         },
-                        zoom: 14,
-                        panControl: false,
-                        zoomControl: true,
-                        scaleControl: false,
-                        scrollwheel: false,
-                        mapTypeControlOptions: {
-                            mapTypeIds: [google.maps.MapTypeId.SATELLITE, this.strydDarkId]
+                        {
+                            featureType: 'All',
+                            elementType: 'All',
+                            stylers: [
+                                {lightness: -50},
+                                {hue: '#1f1f1f'},
+                                {saturation: -80},
+                                {weight: 1.3},
+                                {visibility: 'simplified'},
+                                {gamma: 0.63}
+                            ]
+                        },
+                        {
+                            elementType: 'labels.text',
+                            stylers: [
+                                {visibility: 'off'}
+                            ]
                         }
-                    }
-                );
-                this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
-                this.map.setMapTypeId(this.strydDarkId);
+                    ], {name: 'Power Map'});
+
+                    this.map = new google.maps.Map(
+                        this.$.map,
+                        {
+                            center: {
+                                lat: 40.0274,
+                                lng: -105.2519
+                            },
+                            zoom: 14,
+                            panControl: false,
+                            zoomControl: true,
+                            scaleControl: false,
+                            scrollwheel: false,
+                            mapTypeControlOptions: {
+                                mapTypeIds: []
+                            }
+                        }
+                    );
+                    this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
+                    this.map.setMapTypeId(this.strydDarkId);
+                }
+                this.setDataReady();
             },
-            setDataReady: function (graphSegments) {
-                var i, path, step, graphSegment;
+            setDataReady: function () {
+                if (this.data === null || this.data === undefined) {
+                    return;
+                }
+                var i, path, graphSegment;
                 for (i = 0; i < this.mapObjs.length; i++) {
                     this.mapObjs[i].setMap(null);
                 }
                 var bounds = new google.maps.LatLngBounds();
-                step = 1;
-                for (i = 0; i < graphSegments.length; i=i+step) {
+                for (i = 0; i < this.data.length; i++) {
                     // Set segments on map
-                    graphSegment = graphSegments[i];
+                    graphSegment = this.data[i];
                     path = new google.maps.Polyline({
                         path: graphSegment.location,
                         geodesic: false,
@@ -114,8 +124,8 @@
                     );
                     bounds.extend(latLng);
                 }
-                this.center.lat = graphSegments[0].location[0].lat;
-                this.center.lng = graphSegments[0].location[0].lng;
+                this.center.lat = this.data[0].location[0].lat;
+                this.center.lng = this.data[0].location[0].lng;
                 this.map.fitBounds(bounds);
                 this.map.setCenter(bounds.getCenter());
                 // Start Marker
@@ -137,8 +147,8 @@
                 // End Marker
                 var stop = new google.maps.Marker({
                     position: {
-                        lat: graphSegments[graphSegments.length-1].location[1].lat,
-                        lng: graphSegments[graphSegments.length-1].location[1].lng
+                        lat: this.data[this.data.length-1].location[1].lat,
+                        lng: this.data[this.data.length-1].location[1].lng
                     },
                     map: this.map,
                     icon: {
@@ -150,19 +160,7 @@
                     }
                 });
                 this.mapObjs.push(stop);
-            },
-            exportCoordinates: function () {
-                var graphSegments = this.data;
-                var step = 1;
-                var obj = [];
-                for (var i = 0; i < graphSegments.length; i=i+step) {
-                    obj.push(graphSegments[i].location[0]);
-                }
-                var data = new Blob([JSON.stringify(obj)], {type: 'application/json'});
-                var textFile = window.URL.createObjectURL(data);
-                return textFile;
             }
         });
     </script>
-    <script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady'></script>
 </dom-module>

@@ -1,0 +1,276 @@
+<dom-module id="compare-calendar">
+    <style>
+        :host {
+            @apply(--layout-vertical);
+            font-family: "Stryd", sans-serif;
+            background-color: var(--dark-background-color);
+            padding: 0;
+            width: 600px;
+        }
+        h1.header {
+            @apply(--header);
+            margin-bottom: 10px;
+        }
+        .title {
+            padding: 0 20px;
+            @apply(--layout-end);
+            border: 1px solid #4d4d4d;
+            border-bottom: 0;
+        }
+
+        .days {
+            border-top: 1px solid #4d4d4d !important;
+        }
+        .day {
+            @apply(--layout-flex);
+            @apply(--layout-center-justified);
+            border-right: 1px solid #4d4d4d;
+            font-size: 17px;
+            height: 50px;
+            color: white;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 50px;
+        }
+        .day:last-child {
+            border-right: 0;
+        }
+
+        .row {
+            @apply(--layout-horizontal);
+            border: 1px solid #4d4d4d;
+            border-top: 0;
+        }
+
+        button {
+            margin-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        button iron-icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+    <template>
+        <div class="layout horizontal title">
+            <div class="flex">
+                <h1 class="header">{{month}}</h1>
+            </div>
+            <div class="flex layout horizontal end-justified">
+                <button on-click="prevMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-back"></iron-icon></button>
+                <button on-click="nextMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-forward"></iron-icon></button>
+            </div>
+        </div>
+        <div id="calendarContainer">
+            <div class="days row">
+                <div class="day">Mon</div>
+                <div class="day">Tues</div>
+                <div class="day">Wed</div>
+                <div class="day">Thur</div>
+                <div class="day">Fri</div>
+                <div class="day">Sat</div>
+                <div class="day">Sun</div>
+            </div>
+        </div>
+    </template>
+    <script>
+    Polymer({
+        is: 'compare-calendar',
+        ready: function () {
+            this.dom = [];
+            this.dates = [];
+
+            this.displayedTime = moment();
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+
+            this.hasLoaded = false;
+            this.lastActivity = null;
+
+            window.addEventListener('gotActivities', () => {
+                if (!this.hasLoaded) {
+                    this.hasLoaded = true;
+                    this.assembleDOM();
+                    this.callMonth();
+                }
+            });
+        },
+        attached: function () {
+            if (jwt.hasToken) {
+                setTimeout(() => {
+                    if (!this.hasLoaded) {
+                        this.hasLoaded = true;
+                        this.assembleDOM();
+                        this.callMonth();
+                    }
+                }, 1000);
+            }
+        },
+        // Creates dom structure of 5 rows of 7 columns of log-day elements
+        assembleDOM: function () {
+            var calendarContainer = this.$.calendarContainer;
+            for (var i = 0; i < 5; i++) {
+                var row = document.createElement('div');
+                row.classList.add('row');
+                var rowDom = [];
+                for (var o = 0; o < 7; o++) {
+                    var node = document.createElement('compare-container');
+                    row.appendChild(node);
+                    rowDom.push(node);
+                }
+                Polymer.dom(calendarContainer).appendChild(row);
+                this.dom.push(rowDom);
+            }
+        },
+        // // Grabs array of activity data to populate calendar for month (int) and year (int)
+        fetchMonth: function (month, year) {
+            this.dRange = this.dateRange(month, year);
+            this.switchMonthContext(this.dRange.firstMonday);
+            setTimeout(() => {
+                calendarManager.requestActivities2(this.dRange.firstMonday, this.dRange.lastSunday);
+            }, 1000);
+        },
+        // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
+        dateRange: function (monthInt, year) {
+            var month = moment({
+                month: monthInt,
+                year: year
+            });
+            var startOfMonth = month.startOf('month');
+            var indexFOM = startOfMonth.isoWeekday();
+            var firstMonday = startOfMonth.subtract(indexFOM - 1, 'days');
+            var lastSunday = moment(firstMonday).add(35, 'days');
+            return {
+                firstMonday: firstMonday,
+                lastSunday: lastSunday
+            };
+        },
+        processActivities: function (activities) {
+            for (var activity of activities) {
+                this.addActivity(activity);
+            }
+        },
+        switchMonthContext: function (firstMonday) {
+            this.dates = [];
+            var movingDay = moment(firstMonday);
+            for (var row of this.dom) {
+                var dateRow = [];
+                for (var container of row) {
+                    var dayObj = {
+                        day: moment(movingDay).format('DD'),
+                        hash: movingDay.format('YYYYMMDD')
+                    };
+                    // Determine if there is planned training
+                    var dailyPlan = trainingPlan.getDay(
+                        movingDay.format('YYYYMMDD')
+                    );
+                    if (dailyPlan !== null) {
+                        dayObj.training = dailyPlan;
+                    }
+                    // Clear container
+                    container.clear();
+                    // Create blank child
+                    var day = document.createElement('compare-day');
+                    // Add day data
+                    day.setData(dayObj);
+                    // Append to container
+                    container.addChild(day);
+                    // Append to day array
+                    dateRow.push(moment(movingDay));
+                    // Advance day
+                    movingDay.add(1, 'days');
+                }
+                this.dates.push(dateRow);
+            }
+        },
+        addActivity: function (activity) {
+            var activityMoment = moment
+                .unix(activity.start_time);
+            for (var i = 0; i < this.dates.length; i++) {
+            for (var o = 0; o < this.dates[i].length; o++) {
+                var startDate = this.dates[i][o];
+                if (activityMoment.isSame(startDate, 'day')) {
+                    var dayObj = {
+                        day: activityMoment.format('DD'),
+                        power: activity.average_power,
+                        id: activity.id,
+                        updated_time: activity.updated_time,
+                        time: activity.moving_time,
+                        distance: activity.distance,
+                        description: activity.description,
+                        hash: activityMoment.format('YYYYMMDD'),
+                        rss: activity.stress
+                    };
+                    var container = this.dom[i][o];
+                    container.addDay(dayObj);
+                    return true;
+                }
+            }
+            }
+        },
+        removeActivity: function (id) {
+            for (var row of this.dom) {
+                for (var container of row) {
+                    if (container.hasID(id)) {
+                        container.removeID(id);
+                        break;
+                    }
+                }
+            }
+        },
+        nextMonth: function () {
+            this.displayedTime.add(1, 'months');
+            this.fetchMonth(
+                this.displayedTime.month(),
+                this.displayedTime.year(),
+                false
+            );
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            var logDayActive = this.querySelector('compare-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+        },
+        prevMonth: function () {
+            this.displayedTime.subtract(1, 'months');
+            this.fetchMonth(
+                this.displayedTime.month(),
+                this.displayedTime.year(),
+                false
+            );
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            var logDayActive = this.querySelector('compare-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+        },
+        callMonth: function () {
+            this.fetchMonth(
+                this.displayedTime.month(),
+                this.displayedTime.year()
+            );
+            this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
+            this.removeActive();
+        },
+        setActive: function (id) {
+            var logDayActive = this.querySelector('compare-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+            for (var row of this.dom) {
+                for (var container of row) {
+                    if (container.hasID(id)) {
+                        container.setActive(id);
+                    }
+                }
+            }
+        },
+        removeActive: function () {
+            var logDayActive = this.querySelector('log-container.active');
+            if (logDayActive) {
+                logDayActive.classList.remove('active');
+            }
+        }
+    });
+    </script>
+</dom-module>

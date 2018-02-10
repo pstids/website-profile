@@ -1,0 +1,284 @@
+<dom-module id="workout-summary">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+			border: 1px solid #4D4D4D;
+			flex: 3;
+			margin: 20px;
+		}
+		.rss-container {
+			margin: 0 50px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: row;
+		}
+		.rss {
+			width: 160px;
+			height: 160px;
+			border-radius: 50%;
+			border: 1px solid orange;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: row;
+		}
+		.rss h1 {
+			font-size: 32px;
+			margin-right: 5px;
+		}
+		.rss span {
+			color: white;
+		}
+		.top {
+			background-color: #222222;
+			border-bottom: 1px solid #4D4D4D;
+			height: 70px;
+		}
+		.title {
+			@apply(--layout-horizontal);
+			@apply(--layout-flex);
+		}
+		.accent {
+			font-weight: 100;
+		}
+		.raindrop {
+			flex: 0 1;
+			border-left: 1px solid #4D4D4D;
+			@apply(--layout);
+			@apply(--layout-end-justified);
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+		.raindrop iron-icon {
+			width: 34px;
+			height: 34px;
+			fill: orange;
+			padding: 0 20px;
+		}
+		.stats {
+			padding: 20px;
+			@apply(--layout-horizontal);
+		}
+		@media (max-width: 800px) {
+			.stats {
+				padding: 20px;
+				@apply(--layout-vertical);
+			}
+		}
+		.stats h2 {
+			margin: 0;
+			color: white;
+			font-size: 30px;
+		}
+		.stats h2 .unit {
+			margin-top: 10px;
+			font-size: 16px;
+		}
+		.stats .sub {
+			color: #A4A4A4;
+			text-align: center;
+		}
+		.stats .stat {
+			flex: 1 1 200px;
+		}
+		.values {
+			@apply(--layout-flex);
+		}
+		.values .value {
+			@apply(--layout-flex);
+			justify-content: center;
+			align-items: center;
+		}
+		.tiz-container {
+			width: 330px;
+			margin: 0 50px;
+		}
+		#messageContainer {
+			width: 230px;
+		}
+
+		paper-input input {
+			text-align: center !important;
+		}
+
+		paper-dropdown-menu {
+			--paper-input-container-label: {
+				color: white;
+				font-weight: bold;
+			};
+			--paper-input-container-input: {
+				color: white;
+				font-style: normal;
+			};
+			/* no underline */
+			--paper-input-container-underline: {
+				color: white;
+			};
+		}
+
+		paper-icon-button {
+			color: white;
+		}
+	</style>
+	<template>
+		<div class="layout horizontal top">
+			<div class="title">
+				<h1 class="bold">{{data.date}}</h1>
+				<h1 class="accent hidden">{{data.type}}</h1>
+			</div>
+		</div>
+		<div class="stats">
+			<div class="layout horizontal stat">
+				<div class="layout vertical values">
+					<div class="layout vertical value">
+						<h2><span class="value">{{data.rss}}</span></h2>
+						<span class="sub">{{data.rss_message}}</span>
+					</div>
+					<div class="layout vertical value">
+						<h2><span class="value">{{data.duration}}</span> <span class="unit"></span></h2>
+						<span class="sub">Time</span>
+					</div>
+				</div>
+				<div class="layout vertical values">
+					<div class="layout vertical value">
+						<h2><span class="value">{{data.pace}}</span><span class="unit">{{data.pace_unit}}</span></h2>
+						<span class="sub">Pace</span>
+					</div>
+					<div class="layout vertical value">
+						<h2><span class="value">{{data.distance}}</span> <span class="unit">{{data.distance_unit}}</span></h2>
+						<span class="sub">Distance</span>
+					</div>
+				</div>
+			</div>
+			<time-in-zone data-property="tiz2" id="tiz" class="tiz-container"></time-in-zone>
+			<div class="flex layout vertical center center-justified">
+				<paper-dropdown-menu label="Workout Type" style="margin-bottom: 50px;">
+					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType">
+						<paper-item>None</paper-item>
+						<paper-item>Easy Run</paper-item>
+						<paper-item>Long Run</paper-item>
+						<paper-item>Fartlek Run</paper-item>
+						<paper-item>Threshold Run</paper-item>
+						<paper-item>Cruise Interval</paper-item>
+						<paper-item>Interval</paper-item>
+						<paper-item>Tempo Run</paper-item>
+						<paper-item>Repetition Run</paper-item>
+						<paper-item>Race Pace Training</paper-item>
+						<paper-item>Race</paper-item>
+						<paper-item>Critical Test Run</paper-item>
+					</paper-menu>
+				</paper-dropdown-menu>
+				<paper-dropdown-menu label="Post Run RPE">
+					<paper-menu class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE">
+						<paper-item>None</paper-item>
+						<paper-item>RPE 1</paper-item>
+						<paper-item>RPE 2</paper-item>
+						<paper-item>RPE 3</paper-item>
+						<paper-item>RPE 4</paper-item>
+						<paper-item>RPE 5</paper-item>
+						<paper-item>RPE 6</paper-item>
+						<paper-item>RPE 7</paper-item>
+						<paper-item>RPE 8</paper-item>
+						<paper-item>RPE 9</paper-item>
+						<paper-item>RPE 10</paper-item>
+					</paper-menu>
+				</paper-dropdown-menu>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'workout-summary',
+			properties: {
+				data: Object
+			},
+			ready: function () {
+				this.selected_rpe = 0;
+				this.selected_type = 0;
+				this.hasWorkout = false;
+				this.rpes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+				this.types = ['', 'easy', 'long', 'fartlek', 'threshold', 'cruise interval', 'interval', 'tempo', 'repetition', 'pace', 'race', 'critical test'];
+			},
+			attached: function () {
+				this.data = {
+					type: 'Interval Run',
+					date: 'Jan 1st, 2017',
+					rss: '--',
+					duration: '--:--:--',
+					pace: '--:--',
+					distance: '--',
+					distance_unit: 'mi',
+					pace_unit: '/mi',
+					rss_message: 'RSS'
+				};
+				this.eState = false;
+
+				this.$.workoutRPE.addEventListener('iron-select', () => {
+					var item = this.rpes[this.$.workoutRPE.selected];
+					if ('activity' in this) {
+						app.updateWorkout(
+							this.activity.id,
+							{
+								rpe: item
+							},
+							null
+						);
+					}
+				});
+				this.$.workoutType.addEventListener('iron-select', () => {
+					var item = this.types[this.$.workoutType.selected];
+					if ('activity' in this) {
+						app.updateWorkout(
+							this.activity.id,
+							{
+								type: item
+							},
+							null
+						);
+					}
+				});
+			},
+			setData: function (activity) {
+				this.hasWorkout = true;
+				this.activity = activity;
+				console.log(this.activity);
+				this.data.date = moment(activity.start_time*1000).format('MMM Do, YYYY');
+				this.notifyPath('data.date');
+
+				if (!this.eState) {
+					this.data.rss = activity.average_power.toFixed(0);
+					this.data.rss_message = 'Avg Power';
+				} else {
+					this.data.rss = ((activity.average_power) / (activity.average_power + 100) * 100).toFixed(0) + '%';
+					this.data.rss_message = 'Run Efficiency Score';
+				}
+				this.notifyPath('data.rss');
+				this.notifyPath('data.rss_message');
+
+				this.data.duration = secToDuration(activity.moving_time);
+				this.notifyPath('data.duration');
+
+				var speed = activity.distance/activity.moving_time;
+				this.data.pace = unit.speedValue(speed, user.data.units);
+				this.data.pace_unit = unit.speedUnit(user.data.units);
+				this.notifyPath('data.pace');
+				this.notifyPath('data.pace_unit');
+
+				this.data.distance = unit.distanceValue(activity.distance, user.data.units);
+				this.data.distance_unit = unit.distanceUnit(user.data.units);
+				this.notifyPath('data.distance');
+				this.notifyPath('data.distance_unit');
+
+				this.$.tiz.setData(activity.seconds_in_zones, activity.stress);
+
+				this.selected_rpe = this.rpes.indexOf(activity.rpe);
+				this.selected_type = this.types.indexOf(activity.type);
+			},
+			setEfficiency: function () {
+				this.eState = true;
+			}
+		});
+	</script>
+</dom-module>

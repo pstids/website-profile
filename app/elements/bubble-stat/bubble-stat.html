@@ -4,12 +4,9 @@
 			box-shadow: 0px 100px 100px -95px #000000;
 			border-radius: 50%;
 			cursor: pointer;
-		}
-		.bubble-wrap {
-			width: 100%;
-			height: 100%;
-			position: absolute;
-			z-index: 10;
+			z-index: 2;
+			width: 12vw;
+			height: 12vw;
 			@apply(--bubble-stat-wrap);
 		}
 		.bubble-border {
@@ -50,6 +47,7 @@
 			text-transform: uppercase;
 			font-weight: 500;
 			font-size: 0.68vw;
+			text-align: center;
 		}
 		.value {
 			color: white;
@@ -65,44 +63,45 @@
 			font-weight: 500;
 			font-size: 0.68vw;
 		}
-		.popped .bubble-border:nth-child(1) {
+		:host.popped {
+			z-index: 4;
+		}
+		:host.popped .bubble-border:nth-child(1) {
 			transform: translate(0, 0px);
 		}
-		.popped .bubble-border:nth-child(2) {
-			transform: translate(0, 12vw);
-		}
-		.popped .bubble-border:nth-child(3) {
+		:host.popped .bubble-border:nth-child(2) {
 			transform: translate(0, -12vw);
 		}
+		:host.popped .bubble-border:nth-child(3) {
+			transform: translate(0, 12vw);
+		}
 		.active {
-			z-index: 11;
+			z-index: 3;
 		}
 	</style>
 	<template>
-		<div class="bubble-wrap" id="wrap">
-			<div class="bubble-border active" data-bubble="1">
-				<div class="bubble">
-					<iron-icon icon="{{obja.icon}}" class="icon"></iron-icon>
-					<span class="title">{{obja.title}}</span>
-					<span class="value">{{obja.value}}</span>
-					<span class="unit">{{obja.unit}}</span>
-				</div>
+		<div class="bubble-border active" data-bubble="1">
+			<div class="bubble">
+				<iron-icon icon="{{obja.icon}}" class="icon"></iron-icon>
+				<span class="title">{{obja.title}}</span>
+				<span class="value">{{obja.value}}</span>
+				<span class="unit">{{obja.unit}}</span>
 			</div>
-			<div class="bubble-border" data-bubble="2">
-				<div class="bubble">
-					<iron-icon icon="{{objb.icon}}" class="icon"></iron-icon>
-					<span class="title">{{objb.title}}</span>
-					<span class="value">{{objb.value}}</span>
-					<span class="unit">{{objb.unit}}</span>
-				</div>
+		</div>
+		<div class="bubble-border" data-bubble="2">
+			<div class="bubble">
+				<iron-icon icon="{{objb.icon}}" class="icon"></iron-icon>
+				<span class="title">{{objb.title}}</span>
+				<span class="value">{{objb.value}}</span>
+				<span class="unit">{{objb.unit}}</span>
 			</div>
-			<div class="bubble-border" data-bubble="3">
-				<div class="bubble">
-					<iron-icon icon="{{objc.icon}}" class="icon"></iron-icon>
-					<span class="title">{{objc.title}}</span>
-					<span class="value">{{objc.value}}</span>
-					<span class="unit">{{objc.unit}}</span>
-				</div>
+		</div>
+		<div class="bubble-border" data-bubble="3">
+			<div class="bubble">
+				<iron-icon icon="{{objc.icon}}" class="icon"></iron-icon>
+				<span class="title">{{objc.title}}</span>
+				<span class="value">{{objc.value}}</span>
+				<span class="unit">{{objc.unit}}</span>
 			</div>
 		</div>
 	</template>
@@ -115,39 +114,40 @@
 				objc: Object
 			},
 			listeners: {
-				'click': 'click'
+				'tap': 'bubblePop'
 			},
-			click: function () {
-				this.$.wrap.classList.toggle('popped');
-			},
-			setMode: function (opt) {
+			setMode: function () {
 				var activeKeys = this.objects.active;
 				for (var i = 0; i < activeKeys.length; i++) {
 					var activeKey = activeKeys[i];
+					if (Object.keys(this.objects).indexOf(activeKey) < 0) {
+						return;
+					}
 					var active = this.objects[activeKey];
-					var title;
-					if (opt === 'moving') {
-						title = active.title;
+					var title = active.title;
+					if (this.opt === 'moving') {
 						if (title !== 'Time') {
-							title = 'Average Moving ' + active.title;
+							title = `Average Moving ${active.title}`;
 						} else {
-							title = 'Moving ' + active.title;
+							title = `Moving ${active.title}`;
 						}
-						this.set('obj' + active.prop + '.title', title);
-						this.set('obj' + active.prop + '.value', active.moving);
+						this.set(`obj${active.prop}.title`, title);
+						this.set(`obj${active.prop}.value`, active.moving);
 					} else {
-						title = active.title;
 						if (title !== 'Time') {
-							title = 'Average Elapsed ' + active.title;
+							title = `Average Elapsed ${active.title}`;
 						} else {
-							title = 'Elapsed ' + active.title;
+							title = `Elapsed ${active.title}`;
 						}
-						this.set('obj' + active.prop + '.title', title);
-						this.set('obj' + active.prop + '.value', active.elapsed);
+						this.set(`obj${active.prop}.title`, title);
+						this.set(`obj${active.prop}.value`, active.elapsed);
 					}
 				}
 			},
 			setData: function (objs) {
+				for (var x = 1; x <= 3; x++) {
+					Polymer.dom(this.querySelector(`[data-bubble="${x}"]`)).classList.remove('hidden');
+				}
 				this.objects = objs;
 				var props = ['a', 'b', 'c'];
 				var i = 0;
@@ -159,38 +159,45 @@
 						var obj = this.objects[key];
 						var prop = props[i];
 						obj.prop = prop;
-						this.set('obj' + prop + '.icon', obj.icon);
-						this.set('obj' + prop + '.unit', obj.unit);
+						this.set(`obj${prop}.icon`, obj.icon);
+						this.set(`obj${prop}.unit`, obj.unit);
 						// Check if this is an object that can be toggled by elapsed/moving
 						if (activeKeys.indexOf(key) !== -1) {
-							this.set('obj' + prop + '.title', 'Average Elapsed ' + obj.title);
-							this.set('obj' + prop + '.value', obj.elapsed);
+							this.set(`obj${prop}.title`, `Average Elapsed ${obj.title}`);
+							this.set(`obj${prop}.value`, obj.elapsed);
 						} else {
-							this.set('obj' + prop + '.title', obj.title);
-							this.set('obj' + prop + '.value', obj.value);
+							this.set(`obj${prop}.title`, obj.title);
+							this.set(`obj${prop}.value`, obj.value);
 						}
-						i++;
+						i+=1;
 					}
 				}
-				// If there are less than three objects, hide the remaining bubbles.
-				for (; i < 3; i++) {
-					this.querySelector('[data-bubble="' + parseInt(i+1) + '"]').classList.add('hidden');
+				if (i === 0) {
+					this.classList.add('hidden');
+				} else {
+					this.classList.remove('hidden');
 				}
+				for (; i < 3; i++) {
+					Polymer.dom(this.querySelector(`[data-bubble="${i+1}"]`)).classList.add('hidden');
+				}
+				this.setMode();
 			},
 			ready: function () {
 				this.obja = {};
 				this.objb = {};
 				this.objc = {};
 				this.objects = {};
-				this.addEventListener('click', this.bubblePop.bind(this));
+				this.opt = 'elapsed';
 			},
 			bubblePop: function (e) {
 				var target = e.target;
-				var keepLooking = true;
-				while (!('bubble' in target.dataset) && keepLooking) {
+				if (target.dataset === undefined) {
+					return;
+				}
+				while (!('bubble' in target.dataset)) {
 					target = target.parentNode;
 					if (this === target) {
-						keepLooking = false;
+						break;
 					}
 				}
 				var activeBubble = this.querySelector('[data-bubble].active');
@@ -198,6 +205,7 @@
 					activeBubble.classList.remove('active');
 				}
 				target.classList.add('active');
+				this.classList.toggle('popped');
 			}
 		});
 	</script>

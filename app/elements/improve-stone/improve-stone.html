@@ -1,0 +1,453 @@
+<dom-module id="improve-stone">
+<style>
+	:host {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 10;
+	}
+	h1.header {
+		@apply(--header);
+		text-align: center;
+		padding: 15px 0;
+	}
+	.stone {
+		position: fixed;
+		width: 50%;
+		margin: 5% 25%;
+		background: #262626;
+		-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		z-index: 11;
+	}
+	.holder {
+		margin: 20px 10%;
+	}
+	paper-input {
+		display: inline-block;
+	}
+	.justified-row {
+		@apply(--layout-horizontal);
+		@apply(--layout-justified);
+	}
+	.information {
+		@apply(--layout-horizontal);
+		@apply(--layout-justified);
+		padding: 0.6vw 0;
+	}
+	.information .info {
+		text-transform: uppercase;
+	}
+	.information .info h1 {
+		font-size: 0.67vw;
+		color: var(--primary-header-color);
+		margin: 0;
+		padding: 0;
+	}
+	.information.height-weight .info {
+		width: 25%;
+	}
+	.information #birthday-input {
+		width: 80%;
+	}
+	.information #birthday-input paper-input {
+		width: 20%;
+	}
+	.information #location-input {
+		width: 100%;
+	}
+	.information #location-input paper-input {
+		width: 40%;
+	}
+	.information #birthday-input .slash {
+		/*@apply(--layout-self-end);*/
+		font-size: 1.67vw;
+		color: var(--primary-header-color);
+		position: absolute;
+		bottom: 30%;
+	}
+</style>
+<template>
+	<div class="stone hidden" data-stone="personal">
+		<h1 class="header">Get Personalized Insight</h1>
+		<div class="layout vertical holder">
+			<paper-dropdown-menu label="Target Race Distance">
+				<paper-menu class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType">
+					<paper-item>5 Kilometer</paper-item>
+					<paper-item>10 Kilometer</paper-item>
+					<paper-item>Half Marathon</paper-item>
+					<paper-item>Marathon</paper-item>
+				</paper-menu>
+			</paper-dropdown-menu>
+			<div class="information">
+				<div class="info">
+					<h1>Date of Birth</h1>
+					<div id="birthday-input" class="justified-row">
+						<paper-input
+							type="text"
+							placeholder="Month"
+							label="Month (MM)"
+							class="editable"
+							name="birth_month"
+							auto-validate
+							pattern="^([1-9]|[0-1][0-9])$" 
+							error-message="01 - 12"
+							value="{{userLocal.birth_month::input}}">
+						</paper-input>
+						<div style="position: relative"><span class="slash">/</span></div>
+						<paper-input
+							type="text"
+							placeholder="Day"
+							label="Day (DD)"
+							class="editable"
+							name="birth_day"
+							auto-validate
+							pattern="^([1-9]|[0-3][0-9])"
+							error-message="01 - 31"
+							value="{{userLocal.birth_day::input}}">
+						</paper-input>
+						<div style="position: relative"><span class="slash">/</span></div>
+						<paper-input
+							type="text"
+							placeholder="Year"
+							label="Year (YYYY)"
+							class="editable"
+							name="birth_year"
+							auto-validate
+							pattern="^(19[0-9][0-9]|20[0-9][0-9])" 
+							error-message="wrong year"
+							value="{{userLocal.birth_year::input}}">
+						</paper-input>
+					</div>
+				</div>
+			</div>
+			<div class="information">
+				<div class="info">
+					<h1>Gender</h1>
+					<paper-radio-group selected="{{userLocal.gender}}" attr-for-selected="name" class="editable">
+						<paper-radio-button name="male">Male</paper-radio-button>
+						<paper-radio-button name="female">Female</paper-radio-button>
+						<paper-radio-button name="other">Other</paper-radio-button>
+					</paper-radio-group>
+				</div>
+			</div>
+			<button is="stryd-button" on-click="savePersonal" style="margin-bottom: 20px;">Save</button>
+		</div>
+	</div>
+	<div class="stone hidden" data-stone="baseline">
+		<h1 class="header">Find My Baseline Performance</h1>
+		<div class="layout vertical holder">
+			<div class="layout horizontal">
+				<paper-dropdown-menu label="Critical Power Test Method" no-animations style="padding: 2vw">
+					<paper-menu class="dropdown-content" selected="{{selected}}">
+						<paper-item>5k estimation</paper-item>
+						<paper-item>10k estimation</paper-item>
+					</paper-menu>
+				</paper-dropdown-menu>
+				<iron-pages selected="{{selected}}">
+					<div class="test-input" style="padding: 2vw">
+						<div class="subtest-input">
+							<paper-input
+								required
+								auto-validate
+								allowed-pattern="[0-9]|:"
+								error-message="{{errMsgPace}}"
+								label="5K Time (e.g. 23:00)"
+								placeholder="{{labelDuration5K}}"
+								value="{{distanceTestResult.fiveKDuration}}">
+							</paper-input>
+						</div>
+					</div>
+					<div class="test-input" style="padding: 2vw">
+						<div class="subtest-input">
+							<paper-input
+								required
+								auto-validate
+								allowed-pattern="[0-9]|:"
+								error-message="{{errMsgPace}}"
+								label="10K Time (e.g. 50:40)"
+								placeholder="{{labelDuration10K}}"
+								value="{{distanceTestResult.tenKDuration}}">
+							</paper-input>
+						</div>
+					</div>
+				</iron-pages>
+			</div>
+			<button is="stryd-button" on-click="calcTraining" style="margin-bottom: 20px;">Save</button>
+		</div>
+	</div>
+	<paper-dialog id="invalid">
+		<h1>Some of your inputs are wrong. Please double check, correct it, and re-submit.</h1>
+		<div class="buttons">
+			<paper-button dialog-confirm autofocus>Okay</paper-button>
+		</div>
+	</paper-dialog>
+</template>
+<script>
+Polymer({
+	is: 'improve-stone',
+	properties: {
+		selected: {
+			type: Number,
+			notify: true
+		},
+		errMsgPace: {
+			type: String,
+			readOnly: true,
+			value: 'Invalid pace input!'
+		},
+		labelDuration5K: {
+			type: String,
+			readOnly: true,
+			value: 'Duration (e.g. 23:00)'
+		},
+		labelDuration10K: {
+			type: String,
+			readOnly: true,
+			value: 'Duration (e.g. 50:40)'
+		},
+		distanceTestResult: {
+			type: Object,
+			notify: true,
+			value: function () {
+				return {};
+			}
+		},
+		userLocal: {
+			type: Object,
+			notify: true
+		}
+	},
+	ready: function () {
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
+		this.selected = 0;
+		this.currentStep = 0;
+		this.availables = [];
+		this.targetRaces = ['5k', '10k', 'half marathon', 'marathon'];
+	},
+	attached: function () {
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
+		if (jwt.hasToken) {
+			if (Object.keys(user.data).length === 0) {
+				user.fetchDetails(() => {
+					this.setUserLocal();
+				});
+				return;
+			}
+			this.setUserLocal();
+		}
+		this.checkAvailables();
+	},
+	setUserLocal: function () {
+		var aboutStr = user.data.about_me;
+		if (!aboutStr) {
+			aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
+		}
+		var targetRaceIdx = 0;
+		var hasTargetRaceIdx = false;
+		if ('race' in user.data) {
+			targetRaceIdx = this.targetRaces.indexOf(user.data.race);
+			if (targetRaceIdx < 0) {
+				targetRaceIdx = 0;
+				hasTargetRaceIdx = false;
+			} else {
+				hasTargetRaceIdx = true;
+			}
+		}
+		this.userLocal = {
+			birth_day: user.data.birth.day,
+			birth_month: user.data.birth.month,
+			birth_year: user.data.birth.year,
+			gender: user.data.gender,
+			height: user.data.height,
+			city: user.data.city,
+			state: user.data.state,
+			weight: user.data.weight,
+			name: user.data.user_name,
+			profileImg: user.getImage(),
+			about_me: aboutStr,
+			units: user.data.units,
+			age: this.getAge(
+				user.data.birth.year,
+				user.data.birth.month,
+				user.data.birth.day
+			),
+			targetRaceIdx: targetRaceIdx,
+			hasTargetRaceIdx: hasTargetRaceIdx
+		};
+	},
+	getAge: function (year, month, day) {
+		if (year === 0 && month === 0 && day === 0) {
+			return 0;
+		}
+		var today = new Date();
+		var birth = new Date(
+				parseInt(year) + 1,
+				parseInt(month) - 1,
+				parseInt(day)
+		);
+		return today.getFullYear() - birth.getFullYear();
+	},
+	savePersonal: function () {
+		var updateParams = '?fields=gender,birth,race';
+
+		var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
+		superagent
+			.put(`/b/api/v1/users/${jwt.data.id}${updateParams}`)
+			.send({
+				gender: this.userLocal.gender,
+				birth: {
+					year: parseInt(this.userLocal.birth_year),
+					month: parseInt(this.userLocal.birth_month),
+					day: parseInt(this.userLocal.birth_day)
+				},
+				race: target_race
+			})
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				var text;
+				if (res.ok) {
+					text = 'Your information is updated!';
+					user.updateData(res.body);
+					heatDuration.getZones();
+					spiderChart.ready();
+				} else {
+					text = 'Your information is not updated. Please try again.';
+				}
+				toast(text);
+				this.nextAvailable();
+			});
+	},
+	calcTraining: function () {
+		let results = [];
+		switch (this.selected) {
+			case 0:
+				let duration5k = durationToSec(this.distanceTestResult.fiveKDuration);
+				if (duration5k === -1) {
+					break;
+				}
+				results.push({
+					label: '5k',
+					speed: 5000 / duration5k,
+					duration: duration5k
+				});
+				break;
+			case 1:
+				let duration10k = durationToSec(this.distanceTestResult.tenKDuration);
+				if (duration10k === -1) {
+					break;
+				}
+				results.push({
+					label: '10k',
+					speed: 10000 / duration10k,
+					duration: duration10k
+				});
+				break;
+		}
+		if (results.length === 0) {
+			this.$.invalid.open();
+			return;
+		}
+		superagent
+			.post('/b/api/v1/training')
+			.send({
+				'cptest_result': results
+			})
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				var text;
+				if (res.ok) {
+					text = 'Your critical power is updated.';
+				} else {
+					text = 'Your information is not accepted by server. Please try again.';
+				}
+				toast(text);
+				this.nextAvailable();
+			});
+	},
+	checkAvailables: function () {
+		if (
+			this.userLocal.birth_year === 0 ||
+			this.userLocal.gender === '' ||
+			!this.userLocal.hasTargetRaceIdx
+		) {
+			this.availables.push('personal');
+		}
+		if (user.data.training_info.critical_power === 0) {
+			this.availables.push('baseline');
+		}
+		this.activateAvailables();
+	},
+	changeRace: function () {
+		this.currentStep = 0;
+		this.availables = ['personal'];
+		this.show();
+		this.activateAvailables();
+	},
+	activateAvailables: function () {
+		if (this.availables.length > 0) {
+			this.addBlur();
+			this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.remove('hidden');
+		} else {
+			this.removeBlur();
+			this.hide();
+			this.availables = [];
+			this.currentStep = 0;
+		}
+	},
+	nextAvailable: function () {
+		this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.add('hidden');
+		this.currentStep++;
+		if (this.currentStep === this.availables.length) {
+			this.removeBlur();
+			this.hide();
+		} else {
+			this.querySelector(`[data-stone=${this.availables[this.currentStep]}]`).classList.remove('hidden');
+		}
+	},
+	show: function () {
+		this.classList.remove('hidden');
+	},
+	hide: function () {
+		this.classList.add('hidden');
+	},
+	/* global heatDuration, spiderChart, performanceManagement */
+	addBlur: function () {
+		if (heatDuration) {
+			heatDuration.classList.add('blurred');
+		}
+		if (spiderChart) {
+			spiderChart.classList.add('blurred');
+		}
+		if (performanceManagement) {
+			performanceManagement.classList.add('blurred');
+		}
+		if (powerTrend) {
+			powerTrend.classList.add('blurred');
+		}
+	},
+	removeBlur: function () {
+		if (heatDuration) {
+			heatDuration.classList.remove('blurred');
+		}
+		if (spiderChart) {
+			spiderChart.classList.remove('blurred');
+		}
+		if (performanceManagement) {
+			performanceManagement.classList.remove('blurred');
+		}
+		if (powerTrend) {
+			powerTrend.classList.remove('blurred');
+		}
+	}
+});
+</script>
+</dom-module>

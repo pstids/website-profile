@@ -1,0 +1,852 @@
+<dom-module id="heat-duration">
+<style>
+	:host {
+		font-family: "Stryd", sans-serif;
+		position: relative;
+		background-color: var(--primary-background-color);
+		min-width: 960px;
+		padding: 20px;
+		padding-bottom: 40px;
+		display: block;
+	}
+	:host.blurred {
+		-webkit-filter: blur(2px);
+		-moz-filter: blur(2px);
+		-ms-filter: blur(2px);
+		-o-filter: blur(2px);
+		filter: blur(2px);
+	}
+	h1.header {
+		@apply(--header);
+		text-align: center;
+		padding: 15px 0;
+	}
+	.charts {
+		position: relative;
+		width: 860px;
+		height: 560px;
+		z-index: 3;
+	}
+	.sidecharts {
+		@apply(--layout-horizontal);
+		justify-content: center;
+	}
+	#heatcanvas, #heatline, #heatline2 {
+		position: absolute;
+	}
+	.heatbars {
+		flex: 0 1 300px;
+		border: 1px solid #4D4D4D;
+		margin: 10px;
+	}
+	.heatmaps {
+		border: 1px solid #4D4D4D;
+		margin: 10px;
+		@apply(--layout-vertical);
+	}
+
+	.info {
+		@apply(--layout-vertical);
+		border: 1px solid #4D4D4D;
+		flex: 0 1 270px;
+		margin: 0 20px 20px 20px;
+	}
+	.title {
+		@apply(--layout-horizontal);
+		@apply(--layout-flex);
+	}
+	.stats {
+		padding: 20px;
+		@apply(--layout-horizontal);
+	}
+	@media (max-width: 800px) {
+		.stats {
+			@apply(--layout-vertical);
+		}
+	}
+	.stats p {
+		color: white;
+		padding: 10px;
+		line-height: 1.7;
+		margin: 0;
+	}
+	.floater {
+		position: absolute;
+		background: #262626;
+		-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+		padding: 10px;
+		border: 1px solid #4D4D4D;
+	}
+	.floater .titles {
+		padding: 5px;
+	}
+	.floater .titles p {
+		color: white;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+	.floater .values {
+		padding: 5px;
+	}
+	.floater .values p {
+		color: white;
+	}
+	#heatlay {
+		z-index: 9;
+		position: relative;
+	}
+	.block {
+		width: 20px;
+		height: 20px;
+		padding: 3px;
+	}
+	[data-block="plan"] {
+		background: #F5A214;
+
+	}
+	[data-block="personal"] {
+		background: #c55300;
+	}
+	.text {
+		font-size: 20px;
+		line-height: 20px;
+		padding: 3px 15px 3px 10px;
+		color: white;
+	}
+	.setButton {
+		width: 250px;
+		padding: 10px;
+		margin-bottom: 30px;
+	}
+	.targetRace {
+		text-transform: capitalize;
+	}
+	.questionBtn {
+		margin-top: 0;
+		margin-left: 20px;
+	}
+	.gradient {
+		background: hsla(7,80%,59%,1);
+		background: -moz-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: -webkit-gradient(left top, right top, color-stop(0%, hsla(7,80%,59%,1)), color-stop(25%, hsla(62,80%,50%,1)), color-stop(50%, hsla(151,94%,25%,1)), color-stop(75%, hsla(216,80%,24%,1)), color-stop(100%, hsla(266,63%,18%,1)));
+		background: -webkit-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: -o-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: -ms-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		background: linear-gradient(to right, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ea5643', endColorstr='#2a114b', GradientType=1);
+		height: 15px;
+		width: 100%;
+	}
+	.keys {
+		position: relative;
+		height: 100%;
+		color: white;
+	}
+	[data-key="top"] {
+		bottom: 5px;
+		left: 0;
+		position: absolute;
+	}
+	[data-key="bottom"] {
+		bottom: 5px;
+		right: 0;
+		position: absolute;
+	}
+	p {
+		font-size: 18px;
+		line-height: 1.45;
+	}
+</style>
+<template>
+	<div class="layout horizontal center center-justified">
+		<h1 class="header">Improve Training Strategy</h1>
+	</div>
+	<div class="sidecharts center" style="margin-top: 20px;">
+		<div class="heatbars">
+			<div class="layout vertical" style="margin-bottom: 20px;">
+				<div class="top">
+					<h1><span class="targetRace">{{raceKey}}</span> Plan Comparison</h1>
+					<div class="raindrop" on-click="comparisonQuestion" class="questionBtn">
+						<iron-icon icon="icons:help-outline"></iron-icon>
+					</div>
+				</div>
+				<div class="layout horizontal" style="padding: 10px;">
+					<div class="block" data-block="plan"></div>
+					<div class="text">Plan</div>
+					<div class="block" data-block="personal"></div>
+					<div class="text">Your Training</div>
+				</div>
+			</div>
+			<div id="heatbars"></div>
+		</div>
+		<div class="heatmaps">
+			<div class="top">
+				<h1>Training Power Heat Map</h1>
+				<div class="raindrop" on-click="heatmapQuestion" class="questionBtn">
+					<iron-icon icon="icons:help-outline"></iron-icon>
+				</div>
+			</div>
+			<div class="layout vertical">
+				<div class="charts">
+					<svg id="heatline"></svg>
+					<canvas id="heatcanvas"></canvas>
+					<svg id="heatline2"></svg>
+					<svg id="heatlay"></svg>
+					<div class="floater hidden layout horizontal" id="floater">
+						<div class="layout vertical titles">
+							<p>Runs</p>
+							<p>Real Power</p>
+							<p>Curve Power</p>
+							<p>Duration</p>
+						</div>
+						<div class="layout vertical values">
+							<p id="fruns"></p>
+							<p id="fpower"></p>
+							<p id="fpotential"></p>
+							<p id="fduration"></p>
+						</div>
+					</div>
+				</div>
+				<div class="layout vertical" style="padding: 25px; position: relative; z-index: 2;">
+					<div class="keys">
+						<div data-key="top">High Run Frequency</div>
+						<div data-key="bottom">Low Run Frequency</div>
+					</div>
+					<div class="gradient"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<paper-dialog id="comparisonDialog" style="max-width: 600px;">
+		<h1>Stryd Plan Comparison</h1>
+		<div class="layout vertical">
+			<p>Compare your training to training plans developed by expert coaches and exercise physiologists.  Make the appropriate changes to align your training for big improvements!  You can compare to a different plan by changing your Target Race Distance on the Settings Page - be sure to refresh your browser!)</p>
+		</div>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+	<paper-dialog id="heatmapDialog" style="max-width: 600px;">
+		<h1>Training Power Heatmap</h1>
+		<div class="layout vertical">
+			<p>A visual description of your running history in terms of both intensity (power) and duration.  Bright Red, “hot” areas, indicate combinations of power and duration that you frequently achieve in your training.   Dark blue areas occur less often.  Moving your cursor over different parts of the heat map will reveal the average power, duration, and frequency for that range of power and duration.  The Orange Dot will always display the maximum power that you have achieved for that given duration.  This gives you a sense of what you are able to accomplish in your next race!</p>
+		</div>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+</template>
+<script>
+Polymer({
+	is: 'heat-duration',
+	ready: function () {
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
+		this.width = 760;
+		this.height = 500;
+		this.padding = 30;
+		this.data = {};
+
+		this.colors = ['#F5A214', '#c55300'];
+
+		this.mouseX = 0;
+		this.mouseY = 0;
+		this.boxX = 0;
+		this.boxY = 0;
+		this.lTimer = null;
+
+		this.raceKey = '';
+	},
+	comparisonQuestion: function () {
+		this.$.comparisonDialog.open();
+	},
+	heatmapQuestion: function () {
+		this.$.heatmapDialog.open();
+	},
+	moveFloat: function () {
+		var distanceX = Math.abs(this.mouseX - this.boxX);
+		var distanceY = Math.abs(this.mouseY - this.boxY);
+		if (distanceX > 100 || distanceX < 1 || distanceY > 100 || distanceY < 1) {
+			this.boxX = this.mouseX;
+			this.boxY = this.mouseY;
+		} else {
+			var speedX = Math.round(distanceX / 10, 0);
+			this.boxX = (this.boxX < this.mouseX) ? this.boxX + speedX : this.boxX - speedX;
+			var speedY = Math.round(distanceY / 10, 0);
+			this.boxY = (this.boxY < this.mouseY) ? this.boxY + speedY : this.boxY - speedY;
+		}
+
+		if ('heatmaps' in this.data) {
+			var coors = this.getXY2(this.boxX, this.boxY);
+			var runsValue = null;
+			if (coors.y >= 0 && coors.y < this.data.heatmaps.length) {
+				runsValue = this.data.heatmaps[coors.y][coors.x];
+			}
+			var powerValue = null;
+			if (coors.y >= 0 && coors.y < this.data.heatmaps.length) {
+				powerValue = this.data.powers[this.data.powers.length - coors.y];
+			}
+			var timeValue = null;
+			if (coors.x >= 0 && coors.x < this.data.heatmaps[0].length) {
+				timeValue = this.data.windows[coors.x];
+			}
+			var potentialValue = null;
+			if (coors.x >= 0 && coors.x < this.data.heatmaps[0].length) {
+				potentialValue = Math.floor(this.data.maxs[coors.x]);
+			}
+			if (
+				runsValue !== null &&
+				powerValue !== null &&
+				timeValue !== null &&
+				runsValue !== undefined &&
+				powerValue !== undefined &&
+				timeValue !== undefined
+			) {
+				this.$.fruns.textContent = runsValue;
+				this.$.fpower.textContent =  `${powerValue} watts`;
+				var timeUnit = ' secs';
+				if (timeValue > 60) {
+					timeValue /= 60;
+					timeUnit = ' mins';
+				}
+				this.$.fduration.textContent = `${timeValue}${timeUnit}`;
+				this.$.fpotential.textContent = `${potentialValue} watts`;
+				this.$.floater.style.left = `${this.boxX+10}px`;
+				this.$.floater.style.top = `${this.boxY+10}px`;
+				this.$.floater.classList.remove('hidden');
+			} else {
+				this.$.floater.classList.add('hidden');
+			}
+		}
+	},
+	attached: function () {
+		// if (!featureManagement.hasFeatures) {
+		// 	return;
+		// }
+		var today = moment();
+		var past = moment().subtract(12, 'months');
+		var todayFMT = today.format('MM-DD-YYYY');
+		var pastFMT = past.format('MM-DD-YYYY');
+		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;
+		if (isLocal) {
+			path = '/powercenter/scripts/local/powerduration.json';
+		}
+		superagent
+			.get(path)
+			.send()
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res.ok) {
+					this.data = res.body;
+					this.data.maxs.splice(0, 2);
+					this.data.windows.splice(0, 2);
+					for (let i = 0; i < this.data.heatmaps.length; i++) {
+						this.data.heatmaps[i].splice(0, 2);
+					}
+					var max = this.data.maxs[0];
+					for (let i = 0; i < this.data.powers.length; i++) {
+						var power = this.data.powers[i];
+						if (power > max) {
+							this.data.powers.splice(i);
+							this.data.heatmaps.splice(
+								0,
+								this.data.heatmaps.length-i
+							);
+						}
+					}
+					var lastMax = 0;
+					for (let o = 0; o < this.data.maxs.length; o++) {
+						if (this.data.maxs[o] === 0) {
+							this.data.maxs[o] = lastMax;
+						} else {
+							lastMax = this.data.maxs[o];
+						}
+					}
+					this.createChart();
+				} else {
+					console.log('Error: cannot fetch data');
+				}
+			});
+
+		this.getZones();
+	},
+	getZones: function () {
+		app.clearChildren(this.$.heatbars);
+		var planPercentage = new Promise(resolve => {
+			this.raceKey = '5k';
+			if ('race' in user.data && user.data.race !== '') {
+				this.raceKey = user.data.race;
+			}
+			var path = `/b/internal/plan/zoneproportion?race=${this.raceKey}`;
+			if (isLocal) {
+				path = '/powercenter/scripts/local/zoneproportion.json';
+			}
+			superagent
+				.get(path)
+				.send()
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res.ok) {
+						resolve(res.body);
+					} else {
+						resolve(0);
+						console.log('Error: cannot fetch data');
+					}
+				});
+		});
+		var personPercentage = new Promise(resolve => {
+			var today = moment();
+			var past = moment().subtract(2, 'months');
+			var todayFMT = today.format('MM-DD-YYYY');
+			var pastFMT = past.format('MM-DD-YYYY');
+			var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${pastFMT}&endDate=${todayFMT}&sortBy=StartDate`;
+			var zones = [0, 0, 0, 0, 0];
+			var addFun = (a, i) => a + zones[i];
+			superagent
+				.get(activityEndPoint)
+				.send()
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer: ${jwt.token}`)
+				.end((err, res) => {
+					if (res.ok) {
+						if (res.body !== null && res.body.activities !== null) {
+							for (var activity of res.body.activities) {
+								if (activity.seconds_in_zones !== null) {
+									zones = activity.seconds_in_zones.map(addFun);
+								}
+							}
+						}
+						resolve(zones);
+					} else {
+						resolve(0);
+						console.log('Error: failure on grabLogs', err, res);
+					}
+				});
+		});
+		Promise.all([planPercentage, personPercentage])
+			.then(values => {
+				var planTotals = [0, 0, 0, 0, 0];
+				var persTotals = [0, 0, 0, 0, 0];
+				var planPers = [];
+				var persPers = [];
+				var total = 1;
+				var i = 0;
+				if (values[0]) {
+					planTotals = values[0];
+					total = planTotals.reduce((a, b) => a + b, 1);
+					for (i = 0; i < 5; i++) {
+						planPers.push(Math.round(planTotals[i]/total*100));
+					}
+				}
+				if (values[1]) {
+					persTotals = values[1];
+					total = persTotals.reduce((a, b) => a + b, 1);
+					for (i = 0; i < 5; i++) {
+						persPers.push(Math.round(persTotals[i]/total*100));
+					}
+				}
+				var max = Math.max.apply(null, planPers.concat(persPers));
+				for (i = 5; i > 0; i--) {
+					this.createZone(i, planPers[i-1], persPers[i-1], max);
+				}
+			});
+	},
+	createChart: function () {
+		this.dx = this.data.heatmaps[0].length;
+		this.dy = this.data.heatmaps.length;
+
+		this.x = d3.scale.linear()
+			.domain([0, this.dx])
+			.range([0, this.width]);
+		this.y = d3.scale.linear()
+			.domain([0, this.dy])
+			.range([this.height, 0]);
+
+		var xAxis = d3.svg.axis()
+			.scale(this.x)
+			.tickSize(1)
+			.tickPadding(10)
+			.orient('bottom')
+			.tickFormat((d) => {
+				var unit = ' secs';
+				var val = this.data.windows[d-1];
+				if (val > 60) {
+					val /= 60;
+					unit = ' mins';
+				}
+				return [`${val}${unit}`];
+			})
+			.innerTickSize(-this.height)
+			.outerTickSize(0)
+			.ticks(10);
+
+		var yAxis = d3.svg.axis()
+			.scale(this.y)
+			.orient('left')
+			.tickFormat((d) => {
+				return this.data.powers[d];
+			})
+			.outerTickSize(0)
+			.tickPadding(10)
+			.tickSize(1);
+
+		var svg = d3.select('#heatline')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+				.append('svg:g')
+				.attr('transform', `translate(${this.padding}, ${this.padding})`);
+
+		var line = d3.svg.area()
+			/* unused: d */
+			.x((d, i) => {
+				return +this.x(i)+3;
+			})
+			.y0(this.height-3)
+			.y1((d) => {
+				var y = +this.y((d-100)/10);
+				if (y > this.height) {
+					y = this.height-3;
+				}
+				return y;
+			});
+
+		svg.append('path')
+			.datum(this.data.maxs)
+			.attr('class', 'line')
+			.attr('d', line)
+			.attr('stroke', '#f4931f')
+			.attr('stroke-width', 4)
+			.attr('border', '')
+			.attr('transform', `translate(${this.padding}, 0)`)
+			.attr('fill', '#F5A214');
+
+		var svg2 = d3.select('#heatline2')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+				.append('svg:g')
+				.attr('transform', `translate(${this.padding}, ${this.padding})`);
+
+		var line2 = d3.svg.line()
+			/* unused: d */
+			.x((d, i) => {
+				return +this.x(i)+3;
+			})
+			.y((d) => {
+				var y = +this.y((d-100)/10);
+				if (y > this.height) {
+					y = this.height-3;
+				}
+				return y;
+			});
+
+		svg2.append('path')
+			.datum(this.data.maxs)
+			.attr('class', 'line')
+			.attr('d', line2)
+			.attr('stroke', '#f4931f')
+			.attr('stroke-width', 4)
+			.attr('transform', `translate(${this.padding}, 0)`)
+			.attr('fill', 'rgba(0, 0, 0, 0)');
+
+		svg.append('g')
+			.attr('class', 'x axis2')
+			.attr('transform', `translate(${this.padding}, ${this.height})`)
+			.call(xAxis)
+			.call(this.removeZero)
+				.append('text')
+				.attr('transform', `translate(${this.width/2}, ${this.padding + 20})`)
+				.text('Duration');
+
+		svg.append('g')
+			.attr('class', 'y axis2')
+			.attr('transform', `translate(${this.padding}, 0)`)
+			.call(yAxis)
+			.call(this.removeZero)
+				.append('text')
+				.attr('y', -10)
+				.text('Power (W)');
+
+		var focus = d3.select('#heatlay')
+			.append('g')
+			.style('display', 'none');
+
+		focus.append('line')
+			.attr('id', 'focusLineX')
+			.attr('class', 'focusLine')
+			.attr('stroke', '#F5A214')
+			.attr('stroke-width', '0.5px');
+		focus.append('line')
+			.attr('id', 'focusLineY')
+			.attr('class', 'focusLine')
+			.attr('stroke', '#F5A214')
+			.attr('stroke-width', '0.5px');
+		focus.append('circle')
+			.attr('id', 'focusCircle')
+			.attr('fill', '#F5A214')
+			.attr('r', 10)
+			.attr('class', 'circle focusCircle');
+
+		this.rMaxs = [];
+		for (var max of this.data.maxs) {
+			this.rMaxs.push((max-100)/10);
+		}
+
+		var that = this;
+
+		d3.select('#heatlay')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+			.append('g')
+			.append('rect')
+			.attr('class', 'overlay')
+			.attr('width', this.width + this.padding*2)
+			.attr('height', this.height + this.padding*2)
+			.on('mouseover', () => {
+				this.boxX = this.mouseX;
+				this.boxY = this.mouseY;
+				this.$.floater.style.left = `${this.boxX}px`;
+				this.$.floater.style.top = `${this.boxY}px`;
+				this.$.floater.classList.remove('hidden');
+				this.lTimer = setInterval(this.moveFloat.bind(this), 10);
+				
+				focus.style('display', null);
+			})
+			.on('mouseout', () => {
+				clearTimeout(this.lTimer);
+				this.boxX = 0;
+				this.boxY = 0;
+				this.$.floater.style.left = `${this.boxX}px`;
+				this.$.floater.style.top = `${this.boxY}px`;
+				this.$.floater.classList.add('hidden');
+				
+				focus.style('display', 'none');
+			})
+			.on('mousemove', function () {
+				var mouse = d3.mouse(this);
+
+				that.mouseX = mouse[0];
+				that.mouseY = mouse[1];
+
+				var mouseDate = that.x.invert(mouse[0]-60);
+				var i = Math.floor(mouseDate);
+
+				var d0 = that.rMaxs[i];
+				var d1 = that.rMaxs[i + 1];
+				// work out which date value is closest to the mouse
+				var diffD = that.y(d1) - that.y(d0);
+				var heightD = that.y(d0) + ((mouseDate-i) * diffD);
+
+				var x = that.mouseX;
+				var y = heightD;
+
+				if (y > that.height) {
+					y = that.height;
+				}
+
+				if (isNaN(x) || isNaN(y)) {
+					return;
+				}
+
+				focus.select('#focusCircle')
+					.attr('cx', x)
+					.attr('cy', y+that.padding);
+				focus.select('#focusLineX')
+					.attr('x1', x)
+					.attr('y1', that.padding)
+					.attr('x2', x)
+					.attr('y2', that.height+that.padding);
+				focus.select('#focusLineY')
+					.attr('x1', that.padding)
+					//.attr('y1', y+that.padding)
+					.attr('y1', mouse[1])
+					.attr('x2', that.width+that.padding)
+					//.attr('y2', y+that.padding);
+					.attr('y2', mouse[1]);
+			});
+
+		this.draw();
+	},
+	/* globals HeatCanvas:true */
+	draw: function () {
+		this.$.heatcanvas.width = this.width + this.padding * 2;
+		this.$.heatcanvas.height = this.height + this.padding * 2;
+		var heatmap = new HeatCanvas(this.$.heatcanvas);
+		for (var y = 0; y < this.dy; y++) {
+			for (var x = 0; x < this.dx; x++) {
+				var pt = this.getXY(x, y);
+				var it = this.getIntensity(this.data.heatmaps[y][x]);
+				// if (x < 10 && y < 10) {
+				// 	console.log(Math.round(pt.x), Math.round(pt.y), it);
+				// }
+				heatmap.push(Math.round(pt.x), Math.round(pt.y), it);
+			}
+		}
+		heatmap.render(null, null, (value) => {
+			var h = (1 - value);
+			var s = 0.8;
+			var l = value * 0.6;
+			var a = 1;
+			if (value < 0.3) {
+				// h = (0.8 - value);
+				// s = 0.6;
+				// l = value * 0.5;
+				a = value * (10/3);
+			}
+			return [h, s, l, a];
+		});
+	},
+	getXY: function (xi, yi) {
+		var partx = this.width / this.dx;
+		var party = this.height / this.dy;
+		return {
+			x: partx * xi + (partx/2) + (this.padding*2),
+			y: party * yi + (party/2) + this.padding
+		};
+	},
+	getXY2: function (x, y) {
+		var partx = this.width / this.dx;
+		var party = this.height / this.dy;
+		return {
+			x: Math.floor((x  - (partx/2) - (this.padding*2)) / partx),
+			y: Math.floor((y - (party/2) - this.padding) / party)
+		};
+	},
+	getIntensity: function (value) {
+		if (value === 0) {
+			return 0;
+		}
+		value *= 10;
+		var high = 210;
+		return ((value/high)*30) + 20;
+	},
+	removeZero: function (axis) {
+		axis.selectAll('g')
+			.filter((d) => {
+				return !d;
+			}).remove();
+	},
+	/* unused: d */
+	createZone: function (zone, yPer, pPer, max) {
+		var data = [
+			{
+				name: '5K Plan',
+				value: yPer,
+				display: `${yPer}%`
+			},
+			{
+				name: 'Gus',
+				value: pPer,
+				display: `${pPer}%`
+			}
+		];
+		var margin = {
+			top: 0,
+			bottom: 0,
+			left: 80,
+			right: 0
+		};
+		var width = 300 - margin.left - margin.right;
+		var height = 105 - margin.top - margin.bottom;
+		var numTicks = 0;
+
+		var adjWidth = Math.max(yPer/max, pPer/max);
+		var xScale = d3.scale.linear()
+			.range([0, adjWidth*width]);
+		var yScale = d3.scale.ordinal()
+			.rangeBands([0, height]);
+
+		var svg = d3.select('#heatbars')
+			.append('svg')
+			.attr('width', width + margin.left + margin.right)
+			.attr('height', height + margin.top + margin.bottom)
+			.attr('class', 'base-svg');
+		svg.style('border-top', '1px solid #4D4D4D');
+
+		var barSvg = svg.append('g')
+			.attr('transform', `translate(${margin.left}, ${margin.top})`)
+			.attr('class','bar-svg');
+
+		var xMin = 0;
+		var xMax = d3.max(data, (d) => {
+			return d.value;
+		});
+
+		xScale.domain([xMin, xMax]);
+		yScale.domain(data.map((d) => {
+			return d.name;
+		}));
+
+		svg.append('text')
+			.attr('x', 10)
+			.attr('y', height/2)
+			.attr('text-anchor', 'start')
+			.text(`Zone ${zone}`)
+			.attr('class', 'title');
+
+		var groups = barSvg.append('g')
+			.attr('class', 'labels')
+			.selectAll('text')
+			.data(data)
+			.enter()
+			.append('g');
+
+		groups.attr('class', 'bars')
+			.append('rect')
+			.attr('width', (d) => {
+				return xScale(d.value);
+			})
+			.attr('height', 46)
+			.attr('x', (d) => {
+				return width-xScale(d.value);
+			})
+			.attr('y', (d) => {
+				return yScale(d.name);
+			})
+			.attr('fill', (d, i) => {
+				return this.colors[i];
+			})
+			.attr('id', (d, i) => {
+				return `bar${i}`;
+			});
+
+		groups.append('text')
+			.attr('x', (d) => {
+				return width-xScale(d.value)-10;
+			})
+			.attr('y', (d) => {
+				return yScale(d.name);
+			})
+			.text((d) => {
+				return d.display;
+			})
+			.attr('text-anchor', 'end')
+			.attr('dy', '1.5em')
+			.attr('dx', '.32em')
+			.attr('id', 'precise-value');
+
+		var grid = xScale.ticks(numTicks);
+		barSvg.append('g').attr('class', 'grid')
+			.selectAll('line')
+			.data(grid, (d) => {
+				return d;
+			})
+			.enter()
+				.append('line')
+				.attr('y1', 0)
+				.attr('y2', height+margin.bottom)
+				.attr('x1', (d) => {
+					return xScale(d);
+				})
+				.attr('x2', (d) => {
+					return xScale(d);
+				})
+				.attr('stroke', 'white');
+	}
+});
+</script>
+</dom-module>

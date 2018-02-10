@@ -3,6 +3,8 @@
         <style>
             :host {
                 display: block;
+                color: white;
+                padding: 5vw 15vw;
             }
             h1.title {
                 @apply(--header);
@@ -21,6 +23,7 @@
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
                 @apply(--layout-justified);
+                @apply(--layout-wrap);
                 padding: 20px;
             }
             .authenticate div button, .authenticate div a {
@@ -34,8 +37,19 @@
                 border-color: var(--warning-color);
                 color: var(--warning-color);
             }
-            .authenticate div button[data-toggle="off"] {
+            @media (max-width: 1000px) {
+                .authenticate {
+                    @apply(--layout-vertical);
+                }
+                .authenticate > div {
+                    margin-top: 20px;
+                }
             }
+            .aplatform {
+                margin: 20px;
+            }
+            /*.authenticate div button[data-toggle="off"] {
+            }*/
         </style>
         <h1 class="title">Stryd Connect</h1>
         <div class="import">
@@ -53,13 +67,7 @@
                     </a>
                     <button is="stryd-button" data-suunto="connect">Connect</button>
                     <div data-suunto="authStep" class="hidden">
-                        <paper-input
-                            no-label-float
-                            type="text"
-                            placeholder="Email"
-                            name="email"
-                            data-suunto="email">
-                        </paper-input>
+                        <paper-input no-label-float type="text" placeholder="Email" name="email" data-suunto="email"></paper-input>
                         <button is="stryd-button" data-suunto="auth">Connect to Movescount</button>
                     </div>
                     <a is="stryd-button" data-suunto="confirm" href="http://www.movescount.com/settings#connections" class="hidden" target="_blank">Visit Movescount to Confirm</a>
@@ -73,19 +81,25 @@
         <div class="export">
             <h2 class="subtitle">Exports To</h2>
             <div class="authenticate">
-                <div>
+                <div class="aplatform">
+                    <a href="https://www.finalsurge.com/">
+                        <img class="logo" src="/powercenter/images/logos/logo_finalsurge.png" width="114px" height="35px"/>
+                    </a>
+                    <button is="stryd-button" data-toggle="off" id="finalsurge" on-click="oauthConnect">Connect</button>
+                </div>
+                <div class="aplatform">
                     <a href="https://www.trainingpeaks.com">
                         <img class="logo" src="/powercenter/images/logos/logo_tp.png" width="150px" height="35px"/>
                     </a>
                     <button is="stryd-button" data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</button>
                 </div>
-                <div>
+                <div class="aplatform">
                     <a href="https://www.strava.com">
                         <img class="logo" src="/powercenter/images/logos/logo_strava.png" width="150px" height="35px"/>
                     </a>
                     <button is="stryd-button" data-toggle="off" id="strava" on-click="oauthConnect">Connect</button>
                 </div>
-                <div>
+                <div class="aplatform">
                     <a href="https://www.2peak.com">
                         <img class="logo" src="/powercenter/images/logos/logo_2peak.png" width="150px" height="35px"/>
                     </a>
@@ -96,9 +110,6 @@
         <paper-toast duration="1300" text="Workouts fetched." data-suunto="alert"></paper-toast>
     </template>
     <script>
-        /*global superagent */
-        /*global jwt */
-        /*jshint unused: false*/
         /*jshint camelcase: false */
         Polymer({
             is: 'platform-connect',
@@ -116,7 +127,7 @@
                 this.suunto.alert.text = message;
                 this.suunto.alert.show();
             },
-            suuntoCheck: function (e) {
+            suuntoCheck: function () {
                 if (document.visibilityState === 'visible' &&
                     !this.suunto.confirm.classList.contains('hidden')) {
                     superagent
@@ -135,20 +146,19 @@
                         });
                 }
             },
-            suuntoAuth: function (e) {
+            suuntoAuth: function () {
                 this.suunto = {
-                    connect: this.querySelector('[data-suunto=\'connect\']'),
-                    email: this.querySelector('[data-suunto=\'email\']'),
-                    auth: this.querySelector('[data-suunto=\'auth\']'),
-                    authStep: this.querySelector('[data-suunto=\'authStep\']'),
-                    confirm: this.querySelector('[data-suunto=\'confirm\']'),
-                    fetch: this.querySelector('[data-suunto=\'fetch\']'),
-                    fetching: this.querySelector('[data-suunto=\'fetching\']'),
-                    alert: this.querySelector('[data-suunto=\'alert\']'),
-                    disconnect: this.querySelector('[data-suunto=\'disconnect\']')
+                    connect: this.querySelector('[data-suunto="connect"]'),
+                    email: this.querySelector('[data-suunto="email"]'),
+                    auth: this.querySelector('[data-suunto="auth"]'),
+                    authStep: this.querySelector('[data-suunto="authStep"]'),
+                    confirm: this.querySelector('[data-suunto="confirm"]'),
+                    fetch: this.querySelector('[data-suunto="fetch"]'),
+                    fetching: this.querySelector('[data-suunto="fetching"]'),
+                    alert: this.querySelector('[data-suunto="alert"]'),
+                    disconnect: this.querySelector('[data-suunto="disconnect"]')
                 };
-                this.suunto.fetch.addEventListener('click', (e) => {
-                    var target = e.target;
+                this.suunto.fetch.addEventListener('click', () => {
                     this.suunto.fetch.classList.add('hidden');
                     this.suunto.fetching.classList.remove('hidden');
                     superagent
@@ -164,7 +174,7 @@
                                 if (res.body.workouts !== null) {
                                     for (var i = 0; i < res.body.workouts.length; i++) {
                                         var workoutID = res.body.workouts[i];
-                                        addLog(workoutID);
+                                        app.addLog(workoutID);
                                     }
                                 }
                             } else {
@@ -172,12 +182,12 @@
                             }
                         });
                 });
-                this.suunto.connect.addEventListener('click', (e) => {
+                this.suunto.connect.addEventListener('click', () => {
                     this.suunto.connect.classList.add('hidden');
                     this.suunto.authStep.classList.remove('hidden');
                     this.suunto.disconnect.classList.remove('hidden');
                 });
-                this.suunto.auth.addEventListener('click', (e) => {
+                this.suunto.auth.addEventListener('click', () => {
                     superagent
                         .post('/b/platform/auth/suunto')
                         .send({
@@ -195,7 +205,7 @@
                             }
                         });
                 });
-                this.suunto.disconnect.addEventListener('click', (e) => {
+                this.suunto.disconnect.addEventListener('click', () => {
                     this.oauthDisconnect('suunto', () => {
                         this.suunto.confirm.classList.add('hidden');
                         this.suunto.disconnect.classList.add('hidden');
@@ -256,7 +266,7 @@
                 }
             },
             updateView: function (platforms) {
-                var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak'], verifyPlatforms = ['suunto'];
+                var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak', 'finalsurge'], verifyPlatforms = ['suunto'];
                 var platform, i;
                 for (i = 0; i < platforms.length; i++) {
                     platform = platforms[i];

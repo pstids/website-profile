@@ -1,0 +1,91 @@
+<dom-module id="file-upload">
+	<style>
+		.uploader {
+			color: white;
+			padding: 4vw;
+			display: flex;
+			flex-direction: column;
+		}
+		.uploader h1 {
+			text-transform: uppercase;
+			font-size: 2.27vw;
+			color: #F5A214;
+			margin: 0;
+		}
+		.uploader .dropzone {
+			background-color: rgba(72, 72, 72, 0.7);
+			border-radius: 50px;
+			border: 1px solid #2F2F2F;
+			color: white;
+			height: 30vh;
+			width: 100%;
+			margin-top: 2vw;
+		}
+		.uploader .dropzone .dz-message {
+			padding-top: 6vh;
+		}
+	</style>
+	<template>
+		<div class="uploader">
+			<h1 class="title">Upload</h1>
+			<p>If you record your activitiy with a Garmin watch, you must upload your activity as a FIT file.</p>
+			<form class="dropzone" id="file">
+				<div class="dz-message" data-dz-message>
+					<span>Drop your FIT & TCX files here to upload (Or click to select from computer)</span>
+				</div>
+			</form>
+		</div>
+	</template>
+	<script>
+	/*global Dropzone*/
+	Polymer({
+		is: 'file-upload',
+		ready: function () {
+			Dropzone.autoDiscover = false;
+			new Dropzone(
+				this.$.file,
+				{
+					paramName: 'file',
+					url: '/b/platform/data/stryd',
+					headers: {
+						'Authorization': `Bearer: ${jwt.token}`
+					},
+					parallelUploads: 1,
+					maxFilesize: 60,
+					acceptedFiles: '.fit,.tcx,.offline',
+					uploadMultiple: false,
+					addRemoveLinks: true,
+					dictDefaultMessage: 'Drop your FIT file here to upload (Or click to select from computer)',
+					dictInvalidFileType: 'File type is not supported. Please upload valid sports watch data file.',
+					/* unused: file, xhr */
+					accept: (file, done) => {
+						done();
+					},
+					success: (file, message) => {
+						app.addLog(message.activity_id);
+					},
+					error: (file, message) => {
+						if (message) {
+							toast(message.message);
+						} else {
+							toast('Workout could not be uploaded.');
+						}
+					},
+					sending: (file, xhr, formData) => {
+						var uid = new Date().getUTCMilliseconds();
+						var fileMetaData = {
+							sizeInBytes: file.size,
+							uploadId: String(uid),
+							md5: '',
+							oauthToken: jwt.token,
+							privacy: 'public',
+							activityIds: [1]
+						};
+						formData.append('uploadMetaData', JSON.stringify(fileMetaData));
+					}
+				}
+			);
+		}
+	});
+	</script>
+</dom-module>

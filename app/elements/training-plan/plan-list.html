@@ -29,7 +29,6 @@
                 </template>
             </paper-listbox>
             <paper-button raised on-click="onAddPlan">Add plan</paper-button>
-            <paper-toast duration="1200" text="" id="toast"></paper-toast>
         </div>
     </template>
 
@@ -45,18 +44,17 @@
                 superagent
                     .get('/b/api/v1/training/plan/all')
                     .set('Accept', 'application/json')
-                    .set('Authorization', 'Bearer: ' + jwt.token)
-                    .end(function(err, res) {
-                        console.log('here in plan list', res);
+                    .set('Authorization', `Bearer: ${jwt.token}`)
+                    .end((err, res) => {
+                        // console.log('here in plan list', res);
                         if (res.ok) {
                             if (res.body !== null) { // Not empty
                                 this.plans = res.body;
                             }
                         } else {
-                            this.$.toast.text = 'Failed to fetch your training plans. Please try again later';
-                            this.$.toast.show();
+                            toast('Failed to fetch your training plans. Please try again later');
                         }
-                    }.bind(this));
+                    });
             },
             onAddPlan: function () {
                 let ID = (new Date()).valueOf() + Math.ceil(Math.random() * 97);

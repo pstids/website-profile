@@ -1,0 +1,129 @@
+<dom-module id="bubble-stats">
+	<style>
+		:host {
+			position: relative;
+		}
+		.bubbles {
+			@apply(--layout-horizontal);
+			@apply(--layout-around-justified);
+			padding: 2vw 1vw 1vw;
+		}
+		bubble-stat {
+			@apply(--layout-flex);
+			margin: 1vw;
+			--bubble-stat-wrap: {
+				width: 10vw;
+				height: 10vw;
+			};
+			--bubble-stat-border: {
+				width: 10vw;
+				height: 10vw;
+			};
+		}
+
+		.toggles {
+			position: absolute;
+			top: 0;
+			left: 0;
+			opacity: 0;
+			transition: opacity 0.5s;
+			z-index: 4;
+			display: flex;
+			flex-direction: row;
+			left: 20px;
+		}
+		:host:hover .toggles {
+			opacity: 1;
+		}
+
+		[data-stat] {
+			@apply(--layout-center);
+			@apply(--layout-justified);
+			@apply(--layout-horizontal);
+			background-color: var(--primary-background-color);
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			color: #FFFFFF;
+			cursor: pointer;
+			font-size: 0.7vw;
+			font-weight: 500;
+			margin: 0.5vw 1vw 0 0;
+			padding: 0.4vw 0.5vw;
+			text-transform: uppercase;
+		}
+		[data-stat] .circle {
+			width: 0.5vw;
+			height: 0.5vw;
+			border-radius: 50%;
+			border: 3px #FFFFFF solid;
+		}
+		[data-stat] .type {
+			padding-left: 10px;
+		}
+		[data-toggle="on"] .circle {
+			background-color: #F7A017;
+			border-color: #F7A017;
+			box-shadow: 0px 0px 20px 0px #F7A017;
+		}
+	</style>
+	<template>
+		<div class="toggles" id="toggles">
+			<div class="stat-toggle"
+			data-toggle="on"
+			on-click="toggleMetrics"
+			data-stat="elapsed">
+				<div class="circle"></div>
+				<div class="type">Elapsed Statistics</div>
+			</div>
+			<div class="stat-toggle"
+			data-toggle="off"
+			on-click="toggleMetrics"
+			data-stat="moving">
+				<div class="circle"></div>
+				<div class="type">Moving Statistics</div>
+			</div>
+		</div>
+		<div class="layout horizontal bubbles">
+			<bubble-stat id="bubble1"></bubble-stat>
+			<bubble-stat id="bubble2"></bubble-stat>
+			<bubble-stat id="bubble3"></bubble-stat>
+			<bubble-stat id="bubble4"></bubble-stat>
+			<bubble-stat id="bubble5"></bubble-stat>
+			<bubble-stat id="bubble6"></bubble-stat>
+		</div>
+	</template>
+	<script>
+	Polymer({
+		is: 'bubble-stats',
+		setData: function (metrics) {
+			this.$.bubble1.setData(metrics.pace);
+			this.$.bubble2.setData(metrics.time);
+			this.$.bubble3.setData(metrics.power);
+			this.$.bubble4.setData(metrics.heartRate);
+			this.$.bubble5.setData(metrics.dynamics);
+			this.$.bubble6.setData(metrics.misc);
+		},
+		toggleMetrics: function (e) {
+			var target = e.target;
+			while (!('stat' in target.dataset)) {
+				target = target.parentElement;
+			}
+			var opt = target.dataset.stat;
+
+			/* Change visual state */
+			var active = this.querySelector('[data-toggle="on"]');
+			active.dataset.toggle = 'off';
+			target.dataset.toggle = 'on';
+			
+			var bubbles = this.querySelectorAll('bubble-stat');
+			for (var bubble of bubbles) {
+				bubble.opt = opt;
+				bubble.setMode();
+			}
+		},
+		giveToggle: function () {
+			//this.$.toggles.classList.remove('hidden');
+		}
+	});
+	</script>
+</dom-module>

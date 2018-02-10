@@ -1,0 +1,130 @@
+<dom-module id="plan-segment">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+			border-bottom: 1px solid #4D4D4D;
+			background-color: #262626;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+		.insight {
+			@apply(--layout-horizontal);
+			@apply(--layout-flex);
+			@apply(--layout-center);
+			z-index: 1;
+		}
+		.insight .info {
+			@apply(--layout-vertical);
+		}
+		.insight .title {
+			@apply(--layout-horizontal);
+			font-size: 10px;
+			font-weight: 400;
+		}
+		.insight .field {
+			@apply(--layout-horizontal);
+			font-size: 25px;
+			font-weight: 400;
+			text-transform: uppercase;
+		}
+		.number {
+			border-color: #f7a017;
+			border-radius: 50px;
+			height: 50px;
+			width: 50px;
+			line-height: 50px;
+			font-size: 15px;
+			text-align: center;
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+		}
+		iron-icon {
+			width: 40px;
+			height: auto;
+			padding-right: 5px;
+			color: var(--primary-icon-color);
+			fill: var(--primary-icon-color);
+		}
+		span {
+			white-space: pre;
+		}
+		span.unit {
+			@apply(--layout-self-end);
+			font-size: 10px;
+			font-weight: 400;
+		}
+		p {
+			margin: 10px 0 0 0;
+			padding: 6px;
+			line-height: 23px;
+		}
+	</style>
+	<template>
+		<div class="layout horizontal">
+			<div class="duration insight">
+				<iron-icon icon="image:timer" id="time" class="hidden"></iron-icon>
+				<iron-icon icon="communication:swap-calls" id="distance" class="hidden"></iron-icon>
+				<div class="info">
+					<div class="title">{{duration_type}}</div>
+					<div class="field">
+						<span>{{duration_length}}</span><span> </span><span class="unit">{{duration_unit}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="range insight">
+				<iron-icon icon="{{pace_icon}}"></iron-icon>
+				<div class="info">
+					<div class="title">{{pace_name}}</div>
+					<div class="field">
+						<span>{{pace_value}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<p>{{description}}</p>
+	</template>
+	<script>
+		Polymer({
+			is: 'plan-segment',
+			properties: {
+				data: Object
+			},
+			ready: function () {
+				this.display = {};
+			},
+			setData: function (segment) {
+				if (segment.duration_type === 'distance') {
+					this.duration_type = 'Distance';
+					this.duration_length = segment.duration_distance;
+					this.duration_unit = segment.distance_unit_selected;
+					if (segment.duration_distance > 50 && segment.distance_unit_selected === 'mile') {
+						this.duration_unit = 'meter';
+					}
+					this.$.time.classList.add('hidden');
+					this.$.distance.classList.remove('hidden');
+				} else {
+					this.duration_type = 'Time';
+					this.duration_length = `${segment.duration_time.hour.fill()}:${segment.duration_time.minute.fill()}:${segment.duration_time.second.fill()}`;
+					this.duration_unit = 'HH:MM:SS';
+					this.$.distance.classList.add('hidden');
+					this.$.time.classList.remove('hidden');
+				}
+
+				if (segment.intensity_type === 'zone') {
+					this.pace_value = parseInt(segment.zone_selected) + 1;
+					this.pace_name = 'ZONE';
+					this.pace_icon = 'image:flash-on';
+				} else if (segment.intensity_type === 'pace') {
+					this.pace_value = segment.pace_selected;
+					this.pace_name = 'PACE';
+					this.pace_icon = 'maps:directions-run';
+				} else {
+					this.pace_value = parseInt(segment.zone_selected) + 1;
+					this.pace_name = 'ZONE';
+					this.pace_icon = 'image:flash-on';
+				}
+				this.description = segment.segment_desc;
+			}
+		});
+	</script>
+</dom-module>

@@ -1,0 +1,135 @@
+<dom-module id="home-navigation">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+			padding: 20px;
+		}
+
+		h1.header {
+			@apply(--header);
+		}
+
+		[data-select] {
+			@apply(--layout-center);
+			@apply(--layout-justified);
+			@apply(--layout-horizontal);
+			background-color: var(--primary-background-color);
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			color: #FFFFFF;
+			cursor: pointer;
+			font-size: 1vw;
+			font-weight: 500;
+			margin: 0.5vw 1vw 0 0;
+			padding: 0.8vw 1.1vw;
+			text-transform: uppercase;
+		}
+		[data-select] .circle {
+			width: 1.3vw;
+			height: 1.3vw;
+			border-radius: 50%;
+			border: 3px #FFFFFF solid;
+		}
+		[data-select] .type {
+			padding-left: 10px;
+		}
+		[data-toggle="on"] .circle {
+			background-color: #F7A017;
+			border-color: #F7A017;
+			-webkit-box-shadow: 0px 0px 20px 0px #F7A017;
+			-moz-box-shadow: 0px 0px 20px 0px #F7A017;
+			box-shadow: 0px 0px 20px 0px #F7A017;
+		}
+		compare-calendar {
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 100;
+		}
+	</style>
+	<template>
+		<div class="layout horizontal title center">
+			<h1 class="header">{{title}}</h1>
+			<div class="flex layout horizontal end-justified">
+				<div data-select="analysis" on-click="router" data-toggle="on">
+					<div class="circle"></div>
+					<div class="type">Analysis</div>
+				</div>
+				<div data-select="comparison" on-click="router" data-toggle="off" >
+					<div class="circle"></div>
+					<div class="type">Comparison</div>
+				</div>
+				<div data-select="training" on-click="router" data-toggle="off">
+					<div class="circle"></div>
+					<div class="type">Training</div>
+				</div>
+			</div>
+		</div>
+		<compare-calendar class="hidden"></compare-calendar>
+	</template>
+	<script>
+		Polymer({
+			is: 'home-navigation',
+			ready: function () {
+				this.availables = {};
+				this.title = 'Analysis';
+
+				this.compareCalendar = this.querySelector('compare-calendar');
+				this.selectComparison = this.querySelector('[data-select="comparison"]');
+				this.selectComparison.addEventListener('mouseenter', () => {
+					this.compareCalendar.classList.remove('hidden');
+				});
+				this.compareCalendar.addEventListener('mouseleave', () => {
+					this.compareCalendar.classList.add('hidden');
+				});
+			},
+			router: function (e) {
+				var target = e.target;
+				while (target.dataset.select === undefined) {
+					target = target.parentElement;
+				}
+				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+				target.dataset.toggle = 'on';
+
+				var select = target.dataset.select;
+				if (select === 'analysis') {
+					app.home = 'analysis';
+					urlManager.view('analysis');
+					this.title = 'Analysis';
+				} else if (select === 'comparison') {
+					app.home = 'comparison';
+					urlManager.view('comparison');
+					this.title = 'Comparison';
+				} else if (select === 'training') {
+					app.home = 'training';
+					urlManager.view('training');
+					this.title = 'Training';
+				}
+			},
+			select: function (select) {
+				console.log(select);
+				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+				this.querySelector(`[data-select="${select}"]`).dataset.toggle = 'on';
+				if (select === 'analysis') {
+					this.title = 'Analysis';
+				} else if (select === 'comparison') {
+					this.title = 'Comparison';
+				} else if (select === 'training') {
+					this.title = 'Training';
+				}
+			},
+			setAvailable: function (availables) {
+				var navs = ['analysis', 'comparison', 'training'];
+				this.availables = availables;
+				for (var nav of navs) {
+					var navEle = this.querySelector(`[data-select="${nav}"]`);
+					if (availables.indexOf(nav) !== -1) {
+						navEle.classList.remove('hidden');
+					} else {
+						navEle.classList.add('hidden');
+					}
+				}
+			}
+		});
+	</script>
+</dom-module>

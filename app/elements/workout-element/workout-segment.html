@@ -1,0 +1,104 @@
+<dom-module id="workout-segment">
+	<style>
+		:host {
+			@apply(--layout-horizontal);
+			border: 1px solid #4D4D4D;
+			border-bottom: 0;
+			border-left: 0;
+			background-color: #262626;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+		.insight {
+			@apply(--layout-horizontal);
+			@apply(--layout-flex);
+			@apply(--layout-center);
+			z-index: 1;
+		}
+		.insight .info {
+			@apply(--layout-vertical);
+		}
+		.insight .title {
+			@apply(--layout-horizontal);
+			font-size: 10px;
+            font-weight: 400;
+		}
+		.insight .field {
+			@apply(--layout-horizontal);
+            font-size: 16px;
+            font-weight: 400;
+		}
+		.number {
+			border-color: #f7a017;
+			border-radius: 50px;
+			height: 50px;
+			width: 50px;
+			line-height: 50px;
+			font-size: 15px;
+			text-align: center;
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+		}
+
+		iron-icon {
+			width: 20px;
+			height: auto;
+			padding-right: 5px;
+			color: var(--primary-icon-color);
+			fill: var(--primary-icon-color);
+		}
+		span {
+			white-space: pre;
+		}
+	</style>
+	<template>
+		<div>
+			<div class="number">{{order}}</div>
+		</div>
+		<div class="duration insight">
+			<iron-icon icon="image:timer"></iron-icon>
+			<div class="info">
+				<div class="title">{{duration_type}}</div>
+				<div class="field">
+					<span>{{duration_length}}</span><span> </span><span>{{duration_unit}}</span>
+				</div>
+			</div>
+		</div>
+		<div class="range insight">
+			<iron-icon icon="image:flash-on"></iron-icon>
+			<div class="info">
+				<div class="title">Zone</div>
+				<div class="field">
+					<span>{{zone}}</span><span>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'workout-segment',
+			properties: {
+				data: Object
+			},
+			ready: function () {
+				this.display = {};
+			},
+			setData: function (data) {
+				this.data = data;
+				this.order = data.order;
+				var segment = data.segments[0];
+				if (segment.duration_distance !== 0) {
+					this.duration_type = 'Distance';
+					this.duration_length = segment.duration_distance;
+					this.duration_unit = segment.duration_unit_selected;
+				} else {
+					this.duration_type = 'Time';
+					this.duration_length = 'SET';
+					this.duration_unit = 'SET2';
+				}
+				this.zone = segment.zone_selected;
+				//this.notify('display');
+			}
+		});
+	</script>
+</dom-module>

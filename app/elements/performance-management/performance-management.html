@@ -1,0 +1,719 @@
+<dom-module id="performance-management">
+	<style>
+		:host {
+			@apply(--layout-vertical);
+			@apply(--layout-center);
+			font-family: "Stryd", sans-serif;
+			background-color: var(--dark-background-color);
+			padding: 20px;
+			--paper-slider-knob-color: #F5A214;
+			min-width: 860px;
+			overflow-x: auto;
+		}
+		:host.blurred {
+			-webkit-filter: blur(2px);
+			-moz-filter: blur(2px);
+			-ms-filter: blur(2px);
+			-o-filter: blur(2px);
+			filter: blur(2px);
+		}
+
+		h1.header {
+			@apply(--header);
+			text-align: center;
+			padding: 15px 0;
+		}
+		.title {
+			padding: 20px;
+			@apply(--layout-end);
+		}
+
+		#stress {
+			width: 960px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+		#management {
+			position: relative;
+		}
+		.holder {
+			border: 1px solid #4D4D4D;
+			@apply(--layout-vertical);
+			margin: 10px;
+		}
+
+		[data-stat] {
+			@apply(--layout-center);
+			@apply(--layout-justified);
+			@apply(--layout-horizontal);
+			background-color: var(--primary-background-color);
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			color: #FFFFFF;
+			cursor: pointer;
+			font-size: 1vw;
+			font-weight: 500;
+			margin: 0.5vw 1vw 0 0;
+			padding: 0.8vw 1.1vw;
+			position: relative;
+			text-transform: uppercase;
+			z-index: 5;
+		}
+		[data-stat] .circle {
+			width: 1.3vw;
+			height: 1.3vw;
+			border-radius: 50%;
+			border: 3px #FFFFFF solid;
+			z-index: 2;
+		}
+		[data-stat] .type {
+			padding-left: 10px;
+		}
+		[data-toggle="on"][data-stat="stress"] .circle {
+			background-color: #F5A214;
+			border-color: #F5A214;
+			box-shadow: 0px 0px 20px 0px #F7A017;
+		}
+		[data-toggle="on"][data-stat="distance"] .circle {
+			background-color: #FFFFFF;
+			border-color: #FFFFFF;
+			box-shadow: 0px 0px 20px 0px #FFFFFF;
+		}
+		[data-toggle="on"][data-stat="zones"] .circle {
+			background-color: #fce9d2;
+			border-color: #fce9d2;
+			box-shadow: 0px 0px 20px 0px #5ea7a1;
+		}
+	</style>
+	<template>
+		<h1 class="header">Manage Training Load</h1>
+		<div class="layout vertical holder active" data-holder="stress">
+			<div class="top">
+				<h1>Training Load Bar Chart</h1>
+			</div>
+			<svg id="stress"></svg>
+			<div class="layout horizontal title">
+				<div class="layout horizontal flex">
+					<h1>Last <span>{{timeRange}}</span> weeks</h1>
+					<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
+				</div>
+				<div class="flex layout horizontal end-justified">
+					<div data-stat="stress" data-toggle="on">
+						<div class="circle"></div>
+						<div class="type">Stress</div>
+					</div>
+					<div data-stat="distance" data-toggle="off" >
+						<div class="circle"></div>
+						<div class="type">Distance</div>
+					</div>
+					<div data-stat="zones" data-toggle="off">
+						<div class="circle"></div>
+						<div class="type">Time in Zones</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+	Polymer({
+		is: 'performance-management',
+		ready: function () {
+			this.width = 860;
+			this.height = 400;
+
+			this.weekDays = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
+			this.weekIDS = [];
+			this.weekNames = [];
+			this.ids = [];
+
+			this.state = 'stress';
+			this.max = 0;
+			this.timeRange = 10;
+
+			this.$.dateSelection.addEventListener('change', (e) => {
+				this.timeRange = e.target.value;
+				if (this.state === 'tiz') {
+					this.zillBars('weeks');
+				} else {
+					this.fillBars('weeks');
+				}
+			});
+		},
+		attached: function () {
+			this.grabData();
+		},
+		getDayName: function (idx) {
+			return this.weekDays[idx % 7];
+		},
+		getWeekName: function (idx) {
+			return this.weekNames[idx];
+		},
+		getID: function (idx) {
+			return this.weekIDS[idx];
+		},
+		grabData: function () {
+			this.processData(calendarManager.getPMActivities());
+			window.addEventListener('gotActivities', () => {
+				this.processData(calendarManager.getPMActivities());
+			});
+		},
+		processData: function (activities) {
+			if (activities === []) {
+				return;
+			}
+			this.days = {};
+			for (var activity of activities) {
+				var hash = moment(activity.timestamp * 1000).format('YYYYMMDD');
+				if (hash in this.days) {
+					this.days[hash].push(activity);
+				} else {
+					this.days[hash] = [activity];
+				}
+			}
+			this.fillInit();
+		},
+		fillInit: function () {
+			this.graph = d3.select('#stress')
+				.attr('width', this.width + 100)
+				.attr('height', this.height + 100);
+
+			this.graph.append('svg:g')
+				.attr('id', 'barchart')
+				.attr('transform', 'translate(50, 50)');
+
+			d3.selectAll('[data-stat]')
+				.on('click', this.callFun.bind(this));
+
+			// d3.select(window).on('resize', this.resize.bind(this));
+			this.fillBars('weeks');
+		},
+		fillBars: function (time, idx) {
+			d3.select('#barchart')
+				.selectAll('*')
+				.remove();
+
+			this.data = this.getTimeType(this.state, time, idx);
+			this.max = d3.max(this.data);
+
+			var mColor = '';
+			var msg2 = '';
+			if (this.state === 'stress') {
+				mColor = '#F5A214';
+				msg2 = 'Running Stress Score';
+				this.max += 10;
+			} else if (this.state === 'distance') {
+				mColor = '#FFFFFF';
+				msg2 = `Distance (${unit.distanceUnit(user.data.units)})`;
+				this.max += 1;
+			}
+
+			this.x = d3.scale.ordinal()
+				.domain(d3.range(this.data.length))
+				.range([0, this.width])
+				.rangeBands([0, this.width], 0.3);
+
+			this.y = d3.scale.linear()
+				.domain([0, this.max])
+				.range([this.height, 0]);
+
+			this.xAxis = d3.svg.axis()
+				.scale(this.x)
+				.tickSize(1)
+				.tickPadding(10)
+				.orient('bottom')
+				.innerTickSize(-this.height)
+				.outerTickSize(0);
+
+			if (time === 'weeks') {
+				this.xAxis.tickFormat(this.getWeekName.bind(this));
+			} else {
+				this.xAxis.tickFormat(this.getDayName.bind(this));
+			}
+
+			this.yAxis = d3.svg.axis()
+				.scale(this.y)
+				.tickSize(1)
+				.tickPadding(10)
+				.tickFormat(d3.format('.0f'))
+				.orient('left')
+				.innerTickSize(-this.width)
+				.outerTickSize(0);
+
+			d3.selectAll('.d3-tip')
+				.remove();
+
+			var tip = d3.tip()
+				.attr('class', 'd3-tip')
+				.offset([-10, 0])
+				.html((d, i) => {
+					d = parseInt(d);
+					var msg = '';
+					if (this.state === 'stress') {
+						msg = `<div class="float-tag">Stress</div><div class="float-value">${d} RSS</div>`;
+					} else if (this.state === 'distance') {
+						msg = `<div class="float-tag">Distance</div><div class="float-value">${d} ${unit.distanceUnit(user.data.units)}</div>`;
+					}
+					if (time === 'weeks') {
+						return `${msg}<div class="float-action">TAP FOR WEEK</div>`;
+					} else {
+						var message2 = 'TAP FOR RUN';
+						if (this.ids[i].length > 1) {
+							message2 = 'TAP FOR RUNS';
+						}
+						return `${msg}<div class="float-action">${message2}</div>`;
+					}
+				});
+
+			var vis = d3.select('#barchart');
+			vis.call(tip);
+
+			d3.selectAll('.axis').remove();
+
+			var xAxisText = vis.insert('g', ':first-child')
+				.attr('class', 'x axis')
+				.attr('transform', `translate(0, ${this.height})`)
+				.call(this.xAxis)
+				.attr('opacity', 1)
+				.attr('fill', '#2d2d2d')
+				.attr('stroke', '#2d2d2d')
+				.attr('stroke-width', 0)
+				.selectAll('text')
+					.attr('opacity', 1)
+					.attr('fill', '#FFFFFF')
+					.attr('stroke-width',0)
+					.attr('transform', 'rotate(0)')
+					.style('text-anchor', 'middle');
+
+			if (this.timeRange > 10) {
+				xAxisText.style('transform', 'translate(-20px, 15px) rotate(-45deg)');
+			}
+
+			vis.insert('g', ':first-child')
+				.attr('class', 'y axis')
+				.call(this.yAxis)
+				.attr('stroke-width', 1)
+				.attr('stroke', '#2d2d2d')
+				.attr('fill', '#2d2d2d')
+				.attr('opacity', 1)
+				.append('text')
+					.attr('y', -10)
+					.text(msg2)
+					.attr('stroke-width', 1)
+					.attr('color', '#FFFFFF')
+					.attr('stroke', '#FFFFFF')
+					.attr('fill', '#FFFFFF');
+
+			vis.select('.y.axis').selectAll('text')
+				.attr('stroke', '#FFFFFF')
+				.attr('fill', '#FFFFFF')
+				.attr('color', '#FFFFFF');
+
+			var bars = vis.selectAll('.bar')
+				.data(this.data)
+				.attr('fill', mColor);
+
+			bars.enter()
+				.append('svg:rect')
+				.attr('class', 'bar')
+				.attr('opacity', 0.8)
+				.attr('fill', mColor)
+				.attr('width', this.x.rangeBand())
+				.on('mouseover', tip.show)
+				.on('mouseout', tip.hide);
+
+			bars.exit()
+				.attr('fill', mColor)
+				.transition()
+				.duration(300)
+				.ease('square')
+				.attr('transform', () => {
+					return 'translate(100, 0)';
+				})
+				.remove();
+
+			bars.transition()
+				.duration(300)
+				.ease('square')
+				.attr('width', this.x.rangeBand())
+				.attr('height', (d) => {
+					return this.height - this.y(d);
+				})
+				/* unused: d */
+				.attr('x', (d, i) => {
+					return 2*(this.x(i) - this.x(3));
+				})
+				.attr('y', (d) => {
+					return this.y(d);
+				})
+				/* unused:  d */
+				.attr('transform', (d, i) => {
+					var first = -this.x(i)+(2*this.x(3));
+					return `translate(${first}, 0)`;
+				});
+
+			if (time === 'weeks') {
+				/* unused: d */
+				bars.on('click', (d, i) => {
+					this.fillBars('days', i);
+				});
+			} else {
+				bars.on('click', (d, i) => {
+					if (this.ids[i].length > 1) {
+						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+					} else {
+						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+					}
+				});
+			}
+		},
+		zillBars: function (time, idx) {
+			d3.select('#barchart')
+				.selectAll('*')
+				.remove();
+
+			if (time === 'days') {
+				this.data = this.getZoneDayType(idx);
+			} else {
+				this.data = this.getZoneWeekType();
+			}
+
+			var msg2 = 'Time (hr)';
+
+			this.max = 0;
+			for (var i = 0; i < this.data.length; i++) {
+				var row = this.data[i];
+				var result = 0;
+				for (var o = 0; o < row.length; o++) {
+					result += row[o];
+				}
+				if (result > this.max) {
+					this.max = result;
+				}
+			}
+
+			var xData = [0, 1, 2, 3, 4];
+			
+			this.x = d3.scale.ordinal()
+				.domain(d3.range(this.data.length))
+				.range([0, this.width])
+				.rangeBands([0, this.width], 0.3);
+
+			this.y = d3.scale.linear()
+				.domain([0, this.max])
+				.range([this.height, 0]);
+
+			var mColors = ['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f'];
+
+			this.xAxis = d3.svg.axis()
+				.scale(this.x)
+				.tickSize(0)
+				.orient('bottom')
+				.innerTickSize(0)
+				.outerTickSize(0);
+
+			if (time === 'weeks') {
+				this.xAxis.tickFormat(this.getWeekName.bind(this));
+			} else {
+				this.xAxis.tickFormat(this.getDayName.bind(this));
+			}
+
+			this.yAxis = d3.svg.axis()
+				.scale(this.y)
+				.tickSize(1)
+				.ticks(this.max+1)
+				.tickPadding(10)
+				.tickFormat(d3.format('.0f'))
+				.orient('left')
+				.innerTickSize(-this.width)
+				.outerTickSize(0);
+
+			d3.selectAll('.d3-tip')
+				.remove();
+
+			var tip = d3.tip()
+				.attr('class', 'd3-tip')
+				.offset([-10, 0])
+				/* unused: i */
+				.html((d, i, a) => {
+					var time;
+					if (d.y < 1) {
+						time = parseInt(d.y * 60) + ' minutes';
+					} else {
+						time = parseInt(d.y) + ' hours';
+					}
+					var zone = a+1;
+					var msg = `<div class="float-tag">Zone ${zone} </div><div class="float-value">for ${time}</div>`;
+					if (time === 'days') {
+						var id = this.getID(d.x);
+						return `${msg}<br><a href="/powercenter/run/${id}"><span style="color:rgb(236,176,31)">TAP FOR RUN</span>`;
+					} else {
+						return msg;
+					}
+				});
+
+			var vis = d3.select('#barchart');
+			vis.call(tip);
+			d3.selectAll('.axis').remove();
+
+			var xAxisText = vis.insert('g', ':first-child')
+				.attr('class', 'x axis')
+				.attr('transform', `translate(0, ${this.height})`)
+				.call(this.xAxis)
+				.attr('opacity', 1)
+				.attr('fill', '#2d2d2d')
+				.attr('stroke', '#2d2d2d')
+				.attr('stroke-width', 0)
+				.selectAll('text')
+					.attr('opacity', 1)
+					.attr('fill', '#FFFFFF')
+					.attr('stroke-width',0)
+					.attr('transform', 'rotate(0)')
+					.style('text-anchor', 'middle');
+
+			if (this.timeRange > 10) {
+				xAxisText.style('transform', 'translate(-20px, 15px) rotate(-45deg)');
+			}
+
+			vis.insert('g', ':first-child')
+				.attr('class', 'y axis')
+				.call(this.yAxis)
+				.attr('stroke-width', 1)
+				.attr('stroke', '#2d2d2d')
+				.attr('fill', '#2d2d2d')
+				.attr('opacity', 1)
+				.append('text')
+					.attr('y', -10)
+					.text(msg2)
+					.attr('stroke-width', 1)
+					.attr('stroke', '#FFFFFF')
+					.attr('fill', '#FFFFFF');
+
+			vis.select('.y.axis').selectAll('text')
+				.attr('stroke', '#FFFFFF')
+				.attr('fill', '#FFFFFF')
+				.attr('color', '#FFFFFF');
+
+			var dataIntermediate = xData.map((c) => {
+				/* unused: d */
+				return this.data.map((d, i) => {
+					return {
+						x: i,
+						y: d[c]
+					};
+				});
+			});
+
+			var dataStackLayout = d3.layout.stack()(dataIntermediate);
+
+			this.x.domain(dataStackLayout[0].map((d) => {
+				return d.x;
+			}));
+
+			var layer = vis.selectAll('.stack')
+				.data(dataStackLayout)
+				.enter().append('g')
+				.attr('class', 'stack')
+				/* unused: d */
+				.style('fill', function (d, i) {
+					return mColors[i];
+				});
+
+			var bars = layer.selectAll('rect')
+				.data((d) => {
+					return d;
+				});
+
+			bars.enter()
+				.append('rect')
+				.attr('x', (d) => {
+					return this.x(d.x);
+				})
+				.attr('y', (d) => {
+					return this.y(d.y + d.y0);
+				})
+				.attr('height', (d) => {
+					return this.y(d.y0) - this.y(d.y + d.y0);
+				})
+				.attr('width', this.x.rangeBand())
+				.on('mouseover', tip.show)
+				.on('mouseout', tip.hide);
+
+			if (time === 'weeks') {
+				/* unused: d */
+				bars.on('click', (d, i) => {
+					this.zillBars('days', i);
+				});
+			} else {
+				/* unused: d */
+				bars.on('click', (d, i) => {
+					page.redirect(`/powercenter/run/${this.ids[i]}`);
+				});
+			}
+
+			bars.transition()
+				.duration(300)
+				.attr('transform', 'translate(0, 0)');
+		},
+		/* unused: a */
+		callFun: function (a, e) {
+			var vis = d3.select('#barchart');
+			vis.selectAll('.stack').remove();
+			var on = this.querySelector('[data-toggle="on"]');
+			if (on) {
+				on.dataset.toggle = 'off';
+			}
+
+			if (e === 3) {
+				this.state = 'distance';
+				this.fillBars('weeks');
+				this.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
+			} else if (e === 2) {
+				this.state = 'stress';
+				this.fillBars('weeks');
+				this.querySelector('[data-stat="stress"]').dataset.toggle = 'on';
+			} else if (e === 4) {
+				this.state = 'tiz';
+				this.zillBars('weeks');
+				this.querySelector('[data-stat="zones"]').dataset.toggle = 'on';
+			}
+		},
+		getTimeType: function (dataType, timeType, idx) {
+			if (timeType === 'days') {
+				return this.getDayType(dataType, idx);
+			} else if (timeType === 'weeks') {
+				return this.getWeekType(dataType);
+			}
+		},
+		wayBack: function (weeks) {
+			var wayBack = moment().subtract(weeks, 'weeks');
+			return wayBack.subtract(
+				parseInt(wayBack.format('d'))-1,
+				'days'
+			);
+		},
+		sumFunction: function (a, b) {
+			return a + b;
+		},
+		getDayType: function (dataType, idx) {
+			var movingDay = this.wayBack(this.timeRange);
+			var result = [];
+			this.ids = [];
+			for (var i = 0; i <= this.timeRange; i++) {
+				var subResult = [];
+				for (var o = 0; o < 7; o++) {
+					var hash = movingDay.format('YYYYMMDD');
+					if (hash in this.days) {
+						subResult.push(this.getData(hash, dataType).reduce(this.sumFunction));
+						if (idx === i) {
+							this.ids.push(this.getData(hash, 'id'));
+						}
+					} else {
+						subResult.push(0);
+						if (idx === i) {
+							this.ids.push([0]);
+						}
+					}
+					movingDay.add(1, 'day');
+				}
+				result.push(subResult);
+			}
+			return result[idx];
+		},
+		getWeekType: function (dataType) {
+			var movingDay = this.wayBack(this.timeRange);
+			var result = [];
+			this.weekNames = [];
+			for (var i = 0; i <= this.timeRange; i++) {
+				var subResult = 0;
+				for (var o = 0; o < 7; o++) {
+					var hash = movingDay.format('YYYYMMDD');
+					if (o === 0) {
+						this.weekNames.push(movingDay.format('MMM Do'));
+					}
+					if (hash in this.days) {
+						subResult += this.getData(hash, dataType).reduce(this.sumFunction);
+					}
+					movingDay.add(1, 'day');
+				}
+				result.push(subResult);
+			}
+			return result;
+		},
+		getZoneDayType: function (idx) {
+			var movingDay = this.wayBack(this.timeRange);
+			var result = [];
+			for (var i = 0; i <= this.timeRange; i++) {
+				var subResult = [];
+				this.ids = [];
+				for (var o = 0; o < 7; o++) {
+					var hash = movingDay.format('YYYYMMDD');
+					if (hash in this.days) {
+						var dup = [0, 0, 0, 0, 0];
+						var tiz = this.getData(hash, 'zones')[0];
+						// for (let tiz of tizs) {
+							for (var p = 0; p < 5; p++) {
+								dup[p] = tiz[p]/3600;
+							}
+						// }
+						subResult.push(dup);
+						if (idx === i) {
+							this.ids.push(this.getData(hash, 'id'));
+						}
+					} else {
+						subResult.push([0, 0, 0, 0, 0]);
+						if (idx === i) {
+							this.ids.push([0]);
+						}
+					}
+					movingDay.add(1, 'day');
+				}
+				result.push(subResult);
+			}
+			return result[idx];
+		},
+		getZoneWeekType: function () {
+			var movingDay = this.wayBack(this.timeRange);
+			var result = [];
+			for (var i = 0; i <= this.timeRange; i++) {
+				var subResult = [0, 0, 0, 0, 0];
+				for (var o = 0; o < 7; o++) {
+					var hash = movingDay.format('YYYYMMDD');
+					if (o === 0) {
+						this.weekNames.push(movingDay.format('MMM Do'));
+					}
+					if (hash in this.days) {
+						var tiz = this.getData(hash, 'zones')[0];
+						for (var p = 0; p < 5; p++) {
+							subResult[p] = subResult[p] + tiz[p]/3600;
+						}
+					}
+					movingDay.add(1, 'day');
+				}
+				result.push(subResult);
+			}
+			return result;
+		},
+		getData: function (hash, type) {
+			if (type === 'zones') {
+				type = 'seconds_in_zones';
+			}
+			let list = this.days[hash];
+			let result = [];
+			for (let item of list) {
+				let value = item[type];
+				if (type === 'distance') {
+					value = unit.distanceValueRaw(value, user.data.units);
+				} else if (type === 'elapsed_time') {
+					value /= 3600;
+				} else if (type === 'seconds_in_zones') {
+					if (value === null) {
+						value = [0, 0, 0, 0, 0];
+					}
+				}
+				result.push(value);
+			}
+			return result;
+		}
+	});
+	</script>
+</dom-module

@@ -58,15 +58,14 @@
                 this.userName = activity.name;
                 this.userImage = this.getImage(activity);
                 this.notifyPath('userName', activity.name);
-                console.log('uimg', this.userImage);
-                console.log('u2img', this.getImage(activity));
-                console.log('act', activity);
                 this.notifyPath('userImage', this.getImage(activity));
             },
             setData: function (activity) {
                 this.activity = activity;
                 this.fetchUser(activity);
-                this.runDate = moment.unix(activity.start_time).format('LL');
+                this.runDate = moment
+                    .unix(activity.start_time)
+                    .format('LL');
             }
         });
     </script>

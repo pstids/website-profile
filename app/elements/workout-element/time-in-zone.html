@@ -1,0 +1,118 @@
+<dom-module id="time-in-zone">
+	<style>
+		svg {
+			width: 350px;
+			height: 240px;
+		}
+	</style>
+	<template>
+		<svg></svg>
+	</template>
+	<script>
+	Polymer({
+		is: 'time-in-zone',
+		ready: function () {
+			var property = this.dataset.property;
+			if (property === '' || property === undefined) {
+				property = parseInt(Math.random() * 10000);
+			}
+			this.selector = `svg-${property}`;
+			this.selectorID = `#svg-${property}`;
+			this.querySelector('svg').id = this.selector;
+		},
+		setData: function (tizs, rss) {
+			if (isNaN(rss)) {
+				rss = null;
+			}
+			var data = [];
+			var total = 0;
+			if (tizs !== null) {
+				total = tizs.reduce((a, b) => {
+					return a + b;
+				}, 0);
+			}
+			if (total === 0 || isNaN(total) || total === null) {
+				this.classList.add('hidden');
+				return false;
+			} else {
+				this.classList.remove('hidden');
+			}
+			for (var i = 0; i < tizs.length; i++) {
+				var tiz = tizs[i];
+				data.push({
+					zone: i+1,
+					tiz: tiz,
+					percentage: tiz/total
+				});
+			}
+			var width = 330, height = 230, radius = 110;
+			var color = d3.scale.ordinal().range(['#fce9d2', '#fad3a5', '#f8be78', '#f6a84b', '#f4931f']);
+			var arc = d3.svg.arc()
+				.outerRadius(radius-40)
+				.innerRadius(radius-60);
+			var pie = d3.layout.pie()
+				.sort(null)
+				.value((d) => {
+					return d.tiz;
+				});
+			d3.select(this.selectorID)
+				.selectAll('*')
+				.remove();
+			var svg = d3.select(this.selectorID)
+				.attr('width', width)
+				.attr('height', height)
+				.append('g')
+					.attr('transform', `translate(${radius}, ${radius})`);
+			var g = svg.selectAll('.arc')
+				.data(pie(data))
+				.enter()
+				.append('g')
+					.attr('class', 'arc');
+			g.append('path')
+				.attr('d', arc)
+				.style('fill', (d) => {
+					return color(d.data.zone);
+				});
+			g.append('rect')
+				.attr('width', 20)
+				.attr('height', 20)
+				.attr('transform', (d) => {
+					return `translate(${radius}, ${d.data.zone*25-radius+15})`;
+				})
+				.attr('fill', (d) => {
+					return color(d.data.zone);
+				});
+			g.append('text')
+				.attr('transform', (d) => {
+					return `translate(${radius+25}, ${d.data.zone*25-radius+30})`;
+				})
+				.style('text-anchor', 'start')
+				.attr('font-size', 16)
+				.text((d) => {
+					var percentage = (d.data.percentage * 100).toFixed(0);
+					return `Z${d.data.zone} ${percentage}%`;
+				});
+			if (rss !== null && rss !== '') {
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 0)
+					.attr('font-size', 25)
+					.attr('font-weight', '400')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text('RSS');
+
+				svg.append('text')
+					.attr('x', 0)
+					.attr('y', 25)
+					.attr('font-size', 25)
+					.attr('font-weight', 'bolder')
+					.attr('fill', '#FFFFFF')
+					.style('text-anchor', 'middle')
+					.text(parseInt(rss).toFixed(0));
+			}
+			return true;
+		}
+	});
+	</script>
+</dom-module>
