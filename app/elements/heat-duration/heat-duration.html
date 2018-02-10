@@ -327,7 +327,7 @@ Polymer({
 		// 	return;
 		// }
 		var today = moment();
-		var past = moment().subtract(2, 'months');
+		var past = moment().subtract(12, 'months');
 		var todayFMT = today.format('MM-DD-YYYY');
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;

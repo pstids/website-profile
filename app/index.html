@@ -47,9 +47,25 @@
 		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-		ga('create', 'UA-56986987-2', 'auto');
+		ga('create', 'UA-56986987-1', 'auto');
 		ga('send', 'pageview');
 	</script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1692308661008752');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1692308661008752&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->
 
 	<link rel="stylesheet" href="/powercenter/styles/main.css">
 	<link rel="import" href="/powercenter/elements/elements.html">
@@ -60,7 +76,9 @@
 
 <template is="dom-bind" id="app">
 	<div class="content">
+
 		<header-element></header-element>
+
 		<iron-pages attr-for-selected="data-route" selected="{{route}}">
 			<section data-route="profile">
 				<div class="layout horizontal">
@@ -116,7 +134,9 @@
 
 			<section data-route="*"></section>
 		</iron-pages>
-		<footer-element></footer-element>
+
+		<footer-elementa></footer-elementa>
+
 	</div>
 	<log-options></log-options>
 	<paper-toast id="toast" duration="5000"></paper-toast>

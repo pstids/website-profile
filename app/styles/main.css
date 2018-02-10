@@ -33,7 +33,7 @@ iron-pages::after {
 	visibility: hidden;
 }
 
-header-element, footer-element {
+header-element, footer-elementa {
 	flex: none;
 }
 
