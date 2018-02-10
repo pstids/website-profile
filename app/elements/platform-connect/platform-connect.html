@@ -23,6 +23,7 @@
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
                 @apply(--layout-justified);
+                @apply(--layout-wrap);
                 padding: 20px;
             }
             .authenticate div button, .authenticate div a {
@@ -43,6 +44,9 @@
                 .authenticate > div {
                     margin-top: 20px;
                 }
+            }
+            .aplatform {
+                margin: 20px;
             }
             /*.authenticate div button[data-toggle="off"] {
             }*/
@@ -77,19 +81,25 @@
         <div class="export">
             <h2 class="subtitle">Exports To</h2>
             <div class="authenticate">
-                <div>
+                <div class="aplatform">
+                    <a href="https://www.finalsurge.com/">
+                        <img class="logo" src="/powercenter/images/logos/logo_finalsurge.png" width="114px" height="35px"/>
+                    </a>
+                    <button is="stryd-button" data-toggle="off" id="finalsurge" on-click="oauthConnect">Connect</button>
+                </div>
+                <div class="aplatform">
                     <a href="https://www.trainingpeaks.com">
                         <img class="logo" src="/powercenter/images/logos/logo_tp.png" width="150px" height="35px"/>
                     </a>
                     <button is="stryd-button" data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</button>
                 </div>
-                <div>
+                <div class="aplatform">
                     <a href="https://www.strava.com">
                         <img class="logo" src="/powercenter/images/logos/logo_strava.png" width="150px" height="35px"/>
                     </a>
                     <button is="stryd-button" data-toggle="off" id="strava" on-click="oauthConnect">Connect</button>
                 </div>
-                <div>
+                <div class="aplatform">
                     <a href="https://www.2peak.com">
                         <img class="logo" src="/powercenter/images/logos/logo_2peak.png" width="150px" height="35px"/>
                     </a>
@@ -256,7 +266,7 @@
                 }
             },
             updateView: function (platforms) {
-                var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak'], verifyPlatforms = ['suunto'];
+                var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak', 'finalsurge'], verifyPlatforms = ['suunto'];
                 var platform, i;
                 for (i = 0; i < platforms.length; i++) {
                     platform = platforms[i];
