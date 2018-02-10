@@ -1,200 +1,213 @@
 <dom-module id="plan-card">
-    <template>
-        <style>
-            :host {
-                color: var(--paper-grey-100);
-                position: relative;
-            }
-            :host:hover {
-                cursor: pointer;
-            }
-            div#main {
-                width: 100%;
-                height: 100%;
-                -webkit-transition: -webkit-transform 0.5s;
-                transition: transform 0.5s;
-                -webkit-transition-timing-function: ease-in-out;
-                transition-timing-function: ease-in-out;
-            }
-            paper-card {
-                display: inline-block;
-                box-sizing: border-box;
-                border-radius: 2px;
-                text-align: center;
-                width: 100%;
-                height: 100%;
-            }
-            paper-card.full {
-                border: 1px solid #eeeeee;
-            }
-            paper-card.empty {
-                border: 1px dashed #888888;
-            }
+  <template>
+    <style>
+      :host {
+        color: var(--paper-grey-100);
+        position: relative;
+      }
+      div#main {
+        width: 100%;
+        height: 100%;
+        -webkit-transition: -webkit-transform 0.5s;
+        transition: transform 0.5s;
+        -webkit-transition-timing-function: ease-in-out;
+        transition-timing-function: ease-in-out;
+      }
+      paper-card {
+        display: inline-block;
+        box-sizing: border-box;
+        border-radius: 2px;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+      }
+      paper-card.full {
+        border: 1px solid #eeeeee;
+      }
+      paper-card.empty {
+        border: 1px dashed #888888;
+      }
 
-            #content {
-                background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
-                background-size: cover;
-            }
-            .title {
-                @apply(--paper-font-body1);
-                font-weight: bold;
-                max-width: 100%;
-                padding-top: 5px;
-            }
-            .subtitle { @apply(--paper-font-caption); }
-            .subtitle iron-icon {
-                font-size: 12px;
-            }
-            .desc {
-                width: 100%;
-                padding: 2px;
-                @apply(--paper-font-caption);
-            }
-            #stat {
-                vertical-align: middle;
-            }
-            .text-light { color: var(--paper-grey-200); }
-            .small {
-                --iron-icon-height: 14px;
-                --iron-icon-width: 14px;
-            }
-            .big {
-                --iron-icon-height: 56px;
-                --iron-icon-width: 56px;
-            }
-            .grey {
-                --iron-icon-fill-color: var(--paper-grey-500);
-                --iron-icon-stroke-color: var(--paper-grey-500);
-            }
-            #menu {
-                position: relative;
-            }
-            #menu paper-menu-button {
-                padding: 0;
-            }
-            #menu paper-icon-button {
-                width: 30px;
-                height: 30px;
-            }
-        </style>
+      #content {
+        background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+        background-size: cover;
+        width: 100%;
+      }
+      #content paper-icon-button {
+        padding: 0;
+        width: 20px;
+        height: 20px;
+      }
+      .title {
+        @apply(--paper-font-body1);
+        font-weight: bold;
+      }
+      .subtitle { @apply(--paper-font-caption); }
+      .subtitle iron-icon {
+        font-size: 12px;
+      }
+      .desc {
+        width: 100%;
+        padding: 2px;
+        @apply(--paper-font-caption);
+      }
+      .text-light { color: var(--paper-grey-200); }
+      .small {
+        --iron-icon-height: 14px;
+        --iron-icon-width: 14px;
+      }
+      .big {
+        --iron-icon-height: 56px;
+        --iron-icon-width: 56px;
+      }
+      .grey {
+        --iron-icon-fill-color: var(--paper-grey-500);
+        --iron-icon-stroke-color: var(--paper-grey-500);
+      }
+      #menu {
+        position: relative;
+      }
+      #menu paper-icon-button {
+        padding: 0;
+        width: 30px;
+        height: 30px;
+      }
+    </style>
 
-        <div id="main" class="layout horizontal center" on-mouseenter="_showSummary" on-mouseleave="_hideSummary">
-            <paper-card elevation="3" class$="flex layout vertical {{cardStatus}}">
-                <div id="content" class="flex-3 layout vertical center" on-tap="_showDialog">
-                    <div class="title flex">{{title}}</div>
-                    <div class="subtitle text-light" id="stat">
-                        <iron-icon class="small" icon="image:flash-on"></iron-icon>
-                        <span>{{intensity}} (TSS)</span>
-                        <iron-icon class="small" icon="image:timer"></iron-icon>
-                        <span>{{duration}}</span>
-                    </div>
-                    <!--<p class="desc flex">{{description}}</p>-->
-                </div>
-                <div id="add" class="flex-3 layout vertical center center-justified" on-tap="_showDialog">
-                    <iron-icon class="big grey" icon="icons:add-circle-outline"></iron-icon>
-                </div>
-                <div id="menu" class="flex-1" >
-                    <paper-menu-button vertical-align="bottom" horizontal-align="right">
-                        <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
-                        <paper-menu class="dropdown-content">
-                            <paper-item on-click="_copy">Copy</paper-item>
-                            <paper-item on-click="_paste">Paste</paper-item>
-                            <paper-item on-click="_delete">Delete</paper-item>
-                        </paper-menu>
-                    </paper-menu-button>
-                </div>
-            </paper-card>
+    <!--<div id="main" class="layout horizontal center" on-mouseenter="_showSummary" on-mouseleave="_hideSummary">-->
+    <div id="main">
+      <paper-card elevation="3" class$="flex layout vertical">
+        <div id="content" class="flex-3 layout vertical center">
+          <template is="dom-repeat" items="{{trainingInfos}}">
+            <div class="layout horizontal center around-justified" style="width:100%">
+              <div class="title" on-tap="_showDialog" data-index$="{{index}}">{{item.workout_title}}</div>
+              <div class="subtitle text-light">
+                <!--<iron-icon class="small" icon="image:flash-on"></iron-icon>-->
+                <!--<span>70 (TSS)</span>-->
+                <iron-icon class="small" icon="image:timer"></iron-icon>
+                <span>{{item.workout_duration}}</span>
+              </div>
+              <paper-menu-button vertical-align="bottom" horizontal-align="right">
+                <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+                <paper-menu class="dropdown-content">
+                  <paper-item data-index$="{{index}}" on-click="_copy">Copy</paper-item>
+                  <paper-item data-index$="{{index}}" on-click="_delete">Delete</paper-item>
+                </paper-menu>
+              </paper-menu-button>
+            </div>
+          </template>
+          <!--<p class="desc flex">{{description}}</p>-->
         </div>
-    </template>
+        <div id="menu" class="flex-1" >
+          <paper-menu-button vertical-align="bottom" horizontal-align="right">
+            <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+            <paper-menu class="dropdown-content">
+              <paper-item on-click="_showDialog">Add</paper-item>
+              <paper-item on-click="_paste">Paste</paper-item>
+            </paper-menu>
+          </paper-menu-button>
+        </div>
+      </paper-card>
+    </div>
+  </template>
 
-    <script>
-        Polymer({
-            is: 'plan-card',
-            properties: {
-                trainingInfo: Object,   // Training info in internal format
-                title: String,
-                duration: Number,
-                week: Number,
-                intensity: Number,
-                day: Number,    // Zero-based
-                cardStatus: String,
-                readOnly: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_permissionChanged'
-                }
-            },
-            listeners: {
+  <script>
+    Polymer({
+      is: 'plan-card',
+      properties: {
+        trainingInfos: {
+          type: Array,
+          value: function () {
+            return [];
+          },
+        },  // Training info in internal format
+        week: Number,
+        day: Number,    // Zero-based
+        readOnly: {
+          type: Boolean,
+          value: false,
+          observer: '_permissionChanged'
+        }
+      },
+      listeners: {
 //                'tap': 'showDialog'
-            },
-            ready: function () {
-                this.trainingInfo = {};
-                this.trainingInfoChanged({});
-            },
-            trainingInfoChanged: function (info) {
-                this.trainingInfo = JSON.parse(JSON.stringify(info));
-                if (Object.keys(this.trainingInfo).length !== 0) {
-                    this.trainingInfo.workout_day = (this.week - 1) * 7 + this.day; // Zero-based
-                    this.title = info.workout_title;
-                    this.duration = info.workout_duration;
-                    this.intensity = 70;
-                    this.$.add.style.display = 'none';
-                    this.$.content.style.display = 'inherit';
-                    this.cardStatus = 'full';
-                } else  {
-                    this.cardStatus = 'empty';
-                    this.$.content.style.display = 'none';
-                    if (!this.readOnly) {
-                        this.$.add.style.display = 'inherit';
-                    }
-                }
-            },
-            _showDialog: function () {
-                if (this.readOnly) {
-                    return;
-                }
-                // Used to fill current information on to training-entry dialog
-                this.fire('card-tap', {'info': this.trainingInfo, 'week': this.week, 'day': this.day});
-            },
-            _showSummary: function (e) {
-                if (!this.readOnly || this.cardStatus === 'empty') {
-                    return;
-                }
-                let target = e.target || e.srcElement;
-                let rect = target.getBoundingClientRect();
-                let y = rect.top;
-                let pos = 'right';
-                let x = rect.right;
-                if (this.day > 3) {
-                    pos = 'left';
-                    // Relative to the right side of the screen, considering the zoom level
-                    x = document.body.clientWidth - rect.left;
-                }
-                this.fire('card-show-summary',
-                    {'info': this.trainingInfo, 'week': this.week, 'day': this.day, 'x': x, 'y': y, 'pos': pos});
-            },
-            _hideSummary: function () {
-                if (!this.readOnly) {
-                    return;
-                }
-                this.fire('card-hide-summary');
-            },
-            _copy: function () {
-                this.fire('card-copy', {'info': this.trainingInfo});
-            },
-            _paste: function () {
-                this.fire('card-paste', {'week': this.week, 'day': this.day});
-            },
-            _delete: function () {
-                this.trainingInfoChanged({});
-            },
-            _permissionChanged: function () {
-                if (this.readOnly) {
-                    this.$.menu.style.display = 'none';
-                }
-            }
-        });
+      },
+      ready: function () {
+      },
+      addTrainingInfo: function (i) {
+        console.log('add training info');
+        var info = JSON.parse(JSON.stringify(i));
+        if (Object.keys(info).length === 0) {
+          return;
+        }
+        info.workout_day = (this.week - 1) * 7 + this.day; // Zero-based
+        let seq = info.workout_seq;
+        if (this.trainingInfos.length > seq) {
+          this.splice('trainingInfos', seq, 1, info);
+        } else {
+          this.push('trainingInfos', info);
+        }
+      },
+      _showDialog: function (e) {
+        if (this.readOnly) {
+          return;
+        }
+        let arg = parseInt(e.target.getAttribute('data-index'));
+        console.log('args are ' + arg);
+        if (isNaN(arg)) {
+          this.fire('card-tap', {'info': {}, 'week': this.week, 'day': this.day, 'seq': this.trainingInfos.length});
+          return;
+        }
+        let info = this.get(['trainingInfos', arg]);
+        // Used to fill current information on to training-entry dialog
+        this.fire('card-tap', {'info': info, 'week': this.week, 'day': this.day, 'seq': arg});
+      },
+      _copy: function (e) {
+        let arg = parseInt(e.target.getAttribute('data-index'));
+        if (!isNaN(arg)) {
+          this.fire('card-copy', {'info': this.get(['trainingInfos', arg])});
+        }
+      },
+      _paste: function () {
+        this.fire('card-paste', {'week': this.week, 'day': this.day, 'seq': this.trainingInfos.length});
+      },
+      _delete: function (e) {
+        let arg = parseInt(e.target.getAttribute('data-index'));
+        if (!isNaN(arg)) {
+          this.splice('trainingInfos', arg, 1);
+        }
+      },
+      _permissionChanged: function () {
+        if (this.readOnly) {
+          this.$.menu.style.display = 'none';
+        }
+      },
+      // TODO: Broken
+      _showSummary: function (e) {
+        if (!this.readOnly) {
+          return;
+        }
+        let target = e.target || e.srcElement;
+        let rect = target.getBoundingClientRect();
+        let y = rect.top;
+        let pos = 'right';
+        let x = rect.right;
+        if (this.day > 3) {
+          pos = 'left';
+          // Relative to the right side of the screen, considering the zoom level
+          x = document.body.clientWidth - rect.left;
+        }
+        this.fire('card-show-summary',
+          {'info': this.trainingInfos, 'week': this.week, 'day': this.day, 'x': x, 'y': y, 'pos': pos});
+      },
+      _hideSummary: function () {
+        if (!this.readOnly) {
+          return;
+        }
+        this.fire('card-hide-summary');
+      },
+    });
 
-    </script>
+  </script>
 
 </dom-module>
