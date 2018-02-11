@@ -190,19 +190,15 @@ gulp.task('fonts', function () {
 
 // Scan Your HTML For Assets & Optimize Them
 gulp.task('html', function () {
-  var assets = $.useref.assets({searchPath: ['.tmp', 'dist']});
-
   return gulp.src(['app/**/*.html', '!app/{elements,test}/**/*.html'])
     // Replace path for vulcanized assets
     .pipe($.if('*.html', $.replace('elements/elements.html', 'elements/elements.vulcanized.html')))
     .pipe($.if('*.html', $.replace('elements/plan.html', 'elements/plan.vulcanized.html')))
-    .pipe(assets)
     // Concatenate And Minify JavaScript
-    .pipe($.if('*.js', $.uglify({preserveComments: 'some'}).on('error', function(err) { console.log(err); })))
+    .pipe($.if('*.js', $.uglify().on('error', function(err) { console.log(err); })))
     // Concatenate And Minify Styles
     // In case you are still using useref build blocks
     .pipe($.if('*.css', $.cssmin()))
-    .pipe(assets.restore())
     .pipe($.useref())
     // Minify Any HTML
     .pipe($.if('*.html', $.minifyHtml({
