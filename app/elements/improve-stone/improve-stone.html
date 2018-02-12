@@ -1,76 +1,76 @@
 <dom-module id="improve-stone">
-<style>
-	:host {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 10;
-	}
-	h1.header {
-		@apply(--header);
-		text-align: center;
-		padding: 15px 0;
-	}
-	.stone {
-		position: fixed;
-		width: 50%;
-		margin: 5% 25%;
-		background: #262626;
-		-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		z-index: 11;
-	}
-	.holder {
-		margin: 20px 10%;
-	}
-	paper-input {
-		display: inline-block;
-	}
-	.justified-row {
-		@apply(--layout-horizontal);
-		@apply(--layout-justified);
-	}
-	.information {
-		@apply(--layout-horizontal);
-		@apply(--layout-justified);
-		padding: 0.6vw 0;
-	}
-	.information .info {
-		text-transform: uppercase;
-	}
-	.information .info h1 {
-		font-size: 0.67vw;
-		color: var(--primary-header-color);
-		margin: 0;
-		padding: 0;
-	}
-	.information.height-weight .info {
-		width: 25%;
-	}
-	.information #birthday-input {
-		width: 80%;
-	}
-	.information #birthday-input paper-input {
-		width: 20%;
-	}
-	.information #location-input {
-		width: 100%;
-	}
-	.information #location-input paper-input {
-		width: 40%;
-	}
-	.information #birthday-input .slash {
-		/*@apply(--layout-self-end);*/
-		font-size: 1.67vw;
-		color: var(--primary-header-color);
-		position: absolute;
-		bottom: 30%;
-	}
-</style>
 <template>
+	<style>
+		:host {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 10;
+		}
+		h1.header {
+			@apply --header;
+			text-align: center;
+			padding: 15px 0;
+		}
+		.stone {
+			position: fixed;
+			width: 50%;
+			margin: 5% 25%;
+			background: #262626;
+			-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			z-index: 11;
+		}
+		.holder {
+			margin: 20px 10%;
+		}
+		paper-input {
+			display: inline-block;
+		}
+		.justified-row {
+			@apply --layout-horizontal;
+			@apply --layout-justified;
+		}
+		.information {
+			@apply --layout-horizontal;
+			@apply --layout-justified;
+			padding: 0.6vw 0;
+		}
+		.information .info {
+			text-transform: uppercase;
+		}
+		.information .info h1 {
+			font-size: 0.67vw;
+			color: var(--primary-header-color);
+			margin: 0;
+			padding: 0;
+		}
+		.information.height-weight .info {
+			width: 25%;
+		}
+		.information #birthday-input {
+			width: 80%;
+		}
+		.information #birthday-input paper-input {
+			width: 20%;
+		}
+		.information #location-input {
+			width: 100%;
+		}
+		.information #location-input paper-input {
+			width: 40%;
+		}
+		.information #birthday-input .slash {
+			/*@apply --layout-self-end;*/
+			font-size: 1.67vw;
+			color: var(--primary-header-color);
+			position: absolute;
+			bottom: 30%;
+		}
+	</style>
 	<div class="stone hidden" data-stone="personal">
 		<h1 class="header">Get Personalized Insight</h1>
 		<div class="layout vertical holder">
