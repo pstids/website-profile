@@ -1,141 +1,141 @@
 <dom-module id="user-info">
-	<style>
-		section {
-			@apply(--layout-horizontal);
-			@apply(--layout-justified);
-		}
-		section > div {
-			padding: 2.5vw;
-		}
-		h1.title {
-			@apply(--header);
-		}
-		h2.subtitle {
-			@apply(--subtitle);
-		}
-		iron-icon {
-			width: 1.2vw;
-			height: 1.2vw;
-			padding-right: 0.5vw;
-		}
-		[option="display"] .editable {
-			display: none;
-		}
-		[option="editable"] .display {
-			display: none;
-		}
-		paper-input {
-			display: inline-block;
-		}
-		.justified-row {
-			@apply(--layout-horizontal);
-			@apply(--layout-justified);
-		}
-
-		.image {
-			@apply(--layout-flex-2);
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			text-align: center;
-			color: white;
-		}
-		.image .border {
-			width: 100px;
-			height: 100px;
-			border-radius: 50%;
-			border: 6px solid #484846;
-		}
-		.image img {
-			height: 100px;
-		}
-		.image h1 {
-			font-size: 26px;
-			color: white;
-			text-transform: uppercase;
-			line-height: 48px;
-			margin: 0;
-			padding: 0;
-		}
-		.about-me {
-			width: 100%;
-		}
-		.about-me p {
-			font-weight: 300;
-			font-size: 1vw;
-			color: white;
-			line-height: 1.8;
-		}
-		.about-me paper-textarea {
-			font-weight: 300;
-			font-size: 1vw;
-			color: white;
-			line-height: 1.8;
-			min-height: 100%;
-		}
-
-		.details {
-			@apply(--layout-flex-3);
-			@apply(--layout-vertical);
-			font-size: 1vw;
-		}
-		.information {
-			@apply(--layout-horizontal);
-			@apply(--layout-justified);
-			padding: 0.6vw 0;
-		}
-		.information .info {
-			text-transform: uppercase;
-		}
-		.information .info h1 {
-			font-size: 0.67vw;
-			color: var(--primary-header-color);
-			margin: 0;
-			padding: 0;
-		}
-		.information.height-weight .info {
-			width: 25%;
-		}
-		.information #birthday-input {
-			width: 80%;
-		}
-		.information #birthday-input paper-input {
-			width: 20%;
-		}
-		.information #location-input {
-			width: 100%;
-		}
-		.information #location-input paper-input {
-			width: 40%;
-		}
-		.information #birthday-input .slash {
-			@apply(--layout-self-end);
-			font-size: 1.67vw;
-			color: var(--primary-header-color);
-			position: absolute;
-			bottom: 30%;
-		}
-
-		.prefs {
-			@apply(--layout-flex-2);
-		}
-		.pref {
-			@apply(--layout-vertical);
-			margin-top: 2vw;
-		}
-		.pref paper-radio-button {
-			font-size: 1vw;
-		}
-
-		#save-button {
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			margin-bottom: 5vh;
-		}
-		button#save-pref {
-			min-width: 20vw;
-		}
-	</style>
 	<template>
+		<style>
+			section {
+				@apply --layout-horizontal;
+				@apply --layout-justified;
+			}
+			section > div {
+				padding: 2.5vw;
+			}
+			h1.title {
+				@apply --header;
+			}
+			h2.subtitle {
+				@apply --subtitle;
+			}
+			iron-icon {
+				width: 1.2vw;
+				height: 1.2vw;
+				padding-right: 0.5vw;
+			}
+			[option="display"] .editable {
+				display: none;
+			}
+			[option="editable"] .display {
+				display: none;
+			}
+			paper-input {
+				display: inline-block;
+			}
+			.justified-row {
+				@apply --layout-horizontal;
+				@apply --layout-justified;
+			}
+
+			.image {
+				@apply --layout-flex-2;
+				@apply --layout-vertical;
+				@apply --layout-center;
+				text-align: center;
+				color: white;
+			}
+			.image .border {
+				width: 100px;
+				height: 100px;
+				border-radius: 50%;
+				border: 6px solid #484846;
+			}
+			.image img {
+				height: 100px;
+			}
+			.image h1 {
+				font-size: 26px;
+				color: white;
+				text-transform: uppercase;
+				line-height: 48px;
+				margin: 0;
+				padding: 0;
+			}
+			.about-me {
+				width: 100%;
+			}
+			.about-me p {
+				font-weight: 300;
+				font-size: 1vw;
+				color: white;
+				line-height: 1.8;
+			}
+			.about-me paper-textarea {
+				font-weight: 300;
+				font-size: 1vw;
+				color: white;
+				line-height: 1.8;
+				min-height: 100%;
+			}
+
+			.details {
+				@apply --layout-flex-3;
+				@apply --layout-vertical;
+				font-size: 1vw;
+			}
+			.information {
+				@apply --layout-horizontal;
+				@apply --layout-justified;
+				padding: 0.6vw 0;
+			}
+			.information .info {
+				text-transform: uppercase;
+			}
+			.information .info h1 {
+				font-size: 0.67vw;
+				color: var(--primary-header-color);
+				margin: 0;
+				padding: 0;
+			}
+			.information.height-weight .info {
+				width: 25%;
+			}
+			.information #birthday-input {
+				width: 80%;
+			}
+			.information #birthday-input paper-input {
+				width: 20%;
+			}
+			.information #location-input {
+				width: 100%;
+			}
+			.information #location-input paper-input {
+				width: 40%;
+			}
+			.information #birthday-input .slash {
+				@apply --layout-self-end;
+				font-size: 1.67vw;
+				color: var(--primary-header-color);
+				position: absolute;
+				bottom: 30%;
+			}
+
+			.prefs {
+				@apply --layout-flex-2;
+			}
+			.pref {
+				@apply --layout-vertical;
+				margin-top: 2vw;
+			}
+			.pref paper-radio-button {
+				font-size: 1vw;
+			}
+
+			#save-button {
+				@apply --layout-vertical;
+				@apply --layout-center;
+				margin-bottom: 5vh;
+			}
+			button#save-pref {
+				min-width: 20vw;
+			}
+		</style>
 		<section>
 			<div class="image">
 				<div class="border">
