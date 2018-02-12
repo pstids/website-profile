@@ -1,128 +1,128 @@
 <dom-module id="workout-summary">
-	<style>
-		:host {
-			@apply(--layout-vertical);
-			border: 1px solid #4D4D4D;
-			flex: 3;
-			margin: 20px;
-		}
-		.rss-container {
-			margin: 0 50px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: row;
-		}
-		.rss {
-			width: 160px;
-			height: 160px;
-			border-radius: 50%;
-			border: 1px solid orange;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: row;
-		}
-		.rss h1 {
-			font-size: 32px;
-			margin-right: 5px;
-		}
-		.rss span {
-			color: white;
-		}
-		.top {
-			background-color: #222222;
-			border-bottom: 1px solid #4D4D4D;
-			height: 70px;
-		}
-		.title {
-			@apply(--layout-horizontal);
-			@apply(--layout-flex);
-		}
-		.accent {
-			font-weight: 100;
-		}
-		.raindrop {
-			flex: 0 1;
-			border-left: 1px solid #4D4D4D;
-			@apply(--layout);
-			@apply(--layout-end-justified);
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-		}
-		.raindrop iron-icon {
-			width: 34px;
-			height: 34px;
-			fill: orange;
-			padding: 0 20px;
-		}
-		.stats {
-			padding: 20px;
-			@apply(--layout-horizontal);
-		}
-		@media (max-width: 800px) {
+	<template>
+		<style>
+			:host {
+				@apply --layout-vertical;
+				border: 1px solid #4D4D4D;
+				flex: 3;
+				margin: 20px;
+			}
+			.rss-container {
+				margin: 0 50px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: row;
+			}
+			.rss {
+				width: 160px;
+				height: 160px;
+				border-radius: 50%;
+				border: 1px solid orange;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: row;
+			}
+			.rss h1 {
+				font-size: 32px;
+				margin-right: 5px;
+			}
+			.rss span {
+				color: white;
+			}
+			.top {
+				background-color: #222222;
+				border-bottom: 1px solid #4D4D4D;
+				height: 70px;
+			}
+			.title {
+				@apply --layout-horizontal;
+				@apply --layout-flex;
+			}
+			.accent {
+				font-weight: 100;
+			}
+			.raindrop {
+				flex: 0 1;
+				border-left: 1px solid #4D4D4D;
+				@apply --layout;
+				@apply --layout-end-justified;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+			}
+			.raindrop iron-icon {
+				width: 34px;
+				height: 34px;
+				fill: orange;
+				padding: 0 20px;
+			}
 			.stats {
 				padding: 20px;
-				@apply(--layout-vertical);
+				@apply --layout-horizontal;
 			}
-		}
-		.stats h2 {
-			margin: 0;
-			color: white;
-			font-size: 30px;
-		}
-		.stats h2 .unit {
-			margin-top: 10px;
-			font-size: 16px;
-		}
-		.stats .sub {
-			color: #A4A4A4;
-			text-align: center;
-		}
-		.stats .stat {
-			flex: 1 1 200px;
-		}
-		.values {
-			@apply(--layout-flex);
-		}
-		.values .value {
-			@apply(--layout-flex);
-			justify-content: center;
-			align-items: center;
-		}
-		.tiz-container {
-			width: 330px;
-			margin: 0 50px;
-		}
-		#messageContainer {
-			width: 230px;
-		}
-
-		paper-input input {
-			text-align: center !important;
-		}
-
-		paper-dropdown-menu {
-			--paper-input-container-label: {
+			@media (max-width: 800px) {
+				.stats {
+					padding: 20px;
+					@apply --layout-vertical;
+				}
+			}
+			.stats h2 {
+				margin: 0;
 				color: white;
-				font-weight: bold;
-			};
-			--paper-input-container-input: {
-				color: white;
-				font-style: normal;
-			};
-			/* no underline */
-			--paper-input-container-underline: {
-				color: white;
-			};
-		}
+				font-size: 30px;
+			}
+			.stats h2 .unit {
+				margin-top: 10px;
+				font-size: 16px;
+			}
+			.stats .sub {
+				color: #A4A4A4;
+				text-align: center;
+			}
+			.stats .stat {
+				flex: 1 1 200px;
+			}
+			.values {
+				@apply --layout-flex;
+			}
+			.values .value {
+				@apply --layout-flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.tiz-container {
+				width: 330px;
+				margin: 0 50px;
+			}
+			#messageContainer {
+				width: 230px;
+			}
 
-		paper-icon-button {
-			color: white;
-		}
-	</style>
-	<template>
+			paper-input input {
+				text-align: center !important;
+			}
+
+			paper-dropdown-menu {
+				--paper-input-container-label: {
+					color: white;
+					font-weight: bold;
+				};
+				--paper-input-container-input: {
+					color: white;
+					font-style: normal;
+				};
+				/* no underline */
+				--paper-input-container-underline: {
+					color: white;
+				};
+			}
+
+			paper-icon-button {
+				color: white;
+			}
+		</style>
 		<div class="layout horizontal top">
 			<div class="title">
 				<h1 class="bold">{{data.date}}</h1>
