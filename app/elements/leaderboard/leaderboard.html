@@ -1,285 +1,285 @@
 <dom-module id="social-leaderboard">
-	<style>
-	:host {
-		min-height: 450px;
-		height: 100%;
-		margin: 0;
-		color: #fff;
-	}
-
-	.leaderboard-main {
-		background: -webkit-linear-gradient(top, #262626, #1C1C1C);
-		background: linear-gradient(to bottom, #262626, #1C1C1C);
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-around-justified);
-	}
-
-	iron-icon {
-		width: 12px;
-		height: 12px;
-		padding: 0 10px;
-	}
-
-	.leaderboard {
-		background: #262626;
-		height: 100%;
-		width: 26%;
-	}
-
-	@media (max-width: 1000px) {
-		.leaderboard-main {
-			@apply(--layout-vertical);
-			margin: 0 20px;
-		}
-		.leaderboard {
-			width: 100%;
-		}
-	}
-
-	.leaderboard h1 {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-
-		font-size: 29px;
-		color: #F5A214;
-		font-weight: 800;
-		margin: 15px;
-		line-height: 70px;
-	}
-	.leaderboard h1 img {
-		height: 80px;
-		position: relative;
-		top: 3px;
-		margin-right: 6px;
-		vertical-align: baseline;
-	}
-	.leaderboard ol {
-		counter-reset: leaderboard;
-		list-style: none;
-		-webkit-padding-start: 0;
-		-webkit-margin-after: 0;
-		padding: 0;
-		margin: 0;
-		height: 100%;
-		position: relative;
-	}
-	.leaderboard ol li {
-		/*border-left: solid 1px orange;*/
-		position: relative;
-		z-index: 1;
-		font-size: 14px;
-		counter-increment: leaderboard;
-		padding: 10px 5% 10px 5%;
-		cursor: pointer;
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		-webkit-transform: translateZ(0) scale(1, 1);
-		transform: translateZ(0) scale(1, 1);
-		border: solid 1px #4D4D4D;
-		border-top: 0;
-		height: 57px;
-
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-	}
-	.leaderboard ol li:first-child {
-		border-top: solid 1px #4D4D4D;
-	}
-	.leaderboard ol li:nth-child(odd) {
-		background-color: #1C1C1C;
-	}
-	.leaderboard ol li.active {
-		background: orange;
-	}
-	.leaderboard ol li.active .count {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li.active mark {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li.active small {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li .count {
-		z-index: 2;
-		left: 15px;
-		width: 25px;
-		height: 25px;
-		line-height: 25px;
-		background: white;
-		color: orange;
-		font-weight: 800;
-		border-radius: 20px;
-		text-align: center;
-		margin-right: 13px;
-		margin-left: 12px;
-	}
-	.leaderboard ol li .count.award {
-		background-color: rgba(0, 0, 0, 0);
-		background-size: 50px 50px;
-		width: 50px;
-		height: 50px;
-		margin-right: 0;
-		margin-left: 0;
-		border-radius: 0;
-	}
-	.leaderboard ol li .count.first {
-		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-gold.png);
-	}
-	.leaderboard ol li .count.second {
-		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-silver.png);
-	}
-	.leaderboard ol li .count.third {
-		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-bronze.png);
-	}
-	.leaderboard ol li img {
-		display: inline;
-		width: 35px;
-		height: 35px;
-		border-radius: 50%;
-		margin-right: 1em;
-		margin-left: 1em;
-		background-color: #1C1C1C;
-		max-width: 100%;
-	}
-	.leaderboard ol li mark {
-		margin: 0;
-		background: none;
-		color: #fff;
-		font-size: 16px;
-		width: 150px;
-	}
-	.leaderboard ol li mark.rank {
-		width: auto;
-	}
-	.leaderboard ol li small {
-		font-size: 16px;
-		flex: 1;
-		text-align: right;
-		margin-right: 1em;
-		opacity: 1;
-		color: #FFFFFF;
-	}
-
-	.space {
-		width: 75px;
-		display: block;
-	}
-
-	#dialog .commit {
-		@apply(--layout);
-		@apply(--layout-horizontal);
-	}
-	#dialog .breakdown {
-		@apply(--layout-flex);
-		@apply(--layout);
-		@apply(--layout-vertical);
-	}
-	#dialog .progression {
-		@apply(--layout-flex-3);
-		@apply(--layout);
-		@apply(--layout-vertical);
-	}
-
-	.tile {
-		width: 18px;
-		height: 18px;
-		margin: 2px;
-		color: white;
-		background: white;
-	}
-	.tile.active {
-		color: orange;
-		background: orange;
-	}
-	.tile-day {
-		font-size: 16px;
-		line-height: 18px;
-		color: white;
-		margin: 2px 5px 2px 2px;
-		text-align: right;
-	}
-
-	.top {
-		background-color: #222222;
-		border-bottom: 1px solid #4D4D4D;
-	}
-	.tops {
-		border: 1px solid #4D4D4D;
-		flex: 1;
-	}
-	.raindrop {
-		flex: 0 1;
-		border-left: 1px solid #4D4D4D;
-		@apply(--layout);
-		@apply(--layout-end-justified);
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-	}
-	.stats {
-		padding: 0 20px;
-	}
-	.stat .sub {
-		color: #A4A4A4;
-	}
-	.stat .values {
-		@apply(--layout-flex);
-	}
-	.stat .values .value {
-		@apply(--layout-flex);
-		justify-content: center;
-		align-items: center;
-	}
-	.stat h2 {
-		margin: 0;
-		color: white;
-		font-size: 30px;
-	}
-	.stat h2 .unit {
-		margin-top: 10px;
-		font-size: 16px;
-	}
-	.buttons {
-		padding-left: 8px;
-	}
-
-	.prompt {
-		margin: 2% 5.5%;
-	}
-	.prompt h1 span {
-		color: orange;
-	}
-	.prompt ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-	.prompt ul li {
-		margin: 20px 0;
-	}
-	.prompt p {
-		font-size: 18px;
-		line-height: 28px;
-	}
-
-	.dialog-container {
-		padding: 0;
-		margin: 0;
-	}
-	.dialog-container .bottom {
-		border: 1px solid #4D4D4D;
-		border-top: 0;
-		padding: 0 20px;
-	}
-	.dialog-container .frequency {
-		padding-top: 20px;
-	}
-	</style>
 	<template>
+		<style>
+		:host {
+			min-height: 450px;
+			height: 100%;
+			margin: 0;
+			color: #fff;
+		}
+
+		.leaderboard-main {
+			background: -webkit-linear-gradient(top, #262626, #1C1C1C);
+			background: linear-gradient(to bottom, #262626, #1C1C1C);
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-around-justified;
+		}
+
+		iron-icon {
+			width: 12px;
+			height: 12px;
+			padding: 0 10px;
+		}
+
+		.leaderboard {
+			background: #262626;
+			height: 100%;
+			width: 26%;
+		}
+
+		@media (max-width: 1000px) {
+			.leaderboard-main {
+				@apply --layout-vertical;
+				margin: 0 20px;
+			}
+			.leaderboard {
+				width: 100%;
+			}
+		}
+
+		.leaderboard h1 {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-center-justified;
+
+			font-size: 29px;
+			color: #F5A214;
+			font-weight: 800;
+			margin: 15px;
+			line-height: 70px;
+		}
+		.leaderboard h1 img {
+			height: 80px;
+			position: relative;
+			top: 3px;
+			margin-right: 6px;
+			vertical-align: baseline;
+		}
+		.leaderboard ol {
+			counter-reset: leaderboard;
+			list-style: none;
+			-webkit-padding-start: 0;
+			-webkit-margin-after: 0;
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			position: relative;
+		}
+		.leaderboard ol li {
+			/*border-left: solid 1px orange;*/
+			position: relative;
+			z-index: 1;
+			font-size: 14px;
+			counter-increment: leaderboard;
+			padding: 10px 5% 10px 5%;
+			cursor: pointer;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+			-webkit-transform: translateZ(0) scale(1, 1);
+			transform: translateZ(0) scale(1, 1);
+			border: solid 1px #4D4D4D;
+			border-top: 0;
+			height: 57px;
+
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-center-justified;
+		}
+		.leaderboard ol li:first-child {
+			border-top: solid 1px #4D4D4D;
+		}
+		.leaderboard ol li:nth-child(odd) {
+			background-color: #1C1C1C;
+		}
+		.leaderboard ol li.active {
+			background: orange;
+		}
+		.leaderboard ol li.active .count {
+			color: #1F1F1F;
+		}
+		.leaderboard ol li.active mark {
+			color: #1F1F1F;
+		}
+		.leaderboard ol li.active small {
+			color: #1F1F1F;
+		}
+		.leaderboard ol li .count {
+			z-index: 2;
+			left: 15px;
+			width: 25px;
+			height: 25px;
+			line-height: 25px;
+			background: white;
+			color: orange;
+			font-weight: 800;
+			border-radius: 20px;
+			text-align: center;
+			margin-right: 13px;
+			margin-left: 12px;
+		}
+		.leaderboard ol li .count.award {
+			background-color: rgba(0, 0, 0, 0);
+			background-size: 50px 50px;
+			width: 50px;
+			height: 50px;
+			margin-right: 0;
+			margin-left: 0;
+			border-radius: 0;
+		}
+		.leaderboard ol li .count.first {
+			background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-gold.png);
+		}
+		.leaderboard ol li .count.second {
+			background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-silver.png);
+		}
+		.leaderboard ol li .count.third {
+			background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-bronze.png);
+		}
+		.leaderboard ol li img {
+			display: inline;
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			margin-right: 1em;
+			margin-left: 1em;
+			background-color: #1C1C1C;
+			max-width: 100%;
+		}
+		.leaderboard ol li mark {
+			margin: 0;
+			background: none;
+			color: #fff;
+			font-size: 16px;
+			width: 150px;
+		}
+		.leaderboard ol li mark.rank {
+			width: auto;
+		}
+		.leaderboard ol li small {
+			font-size: 16px;
+			flex: 1;
+			text-align: right;
+			margin-right: 1em;
+			opacity: 1;
+			color: #FFFFFF;
+		}
+
+		.space {
+			width: 75px;
+			display: block;
+		}
+
+		#dialog .commit {
+			@apply --layout;
+			@apply --layout-horizontal;
+		}
+		#dialog .breakdown {
+			@apply --layout-flex;
+			@apply --layout;
+			@apply --layout-vertical;
+		}
+		#dialog .progression {
+			@apply --layout-flex-3;
+			@apply --layout;
+			@apply --layout-vertical;
+		}
+
+		.tile {
+			width: 18px;
+			height: 18px;
+			margin: 2px;
+			color: white;
+			background: white;
+		}
+		.tile.active {
+			color: orange;
+			background: orange;
+		}
+		.tile-day {
+			font-size: 16px;
+			line-height: 18px;
+			color: white;
+			margin: 2px 5px 2px 2px;
+			text-align: right;
+		}
+
+		.top {
+			background-color: #222222;
+			border-bottom: 1px solid #4D4D4D;
+		}
+		.tops {
+			border: 1px solid #4D4D4D;
+			flex: 1;
+		}
+		.raindrop {
+			flex: 0 1;
+			border-left: 1px solid #4D4D4D;
+			@apply --layout;
+			@apply --layout-end-justified;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+		.stats {
+			padding: 0 20px;
+		}
+		.stat .sub {
+			color: #A4A4A4;
+		}
+		.stat .values {
+			@apply --layout-flex;
+		}
+		.stat .values .value {
+			@apply --layout-flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.stat h2 {
+			margin: 0;
+			color: white;
+			font-size: 30px;
+		}
+		.stat h2 .unit {
+			margin-top: 10px;
+			font-size: 16px;
+		}
+		.buttons {
+			padding-left: 8px;
+		}
+
+		.prompt {
+			margin: 2% 5.5%;
+		}
+		.prompt h1 span {
+			color: orange;
+		}
+		.prompt ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+		.prompt ul li {
+			margin: 20px 0;
+		}
+		.prompt p {
+			font-size: 18px;
+			line-height: 28px;
+		}
+
+		.dialog-container {
+			padding: 0;
+			margin: 0;
+		}
+		.dialog-container .bottom {
+			border: 1px solid #4D4D4D;
+			border-top: 0;
+			padding: 0 20px;
+		}
+		.dialog-container .frequency {
+			padding-top: 20px;
+		}
+		</style>
 		<div class="layout vertical tops hidden prompt" id="crit">
 			<div class="layout horizontal top">
 				<div class="title flex">
