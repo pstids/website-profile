@@ -1,76 +1,76 @@
 <dom-module id="lap-overview">
-	<style>
-		h1.header {
-			@apply(--header);
-		}
-		h2.subtitle {
-			@apply(--subtitle);
-		}
-		.title {
-			padding: 20px;
-			@apply(--layout-end);
-		}
-		table {
-			color: white;
-			border: 1px solid #4D4D4D;
-			width: 100%;
-		}
-		table thead {
-			background-color: #222222;
-		}
-		table tbody tr, table thead tr {
-			display: flex;
-			flex-direction: row;
-			border-bottom: 1px solid #4D4D4D;
-			cursor: pointer;
-		}
-		table tbody tr:last-child {
-			border-bottom: 0;
-		}
-		table th, table td {
-			flex: 1;
-			padding: 6px 0;
-			text-align: center;
-		}
-
-		paper-input input {
-			text-align: center !important;
-		}
-
-		paper-dropdown-menu.test-selector {
-			--paper-input-container-label: {
-				color: white;
-				font-weight: bold;
-			};
-			--paper-input-container-input: {
-				color: white;
-				font-style: normal;
-			};
-			/* no underline */
-			--paper-input-container-underline: {
-				color: white;
-			};
-		}
-
-		paper-icon-button {
-			color: white;
-		}
-		svg {
-			width: 330px;
-		}
-
-		#container {
-			@apply(--layout);
-			@apply(--layout-horizontal);
-		}
-
-		@media (max-width: 1000px) {
-			#container {
-				@apply(--layout-vertical);
-			}
-		}
-	</style>
 	<template>
+		<style>
+			h1.header {
+				@apply --header;
+			}
+			h2.subtitle {
+				@apply --subtitle;
+			}
+			.title {
+				padding: 20px;
+				@apply --layout-end;
+			}
+			table {
+				color: white;
+				border: 1px solid #4D4D4D;
+				width: 100%;
+			}
+			table thead {
+				background-color: #222222;
+			}
+			table tbody tr, table thead tr {
+				display: flex;
+				flex-direction: row;
+				border-bottom: 1px solid #4D4D4D;
+				cursor: pointer;
+			}
+			table tbody tr:last-child {
+				border-bottom: 0;
+			}
+			table th, table td {
+				flex: 1;
+				padding: 6px 0;
+				text-align: center;
+			}
+
+			paper-input input {
+				text-align: center !important;
+			}
+
+			paper-dropdown-menu.test-selector {
+				--paper-input-container-label: {
+					color: white;
+					font-weight: bold;
+				};
+				--paper-input-container-input: {
+					color: white;
+					font-style: normal;
+				};
+				/* no underline */
+				--paper-input-container-underline: {
+					color: white;
+				};
+			}
+
+			paper-icon-button {
+				color: white;
+			}
+			svg {
+				width: 330px;
+			}
+
+			#container {
+				@apply --layout;
+				@apply --layout-horizontal;
+			}
+
+			@media (max-width: 1000px) {
+				#container {
+					@apply --layout-vertical;
+				}
+			}
+		</style>
 		<div id="container">
 			<div class="layout vertical flex-3">
 				<div class="layout horizontal title">
