@@ -69,8 +69,13 @@
 			this.$.leavePlanDialog.open();
 		},
 		leavePlanConfirm: function () {
-			superagent
-				.del(`/b/api/v1/users/plan`)
+          var request = superagent
+				.del(`/b/api/v1/users/plan`);
+            if (isLocal) {
+                request = superagent
+                    .get('/powercenter/scripts/local/ok.json');
+            }
+            request
 				.set('Accept', 'application/json')
 				.set('Authorization', `Bearer: ${jwt.token}`)
 				.end((err, res) => {

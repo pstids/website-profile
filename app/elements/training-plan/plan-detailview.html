@@ -159,8 +159,12 @@
                     return;
                 }
                 this.$.loading.hidden = false;
+                var path = `/b/api/v1/training/plan/${this.planId}`;
+                if (isLocal) {
+                    path = '/powercenter/scripts/local/training_plan_id.json';
+                }
                 superagent
-                    .get(`/b/api/v1/training/plan/${this.planId}`)
+                    .get(path)
                     .set('Accept', 'application/json')
                     .set('Authorization', `Bearer: ${jwt.token}`)
                     .end((err, res) => {

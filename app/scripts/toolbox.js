@@ -209,6 +209,11 @@ var arraysEqual = function (a, b) {
 	return true;
 };
 
+var isLocal = function () {
+	
+	return true;
+};
+
 (function() {
 	function decimalAdjust(type, value, exp) {
 		// If the exp is undefined or zero...

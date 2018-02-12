@@ -130,8 +130,13 @@
             suuntoCheck: function () {
                 if (document.visibilityState === 'visible' &&
                     !this.suunto.confirm.classList.contains('hidden')) {
-                    superagent
-                        .post('/b/platform/auth/suunto/check')
+                    var request = superagent
+                        .post('/b/platform/auth/suunto/check');
+                    if (isLocal) {
+                        request = superagent
+                            .get('/powercenter/scripts/local/ok.json');
+                    }
+                    request
                         .send()
                         .set('Accept', 'application/json')
                         .set('Authorization', `Bearer: ${jwt.token}`)
@@ -161,8 +166,13 @@
                 this.suunto.fetch.addEventListener('click', () => {
                     this.suunto.fetch.classList.add('hidden');
                     this.suunto.fetching.classList.remove('hidden');
-                    superagent
-                        .post('/b/internal/fetch/suunto')
+                    var request = superagent
+                        .post('/b/internal/fetch/suunto');
+                    if (isLocal) {
+                        request = superagent
+                            .get('/powercenter/scripts/local/ok.json');
+                    }
+                    request
                         .send({})
                         .set('Accept', 'application/json')
                         .set('Authorization', `Bearer: ${jwt.token}`)
@@ -188,8 +198,14 @@
                     this.suunto.disconnect.classList.remove('hidden');
                 });
                 this.suunto.auth.addEventListener('click', () => {
-                    superagent
-                        .post('/b/platform/auth/suunto')
+                    var request = superagent
+                        .post('/b/platform/auth/suunto');
+                    if (isLocal) {
+                        request = superagent
+                            .get('/powercenter/scripts/local/ok.json');
+                    }
+
+                    request
                         .send({
                             email: this.suunto.email.value
                         })
@@ -216,8 +232,14 @@
                 });
             },
             oauthDisconnect: function (platform, cb) {
-                superagent
-                    .del(`/b/platform/oauth/${platform}`)
+                var request = superagent
+                    .del(`/b/platform/oauth/${platform}`);
+                if (isLocal) {
+                    request = superagent
+                        .get('/powercenter/scripts/local/ok.json');
+                }
+
+                request
                     .send()
                     .set('Accept', 'application/json')
                     .set('Authorization', `Bearer: ${jwt.token}`)
@@ -237,8 +259,12 @@
                         ele.textContent = 'Connect';
                     });
                 } else {
+                    var path = '`/b/platform/oauth/${platform}`';
+                    if (isLocal) {
+                        path = '/powercenter/scripts/local/oauth_id.json';
+                    }
                     superagent
-                        .get(`/b/platform/oauth/${platform}`)
+                        .get(path)
                         .send()
                         .set('Accept', 'application/json')
                         .set('Authorization', `Bearer: ${jwt.token}`)
@@ -253,8 +279,12 @@
             },
             update: function () {
                 if (jwt.data.id) {
+                    var path = '/b/internal/platforms';
+                    if (isLocal) {
+                        path = '/powercenter/scripts/local/platforms.json';
+                    }
                     superagent
-                        .get('/b/internal/platforms')
+                        .get(path)
                         .send()
                         .set('Accept', 'application/json')
                         .set('Authorization', `Bearer: ${jwt.token}`)

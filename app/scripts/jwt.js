@@ -5,7 +5,7 @@
 /*global fbq*/
 
 var isLocal = false;
-if (window.location.hostname === 'stryd.dev') {
+if (window.location.hostname === 'stryd.dev' || window.location.hostname === 'localhost') {
 	isLocal = true;
 }
 
@@ -55,20 +55,25 @@ class JWT {
 
 	requestToken() {
 		if ('id' in this.data) {
-			superagent
-				.post('/b/token/renew')
-				.send({
-					token: this.token
-				})
-				.set('Accept', 'application/json')
-				.end((err, res) => {
-					if (res.ok) {
-						localStorage.setItem('token', res.body.token);
-						this.constructor();
-					} else {
-						this.logout();
-					}
-				});
+			if (!isLocal) {
+				superagent
+					.post('/b/token/renew')
+					.send({
+						token: this.token
+					})
+					.set('Accept', 'application/json')
+					.end((err, res) => {
+						if (res.ok) {
+							localStorage.setItem('token', res.body.token);
+							this.constructor();
+						} else {
+							this.logout();
+						}
+					});
+			} else {
+				this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
+				this.constructor();
+			}
 		} else {
 			this.logout();
 		}
@@ -148,8 +153,12 @@ class User {
 		if (jwt.data.id === 0) {
 			return;
 		}
+		var path = `/b/api/v1/users/${jwt.data.id}`;
+		if (isLocal) {
+			path = '/powercenter/scripts/local/users_id.json';
+		}
 		superagent
-			.get(`/b/api/v1/users/${jwt.data.id}`)
+			.get(path)
 			.send()
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
@@ -188,8 +197,13 @@ class TrainingPlan {
 			var trainingStarted = localStorage.getItem('training-started');
 			var trainingParsed = moment(trainingStarted, 'YYYYMMDD').format('X');
 			if (trainingSelected !== null && trainingStarted !== null) {
-				superagent
-					.post(`/b/api/v1/users/plan?id=${trainingSelected}&start_date=${trainingParsed}`)
+				var request = superagent
+					.post(`/b/api/v1/users/plan?id=${trainingSelected}&start_date=${trainingParsed}`);
+				if (isLocal) {
+					request = superagent
+						.get('/powercenter/scripts/local/ok.json');
+				}
+				request
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer: ${jwt.token}`)
 					.end((err, res) => {
@@ -462,7 +476,9 @@ class CalendarManager {
 		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
 		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-
+		if (isLocal) {
+			activityEndPoint = '/powercenter/scripts/local/activities_calendar.json';
+		}
 		this.gotActivityEvent = new CustomEvent('gotActivities');
 		superagent
 			.get(activityEndPoint)
@@ -502,6 +518,9 @@ class CalendarManager {
 		var srtDate = this.dateSpan.start.format('MM-DD-YYYY');
 		var endDate = this.dateSpan.end.format('MM-DD-YYYY');
 		var activityEndPoint = `/b/admin/users/${this.username}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		if (isLocal) {
+			activityEndPoint = '/powercenter/scripts/local/activities_calendar.json';
+		}
 		superagent
 			.get(activityEndPoint)
 			.send()
@@ -557,6 +576,9 @@ class CalendarManager {
 		var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
 		if (this.mode === 'admin') {
 			activityEndPoint = `/b/admin/users/${this.username}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+		}
+		if (isLocal) {
+			activityEndPoint = '/powercenter/scripts/local/activities_calendar.json';
 		}
 		superagent
 			.get(activityEndPoint)

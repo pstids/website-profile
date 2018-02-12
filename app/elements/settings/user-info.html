@@ -352,8 +352,14 @@
 		saveDetails: function () {
 			var updateParams = '?fields=gender,weight,height,units,city,state,country,about_me,birth,race';
 			var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
-			superagent
-				.put(`/b/api/v1/users/${jwt.data.id}${updateParams}`)
+
+			var request = superagent
+				.put(`/b/api/v1/users/${jwt.data.id}${updateParams}`);
+			if (isLocal) {
+				request = superagent
+					.get('/powercenter/scripts/local/users_id.json');
+			}
+			request
 				.send({
 					gender: this.userLocal.gender,
 					weight:  parseInt(this.userLocal.weight),
