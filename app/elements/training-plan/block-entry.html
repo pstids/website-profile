@@ -61,32 +61,40 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'block-entry',
-            properties: {
-                num: {
-                    type: Number,
-                    value: 0
-                },
-                repeatCount: {
-                    type: Number,
-                    value: 1
-                },
-                segmentCount: {
-                    type: Number,
-                    value: 0
-                },
-                contentSelected: {
-                    type: String,
-                    value: 'unfold'
-                }
-            },
-            ready: function () {
+        class BlockEntry extends Polymer.Element {
+            static get is() { return 'block-entry'; }
+            static get properties() {
+                return {
+                    num: {
+                        type: Number,
+                        value: 0
+                    },
+                    repeatCount: {
+                        type: Number,
+                        value: 1
+                    },
+                    segmentCount: {
+                        type: Number,
+                        value: 0
+                    },
+                    contentSelected: {
+                        type: String,
+                        value: 'unfold'
+                    }
+                };
+            }
+            ready() {
+                super.ready();
                 this.segmentCount = 0;
-                app.clearChildren(this.$.segments);
+                this.clearChildren(this.$.segments);
                 this.$.repeatcount.style.visibility = 'hidden';
-            },
-            data: function () {
+            }
+            clearChildren(node) {
+                while (node.firstChild) {
+                    node.removeChild(node.firstChild);
+                }
+            }
+            data() {
                 let segments = [];
                 let segmentsContainer = Polymer.dom(this.$.segments).children;
                 for (var i = 0; i < segmentsContainer.length; i++) {
@@ -98,10 +106,10 @@
                     segments: segments,
                 };
                 return data;
-            },
-            setData: function (blockData) {
+            }
+            setData(blockData) {
                 console.log('block data: ', blockData);
-                app.clearChildren(this.$.segments);
+                this.clearChildren(this.$.segments);
                 if (Object.keys(blockData).length <= 0) {
                     return;
                 }
@@ -117,33 +125,33 @@
                 for (let segment of blockData.segments) {
                     this._addSegment(segment);
                 }
-            },
-            _repeatCheckHandler: function () {
+            }
+            _repeatCheckHandler() {
                 if (this.$.repeatcheck.checked) {
                     this.$.repeatcount.style.visibility = 'visible';
                 } else {
                     this.$.repeatcount.style.visibility = 'hidden';
                 }
-            },
-            _addSegment: function (segData) {
+            }
+            _addSegment(segData) {
                 var segmentEntry = document.createElement('segment-entry');
                 this.segmentCount += 1;
                 segmentEntry.segmentNum = this.segmentCount;
                 segmentEntry.setData(segData);
                 Polymer.dom(this.$.segments).appendChild(segmentEntry);
-            },
-            _addSegmentHandler: function () {
+            }
+            _addSegmentHandler() {
                 this._addSegment({});
-            },
-            _removeSegmentHandler: function () {
+            }
+            _removeSegmentHandler() {
                 let segments = Polymer.dom(this.$.segments);
                 if (segments.children.length <= 0) {
                     return;
                 }
                 segments.removeChild(segments.lastChild);
                 this.segmentCount -= 1;
-            },
-            _blockFoldHandler: function () {
+            }
+            _blockFoldHandler() {
                 switch (this.$.fold.icon) {
                     case 'arrow-drop-up':
                         this.$.fold.icon = 'arrow-drop-down';
@@ -155,8 +163,8 @@
                         break;
                 }
             }
-        });
-
+        }
+        window.customElements.define(BlockEntry.is, BlockEntry);
     </script>
 
 </dom-module>
