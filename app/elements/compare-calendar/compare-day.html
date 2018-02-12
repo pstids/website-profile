@@ -1,93 +1,93 @@
 <dom-module id="compare-day">
-    <style>
-        :host {
-            @apply(--layout-flex);
-            @apply(--layout-vertical);
-            position: relative;
-            height: 100%;
-        }
-        .container {
-            @apply(--layout-flex);
-            @apply(--layout-vertical);
-            overflow: hidden;
-            background-size: cover;
-            height: 100%;
-            cursor: auto;
-            background-image: 'none';
-        }
-        .container.has-workout {
-            background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
-            cursor: pointer;
-        }
-        .workout-display {
-            display: none;
-        }
-        .has-workout .workout-display {
-            @apply(--layout);
-        }
-        .header {
-            @apply(--layout-horizontal);
-            @apply(--layout-end-justified);
-            height: 20px;
-            padding: 0 3px;
-            opacity: 0.6;
-            transition: 0.5s opacity;
-            flex: 0 1 20px;
-        }
-        .header .numday {
-            text-align: right;
-            color: white;
-            line-height: 20px;
-            font-size: 12px;
-        }
-        .wattage {
-            margin-top: 5px;
-            @apply(--layout-center-justified);
-            @apply(--layout-center);
-            @apply(--layout-horizontal);
-        }
-        .wattage .value {
-            color: white;
-            text-align: center;
-            font-size: 21px;
-        }
-        .wattage .unit {
-            color: white;
-            text-align: center;
-            font-size: 20px;
-        }
-        .wattage iron-icon {
-            margin-right: 5px;
-            color: var(--primary-icon-color);
-            fill: var(--primary-icon-color);
-            width: 15px;
-            height: 15px;
-        }
-        .other {
-            height: 21px;
-            margin-bottom: 5px;
-        }
-        .stat {
-            height: 21px;
-            @apply(--layout-center-justified);
-            @apply(--layout-center);
-            @apply(--layout-horizontal);
-        }
-        .stat .value {
-            color: white;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 300;
-        }
-        .stat iron-icon {
-            margin-right: 5px;
-            color: var(--primary-icon-color);
-            fill: var(--primary-icon-color);
-            height: 14px;
-            width: 14px;
-        }
-    </style>
     <template>
+        <style>
+            :host {
+                @apply --layout-flex;
+                @apply --layout-vertical;
+                position: relative;
+                height: 100%;
+            }
+            .container {
+                @apply --layout-flex;
+                @apply --layout-vertical;
+                overflow: hidden;
+                background-size: cover;
+                height: 100%;
+                cursor: auto;
+                background-image: 'none';
+            }
+            .container.has-workout {
+                background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+                cursor: pointer;
+            }
+            .workout-display {
+                display: none;
+            }
+            .has-workout .workout-display {
+                @apply --layout;
+            }
+            .header {
+                @apply --layout-horizontal;
+                @apply --layout-end-justified;
+                height: 20px;
+                padding: 0 3px;
+                opacity: 0.6;
+                transition: 0.5s opacity;
+                flex: 0 1 20px;
+            }
+            .header .numday {
+                text-align: right;
+                color: white;
+                line-height: 20px;
+                font-size: 12px;
+            }
+            .wattage {
+                margin-top: 5px;
+                @apply --layout-center-justified;
+                @apply --layout-center;
+                @apply --layout-horizontal;
+            }
+            .wattage .value {
+                color: white;
+                text-align: center;
+                font-size: 21px;
+            }
+            .wattage .unit {
+                color: white;
+                text-align: center;
+                font-size: 20px;
+            }
+            .wattage iron-icon {
+                margin-right: 5px;
+                color: var(--primary-icon-color);
+                fill: var(--primary-icon-color);
+                width: 15px;
+                height: 15px;
+            }
+            .other {
+                height: 21px;
+                margin-bottom: 5px;
+            }
+            .stat {
+                height: 21px;
+                @apply --layout-center-justified;
+                @apply --layout-center;
+                @apply --layout-horizontal;
+            }
+            .stat .value {
+                color: white;
+                text-align: center;
+                font-size: 14px;
+                font-weight: 300;
+            }
+            .stat iron-icon {
+                margin-right: 5px;
+                color: var(--primary-icon-color);
+                fill: var(--primary-icon-color);
+                height: 14px;
+                width: 14px;
+            }
+        </style>
         <div class="container" id="container">
             <div class="header" id="header">
                 <div class="numday">{{day}}</div>
