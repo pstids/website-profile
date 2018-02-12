@@ -1,97 +1,97 @@
 <dom-module id='map-stream'>
-    <style>
-        :host {
-            position: relative;
-        }
-        #map {
-            width: 100%;
-            height: 100vh;
-            min-height: 350px;
-        }
-        .anchor {
-            position: absolute;
-            top: 10%;
-            bottom: 10%;
-            left: 0;
-        }
-        .switch {
-            position: absolute;
-            top: 0;
-            right: 0;
-            @apply(--layout-horizontal);
-        }
-        .view-more {
-            position: absolute;
-            bottom: 0;
-            left: 30%;
-            @apply(--layout-horizontal);
-        }
-        .view-more .block {
-            border-top: 3px solid #F5A214;
-            background-color: rgba(41, 41, 39, 0.9);
-            margin-right: 15px;
-            color: white;
-            padding: 15px;
-            font-size: 18px;
-            text-align: center;
-            line-height: 26px;
-        }
-        .view-more a {
-            color: white;
-            text-decoration: none;
-        }
-        .profile {
-            @apply(--layout-vertical);
-            @apply(--layout-center-justified);
-            @apply(--layout-self-center);
-            margin: 20px;
-            cursor: pointer;
-        }
-        .profile h1 {
-            padding: 0;
-            margin: 10px 0 0 0;
-            font-weight: 300;
-            font-size: 20px;
-            color: white;
-            text-align: center;
-        }
-        .profile img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50px;
-            border: 3px solid var(--primary-background-color);
-        }
-        .profile.active img {
-            border: 3px solid var(--primary-header-color);
-        }
-
-        @media (max-width: 600px) {
+    <template>
+        <style>
             :host {
-                @apply(--layout-vertical);
+                position: relative;
+            }
+            #map {
+                width: 100%;
+                height: 100vh;
+                min-height: 350px;
             }
             .anchor {
-                position: static;
-                width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center-justified);
-                @apply(--layout-self-center);
+                position: absolute;
+                top: 10%;
+                bottom: 10%;
+                left: 0;
             }
-            .anchor map-small {
-                border: none;
+            .switch {
+                position: absolute;
+                top: 0;
+                right: 0;
+                @apply --layout-horizontal;
             }
             .view-more {
-                position: static;
-                width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center-justified);
-                @apply(--layout-self-center);
+                position: absolute;
+                bottom: 0;
+                left: 30%;
+                @apply --layout-horizontal;
             }
             .view-more .block {
-                border: 3px solid #F5A214;
+                border-top: 3px solid #F5A214;
+                background-color: rgba(41, 41, 39, 0.9);
+                margin-right: 15px;
+                color: white;
+                padding: 15px;
+                font-size: 18px;
+                text-align: center;
+                line-height: 26px;
             }
-        }
-    </style>
-    <template>
+            .view-more a {
+                color: white;
+                text-decoration: none;
+            }
+            .profile {
+                @apply --layout-vertical;
+                @apply --layout-center-justified;
+                @apply --layout-self-center;
+                margin: 20px;
+                cursor: pointer;
+            }
+            .profile h1 {
+                padding: 0;
+                margin: 10px 0 0 0;
+                font-weight: 300;
+                font-size: 20px;
+                color: white;
+                text-align: center;
+            }
+            .profile img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50px;
+                border: 3px solid var(--primary-background-color);
+            }
+            .profile.active img {
+                border: 3px solid var(--primary-header-color);
+            }
+    
+            @media (max-width: 600px) {
+                :host {
+                    @apply --layout-vertical;
+                }
+                .anchor {
+                    position: static;
+                    width: 100%;
+                    @apply --layout-horizontal;
+                    @apply --layout-center-justified;
+                    @apply --layout-self-center;
+                }
+                .anchor map-small {
+                    border: none;
+                }
+                .view-more {
+                    position: static;
+                    width: 100%;
+                    @apply --layout-horizontal;
+                    @apply --layout-center-justified;
+                    @apply --layout-self-center;
+                }
+                .view-more .block {
+                    border: 3px solid #F5A214;
+                }
+            }
+        </style>
         <div id="map"
             data-step="5"
             data-intro="Retrace your steps and find where you hit your stride. Red areas indicate high power output. Green areas indicate lower power output."></div>
