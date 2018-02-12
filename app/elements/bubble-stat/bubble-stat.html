@@ -1,85 +1,85 @@
 <dom-module id="bubble-stat">
-	<style>
-		:host {
-			box-shadow: 0px 100px 100px -95px #000000;
-			border-radius: 50%;
-			cursor: pointer;
-			z-index: 2;
-			width: 12vw;
-			height: 12vw;
-			@apply(--bubble-stat-wrap);
-		}
-		.bubble-border {
-			width: 90%;
-			height: 90%;
-			border-radius: 50%;
-			background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
-			position: absolute;
-			z-index: 1;
-			transition: transform 0.3s;
-			@apply(--layout-horizontal);
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-			@apply(--bubble-stat-border);
-		}
-		.bubble {
-			width: 95%;
-			height: 95%;
-			border-radius: 50%;
-			background-color: var(--secondary-background-color);
-			position: relative;
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-			box-shadow: inset 0px 0px 6vw -3.33vw #000000;
-		}
-		.icon {
-			color: var(--primary-icon-color);
-			fill: var(--primary-icon-color);
-			width: 2.5vw;
-			height: 2.5vw;
-			margin-bottom: 1vw;
-			@apply(--bubble-stat-icon);
-		}
-		.title {
-			color: white;
-			line-height: 1vw;
-			text-transform: uppercase;
-			font-weight: 500;
-			font-size: 0.68vw;
-			text-align: center;
-		}
-		.value {
-			color: white;
-			font-size: 2.5vw;
-			line-height: 3.3vw;
-			text-transform: uppercase;
-			font-weight: 800;
-		}
-		.unit {
-			color: white;
-			line-height: 1vw;
-			text-transform: uppercase;
-			font-weight: 500;
-			font-size: 0.68vw;
-		}
-		:host.popped {
-			z-index: 4;
-		}
-		:host.popped .bubble-border:nth-child(1) {
-			transform: translate(0, 0px);
-		}
-		:host.popped .bubble-border:nth-child(2) {
-			transform: translate(0, -12vw);
-		}
-		:host.popped .bubble-border:nth-child(3) {
-			transform: translate(0, 12vw);
-		}
-		.active {
-			z-index: 3;
-		}
-	</style>
 	<template>
+		<style>
+			:host {
+				box-shadow: 0px 100px 100px -95px #000000;
+				border-radius: 50%;
+				cursor: pointer;
+				z-index: 2;
+				width: 12vw;
+				height: 12vw;
+				@apply --bubble-stat-wrap;
+			}
+			.bubble-border {
+				width: 90%;
+				height: 90%;
+				border-radius: 50%;
+				background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
+				position: absolute;
+				z-index: 1;
+				transition: transform 0.3s;
+				@apply --layout-horizontal;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+				@apply --bubble-stat-border;
+			}
+			.bubble {
+				width: 95%;
+				height: 95%;
+				border-radius: 50%;
+				background-color: var(--secondary-background-color);
+				position: relative;
+				@apply --layout-vertical;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+				box-shadow: inset 0px 0px 6vw -3.33vw #000000;
+			}
+			.icon {
+				color: var(--primary-icon-color);
+				fill: var(--primary-icon-color);
+				width: 2.5vw;
+				height: 2.5vw;
+				margin-bottom: 1vw;
+				@apply --bubble-stat-icon;
+			}
+			.title {
+				color: white;
+				line-height: 1vw;
+				text-transform: uppercase;
+				font-weight: 500;
+				font-size: 0.68vw;
+				text-align: center;
+			}
+			.value {
+				color: white;
+				font-size: 2.5vw;
+				line-height: 3.3vw;
+				text-transform: uppercase;
+				font-weight: 800;
+			}
+			.unit {
+				color: white;
+				line-height: 1vw;
+				text-transform: uppercase;
+				font-weight: 500;
+				font-size: 0.68vw;
+			}
+			:host.popped {
+				z-index: 4;
+			}
+			:host.popped .bubble-border:nth-child(1) {
+				transform: translate(0, 0px);
+			}
+			:host.popped .bubble-border:nth-child(2) {
+				transform: translate(0, -12vw);
+			}
+			:host.popped .bubble-border:nth-child(3) {
+				transform: translate(0, 12vw);
+			}
+			.active {
+				z-index: 3;
+			}
+		</style>
 		<div class="bubble-border active" data-bubble="1">
 			<div class="bubble">
 				<iron-icon icon="{{obja.icon}}" class="icon"></iron-icon>
