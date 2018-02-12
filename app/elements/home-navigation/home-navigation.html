@@ -71,9 +71,16 @@
 		<compare-calendar class="hidden"></compare-calendar>
 	</template>
 	<script>
-		Polymer({
-			is: 'home-navigation',
-			ready: function () {
+		class HomeNavigation extends Polymer.Element {
+			static get is() { return 'home-navigation'; }
+
+			ready() {
+				super.ready();
+				Polymer.RenderStatus.afterNextRender(this, () => {
+					this.init();
+				});
+			}
+			init() {
 				this.availables = {};
 				this.title = 'Analysis';
 
@@ -85,8 +92,8 @@
 				this.compareCalendar.addEventListener('mouseleave', () => {
 					this.compareCalendar.classList.add('hidden');
 				});
-			},
-			router: function (e) {
+			}
+			router(e) {
 				var target = e.target;
 				while (target.dataset.select === undefined) {
 					target = target.parentElement;
@@ -108,8 +115,8 @@
 					urlManager.view('training');
 					this.title = 'Training';
 				}
-			},
-			select: function (select) {
+			}
+			select(select) {
 				console.log(select);
 				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
 				this.querySelector(`[data-select="${select}"]`).dataset.toggle = 'on';
@@ -120,8 +127,8 @@
 				} else if (select === 'training') {
 					this.title = 'Training';
 				}
-			},
-			setAvailable: function (availables) {
+			}
+			setAvailable(availables) {
 				var navs = ['analysis', 'comparison', 'training'];
 				this.availables = availables;
 				for (var nav of navs) {
@@ -133,6 +140,7 @@
 					}
 				}
 			}
-		});
+		}
+		window.customElements.define(HomeNavigation.is, HomeNavigation);
 	</script>
 </dom-module>
