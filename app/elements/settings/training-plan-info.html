@@ -1,22 +1,22 @@
 <dom-module id="training-plan-info">
-	<style>
-		:host {
-			@apply(--layout-vertical);
-			padding-bottom: 15%;
-		}
-		h1.title {
-			color: white;
-			margin-left: 0;
-			font-size: 32px;
-		}
-		p {
-			color: white;
-		}
-		button {
-			margin-right: 15px;
-		}
-	</style>
 	<template>
+		<style>
+			:host {
+				@apply --layout-vertical;
+				padding-bottom: 15%;
+			}
+			h1.title {
+				color: white;
+				margin-left: 0;
+				font-size: 32px;
+			}
+			p {
+				color: white;
+			}
+			button {
+				margin-right: 15px;
+			}
+		</style>
 		<template is="dom-if" if="{{plan_available}}">
 			<h1 class="title">{{plan_title}}</h1>
 			<p><b>Starts on:</b> <span>{{plan_start}}</span></p>
