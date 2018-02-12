@@ -1,165 +1,165 @@
 <dom-module id="heat-duration">
-<style>
-	:host {
-		font-family: "Stryd", sans-serif;
-		position: relative;
-		background-color: var(--primary-background-color);
-		min-width: 960px;
-		padding: 20px;
-		padding-bottom: 40px;
-		display: block;
-	}
-	:host.blurred {
-		-webkit-filter: blur(2px);
-		-moz-filter: blur(2px);
-		-ms-filter: blur(2px);
-		-o-filter: blur(2px);
-		filter: blur(2px);
-	}
-	h1.header {
-		@apply(--header);
-		text-align: center;
-		padding: 15px 0;
-	}
-	.charts {
-		position: relative;
-		width: 860px;
-		height: 560px;
-		z-index: 3;
-	}
-	.sidecharts {
-		@apply(--layout-horizontal);
-		justify-content: center;
-	}
-	#heatcanvas, #heatline, #heatline2 {
-		position: absolute;
-	}
-	.heatbars {
-		flex: 0 1 300px;
-		border: 1px solid #4D4D4D;
-		margin: 10px;
-	}
-	.heatmaps {
-		border: 1px solid #4D4D4D;
-		margin: 10px;
-		@apply(--layout-vertical);
-	}
-
-	.info {
-		@apply(--layout-vertical);
-		border: 1px solid #4D4D4D;
-		flex: 0 1 270px;
-		margin: 0 20px 20px 20px;
-	}
-	.title {
-		@apply(--layout-horizontal);
-		@apply(--layout-flex);
-	}
-	.stats {
-		padding: 20px;
-		@apply(--layout-horizontal);
-	}
-	@media (max-width: 800px) {
-		.stats {
-			@apply(--layout-vertical);
-		}
-	}
-	.stats p {
-		color: white;
-		padding: 10px;
-		line-height: 1.7;
-		margin: 0;
-	}
-	.floater {
-		position: absolute;
-		background: #262626;
-		-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		padding: 10px;
-		border: 1px solid #4D4D4D;
-	}
-	.floater .titles {
-		padding: 5px;
-	}
-	.floater .titles p {
-		color: white;
-		font-weight: 700;
-		text-transform: uppercase;
-	}
-	.floater .values {
-		padding: 5px;
-	}
-	.floater .values p {
-		color: white;
-	}
-	#heatlay {
-		z-index: 9;
-		position: relative;
-	}
-	.block {
-		width: 20px;
-		height: 20px;
-		padding: 3px;
-	}
-	[data-block="plan"] {
-		background: #F5A214;
-
-	}
-	[data-block="personal"] {
-		background: #c55300;
-	}
-	.text {
-		font-size: 20px;
-		line-height: 20px;
-		padding: 3px 15px 3px 10px;
-		color: white;
-	}
-	.setButton {
-		width: 250px;
-		padding: 10px;
-		margin-bottom: 30px;
-	}
-	.targetRace {
-		text-transform: capitalize;
-	}
-	.questionBtn {
-		margin-top: 0;
-		margin-left: 20px;
-	}
-	.gradient {
-		background: hsla(7,80%,59%,1);
-		background: -moz-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
-		background: -webkit-gradient(left top, right top, color-stop(0%, hsla(7,80%,59%,1)), color-stop(25%, hsla(62,80%,50%,1)), color-stop(50%, hsla(151,94%,25%,1)), color-stop(75%, hsla(216,80%,24%,1)), color-stop(100%, hsla(266,63%,18%,1)));
-		background: -webkit-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
-		background: -o-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
-		background: -ms-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
-		background: linear-gradient(to right, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ea5643', endColorstr='#2a114b', GradientType=1);
-		height: 15px;
-		width: 100%;
-	}
-	.keys {
-		position: relative;
-		height: 100%;
-		color: white;
-	}
-	[data-key="top"] {
-		bottom: 5px;
-		left: 0;
-		position: absolute;
-	}
-	[data-key="bottom"] {
-		bottom: 5px;
-		right: 0;
-		position: absolute;
-	}
-	p {
-		font-size: 18px;
-		line-height: 1.45;
-	}
-</style>
 <template>
+	<style>
+		:host {
+			font-family: "Stryd", sans-serif;
+			position: relative;
+			background-color: var(--primary-background-color);
+			min-width: 960px;
+			padding: 20px;
+			padding-bottom: 40px;
+			display: block;
+		}
+		:host.blurred {
+			-webkit-filter: blur(2px);
+			-moz-filter: blur(2px);
+			-ms-filter: blur(2px);
+			-o-filter: blur(2px);
+			filter: blur(2px);
+		}
+		h1.header {
+			@apply --header;
+			text-align: center;
+			padding: 15px 0;
+		}
+		.charts {
+			position: relative;
+			width: 860px;
+			height: 560px;
+			z-index: 3;
+		}
+		.sidecharts {
+			@apply --layout-horizontal;
+			justify-content: center;
+		}
+		#heatcanvas, #heatline, #heatline2 {
+			position: absolute;
+		}
+		.heatbars {
+			flex: 0 1 300px;
+			border: 1px solid #4D4D4D;
+			margin: 10px;
+		}
+		.heatmaps {
+			border: 1px solid #4D4D4D;
+			margin: 10px;
+			@apply --layout-vertical;
+		}
+	
+		.info {
+			@apply --layout-vertical;
+			border: 1px solid #4D4D4D;
+			flex: 0 1 270px;
+			margin: 0 20px 20px 20px;
+		}
+		.title {
+			@apply --layout-horizontal;
+			@apply --layout-flex;
+		}
+		.stats {
+			padding: 20px;
+			@apply --layout-horizontal;
+		}
+		@media (max-width: 800px) {
+			.stats {
+				@apply --layout-vertical;
+			}
+		}
+		.stats p {
+			color: white;
+			padding: 10px;
+			line-height: 1.7;
+			margin: 0;
+		}
+		.floater {
+			position: absolute;
+			background: #262626;
+			-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			padding: 10px;
+			border: 1px solid #4D4D4D;
+		}
+		.floater .titles {
+			padding: 5px;
+		}
+		.floater .titles p {
+			color: white;
+			font-weight: 700;
+			text-transform: uppercase;
+		}
+		.floater .values {
+			padding: 5px;
+		}
+		.floater .values p {
+			color: white;
+		}
+		#heatlay {
+			z-index: 9;
+			position: relative;
+		}
+		.block {
+			width: 20px;
+			height: 20px;
+			padding: 3px;
+		}
+		[data-block="plan"] {
+			background: #F5A214;
+	
+		}
+		[data-block="personal"] {
+			background: #c55300;
+		}
+		.text {
+			font-size: 20px;
+			line-height: 20px;
+			padding: 3px 15px 3px 10px;
+			color: white;
+		}
+		.setButton {
+			width: 250px;
+			padding: 10px;
+			margin-bottom: 30px;
+		}
+		.targetRace {
+			text-transform: capitalize;
+		}
+		.questionBtn {
+			margin-top: 0;
+			margin-left: 20px;
+		}
+		.gradient {
+			background: hsla(7,80%,59%,1);
+			background: -moz-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+			background: -webkit-gradient(left top, right top, color-stop(0%, hsla(7,80%,59%,1)), color-stop(25%, hsla(62,80%,50%,1)), color-stop(50%, hsla(151,94%,25%,1)), color-stop(75%, hsla(216,80%,24%,1)), color-stop(100%, hsla(266,63%,18%,1)));
+			background: -webkit-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+			background: -o-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+			background: -ms-linear-gradient(left, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+			background: linear-gradient(to right, hsla(7,80%,59%,1) 0%, hsla(62,80%,50%,1) 25%, hsla(151,94%,25%,1) 50%, hsla(216,80%,24%,1) 75%, hsla(266,63%,18%,1) 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ea5643', endColorstr='#2a114b', GradientType=1);
+			height: 15px;
+			width: 100%;
+		}
+		.keys {
+			position: relative;
+			height: 100%;
+			color: white;
+		}
+		[data-key="top"] {
+			bottom: 5px;
+			left: 0;
+			position: absolute;
+		}
+		[data-key="bottom"] {
+			bottom: 5px;
+			right: 0;
+			position: absolute;
+		}
+		p {
+			font-size: 18px;
+			line-height: 1.45;
+		}
+	</style>
 	<div class="layout horizontal center center-justified">
 		<h1 class="header">Improve Training Strategy</h1>
 	</div>
