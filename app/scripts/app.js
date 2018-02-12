@@ -443,8 +443,14 @@ new information and updates the server.
 }
 */
 app.updateWorkout = function (id, updates, cb) {
-	superagent
-		.put(`/b/api/v1/activities/${id}`)
+
+	var request = superagent
+		.put(`/b/api/v1/activities/${id}`);
+	if (isLocal) {
+		request = superagent
+			.get('/powercenter/scripts/local/ok.json');
+	}
+	request
 		.send(updates)
 		.set('Authorization', `Bearer: ${jwt.token}`)
 		.end(cb);

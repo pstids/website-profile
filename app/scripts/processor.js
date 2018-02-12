@@ -512,7 +512,9 @@ var workoutFetchingAJAX = function (workoutID) {
 		token = guestToken;
 		endPoint = `/b/activities/${workoutID}`;
 	}
-
+	if (isLocal) {
+		endPoint = '/powercenter/scripts/local/activity_id.json';
+	}
 	superagent
 		.get(endPoint)
 		.send()
@@ -585,8 +587,12 @@ var workoutProcessingComparison = function (workout) {
 };
 
 var workoutFetchingComparisonAJAX = function (workoutID, resolve) {
+	var path = `/b/api/v1/activities/${workoutID}`;
+	if (isLocal) {
+		path = '/powercenter/scripts/local/activity_id.json';
+	}
 	superagent
-		.get(`/b/api/v1/activities/${workoutID}`)
+		.get(path)
 		.send()
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
@@ -638,8 +644,12 @@ var workoutFetchingComparison = function (workoutID, workoutUpdated, resolve) {
 };
 
 var addLog = function (workoutID) {
+	var path = `/b/api/v1/activities/${workoutID}`;
+	if (isLocal) {
+		path = '/powercenter/scripts/local/activity_id.json';
+	}
 	superagent
-		.get(`/b/api/v1/activities/${workoutID}`)
+		.get(path)
 		.send({})
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
@@ -656,8 +666,12 @@ var addLog = function (workoutID) {
 };
 
 var updateLog = function (id) {
+	var path = `/b/api/v1/activities/${id}`;
+	if (isLocal) {
+		path = '/powercenter/scripts/local/activity_id.json';
+	}
 	superagent
-		.get(`/b/api/v1/activities/${id}`)
+		.get(path)
 		.send({})
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
@@ -674,13 +688,18 @@ var updateLog = function (id) {
 };
 
 var suuntoProcessing = function () {
-	superagent
-		.post('/b/internal/fetch/suunto')
+	var request = superagent
+		.post('/b/internal/fetch/suunto');
+	if (isLocal) {
+		request = superagent
+			.get('/powercenter/scripts/local/ok.json');
+	}
+	request
 		.send({})
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
 		.end((err, res) => {
-			if (res.ok && res.body.workouts !== null) {
+			if (res.ok && res.body.workouts) {
 				for (let workoutID of res.body.workouts) {
 					addLog(workoutID);
 				}
@@ -858,6 +877,10 @@ var resetMetrics = function () {
 var calcMetrics = function (startTime, endTime, activityID, userUnit) {
 	resetMetrics();
 	var activity = seriesMemory[activityID];
+
+	if (!activity) {
+		return null;
+	}
 
 	var start = 0;
 	var end = activity.length-1;
@@ -1097,6 +1120,10 @@ var calcLaps = function (type, activityID, zones, userUnit) {
 
 	var activity = seriesMemory[activityID];
 	var oActivity = activeMemory[activityID];
+
+	if (!activity || !oActivity) {
+		return;
+	}
 
 	var lapTimestamps = [];
 	var lastLapTimestamp = null;
