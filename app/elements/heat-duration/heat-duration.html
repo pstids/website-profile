@@ -345,7 +345,7 @@ class HeatDuration extends Polymer.Element {
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
 			.end((err, res) => {
-				if (res.ok) {
+				if (res.ok && res.body) {
 					this.data = res.body;
 					this.data.maxs.splice(0, 2);
 					this.data.windows.splice(0, 2);
