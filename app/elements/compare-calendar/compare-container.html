@@ -1,60 +1,56 @@
 <dom-module id="compare-container">
-	<style>
-		:host {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			position: relative;
-			border-right: 1px solid #4d4d4d;
-			transition: 0.5s border;
-			height: 80px;
-		}
-		:host:last-child {
-			border-right: 0;
-		}
-		:host:hover #container {
-			position: absolute;
-			min-width: 100%;
-			z-index: 150;
-		}
-
-		#container {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			display: block;
-			height: 80px;
-		}
-
-		:host:hover compare-day {
-			display: block;
-			border-left: 1px solid #FFFFFF;
-			border-right: 1px solid #FFFFFF;
-		}
-		:host:hover compare-day:first-child {
-			border-top: 1px solid #FFFFFF;
-		}
-		:host:hover compare-day:last-child {
-			border-bottom: 1px solid #FFFFFF;
-		}
-
-		compare-day {
-			display: none;
-		}
-		compare-day:first-child {
-			display: block;
-		}
-
-		#more {
-			font-size: 10px;
-			text-align: center;
-			background-color: #000000;
-			opacity: 0.6;
-			color: #FFFFFF;
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-		}
-	</style>
 	<template>
+		<style>
+			:host {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				position: relative;
+				border-right: 1px solid #4d4d4d;
+				transition: 0.5s border;
+				height: 80px;
+			}
+			:host:last-child {
+				border-right: 0;
+			}
+			:host:hover #container {
+				position: absolute;
+				min-width: 100%;
+				z-index: 150;
+			}
+			#container {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				display: block;
+				height: 80px;
+			}
+			:host:hover compare-day {
+				display: block;
+				border-left: 1px solid #FFFFFF;
+				border-right: 1px solid #FFFFFF;
+			}
+			:host:hover compare-day:first-child {
+				border-top: 1px solid #FFFFFF;
+			}
+			:host:hover compare-day:last-child {
+				border-bottom: 1px solid #FFFFFF;
+			}
+			compare-day {
+				display: none;
+			}
+			compare-day:first-child {
+				display: block;
+			}
+			#more {
+				font-size: 10px;
+				text-align: center;
+				background-color: #000000;
+				opacity: 0.6;
+				color: #FFFFFF;
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+			}
+		</style>
 		<div id="container"></div>
 		<div class="hidden" id="more">hover</div>
 	</template>
