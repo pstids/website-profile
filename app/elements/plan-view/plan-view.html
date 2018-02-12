@@ -1,45 +1,45 @@
 <dom-module id="plan-view">
-<style>
-	:host {
-		@apply(--layout-flex);
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-		max-width: 100%;
-	}
-	[data-tp="chart"] {
-		color: #ffffff;
-		height: 50vh;
-		padding: 0 0 0 35px;
-		@apply(--layout-flex-3);
-	}
-	[data-tp="plan"] {
-		@apply(--layout-flex);
-		background-color: #262626;
-		color: white;
-		position: relative;
-		overflow: hidden;
-		border: 1px solid #4D4D4D;
-		height: 50vh;
-		max-width: 500px;
-	}
-	[data-tp="plan"] p {
-		font-size: 13px;
-		line-height: 22px;
-		padding: 14px;
-		margin: 0;
-	}
-	[data-tp="description"] {
-		@apply(--layout-wrap);
-		@apply(--layout-vertical);
-	}
-	h1.header {
-		@apply(--header);
-		padding-top: 14px;
-		padding-left: 14px;
-	}
-</style>
 <template>
+	<style>
+		:host {
+			@apply --layout-flex;
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-center-justified;
+			max-width: 100%;
+		}
+		[data-tp="chart"] {
+			color: #ffffff;
+			height: 50vh;
+			padding: 0 0 0 35px;
+			@apply --layout-flex-3;
+		}
+		[data-tp="plan"] {
+			@apply --layout-flex;
+			background-color: #262626;
+			color: white;
+			position: relative;
+			overflow: hidden;
+			border: 1px solid #4D4D4D;
+			height: 50vh;
+			max-width: 500px;
+		}
+		[data-tp="plan"] p {
+			font-size: 13px;
+			line-height: 22px;
+			padding: 14px;
+			margin: 0;
+		}
+		[data-tp="description"] {
+			@apply --layout-wrap;
+			@apply --layout-vertical;
+		}
+		h1.header {
+			@apply --header;
+			padding-top: 14px;
+			padding-left: 14px;
+		}
+	</style>
 	<div data-tp="chart"></div>
 	<div data-tp="plan">
 		<h1 class="header">{{day_title}}</h1>
