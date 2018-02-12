@@ -1,94 +1,92 @@
 <dom-module id="log-overview">
-	<style>
-		:host {
-			font-size: 12px;
-			line-height: 1.5em;
-			color: #ffffff;
-			border: 1px solid #4D4D4D;
-			margin: 20px;
-			flex: 1;
-		}
-		@media (max-width: 1000px) {
+	<template>
+		<style>
 			:host {
+				font-size: 12px;
+				line-height: 1.5em;
+				color: #ffffff;
+				border: 1px solid #4D4D4D;
+				margin: 20px;
+				flex: 1;
+			}
+			@media (max-width: 1000px) {
+				:host {
+					display: none;
+				}
+			}
+			table {
+				border-collapse: collapse;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+			table thead {
+				background-color: #222222;
+				border-bottom: 1px solid #4D4D4D;
+				height: 40px;
+			}
+			table tr {
+				background: none;
+			}
+			table th {
+				font-size: 14px;
+			}
+			table td {
+				padding: 0;
+				text-align: center;
+				border: none;
+			}
+			table .day-wrapper {
+				position: relative;
+				height: 32px;
+				width: 32px;
+				cursor: pointer;
+			}
+			table a {
+				color: #ffffff;
+				cursor: pointer;
+				text-decoration: none;
+				transition: color 0.1s ease,border 0.1s ease,box-shadow 0.1s ease,background-color 0.1s ease,opacity 0.1s ease;
+			}
+			table .day {
+				border-bottom: 2px solid #ffffff;
+				font-weight: bold;
+				padding-bottom: 2px;
+				opacity: 0;
+				transition: opacity 0.2s linear;
+				-o-transition: opacity 0.2s linear;
+				-ms-transition: opacity 0.2s linear;
+				color: #ffffff;
+			}
+			table a:hover .day {
+				opacity: 1;
+			}
+			table .activity-indicator {
+				background-color: #ffffff;
+				height: 2px;
+				width: 2px;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				opacity: 1;
+				transform: translate(-50%, -50%);
+				border-radius: 100%;
+				transition: opacity 0.2s linear;
+			}
+			table .highlighted .activity-indicator {
+				background-color: #ffffff;
+				height: 10px;
+				width: 10px;
+			}
+			table a:hover .activity-indicator {
+				opacity: 0;
+			}
+	
+			#action {
+				position: absolute;
 				display: none;
 			}
-		}
-		table {
-			border-collapse: collapse;
-			margin: 0;
-			height: 100%;
-			width: 100%;
-		}
-		table thead {
-			background-color: #222222;
-			border-bottom: 1px solid #4D4D4D;
-			height: 40px;
-		}
-		table tr {
-			background: none;
-		}
-		table th {
-			font-size: 14px;
-		}
-		table td {
-			padding: 0;
-			text-align: center;
-			border: none;
-		}
-		table .day-wrapper {
-			position: relative;
-			height: 32px;
-			width: 32px;
-			cursor: pointer;
-		}
-		table a {
-			color: #ffffff;
-			cursor: pointer;
-			text-decoration: none;
-			transition: color 0.1s ease,border 0.1s ease,box-shadow 0.1s ease,background-color 0.1s ease,opacity 0.1s ease;
-		}
-
-		table .day {
-			border-bottom: 2px solid #ffffff;
-			font-weight: bold;
-			padding-bottom: 2px;
-			opacity: 0;
-			transition: opacity 0.2s linear;
-			-o-transition: opacity 0.2s linear;
-			-ms-transition: opacity 0.2s linear;
-			color: #ffffff;
-		}
-		table a:hover .day {
-			opacity: 1;
-		}
-
-		table .activity-indicator {
-			background-color: #ffffff;
-			height: 2px;
-			width: 2px;
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			opacity: 1;
-			transform: translate(-50%, -50%);
-			border-radius: 100%;
-			transition: opacity 0.2s linear;
-		}
-		table .highlighted .activity-indicator {
-			background-color: #ffffff;
-			height: 10px;
-			width: 10px;
-		}
-		table a:hover .activity-indicator {
-			opacity: 0;
-		}
-
-		#action {
-			position: absolute;
-			display: none;
-		}
-	</style>
-	<template>
+		</style>
 		<table>
 			<thead>
 				<tr style="height: 70px;">
