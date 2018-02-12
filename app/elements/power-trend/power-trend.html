@@ -1,129 +1,129 @@
 <dom-module id="power-trend">
-<style>
-	:host {
-		@apply(--layout-vertical);
-		@apply(--layout-center);
-		font-family: "Stryd", sans-serif;
-		background-color: var(--dark-background-color);
-		padding: 20px;
-		--paper-slider-knob-color: #F5A214;
-		min-width: 860px;
-		overflow-x: auto;
-	}
-	:host.blurred {
-		-webkit-filter: blur(2px);
-		-moz-filter: blur(2px);
-		-ms-filter: blur(2px);
-		-o-filter: blur(2px);
-		filter: blur(2px);
-	}
-
-	h1.header {
-		@apply(--header);
-		text-align: center;
-		padding: 15px 0;
-	}
-	.title {
-		padding: 20px;
-		@apply(--layout-end);
-	}
-	#trend {
-		width: 1100px;
-		height: 450px;
-		align-self: center;
-	}
-	#fitness {
-		text-align: right;
-		cursor: pointer;
-	}
-	.holder {
-		border: 1px solid #4D4D4D;
-		@apply(--layout-vertical);
-		margin: 10px;
-	}
-
-	[data-stati] {
-		@apply(--layout-center);
-		@apply(--layout-justified);
-		@apply(--layout-horizontal);
-		background-color: var(--primary-background-color);
-		border: 2px solid #FFFFFF;
-		border-radius: 6px;
-		color: #FFFFFF;
-		cursor: pointer;
-		font-size: 1vw;
-		font-weight: 500;
-		margin: 0.5vw 1vw 0 1vw;
-		padding: 0.8vw 1.1vw;
-		position: relative;
-		text-transform: uppercase;
-		z-index: 5;
-	}
-	[data-stati] .circle {
-		width: 1.3vw;
-		height: 1.3vw;
-		border-radius: 50%;
-		border: 3px #FFFFFF solid;
-		z-index: 2;
-	}
-	[data-stati] .type {
-		padding-left: 10px;
-	}
-	[data-stati] iron-icon {
-		width: 1.3vw;
-		height: 1.3vw;
-	}
-	[data-toggle="on"] .circle {
-		background-color: #F5A214;
-		border-color: #F5A214;
-		box-shadow: 0 0 20px 0 #F7A017;
-	}
-
-	.block {
-		width: 20px;
-		height: 20px;
-		padding: 3px;
-	}
-	[data-block="plan"] {
-		background: #F5A214;
-
-	}
-	[data-block="personal"] {
-		background: #c55300;
-	}
-	.text {
-		font-size: 20px;
-		line-height: 20px;
-		padding: 3px 15px 3px 10px;
-		color: white;
-	}
-
-	.clickable {
-		border: 2px solid #FFFFFF;
-		border-radius: 6px;
-		margin: 0.5vw 1vw 0 0;
-		padding: 0.8vw 1.1vw;
-		text-transform: uppercase;
-		cursor: pointer;
-		font-weight: 500;
-		font-size: 1vw;
-		color: white;
-		position: relative;
-	}
-	.clickable .content {
-		position: relative;
-		z-index: 3;
-	}
-	.clickable .background {
-		position: absolute;
-		z-index: 2;
-	}
-	p, ul, li {
-		font-size: 18px;
-		line-height: 1.45;
-	}
-</style>
 <template>
+	<style>
+		:host {
+			@apply --layout-vertical;
+			@apply --layout-center;
+			font-family: "Stryd", sans-serif;
+			background-color: var(--dark-background-color);
+			padding: 20px;
+			--paper-slider-knob-color: #F5A214;
+			min-width: 860px;
+			overflow-x: auto;
+		}
+		:host.blurred {
+			-webkit-filter: blur(2px);
+			-moz-filter: blur(2px);
+			-ms-filter: blur(2px);
+			-o-filter: blur(2px);
+			filter: blur(2px);
+		}
+
+		h1.header {
+			@apply --header;
+			text-align: center;
+			padding: 15px 0;
+		}
+		.title {
+			padding: 20px;
+			@apply --layout-end;
+		}
+		#trend {
+			width: 1100px;
+			height: 450px;
+			align-self: center;
+		}
+		#fitness {
+			text-align: right;
+			cursor: pointer;
+		}
+		.holder {
+			border: 1px solid #4D4D4D;
+			@apply --layout-vertical;
+			margin: 10px;
+		}
+
+		[data-stati] {
+			@apply --layout-center;
+			@apply --layout-justified;
+			@apply --layout-horizontal;
+			background-color: var(--primary-background-color);
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			color: #FFFFFF;
+			cursor: pointer;
+			font-size: 1vw;
+			font-weight: 500;
+			margin: 0.5vw 1vw 0 1vw;
+			padding: 0.8vw 1.1vw;
+			position: relative;
+			text-transform: uppercase;
+			z-index: 5;
+		}
+		[data-stati] .circle {
+			width: 1.3vw;
+			height: 1.3vw;
+			border-radius: 50%;
+			border: 3px #FFFFFF solid;
+			z-index: 2;
+		}
+		[data-stati] .type {
+			padding-left: 10px;
+		}
+		[data-stati] iron-icon {
+			width: 1.3vw;
+			height: 1.3vw;
+		}
+		[data-toggle="on"] .circle {
+			background-color: #F5A214;
+			border-color: #F5A214;
+			box-shadow: 0 0 20px 0 #F7A017;
+		}
+
+		.block {
+			width: 20px;
+			height: 20px;
+			padding: 3px;
+		}
+		[data-block="plan"] {
+			background: #F5A214;
+
+		}
+		[data-block="personal"] {
+			background: #c55300;
+		}
+		.text {
+			font-size: 20px;
+			line-height: 20px;
+			padding: 3px 15px 3px 10px;
+			color: white;
+		}
+
+		.clickable {
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			margin: 0.5vw 1vw 0 0;
+			padding: 0.8vw 1.1vw;
+			text-transform: uppercase;
+			cursor: pointer;
+			font-weight: 500;
+			font-size: 1vw;
+			color: white;
+			position: relative;
+		}
+		.clickable .content {
+			position: relative;
+			z-index: 3;
+		}
+		.clickable .background {
+			position: absolute;
+			z-index: 2;
+		}
+		p, ul, li {
+			font-size: 18px;
+			line-height: 1.45;
+		}
+	</style>
 	<h1 class="header">Identify Your Trends</h1>
 	<div class="holder">
 		<div class="top" style="justify-content: space-between;">
