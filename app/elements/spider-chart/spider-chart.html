@@ -1,131 +1,131 @@
 <dom-module id="spider-chart">
-<style>
-	:host {
-		height: 100%;
-		@apply(--layout);
-		@apply(--layout-vertical);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-		padding: 20px;
-		background-color: var(--primary-background-color);
-	}
-	:host.blurred {
-		-webkit-filter: blur(2px);
-		-moz-filter: blur(2px);
-		-ms-filter: blur(2px);
-		-o-filter: blur(2px);
-		filter: blur(2px);
-	}
-	h1.header {
-		@apply(--header);
-		text-align: center;
-		padding: 15px 0;
-	}
-	#spider {
-		height: 600px;
-		min-width: 700px;
-		flex: 2;
-	}
-
-	.spider-holder {
-		@apply(--layout-horizontal);
-		margin-top: 20px;
-	}
-	@media (max-width: 1250px) {
-		.spider-holder {
-			@apply(--layout-vertical);
-		}
-	}
-
-	.runner-profile {
-		width: 800px;
-	}
-	.training-optimizer {
-		width: 540px;
-	}
-
-	table {
-		color: white;
-		line-height: 2;
-		font-size: 17px;
-		text-align: center;
-		border-collapse: collapse;
-		cursor: pointer;
-		flex: 1;
-		border-top: 1px solid #4D4D4D;
-	}
-	table thead th, table thead td {
-		font-weight: 700;
-	}
-	table .highlight {
-		background: #4D4D4D;
-	}
-	table .highlight.active {
-		background: #F5A214;
-		border-bottom: #F5A214;
-	}
-	table tr:last-child td {
-		border-bottom: 0;
-	}
-	table td, table th {
-		border-right: 1px solid #4D4D4D;
-		border-bottom: 1px solid #4D4D4D;
-		padding: 8px;
-	}
-	table tbody td:last-child {
-		border-right: 0;
-	}
-	table tr td:first-child, table tr th:first-child {
-		width: 230px;
-	}
-	table tbody tr:last-child th {
-		border-bottom: 0;
-	}
-	table th {
-		background: #262626;
-	}
-	[data-category] {
-		width: 80px;
-	}
-	.holder {
-		border: 1px solid #4D4D4D;
-		@apply(--layout-vertical);
-		margin: 10px;
-	}
-	.blocks {
-		margin: 20px;
-	}
-	.block {
-		width: 20px;
-		height: 20px;
-		padding: 3px;
-	}
-	[data-block="active"] {
-		background: #F5A214;
-
-	}
-	[data-block="inactive"] {
-		background: #4D4D4D;
-	}
-	.text {
-		font-size: 20px;
-		line-height: 20px;
-		padding: 3px 15px 3px 10px;
-		color: white;
-	}
-	p {
-		font-size: 18px;
-		line-height: 1.45;
-	}
-	.help-text {
-		margin: 20px 20px 20px 10px;
-		line-height: 1.45;
-	}
-	#workoutDialog, #profileDialog, #recommendationDialog {
-		max-width: 600px;
-	}
-</style>
 <template>
+	<style>
+		:host {
+			height: 100%;
+			@apply --layout;
+			@apply --layout-vertical;
+			@apply --layout-center;
+			@apply --layout-center-justified;
+			padding: 20px;
+			background-color: var(--primary-background-color);
+		}
+		:host.blurred {
+			-webkit-filter: blur(2px);
+			-moz-filter: blur(2px);
+			-ms-filter: blur(2px);
+			-o-filter: blur(2px);
+			filter: blur(2px);
+		}
+		h1.header {
+			@apply --header;
+			text-align: center;
+			padding: 15px 0;
+		}
+		#spider {
+			height: 600px;
+			min-width: 700px;
+			flex: 2;
+		}
+
+		.spider-holder {
+			@apply --layout-horizontal;
+			margin-top: 20px;
+		}
+		@media (max-width: 1250px) {
+			.spider-holder {
+				@apply --layout-vertical;
+			}
+		}
+
+		.runner-profile {
+			width: 800px;
+		}
+		.training-optimizer {
+			width: 540px;
+		}
+
+		table {
+			color: white;
+			line-height: 2;
+			font-size: 17px;
+			text-align: center;
+			border-collapse: collapse;
+			cursor: pointer;
+			flex: 1;
+			border-top: 1px solid #4D4D4D;
+		}
+		table thead th, table thead td {
+			font-weight: 700;
+		}
+		table .highlight {
+			background: #4D4D4D;
+		}
+		table .highlight.active {
+			background: #F5A214;
+			border-bottom: #F5A214;
+		}
+		table tr:last-child td {
+			border-bottom: 0;
+		}
+		table td, table th {
+			border-right: 1px solid #4D4D4D;
+			border-bottom: 1px solid #4D4D4D;
+			padding: 8px;
+		}
+		table tbody td:last-child {
+			border-right: 0;
+		}
+		table tr td:first-child, table tr th:first-child {
+			width: 230px;
+		}
+		table tbody tr:last-child th {
+			border-bottom: 0;
+		}
+		table th {
+			background: #262626;
+		}
+		[data-category] {
+			width: 80px;
+		}
+		.holder {
+			border: 1px solid #4D4D4D;
+			@apply --layout-vertical;
+			margin: 10px;
+		}
+		.blocks {
+			margin: 20px;
+		}
+		.block {
+			width: 20px;
+			height: 20px;
+			padding: 3px;
+		}
+		[data-block="active"] {
+			background: #F5A214;
+
+		}
+		[data-block="inactive"] {
+			background: #4D4D4D;
+		}
+		.text {
+			font-size: 20px;
+			line-height: 20px;
+			padding: 3px 15px 3px 10px;
+			color: white;
+		}
+		p {
+			font-size: 18px;
+			line-height: 1.45;
+		}
+		.help-text {
+			margin: 20px 20px 20px 10px;
+			line-height: 1.45;
+		}
+		#workoutDialog, #profileDialog, #recommendationDialog {
+			max-width: 600px;
+		}
+	</style>
 	<!-- Title -->
 	<div class="layout horizontal center center-justified">
 		<h1 class="header">Strengthen Your Skills</h1>
