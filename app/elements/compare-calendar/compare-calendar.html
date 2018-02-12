@@ -1,58 +1,58 @@
 <dom-module id="compare-calendar">
-    <style>
-        :host {
-            @apply(--layout-vertical);
-            font-family: "Stryd", sans-serif;
-            background-color: var(--dark-background-color);
-            padding: 0;
-            width: 600px;
-        }
-        h1.header {
-            @apply(--header);
-            margin-bottom: 10px;
-        }
-        .title {
-            padding: 0 20px;
-            @apply(--layout-end);
-            border: 1px solid #4d4d4d;
-            border-bottom: 0;
-        }
-
-        .days {
-            border-top: 1px solid #4d4d4d !important;
-        }
-        .day {
-            @apply(--layout-flex);
-            @apply(--layout-center-justified);
-            border-right: 1px solid #4d4d4d;
-            font-size: 17px;
-            height: 50px;
-            color: white;
-            text-transform: uppercase;
-            text-align: center;
-            line-height: 50px;
-        }
-        .day:last-child {
-            border-right: 0;
-        }
-
-        .row {
-            @apply(--layout-horizontal);
-            border: 1px solid #4d4d4d;
-            border-top: 0;
-        }
-
-        button {
-            margin-left: 20px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-        button iron-icon {
-            width: 20px;
-            height: 20px;
-        }
-    </style>
     <template>
+        <style>
+            :host {
+                @apply --layout-vertical;
+                font-family: "Stryd", sans-serif;
+                background-color: var(--dark-background-color);
+                padding: 0;
+                width: 600px;
+            }
+            h1.header {
+                @apply --header;
+                margin-bottom: 10px;
+            }
+            .title {
+                padding: 0 20px;
+                @apply --layout-end;
+                border: 1px solid #4d4d4d;
+                border-bottom: 0;
+            }
+    
+            .days {
+                border-top: 1px solid #4d4d4d !important;
+            }
+            .day {
+                @apply --layout-flex;
+                @apply --layout-center-justified;
+                border-right: 1px solid #4d4d4d;
+                font-size: 17px;
+                height: 50px;
+                color: white;
+                text-transform: uppercase;
+                text-align: center;
+                line-height: 50px;
+            }
+            .day:last-child {
+                border-right: 0;
+            }
+    
+            .row {
+                @apply --layout-horizontal;
+                border: 1px solid #4d4d4d;
+                border-top: 0;
+            }
+    
+            button {
+                margin-left: 20px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            button iron-icon {
+                width: 20px;
+                height: 20px;
+            }
+        </style>
         <div class="layout horizontal title">
             <div class="flex">
                 <h1 class="header">{{month}}</h1>
