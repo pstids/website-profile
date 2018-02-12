@@ -33,6 +33,9 @@
                 if (this.mode === 'admin') {
                     activityEndPoint = `/b/admin/users/${this.user}/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
                 }
+                if (isLocal) {
+                    activityEndPoint = '/powercenter/scripts/local/activities_calendar.json';
+                }
                 superagent
                     .get(activityEndPoint)
                     .set('Accept', 'application/json')

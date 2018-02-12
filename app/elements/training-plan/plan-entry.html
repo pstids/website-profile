@@ -296,8 +296,12 @@
         this.$.loading.hidden = false;
         this.clearData();
         console.log('fetch plan');
+        var path = `/b/api/v1/training/plan/${this.planId}`;
+        if (isLocal) {
+            path = '/powercenter/scripts/local/training_plan_id.json';
+        }
         superagent
-          .get('/b/api/v1/training/plan/'+this.planId)
+          .get(path)
           .set('Accept', 'application/json')
           .set('Authorization', 'Bearer: ' + jwt.token)
           .end(function(err, res) {
@@ -491,8 +495,13 @@
           days: days
         };
         console.log('save all workouts', plan);
-        superagent
-          .post('/b/api/v1/training/plan')
+        var request = superagent
+            .post('/b/api/v1/training/plan');
+        if (isLocal) {
+            request = superagent
+                .get('/powercenter/scripts/local/ok.json');
+        }
+        request
           .send(plan)
           .set('Accept', 'application/json')
           .set('Authorization', 'Bearer: ' + jwt.token)

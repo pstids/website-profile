@@ -405,6 +405,9 @@ Polymer({
 			var todayFMT = today.format('MM-DD-YYYY');
 			var pastFMT = past.format('MM-DD-YYYY');
 			var activityEndPoint = `/b/api/v1/activities/calendar?srtDate=${pastFMT}&endDate=${todayFMT}&sortBy=StartDate`;
+			if (isLocal) {
+				activityEndPoint = '/powercenter/scripts/local/activities_calendar.json';
+			}
 			var zones = [0, 0, 0, 0, 0];
 			var addFun = (a, i) => a + zones[i];
 			superagent

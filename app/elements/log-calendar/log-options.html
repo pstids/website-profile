@@ -36,8 +36,14 @@
                 this.logCalendar = null;
             },
             getFit: function (id) {
-                superagent
-                    .post(`/b/api/v1/activities/${id}/fit`)
+                var request = superagent
+                    .post(`/b/api/v1/activities/${id}/fit`);
+                if (isLocal) {
+                    request = superagent
+                        .get('/powercenter/scripts/local/activities_id_fit.json');
+                }
+
+                request
                     .send()
                     .set('Accept', 'application/json')
                     .set('Authorization', `Bearer: ${jwt.token}`)
@@ -60,8 +66,14 @@
                 this.shareID = null;
             },
             callRecalculate: function (id) {
-                superagent
-                    .post(`/b/api/v1/activities/${id}/recalculate`)
+                var request = superagent
+                    .post(`/b/api/v1/activities/${id}/recalculate`);
+                if (isLocal) {
+                    request = superagent
+                        .get('/powercenter/scripts/local/activities_id_recalculate.json');
+                }
+
+                request
                     .send()
                     .set('Accept', 'application/json')
                     .set('Authorization', `Bearer: ${jwt.token}`)
@@ -76,8 +88,14 @@
             },
             handleDelete: function () {
                 if (this.deleteID !== null) {
-                    superagent
-                        .del(`/b/api/v1/activities/${this.deleteID}`)
+                    var request = superagent
+                        .del(`/b/api/v1/activities/${this.deleteID}`);
+                    if (isLocal) {
+                        request = superagent
+                            .get('/powercenter/scripts/local/activities_id_delete.json');
+                    }
+
+                    request
                         .send()
                         .set('Accept', 'application/json')
                         .set('Authorization', `Bearer: ${jwt.token}`)

@@ -420,9 +420,13 @@
 			}
 		},
 		grabStats: function () {
+			var path = '/b/api/v1/activities/weekly-stat';
+			if (isLocal) {
+				path = '/powercenter/scripts/local/activities_weekly-stat.json';
+			}
 			if (jwt.hasToken) {
 				superagent
-					.get('/b/api/v1/activities/weekly-stat')
+					.get(path)
 					.send()
 					.set('Accept', 'application/json')
 					.set('Authorization', `Bearer: ${jwt.token}`)
@@ -453,25 +457,23 @@
 					this.plan_next_monday = moment().day(1+7).format('dddd, MMMM Do') + ' - Monday Rest Day & Sunday Long Run';
 					this.monday = moment().day(1+7);
 				}
-
-				if (window.location.hostname === 'www.stryd.com') {
-					superagent
-						.get(`/b/api/v1/training/plan/${trainingPlanID}`)
-						.set('Accept', 'application/json')
-						.set('Authorization', `Bearer: ${jwt.token}`)
-						.end((err, res) => {
-							if (res !== undefined && res.ok && res.body !== null) {
-								this.plan = res.body.plan;
-								this.plan_name = this.plan.name;
-								this.$.dialogTraining.open();
-							} else {
-								console.log('Error: failure to get training plan', err);
-							}
-						});
-				} else {
-					this.plan_name = 'Testing Plan';
-					this.$.dialogTraining.open();
+				var path = `/b/api/v1/training/plan/${trainingPlanID}`;
+				if (isLocal) {
+					path = '/powercenter/scripts/local/training_plan_id.json';
 				}
+				superagent
+					.get(path)
+					.set('Accept', 'application/json')
+					.set('Authorization', `Bearer: ${jwt.token}`)
+					.end((err, res) => {
+						if (res !== undefined && res.ok && res.body !== null) {
+							this.plan = res.body.plan;
+							this.plan_name = this.plan.name;
+							this.$.dialogTraining.open();
+						} else {
+							console.log('Error: failure to get training plan', err);
+						}
+					});
 			}
 		},
 		trainingNo: function () {
@@ -483,7 +485,7 @@
 				trainingStart = this.monday.format('X');
 			} else {
 				var finish_date = moment(this.$.datepicker.date);
-				if (window.location.hostname === 'www.stryd.com') {
+				if (!isLocal) {
 					finish_date.subtract(this.plan.week_duration, 'weeks').add(1, 'days');
 				} else {
 					finish_date.subtract(12, 'weeks').add(1, 'days');
@@ -494,10 +496,16 @@
 				);
 				trainingStart = finish_date.format('X');
 			}
-
 			var trainingID = localStorage.getItem('training-plan');
-			superagent
-				.post(`/b/api/v1/users/plan?id=${trainingID}&start_date=${trainingStart}`)
+
+			var request = superagent
+				.post(`/b/api/v1/users/plan?id=${trainingID}&start_date=${trainingStart}`);
+			if (isLocal) {
+				request = superagent
+					.get('/powercenter/scripts/local/users_plan.json');
+			}
+
+			request
 				.set('Accept', 'application/json')
 				.set('Authorization', `Bearer: ${jwt.token}`)
 				.end((err, res) => {

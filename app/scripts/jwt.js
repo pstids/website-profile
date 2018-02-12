@@ -5,7 +5,7 @@
 /*global fbq*/
 
 var isLocal = false;
-if (window.location.hostname === 'stryd.dev') {
+if (window.location.hostname === 'stryd.dev' || window.location.hostname === 'localhost') {
 	isLocal = true;
 }
 

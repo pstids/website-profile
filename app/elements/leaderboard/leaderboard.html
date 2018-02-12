@@ -391,7 +391,7 @@
 			this.statUsername = username;
 			var path = `/b/api/v1/activities/${username}/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
 			if (isLocal) {
-				path = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
+				path = '/powercenter/scripts/local/activities_calendar.json';
 			}
 			superagent
 				.get(path)
@@ -443,8 +443,12 @@
 			this.$.dialog.open();
 		},
 		checkHasCP: function () {
+			var path = '/b/api/v1/training';
+			if (isLocal) {
+				path = '/powercenter/scripts/local/training.json';
+			}
             superagent
-                .get('/b/api/v1/training')
+                .get(path)
                 .set('Accept', 'application/json')
                 .set('Authorization', `Bearer: ${jwt.token}`)
                 .end((err, res) => {

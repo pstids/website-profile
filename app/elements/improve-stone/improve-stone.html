@@ -299,8 +299,14 @@ Polymer({
 		var updateParams = '?fields=gender,birth,race';
 
 		var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
-		superagent
-			.put(`/b/api/v1/users/${jwt.data.id}${updateParams}`)
+
+		var request = superagent
+			.put(`/b/api/v1/users/${jwt.data.id}${updateParams}`);
+		if (isLocal) {
+			request = superagent
+				.get('/powercenter/scripts/local/users_id.json');
+		}
+		request
 			.send({
 				gender: this.userLocal.gender,
 				birth: {
@@ -356,8 +362,13 @@ Polymer({
 			this.$.invalid.open();
 			return;
 		}
-		superagent
-			.post('/b/api/v1/training')
+		var request = superagent
+			.post('/b/api/v1/training');
+		if (isLocal) {
+			request = superagent
+				.get('/powercenter/scripts/local/training.json');
+		}
+		request
 			.send({
 				'cptest_result': results
 			})

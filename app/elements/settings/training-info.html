@@ -495,8 +495,13 @@ Polymer({
 		) {
 			this.trainingInfo = JSON.parse(storage);
 		}
+
+		var path = '/b/api/v1/training';
+		if (isLocal) {
+			path = '/powercenter/scripts/local/training.json';
+		}
 		superagent
-			.get('/b/api/v1/training')
+			.get(path)
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
 			.end((err, res) => {
@@ -558,8 +563,14 @@ Polymer({
 		user.data.training_info.training_zones = zones;
 		user.updateData(user.data);
 
-		superagent
-			.put('/b/api/v1/training/zone')
+		var request = superagent
+			.put('/b/api/v1/training/zone');
+		if (isLocal) {
+			request = superagent
+				.get('/powercenter/scripts/local/training.json');
+		}
+
+		request
 			.send(zones)
 			.set('Accept', 'application/json')
 			.set('Authorization', `Bearer: ${jwt.token}`)
@@ -729,9 +740,13 @@ Polymer({
 			this.$.invalid.open();
 			return;
 		}
-
-		superagent
-			.post('/b/api/v1/training')
+		var request = superagent
+			.post('/b/api/v1/training');
+		if (isLocal) {
+			request = superagent
+				.get('/powercenter/scripts/local/training.json');
+		}
+		request
 			.send({
 				'cptest_result': results
 			})
