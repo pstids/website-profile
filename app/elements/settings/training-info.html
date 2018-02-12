@@ -366,101 +366,106 @@
 	</div>
 </template>
 <script>
-Polymer({
-	is: 'training-info',
-	properties: {
-		trainingInfo: {
-			type: Object,
-			notify: true
-		},
-		paceUnit: {
-			type: String,
-			notify: true
-		},
-		selected: {
-			type: Number,
-			notify: true
-		},
-		errMsgPower: {
-			type: String,
-			readOnly: true,
-			value: 'Invalid power input!'
-		},
-		errMsgPace: {
-			type: String,
-			readOnly: true,
-			value: 'Invalid pace input!'
-		},
-		labelPower: {
-			type: String,
-			readOnly: true,
-			value: 'Power (W)'
-		},
-		labelPace: {
-			type: String,
-			readOnly: true,
-			value: 'Pace (e.g. 5:40)'
-		},
-		labelDuration: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 5:40)'
-		},
-		labelDuration5K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 23:00)'
-		},
-		labelDuration10K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 50:40)'
-		},
-		keyTraining: {
-			type: String,
-			readOnly: true,
-			value: 'training'
-		},
-		keyCPTest: {
-			type: String,
-			readOnly: true,
-			value: 'cpTest'
-		},
-		keyLastTest: {
-			type: String,
-			readOnly: true,
-			value: 'lastTest'
-		},
-		lapTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
+class TrainingInfo extends Polymer.Element {
+	static get is() { return 'training-info'; }
+
+	static get properties() {
+		return {
+			trainingInfo: {
+				type: Object,
+				notify: true
+			},
+			paceUnit: {
+				type: String,
+				notify: true
+			},
+			selected: {
+				type: Number,
+				notify: true
+			},
+			errMsgPower: {
+				type: String,
+				readOnly: true,
+				value: 'Invalid power input!'
+			},
+			errMsgPace: {
+				type: String,
+				readOnly: true,
+				value: 'Invalid pace input!'
+			},
+			labelPower: {
+				type: String,
+				readOnly: true,
+				value: 'Power (W)'
+			},
+			labelPace: {
+				type: String,
+				readOnly: true,
+				value: 'Pace (e.g. 5:40)'
+			},
+			labelDuration: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 5:40)'
+			},
+			labelDuration5K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 23:00)'
+			},
+			labelDuration10K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 50:40)'
+			},
+			keyTraining: {
+				type: String,
+				readOnly: true,
+				value: 'training'
+			},
+			keyCPTest: {
+				type: String,
+				readOnly: true,
+				value: 'cpTest'
+			},
+			keyLastTest: {
+				type: String,
+				readOnly: true,
+				value: 'lastTest'
+			},
+			lapTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			minuteTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			distanceTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			customTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
 			}
-		},
-		minuteTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
-			}
-		},
-		distanceTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
-			}
-		},
-		customTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
-			}
-		},
-	},
-	ready: function () {
+		};
+	}
+	ready() {
+		super.ready();
+
 		if (!jwt.hasToken) {
 			return;
 		}
@@ -493,8 +498,8 @@ Polymer({
 		} else {
 			this.selected = testSelected;
 		}
-	},
-	fetchTraining: function () {
+	}
+	fetchTraining() {
 		var storage = localStorage.getItem(this.keyTraining);
 		if (
 			storage &&
@@ -531,9 +536,9 @@ Polymer({
 				}
 				//toast(text);
 			});
-	},
+	}
 
-	loadTestResult: function () {
+	loadTestResult() {
 		let r = localStorage.getItem(this.keyCPTest);
 		if (
 			!r ||
@@ -547,17 +552,22 @@ Polymer({
 		this.distanceTestResult = result.distance;
 		this.minuteTestResult = result.minute;
 		this.customTestResult = result.custom;
-	},
+	}
 
-	addZone: function (zone) {
+	addZone(zone) {
 		var zoneEntry = document.createElement('zone-entry');
 		zoneEntry.import(zone);
 		this.$.zones.appendChild(zoneEntry);
-	},
-	clearZones: function () {
-		app.clearChildren(this.$.zones);
-	},
-	saveZones: function () {
+	}
+	clearChildren(node) {
+		while (node.firstChild) {
+			node.removeChild(node.firstChild);
+		}
+	}
+	clearZones() {
+		this.clearChildren(this.$.zones);
+	}
+	saveZones() {
 		var zones = [];
 		for (var child of this.$.zones.children) {
 			zones.push(child.export(user.data.units));
@@ -585,8 +595,8 @@ Polymer({
 				}
 				toast(text);
 			});
-	},
-	calculateTrainingInfo: function () {
+	}
+	calculateTrainingInfo() {
 		let results = [];
 		let keys = [];
 		let speedCoeff = 1;
@@ -773,8 +783,8 @@ Polymer({
 				}
 				toast(text);
 			});
-	},
-	parseTrainingInfo: function (info) {
+	}
+	parseTrainingInfo(info) {
 		if (
 			!info ||
 			info === 'null' ||
@@ -852,6 +862,7 @@ Polymer({
 			}
 		}
 	}
-});
+}
+window.customElements.define(TrainingInfo.is, TrainingInfo);
 </script>
 </dom-module>
