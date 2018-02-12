@@ -1,172 +1,172 @@
 <dom-module id="training-info">
-<style>
-	.title {
-		@apply(--header);
-	}
-	h3 {
-		font-size: 20px;
-		color: #FFFFFF;
-		font-weight: 700;
-		text-align: center
-	}
-	p {
-		color: white;
-		line-height: 28px;
-	}
-	paper-input input {
-		text-align: center !important;
-	}
-
-	paper-dropdown-menu {
-		min-width: 20vw;
-
-		--paper-input-container-label: {
-			color: white;
-			font-weight: bold;
-		};
-		--paper-input-container-input: {
-			color: white;
-			font-style: normal;
-		};
-		/* no underline */
-		--paper-input-container-underline: {
-			color: white;
-		};
-	}
-
-	paper-icon-button {
-		color: white;
-	}
-
-	.container {
-		-webkit-transition: max-height 0.8s;
-		-moz-transition: max-height 0.8s;
-		transition: max-height 0.8s;
-		@apply(--layout-vertical);
-		@apply(--layout-center);
-	}
-	.test-input {
-		@apply(--layout-horizontal);
-		@apply(--layout-around-justified);
-		@apply(--layout-center);
-	}
-	.subtest-input {
-		padding-left: 5vw;
-		padding-right: 5vw;
-		@apply(--layout-vertical);
-		@apply(--layout-around-justified);
-		@apply(--layout-center);
-	}
-	.subtest-input .label {
-		font-weight: normal;
-		color: white;
-	}
-	.test-desc {
-		color: white;
-		@apply(--layout-vertical);
-		line-height: 200%;
-		padding: 0 8vw;
-		font-weight: lighter;
-	}
-
-	#bubbles {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-around-justified);
-		min-height: 15vw;
-		width: 60%;
-	}
-	bubble-stat {
-		--bubble-stat-wrap: {
-			width: 12vw;
-			height: 12vw;
-			position: relative;
-		};
-		--bubble-stat-border: {
-			width: 10vw;
-			height: 10vw;
-		};
-		--bubble-stat-icon: {
-			width: 1.5vw;
-			height: 1.5vw;
-		};
-	}
-
-	#zone-titles {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-around-justified);
-		width: 85%;
-	}
-	#zone-titles .title {
-		margin: 5px 20px;
-	}
-	.zones {
-		@apply(--layout-vertical);
-		width: 85%;
-	}
-	.zones zone-entry:nth-of-type(odd) {
-		background-color: rgba(20, 20, 20, 0.5);
-	}
-	.zone {
-		@apply(--layout-flex);
-		border-radius: 30px;
-		border: 1px solid white;
-		margin: 20px 0px 20px 20px;
-		padding: 20px;
-	}
-	.zone:first-child {
-		margin-left: 0px;
-	}
-	.zone.titles {
-		@apply(--layout-flex);
-	}
-
-	.entry paper-input[name] {
-		margin-left: 0;
-	}
-
-	.entry {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		margin-top: 20px;
-	}
-	.entry paper-input {
-		@apply(--layout-flex-2);
-		font-size: 20px;
-		font-weight: 700;
-		text-align: center;
-	}
-
-	.save {
-		position: fixed;
-		bottom: 30px;
-		right: 30px;
-		@apply(--layout-horizontal);
-		@apply(--layout-end-justified);
-		@apply(--layout-center);
-		cursor: pointer;
-		background-color: #262626;
-		padding: 0 0 0 30px;
-		border-radius: 40px;
-		border: 2px solid var(--paper-fab-background);
-	}
-	.save p {
-		color: white;
-		font-size: 14px;
-		margin-right: 15px;
-	}
-	.save-line {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: rgba(38, 38, 38, 0.4);
-		width: 100vw;
-		height: 100px;
-	}
-</style>
 <template>
+	<style>
+		.title {
+			@apply --header;
+		}
+		h3 {
+			font-size: 20px;
+			color: #FFFFFF;
+			font-weight: 700;
+			text-align: center
+		}
+		p {
+			color: white;
+			line-height: 28px;
+		}
+		paper-input input {
+			text-align: center !important;
+		}
+
+		paper-dropdown-menu {
+			min-width: 20vw;
+
+			--paper-input-container-label: {
+				color: white;
+				font-weight: bold;
+			};
+			--paper-input-container-input: {
+				color: white;
+				font-style: normal;
+			};
+			/* no underline */
+			--paper-input-container-underline: {
+				color: white;
+			};
+		}
+
+		paper-icon-button {
+			color: white;
+		}
+
+		.container {
+			-webkit-transition: max-height 0.8s;
+			-moz-transition: max-height 0.8s;
+			transition: max-height 0.8s;
+			@apply --layout-vertical;
+			@apply --layout-center;
+		}
+		.test-input {
+			@apply --layout-horizontal;
+			@apply --layout-around-justified;
+			@apply --layout-center;
+		}
+		.subtest-input {
+			padding-left: 5vw;
+			padding-right: 5vw;
+			@apply --layout-vertical;
+			@apply --layout-around-justified;
+			@apply --layout-center;
+		}
+		.subtest-input .label {
+			font-weight: normal;
+			color: white;
+		}
+		.test-desc {
+			color: white;
+			@apply --layout-vertical;
+			line-height: 200%;
+			padding: 0 8vw;
+			font-weight: lighter;
+		}
+
+		#bubbles {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-around-justified;
+			min-height: 15vw;
+			width: 60%;
+		}
+		bubble-stat {
+			--bubble-stat-wrap: {
+				width: 12vw;
+				height: 12vw;
+				position: relative;
+			};
+			--bubble-stat-border: {
+				width: 10vw;
+				height: 10vw;
+			};
+			--bubble-stat-icon: {
+				width: 1.5vw;
+				height: 1.5vw;
+			};
+		}
+
+		#zone-titles {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-around-justified;
+			width: 85%;
+		}
+		#zone-titles .title {
+			margin: 5px 20px;
+		}
+		.zones {
+			@apply --layout-vertical;
+			width: 85%;
+		}
+		.zones zone-entry:nth-of-type(odd) {
+			background-color: rgba(20, 20, 20, 0.5);
+		}
+		.zone {
+			@apply --layout-flex;
+			border-radius: 30px;
+			border: 1px solid white;
+			margin: 20px 0px 20px 20px;
+			padding: 20px;
+		}
+		.zone:first-child {
+			margin-left: 0px;
+		}
+		.zone.titles {
+			@apply --layout-flex;
+		}
+
+		.entry paper-input[name] {
+			margin-left: 0;
+		}
+
+		.entry {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			margin-top: 20px;
+		}
+		.entry paper-input {
+			@apply --layout-flex-2;
+			font-size: 20px;
+			font-weight: 700;
+			text-align: center;
+		}
+
+		.save {
+			position: fixed;
+			bottom: 30px;
+			right: 30px;
+			@apply --layout-horizontal;
+			@apply --layout-end-justified;
+			@apply --layout-center;
+			cursor: pointer;
+			background-color: #262626;
+			padding: 0 0 0 30px;
+			border-radius: 40px;
+			border: 2px solid var(--paper-fab-background);
+		}
+		.save p {
+			color: white;
+			font-size: 14px;
+			margin-right: 15px;
+		}
+		.save-line {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: rgba(38, 38, 38, 0.4);
+			width: 100vw;
+			height: 100px;
+		}
+	</style>
 	<div data-zone="container">
 		<div id="calculate" class="container" style="margin: 5vh auto;">
 			<h1 class="title">Critical Power Test</h1>
