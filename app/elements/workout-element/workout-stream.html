@@ -1,198 +1,198 @@
 <dom-module id="workout-stream">
     <link rel="import" href="../bubble-stat/bubble-stat.html">
-    <style>
-        .sample {
-            display: none;
-        }
-        :host.sample .sample {
-            display: block;
-        }
-        section {
-            @apply(--layout);
-            @apply(--layout-vertical);
-            background-color: var(--primary-background-color);
-        }
-        h1.header {
-            @apply(--header);
-        }
-        h2.subtitle {
-            @apply(--subtitle);
-        }
-        .chart {
-            display: block;
-            width: 100%;
-            height: 60vh;
-            padding-bottom: 5vh;
-        }
-        #chartdiv {
-            /*background: #3f3f4f;*/
-            color: #ffffff;
-            min-width: 100%;
-            height: 60vh;
-        }
-        .toggle {
-            @apply(--layout-horizontal);
-            padding: 0.8vw 1.1vw;
-            border: 2px solid #FFFFFF;
-            border-radius: 6px;
-            margin: 0 0.5vw;
-            cursor: pointer;
-            background-color: var(--primary-background-color);
-            text-transform: uppercase;
-            color: #FFFFFF;
-            font-size: 1vw;
-            font-weight: 500;
-            overflow: auto;
-            @apply(--layout-center);
-            z-index: 5;
-        }
-        .options {
-            @apply(--layout-horizontal);
-            @apply(--layout-justified);
-            padding: 1vw 3.3vw;
-        }
-        .toggles {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-flex);
-            @apply(--layout-end-justified);
-        }
-        .toggles .heartRate[data-toggle="on"] {
-            border-color: #683a78;
-        }
-        .toggles .heartRate[data-toggle="on"] .circle {
-            border-color: #683a78;
-            box-shadow: 0px 0px 5px #683a78;
-            background-color: #683a78;
-        }
-        .toggles .power[data-toggle="on"] {
-            border-color: #f7a017;
-        }
-        .toggles .power[data-toggle="on"] .circle {
-            border-color: #f7a017;
-            box-shadow: 0px 0px 5px #f7a017;
-            background-color: #f7a017;
-        }
-        .toggles .cadence[data-toggle="on"] {
-            border-color: #5ea7a1;
-        }
-        .toggles .cadence[data-toggle="on"] .circle {
-            border-color: #5ea7a1;
-            box-shadow: 0px 0px 5px #5ea7a1;
-            background-color: #5ea7a1;
-        }
-        .toggles .pace[data-toggle="on"] {
-            border-color: #074a8c;
-        }
-        .toggles .pace[data-toggle="on"] .circle {
-            border-color: #074a8c;
-            box-shadow: 0px 0px 5px #074a8c;
-            background-color: #074a8c;
-        }
-        .toggles .elevation[data-toggle="on"] {
-            border-color: #a06a81;
-        }
-        .toggles .elevation[data-toggle="on"] .circle {
-            border-color: #a06a81;
-            box-shadow: 0px 0px 5px #a06a81;
-            background-color: #a06a81;
-        }
-        .toggle .circle {
-            width: 1.3vw;
-            height: 1.3vw;
-            border-radius: 50%;
-            border: 3px #FFFFFF solid;
-            margin-left: 1vw;
-            @apply(--layout-flex-auto);
-            z-index: 2;
-        }
-        .toggle .type {
-            @apply(--layout-flex-auto);
-            z-index: 2;
-        }
-        div.bubbles {
-            @apply(--layout-horizontal);
-            @apply(--layout-around-justified);
-            padding: 4vw 2vw;
-        }
-        bubble-stat {
-            width: 12vw;
-            height: 12vw;
-        }
-
-        .outer-spinner {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 110%;
-            position: absolute;
-            background-color: var(--primary-background-color);
-            z-index: 10;
-            display: flex;
-            display: -webkit-flex;
-            -ms-flex-align: center;
-            -webkit-align-items: center;
-            align-items: center;
-            -ms-flex-pack: center;
-            -webkit-justify-content: center;
-            justify-content: center;
-            transition: opacity 2s;
-            opacity: 1;
-        }
-        .outer-spinner.fade {
-            opacity: 0;
-            z-index: 0;
-            height: 0px !important;
-        }
-
-        .spinner {
-            margin: 100px auto;
-            width: 40px;
-            height: 40px;
-            position: relative;
-            text-align: center;
-            -webkit-animation: sk-rotate 2.0s infinite linear;
-            animation: sk-rotate 2.0s infinite linear;
-        }
-        .spinner .dot1, .spinner .dot2 {
-            width: 60%;
-            height: 60%;
-            display: inline-block;
-            position: absolute;
-            top: 0;
-            background-color: var(--primary-icon-color);
-            border-radius: 100%;
-
-            -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
-            animation: sk-bounce 2.0s infinite ease-in-out;
-        }
-
-        .spinner .dot2 {
-            top: auto;
-            bottom: 0;
-            -webkit-animation-delay: -1.0s;
-            animation-delay: -1.0s;
-        }
-
-        @-webkit-keyframes sk-rotate { 100% { -webkit-transform: rotate(360deg) }}
-        @keyframes sk-rotate { 100% { transform: rotate(360deg); -webkit-transform: rotate(360deg) }}
-
-        @-webkit-keyframes sk-bounce {
-            0%, 100% { -webkit-transform: scale(0.0) }
-            50% { -webkit-transform: scale(1.0) }
-        }
-
-        @keyframes sk-bounce {
-            0%, 100% { 
-                transform: scale(0.0);
-                -webkit-transform: scale(0.0);
-            } 50% { 
-                transform: scale(1.0);
-                -webkit-transform: scale(1.0);
-            }
-        }
-    </style>
     <template>
+        <style>
+            .sample {
+                display: none;
+            }
+            :host.sample .sample {
+                display: block;
+            }
+            section {
+                @apply --layout;
+                @apply --layout-vertical;
+                background-color: var(--primary-background-color);
+            }
+            h1.header {
+                @apply --header;
+            }
+            h2.subtitle {
+                @apply --subtitle;
+            }
+            .chart {
+                display: block;
+                width: 100%;
+                height: 60vh;
+                padding-bottom: 5vh;
+            }
+            #chartdiv {
+                /*background: #3f3f4f;*/
+                color: #ffffff;
+                min-width: 100%;
+                height: 60vh;
+            }
+            .toggle {
+                @apply --layout-horizontal;
+                padding: 0.8vw 1.1vw;
+                border: 2px solid #FFFFFF;
+                border-radius: 6px;
+                margin: 0 0.5vw;
+                cursor: pointer;
+                background-color: var(--primary-background-color);
+                text-transform: uppercase;
+                color: #FFFFFF;
+                font-size: 1vw;
+                font-weight: 500;
+                overflow: auto;
+                @apply --layout-center;
+                z-index: 5;
+            }
+            .options {
+                @apply --layout-horizontal;
+                @apply --layout-justified;
+                padding: 1vw 3.3vw;
+            }
+            .toggles {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-flex;
+                @apply --layout-end-justified;
+            }
+            .toggles .heartRate[data-toggle="on"] {
+                border-color: #683a78;
+            }
+            .toggles .heartRate[data-toggle="on"] .circle {
+                border-color: #683a78;
+                box-shadow: 0px 0px 5px #683a78;
+                background-color: #683a78;
+            }
+            .toggles .power[data-toggle="on"] {
+                border-color: #f7a017;
+            }
+            .toggles .power[data-toggle="on"] .circle {
+                border-color: #f7a017;
+                box-shadow: 0px 0px 5px #f7a017;
+                background-color: #f7a017;
+            }
+            .toggles .cadence[data-toggle="on"] {
+                border-color: #5ea7a1;
+            }
+            .toggles .cadence[data-toggle="on"] .circle {
+                border-color: #5ea7a1;
+                box-shadow: 0px 0px 5px #5ea7a1;
+                background-color: #5ea7a1;
+            }
+            .toggles .pace[data-toggle="on"] {
+                border-color: #074a8c;
+            }
+            .toggles .pace[data-toggle="on"] .circle {
+                border-color: #074a8c;
+                box-shadow: 0px 0px 5px #074a8c;
+                background-color: #074a8c;
+            }
+            .toggles .elevation[data-toggle="on"] {
+                border-color: #a06a81;
+            }
+            .toggles .elevation[data-toggle="on"] .circle {
+                border-color: #a06a81;
+                box-shadow: 0px 0px 5px #a06a81;
+                background-color: #a06a81;
+            }
+            .toggle .circle {
+                width: 1.3vw;
+                height: 1.3vw;
+                border-radius: 50%;
+                border: 3px #FFFFFF solid;
+                margin-left: 1vw;
+                @apply --layout-flex-auto;
+                z-index: 2;
+            }
+            .toggle .type {
+                @apply --layout-flex-auto;
+                z-index: 2;
+            }
+            div.bubbles {
+                @apply --layout-horizontal;
+                @apply --layout-around-justified;
+                padding: 4vw 2vw;
+            }
+            bubble-stat {
+                width: 12vw;
+                height: 12vw;
+            }
+
+            .outer-spinner {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 110%;
+                position: absolute;
+                background-color: var(--primary-background-color);
+                z-index: 10;
+                display: flex;
+                display: -webkit-flex;
+                -ms-flex-align: center;
+                -webkit-align-items: center;
+                align-items: center;
+                -ms-flex-pack: center;
+                -webkit-justify-content: center;
+                justify-content: center;
+                transition: opacity 2s;
+                opacity: 1;
+            }
+            .outer-spinner.fade {
+                opacity: 0;
+                z-index: 0;
+                height: 0px !important;
+            }
+
+            .spinner {
+                margin: 100px auto;
+                width: 40px;
+                height: 40px;
+                position: relative;
+                text-align: center;
+                -webkit-animation: sk-rotate 2.0s infinite linear;
+                animation: sk-rotate 2.0s infinite linear;
+            }
+            .spinner .dot1, .spinner .dot2 {
+                width: 60%;
+                height: 60%;
+                display: inline-block;
+                position: absolute;
+                top: 0;
+                background-color: var(--primary-icon-color);
+                border-radius: 100%;
+
+                -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+                animation: sk-bounce 2.0s infinite ease-in-out;
+            }
+
+            .spinner .dot2 {
+                top: auto;
+                bottom: 0;
+                -webkit-animation-delay: -1.0s;
+                animation-delay: -1.0s;
+            }
+
+            @-webkit-keyframes sk-rotate { 100% { -webkit-transform: rotate(360deg) }}
+            @keyframes sk-rotate { 100% { transform: rotate(360deg); -webkit-transform: rotate(360deg) }}
+
+            @-webkit-keyframes sk-bounce {
+                0%, 100% { -webkit-transform: scale(0.0) }
+                50% { -webkit-transform: scale(1.0) }
+            }
+
+            @keyframes sk-bounce {
+                0%, 100% {
+                    transform: scale(0.0);
+                    -webkit-transform: scale(0.0);
+                } 50% {
+                    transform: scale(1.0);
+                    -webkit-transform: scale(1.0);
+                }
+            }
+        </style>
         <div class="outer-spinner" id="spinner">
             <div class="spinner">
                 <div class="dot1"></div>
