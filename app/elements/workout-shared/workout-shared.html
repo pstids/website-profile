@@ -3,29 +3,29 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
 <dom-module id="workout-shared">
-    <style>
-        :host {
-            position: absolute;
-            right: 0;
-            background-color: rgba(34, 34, 34, 0.6);
-            height: auto;
-            margin-top: 5%;
-            border-radius: 40px 0 0 40px;
-            padding: 20px;
-            width: 200px;
-        }
-        .text {
-            line-height: 30px;
-            font-size: 18px;
-            color: white;
-        }
-        img {
-            border-radius: 50%;
-            width: auto;
-            height: 60px;
-        }
-    </style>
     <template>
+        <style>
+            :host {
+                position: absolute;
+                right: 0;
+                background-color: rgba(34, 34, 34, 0.6);
+                height: auto;
+                margin-top: 5%;
+                border-radius: 40px 0 0 40px;
+                padding: 20px;
+                width: 200px;
+            }
+            .text {
+                line-height: 30px;
+                font-size: 18px;
+                color: white;
+            }
+            img {
+                border-radius: 50%;
+                width: auto;
+                height: 60px;
+            }
+        </style>
         <div class="layout vertical shared">
             <div class="layout horizontal">
                 <img src="{{userImage}}">
