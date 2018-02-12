@@ -120,15 +120,20 @@
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'lap-overview',
-		listeners: {
-			'tap': 'eleTap'
-		},
-		properties: {
-			lap_number: Number
-		},
-		ready: function () {
+	class LapOverview extends Polymer.Element {
+		static get is() { return 'lap-overview'; }
+		static get listeners() {
+			return {
+				'tap': 'eleTap'
+			};
+		}
+		static get properties() {
+			return {
+				lap_number: Number
+			};
+		}
+		ready() {
+			super.ready();
 			this.first = true;
 			this.lapType = ['mi', 'km', 'split'];
 			this.selected_lap = 0;
@@ -181,8 +186,8 @@
 					header: 'RSS'
 				}
 			];
-		},
-		eleTap: function (e) {
+		}
+		eleTap(e) {
 			var target = e.target;
 			while (true) {
 				if (target === this.$.container) {
@@ -209,16 +214,21 @@
 					return;
 				}
 			}
-		},
-		getLaps: function (id) {
+		}
+		getLaps(id) {
 			this.id = id;
 			var item = this.lapType[this.selected_lap];
 			app.lapProcessing(this.id, item);
-		},
-		displayLaps: function (laps) {
+		}
+		clearChildren(node) {
+			while (node.firstChild) {
+				node.removeChild(node.firstChild);
+			}
+		}
+		displayLaps(laps) {
 			this.laps = laps;
-			app.clearChildren(this.$.laps);
-			app.clearChildren(this.$.lapf);
+			this.clearChildren(this.$.laps);
+			this.clearChildren(this.$.lapf);
 			var availables = this.createHeader(laps[0]);
 			for (var lap of laps) {
 				var row = this.createRow(lap, availables);
@@ -230,8 +240,8 @@
 			} else {
 				this.$.tizContainer.classList.remove('hidden');
 			}
-		},
-		createHeader: function (row) {
+		}
+		createHeader(row) {
 			var availables = [];
 			for (var ele of this.elements) {
 				var value = row[ele.key];
@@ -244,8 +254,8 @@
 				}
 			}
 			return availables;
-		},
-		createRow: function (row, availables) {
+		}
+		createRow(row, availables) {
 			var tr = document.createElement('tr');
 			tr.dataset.lap = row.lap;
 			for (var ele of this.elements) {
@@ -263,6 +273,7 @@
 			}
 			return tr;
 		}
-	});
+	}
+	window.customElements.define(LapOverview.is, LapOverview);
 	</script>
 </dom-module>
