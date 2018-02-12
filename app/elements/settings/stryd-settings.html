@@ -173,14 +173,14 @@
         </div>
     </template>
     <script>
-        class StrydSetting {
-            beforeRegister() {
-                this.is = 'stryd-settings';
-                this.properties = {};
-            }
+        class StrydSettings extends Polymer.Element {
+            static get is() { return 'stryd-settings'; }
+
             ready() {
+                super.ready();
                 this.route = 'profile';
             }
+
             router (e) {
                 var target = e.target;
                 while (!target.dataset.view) {
@@ -188,6 +188,7 @@
                 }
                 this.toggle(target.dataset.view);
             }
+
             toggle(active) {
                 var anchor = this.querySelector(`[data-view='${active}']`);
                 var current = this.querySelector('.active');
@@ -198,6 +199,6 @@
                 this.route = active;
             }
         }
-        Polymer(StrydSetting);
+        window.customElements.define(StrydSettings.is, StrydSettings);
     </script>
 </dom-module>
