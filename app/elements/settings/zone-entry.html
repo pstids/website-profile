@@ -1,28 +1,28 @@
 <dom-module id="zone-entry">
-    <style>
-        .entry {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-justified);
-            margin: 5px 20px;
-        }
-        .entry paper-input {
-            @apply(--layout-flex-2);
-            font-size: 20px;
-            font-weight: 700;
-            text-align: center;
-        }
-        .entry .to {
-            @apply(--layout-flex);
-            color: var(--accent-background-color);
-            text-transform: uppercase;
-            text-align: center;
-        }
-        :host[keep] iron-icon {
-            display: none;
-        }
-    </style>
     <template>
+        <style>
+            .entry {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-justified;
+                margin: 5px 20px;
+            }
+            .entry paper-input {
+                @apply --layout-flex-2;
+                font-size: 20px;
+                font-weight: 700;
+                text-align: center;
+            }
+            .entry .to {
+                @apply --layout-flex;
+                color: var(--accent-background-color);
+                text-transform: uppercase;
+                text-align: center;
+            }
+            :host[keep] iron-icon {
+                display: none;
+            }
+        </style>
         <div class="layout horizontal">
             <div class="flex-1 entry">
                 <paper-input
