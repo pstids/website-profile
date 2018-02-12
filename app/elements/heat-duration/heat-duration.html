@@ -379,8 +379,13 @@ class HeatDuration extends Polymer.Element {
 
 		this.getZones();
 	}
+	clearChildren(node) {
+		while (node.firstChild) {
+			node.removeChild(node.firstChild);
+		}
+	}
 	getZones() {
-		app.clearChildren(this.$.heatbars);
+		this.clearChildren(this.$.heatbars);
 		var planPercentage = new Promise(resolve => {
 			this.raceKey = '5k';
 			if ('race' in user.data && user.data.race !== '') {
