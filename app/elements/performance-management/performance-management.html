@@ -1,91 +1,91 @@
 <dom-module id="performance-management">
-	<style>
-		:host {
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			font-family: "Stryd", sans-serif;
-			background-color: var(--dark-background-color);
-			padding: 20px;
-			--paper-slider-knob-color: #F5A214;
-			min-width: 860px;
-			overflow-x: auto;
-		}
-		:host.blurred {
-			-webkit-filter: blur(2px);
-			-moz-filter: blur(2px);
-			-ms-filter: blur(2px);
-			-o-filter: blur(2px);
-			filter: blur(2px);
-		}
-
-		h1.header {
-			@apply(--header);
-			text-align: center;
-			padding: 15px 0;
-		}
-		.title {
-			padding: 20px;
-			@apply(--layout-end);
-		}
-
-		#stress {
-			width: 960px;
-			margin: 0 auto;
-			padding: 20px;
-		}
-		#management {
-			position: relative;
-		}
-		.holder {
-			border: 1px solid #4D4D4D;
-			@apply(--layout-vertical);
-			margin: 10px;
-		}
-
-		[data-stat] {
-			@apply(--layout-center);
-			@apply(--layout-justified);
-			@apply(--layout-horizontal);
-			background-color: var(--primary-background-color);
-			border: 2px solid #FFFFFF;
-			border-radius: 6px;
-			color: #FFFFFF;
-			cursor: pointer;
-			font-size: 1vw;
-			font-weight: 500;
-			margin: 0.5vw 1vw 0 0;
-			padding: 0.8vw 1.1vw;
-			position: relative;
-			text-transform: uppercase;
-			z-index: 5;
-		}
-		[data-stat] .circle {
-			width: 1.3vw;
-			height: 1.3vw;
-			border-radius: 50%;
-			border: 3px #FFFFFF solid;
-			z-index: 2;
-		}
-		[data-stat] .type {
-			padding-left: 10px;
-		}
-		[data-toggle="on"][data-stat="stress"] .circle {
-			background-color: #F5A214;
-			border-color: #F5A214;
-			box-shadow: 0px 0px 20px 0px #F7A017;
-		}
-		[data-toggle="on"][data-stat="distance"] .circle {
-			background-color: #FFFFFF;
-			border-color: #FFFFFF;
-			box-shadow: 0px 0px 20px 0px #FFFFFF;
-		}
-		[data-toggle="on"][data-stat="zones"] .circle {
-			background-color: #fce9d2;
-			border-color: #fce9d2;
-			box-shadow: 0px 0px 20px 0px #5ea7a1;
-		}
-	</style>
 	<template>
+		<style>
+			:host {
+				@apply --layout-vertical;
+				@apply --layout-center;
+				font-family: "Stryd", sans-serif;
+				background-color: var(--dark-background-color);
+				padding: 20px;
+				--paper-slider-knob-color: #F5A214;
+				min-width: 860px;
+				overflow-x: auto;
+			}
+			:host.blurred {
+				-webkit-filter: blur(2px);
+				-moz-filter: blur(2px);
+				-ms-filter: blur(2px);
+				-o-filter: blur(2px);
+				filter: blur(2px);
+			}
+
+			h1.header {
+				@apply --header;
+				text-align: center;
+				padding: 15px 0;
+			}
+			.title {
+				padding: 20px;
+				@apply --layout-end;
+			}
+
+			#stress {
+				width: 960px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+			#management {
+				position: relative;
+			}
+			.holder {
+				border: 1px solid #4D4D4D;
+				@apply --layout-vertical;
+				margin: 10px;
+			}
+
+			[data-stat] {
+				@apply --layout-center;
+				@apply --layout-justified;
+				@apply --layout-horizontal;
+				background-color: var(--primary-background-color);
+				border: 2px solid #FFFFFF;
+				border-radius: 6px;
+				color: #FFFFFF;
+				cursor: pointer;
+				font-size: 1vw;
+				font-weight: 500;
+				margin: 0.5vw 1vw 0 0;
+				padding: 0.8vw 1.1vw;
+				position: relative;
+				text-transform: uppercase;
+				z-index: 5;
+			}
+			[data-stat] .circle {
+				width: 1.3vw;
+				height: 1.3vw;
+				border-radius: 50%;
+				border: 3px #FFFFFF solid;
+				z-index: 2;
+			}
+			[data-stat] .type {
+				padding-left: 10px;
+			}
+			[data-toggle="on"][data-stat="stress"] .circle {
+				background-color: #F5A214;
+				border-color: #F5A214;
+				box-shadow: 0px 0px 20px 0px #F7A017;
+			}
+			[data-toggle="on"][data-stat="distance"] .circle {
+				background-color: #FFFFFF;
+				border-color: #FFFFFF;
+				box-shadow: 0px 0px 20px 0px #FFFFFF;
+			}
+			[data-toggle="on"][data-stat="zones"] .circle {
+				background-color: #fce9d2;
+				border-color: #fce9d2;
+				box-shadow: 0px 0px 20px 0px #5ea7a1;
+			}
+		</style>
 		<h1 class="header">Manage Training Load</h1>
 		<div class="layout vertical holder active" data-holder="stress">
 			<div class="top">
