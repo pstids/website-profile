@@ -1,60 +1,56 @@
 <dom-module id="log-container">
-	<style>
-		:host {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			position: relative;
-			border-right: 1px solid #4d4d4d;
-			transition: 0.5s border;
-			height: 130px;
-		}
-		:host:last-child {
-			border-right: 0;
-		}
-		:host:hover #container {
-			position: absolute;
-			min-width: 100%;
-			z-index: 100;
-		}
-
-		:host:hover log-day {
-			display: block;
-			border-left: 1px solid #FFFFFF;
-			border-right: 1px solid #FFFFFF;
-		}
-		:host:hover log-day:first-child {
-			border-top: 1px solid #FFFFFF;
-		}
-		:host:hover log-day:last-child {
-			border-bottom: 1px solid #FFFFFF;
-		}
-
-		#container {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			display: block;
-			height: 130px;
-		}
-
-		log-day {
-			display: none;
-		}
-		log-day:first-child {
-			display: block;
-		}
-
-		#more {
-			font-size: 12px;
-			text-align: center;
-			background-color: #000000;
-			opacity: 0.6;
-			color: #FFFFFF;
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-		}
-	</style>
 	<template>
+		<style>
+			:host {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				position: relative;
+				border-right: 1px solid #4d4d4d;
+				transition: 0.5s border;
+				height: 130px;
+			}
+			:host:last-child {
+				border-right: 0;
+			}
+			:host:hover #container {
+				position: absolute;
+				min-width: 100%;
+				z-index: 100;
+			}
+			:host:hover log-day {
+				display: block;
+				border-left: 1px solid #FFFFFF;
+				border-right: 1px solid #FFFFFF;
+			}
+			:host:hover log-day:first-child {
+				border-top: 1px solid #FFFFFF;
+			}
+			:host:hover log-day:last-child {
+				border-bottom: 1px solid #FFFFFF;
+			}
+			#container {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				display: block;
+				height: 130px;
+			}
+			log-day {
+				display: none;
+			}
+			log-day:first-child {
+				display: block;
+			}
+			#more {
+				font-size: 12px;
+				text-align: center;
+				background-color: #000000;
+				opacity: 0.6;
+				color: #FFFFFF;
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+			}
+		</style>
 		<div id="container"></div>
 		<div class="hidden" id="more">hover for more</div>
 	</template>
