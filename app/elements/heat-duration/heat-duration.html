@@ -242,9 +242,10 @@
 	</paper-dialog>
 </template>
 <script>
-Polymer({
-	is: 'heat-duration',
-	ready: function () {
+class HeatDuration extends Polymer.Element {
+	static get is() { return 'heat-duration'; }
+	ready() {
+		super.ready();
 		// if (!featureManagement.hasFeatures) {
 		// 	return;
 		// }
@@ -262,14 +263,14 @@ Polymer({
 		this.lTimer = null;
 
 		this.raceKey = '';
-	},
-	comparisonQuestion: function () {
+	}
+	comparisonQuestion() {
 		this.$.comparisonDialog.open();
-	},
-	heatmapQuestion: function () {
+	}
+	heatmapQuestion() {
 		this.$.heatmapDialog.open();
-	},
-	moveFloat: function () {
+	}
+	moveFloat() {
 		var distanceX = Math.abs(this.mouseX - this.boxX);
 		var distanceY = Math.abs(this.mouseY - this.boxY);
 		if (distanceX > 100 || distanceX < 1 || distanceY > 100 || distanceY < 1) {
@@ -324,8 +325,9 @@ Polymer({
 				this.$.floater.classList.add('hidden');
 			}
 		}
-	},
-	attached: function () {
+	}
+	connectedCallback() {
+		super.connectedCallback();
 		// if (!featureManagement.hasFeatures) {
 		// 	return;
 		// }
@@ -334,7 +336,7 @@ Polymer({
 		var todayFMT = today.format('MM-DD-YYYY');
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;
-		if (isLocal) {
+		if (window.isLocal) {
 			path = '/app/scripts/local/powerduration.json';
 		}
 		superagent
@@ -376,8 +378,8 @@ Polymer({
 			});
 
 		this.getZones();
-	},
-	getZones: function () {
+	}
+	getZones() {
 		app.clearChildren(this.$.heatbars);
 		var planPercentage = new Promise(resolve => {
 			this.raceKey = '5k';
@@ -385,7 +387,7 @@ Polymer({
 				this.raceKey = user.data.race;
 			}
 			var path = `/b/internal/plan/zoneproportion?race=${this.raceKey}`;
-			if (isLocal) {
+			if (window.isLocal) {
 				path = '/app/scripts/local/zoneproportion.json';
 			}
 			superagent
@@ -458,8 +460,8 @@ Polymer({
 					this.createZone(i, planPers[i-1], persPers[i-1], max);
 				}
 			});
-	},
-	createChart: function () {
+	}
+	createChart() {
 		this.dx = this.data.heatmaps[0].length;
 		this.dy = this.data.heatmaps.length;
 
@@ -673,9 +675,9 @@ Polymer({
 			});
 
 		this.draw();
-	},
+	}
 	/* globals HeatCanvas:true */
-	draw: function () {
+	draw() {
 		this.$.heatcanvas.width = this.width + this.padding * 2;
 		this.$.heatcanvas.height = this.height + this.padding * 2;
 		var heatmap = new HeatCanvas(this.$.heatcanvas);
@@ -702,39 +704,39 @@ Polymer({
 			}
 			return [h, s, l, a];
 		});
-	},
-	getXY: function (xi, yi) {
+	}
+	getXY(xi, yi) {
 		var partx = this.width / this.dx;
 		var party = this.height / this.dy;
 		return {
 			x: partx * xi + (partx/2) + (this.padding*2),
 			y: party * yi + (party/2) + this.padding
 		};
-	},
-	getXY2: function (x, y) {
+	}
+	getXY2(x, y) {
 		var partx = this.width / this.dx;
 		var party = this.height / this.dy;
 		return {
 			x: Math.floor((x  - (partx/2) - (this.padding*2)) / partx),
 			y: Math.floor((y - (party/2) - this.padding) / party)
 		};
-	},
-	getIntensity: function (value) {
+	}
+	getIntensity(value) {
 		if (value === 0) {
 			return 0;
 		}
 		value *= 10;
 		var high = 210;
 		return ((value/high)*30) + 20;
-	},
-	removeZero: function (axis) {
+	}
+	removeZero(axis) {
 		axis.selectAll('g')
 			.filter((d) => {
 				return !d;
 			}).remove();
-	},
+	}
 	/* unused: d */
-	createZone: function (zone, yPer, pPer, max) {
+	createZone(zone, yPer, pPer, max) {
 		var data = [
 			{
 				name: '5K Plan',
@@ -850,6 +852,7 @@ Polymer({
 				})
 				.attr('stroke', 'white');
 	}
-});
+}
+window.customElements.define(HeatDuration.is, HeatDuration);
 </script>
 </dom-module>
