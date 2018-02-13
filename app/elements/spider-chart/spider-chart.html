@@ -368,7 +368,7 @@ Polymer({
 		var todayFMT = today.format('MM-DD-YYYY');
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/runnerprofile?srtDate=${pastFMT}&endDate=${todayFMT}`;
-		if (isLocal) {
+		if (window.isLocal) {
 			path = '/app/scripts/local/runnerprofile.json';
 		}
 		superagent
@@ -379,9 +379,11 @@ Polymer({
 			.end((err, res) => {
 				if (res.ok) {
 					this.data = res.body;
-					this.processData();
-					this.createChart();
-					this.findHighlights(this.data);
+					if (res.body) {
+						this.processData();
+						this.createChart();
+						this.findHighlights(this.data);
+					}
 				} else {
 					console.log('Error: cannot fetch data');
 				}
@@ -441,6 +443,9 @@ Polymer({
 		this.highlightRecs(highlightKeys);
 	},
 	processData: function () {
+		if (!this.data) {
+			return;
+		}
 		for (var key of Object.keys(this.data)) {
 			this.chartData.push({
 				category: this.categories[key].title,
