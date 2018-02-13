@@ -49,9 +49,11 @@
 	</div>
 </template>
 <script>
-Polymer({
-	is: 'plan-view',
-	ready: function () {
+class PlanView extends Polymer.Element {
+	static get is() { return 'plan-view'; }
+
+	ready() {
+		super.ready();
 		this.dateHash = '';
 
 		this.day_rss = '';
@@ -61,18 +63,18 @@ Polymer({
 		this.planDescription = this.querySelector('[data-tp="description"]');
 
 		Ps.initialize(this.planList);
-	},
-	setStartTime: function (start_time) {
+	}
+	setStartTime(start_time) {
 		this.dateHash = moment.unix(start_time).format('YYYYMMDD');
 		this.loadTraining();
 		this.processOverview();
-	},
-	setStartHash: function (dateHash) {
+	}
+	setStartHash(dateHash) {
 		this.dateHash = dateHash;
 		this.loadTraining();
 		this.processOverview();
-	},
-	loadTraining: function () {
+	}
+	loadTraining() {
 		this.planList.scrollTop = 0;
 		Ps.update(this.planList);
 
@@ -86,8 +88,8 @@ Polymer({
 		} else {
 			this.classList.add('hidden');
 		}
-	},
-	processOverview: function () {
+	}
+	processOverview() {
 		this.chartData = [];
 
 		var workout = trainingPlan.getDay(this.dateHash);
@@ -161,16 +163,16 @@ Polymer({
 			}
 		}
 		this.loadOverview();
-	},
-	chartToggle: function (toggle) {
+	}
+	chartToggle(toggle) {
 		if (toggle) {
 			this.planChart.classList.remove('hidden');
 		} else {
 			this.planChart.classList.add('hidden');
 		}
-	},
+	}
 	/*global AmCharts*/
-	loadOverview: function () {
+	loadOverview() {
 	   this.chart = AmCharts.makeChart(this.planChart, {
 			type: 'serial',
 			theme: 'stryd',
@@ -212,7 +214,7 @@ Polymer({
 					return '';
 				},
 				fillColors: ['#f4931f', '#f6a84b', '#f8be78', '#fad3a5', '#fce9d2']
-				
+
 			}],
 			autoMargins: false,
 			dataDateFormat: 'YYYY-MM-DD',
@@ -290,7 +292,8 @@ Polymer({
 			dataProvider: this.chartData
 		});
 	}
-});
+}
+window.customElements.define(PlanView.is, PlanView);
 </script>
 </dom-module>
 
