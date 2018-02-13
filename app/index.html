@@ -5,6 +5,19 @@
 	<meta name="description" content="Stryd PowerCenter">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Stryd PowerCenter</title>
+
+		<!--
+		The `<base>` tag below is present to support two advanced deployment options:
+		1) Differential serving. 2) Serving from a non-root path.
+
+		Instead of manually editing the `<base>` tag yourself, you should generally either:
+		a) Add a `basePath` property to the build configuration in your `polymer.json`.
+		b) Use the `--base-path` command-line option for `polymer build`.
+
+		Note: If you intend to serve from a non-root path, see [polymer-root-path] below.
+	-->
+	<base href="/app">
+
 	<!-- Place favicon.ico in the `app/` directory -->
 	<link rel="shortcut icon" href="/app/images/favicon.png">
 
@@ -28,18 +41,26 @@
 	<!-- link rel="manifest" href="manifest.json"> -->
 
 	<script>
-		var wcSupported = (
-			'registerElement' in document &&
-			'import' in document.createElement('link') &&
-			'content' in document.createElement('template')
-		);
+		/**
+		* [polymer-root-path]
+		*
+		* By default, we set `Polymer.rootPath` to the server root path (`/`).
+		* Leave this line unchanged if you intend to serve your app from the root
+		* path (e.g., with URLs like `my.domain/` and `my.domain/view1`).
+		*
+		* If you intend to serve your app from a non-root path (e.g., with URLs
+		* like `my.domain/my-app/` and `my.domain/my-app/view1`), edit this line
+		* to indicate the path from which you'll be serving, including leading
+		* and trailing slashes (e.g., `/my-app/`).
+		*/
+		window.Polymer = {rootPath: '/app'};
 
-		if (!wcSupported) {
-			var wcPoly = document.createElement('script');
-			wcPoly.src = '//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents-lite.min.js';
-			document.head.appendChild(wcPoly);
-		}
+		/* Use Shady DOM instead of Shadow DOM */
+		window.ShadyDOM = {force: true};
 	</script>
+
+	<!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
+	<script src="/app/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
