@@ -87,15 +87,19 @@
 		<p>{{description}}</p>
 	</template>
 	<script>
-		Polymer({
-			is: 'plan-segment',
-			properties: {
-				data: Object
-			},
-			ready: function () {
+		class PlanSegment extends Polymer.Element {
+			static get is() { return 'plan-segment'; }
+
+			static get properties() {
+				return {
+					data: Object
+				};
+			}
+			ready() {
+				super.ready();
 				this.display = {};
-			},
-			setData: function (segment) {
+			}
+			setData(segment) {
 				if (segment.duration_type === 'distance') {
 					this.duration_type = 'Distance';
 					this.duration_length = segment.duration_distance;
@@ -128,6 +132,7 @@
 				}
 				this.description = segment.segment_desc;
 			}
-		});
+		}
+		window.customElements.define(PlanSegment.is, PlanSegment);
 	</script>
 </dom-module>
