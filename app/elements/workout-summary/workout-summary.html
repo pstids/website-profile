@@ -189,19 +189,24 @@
 		</div>
 	</template>
 	<script>
-		Polymer({
-			is: 'workout-summary',
-			properties: {
-				data: Object
-			},
-			ready: function () {
+		class WorkoutSummary extends Polymer.Element {
+			static get is() { return 'workout-summary'; }
+
+			static get properties() {
+				return {
+					data: Object
+				};
+			}
+			ready() {
+				super.ready();
 				this.selected_rpe = 0;
 				this.selected_type = 0;
 				this.hasWorkout = false;
 				this.rpes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 				this.types = ['', 'easy', 'long', 'fartlek', 'threshold', 'cruise interval', 'interval', 'tempo', 'repetition', 'pace', 'race', 'critical test'];
-			},
-			attached: function () {
+			}
+			connectedCallback() {
+				super.connectedCallback();
 				this.data = {
 					type: 'Interval Run',
 					date: 'Jan 1st, 2017',
@@ -239,8 +244,8 @@
 						);
 					}
 				});
-			},
-			setData: function (activity) {
+			}
+			setData(activity) {
 				this.hasWorkout = true;
 				this.activity = activity;
 				console.log(this.activity);
@@ -275,10 +280,11 @@
 
 				this.selected_rpe = this.rpes.indexOf(activity.rpe);
 				this.selected_type = this.types.indexOf(activity.type);
-			},
-			setEfficiency: function () {
+			}
+			setEfficiency() {
 				this.eState = true;
 			}
-		});
+		}
+		window.customElements.define(WorkoutSummary.is, WorkoutSummary);
 	</script>
 </dom-module>
