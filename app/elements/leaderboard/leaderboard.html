@@ -303,15 +303,15 @@
 			</div>
 		</div>
 		<div class="leaderboard-main">
-			<div class="leaderboard" data-parent="rss">
+			<div class="leaderboard" id="boardRss" data-parent="rss">
 				<h1>I Am Dedicated</h1>
 				<ol data-leaderboard="rss"></ol>
 			</div>
-			<div class="leaderboard" data-parent="cp">
+			<div class="leaderboard" id="boardCp" data-parent="cp">
 				<h1>I Am Powerful</h1>
 				<ol data-leaderboard="cp"></ol>
 			</div>
-			<div class="leaderboard" data-parent="eff">
+			<div class="leaderboard" id="boardEff" data-parent="eff">
 				<h1>I Am Active</h1>
 				<ol data-leaderboard="eff"></ol>
 			</div>
@@ -395,7 +395,7 @@
 			var endDate = moment().add(2, 'days').format('MM-DD-YYYY');
 			this.statUsername = username;
 			var path = `/b/api/v1/activities/${username}/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-			if (isLocal) {
+			if (window.isLocal) {
 				path = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
 			}
 			superagent
@@ -454,11 +454,11 @@
                 .set('Authorization', `Bearer: ${jwt.token}`)
                 .end((err, res) => {
                     if (res.ok) {
-                    	if (res.body.critical_power < 1) {
-                    		this.$.crit.classList.remove('hidden');
-                    	}
+                      if (res.body && res.body.critical_power < 1) {
+                        this.$.crit.classList.remove('hidden');
+                      }
                     } else {
-                    	console.log(err);
+                      console.log(err);
                     }
                 });
 		},
@@ -488,21 +488,21 @@
 			this.ltitle = 'Training Load';
 			var stress = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/7';
-				if (isLocal) {
+				if (window.isLocal) {
 					path = '/app/scripts/local/leaderboard-rss.json';
 				}
 				this.callPath(path, resolve);
 			});
 			var today = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/1';
-				if (isLocal) {
+				if (window.isLocal) {
 					path = '/app/scripts/local/leaderboard-rss.json';
 				}
 				this.callPath(path, resolve);
 			});
 			var cp = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/cp';
-				if (isLocal) {
+				if (window.isLocal) {
 					path = '/app/scripts/local/leaderboard-cp.json';
 				}
 				this.callPath(path, resolve);
@@ -512,22 +512,22 @@
 					// sets maximum entries to show after user
 					var max = 5;
 					if (values[0] !== null) {
-						this.querySelector('[data-parent="rss"]').classList.remove('hidden');
+						this.$.boardRss.classList.remove('hidden');
 						this.processEntries(max, 'rss', values[0]);
 					} else {
-						this.querySelector('[data-parent="rss"]').classList.add('hidden');
+						this.$.boardRss.classList.add('hidden');
 					}
 					if (values[1] !== null) {
-						this.querySelector('[data-parent="cp"]').classList.remove('hidden');
+						this.$.boardCp.classList.remove('hidden');
 						this.processEntries(max, 'cp', values[1]);
 					} else {
-						this.querySelector('[data-parent="cp"]').classList.add('hidden');
+						this.$.boardCp.classList.add('hidden');
 					}
 					if (values[2] !== null) {
-						this.querySelector('[data-parent="eff"]').classList.remove('hidden');
+						this.$.boardEff.classList.remove('hidden');
 						this.processEntries(max, 'eff', values[2]);
 					} else {
-						this.querySelector('[data-parent="eff"]').classList.add('hidden');
+						this.$.boardEff.classList.add('hidden');
 					}
 				});
 		},
