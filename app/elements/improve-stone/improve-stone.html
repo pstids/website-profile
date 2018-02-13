@@ -250,8 +250,8 @@ Polymer({
 				});
 				return;
 			}
-			this.setUserLocal();
 		}
+		this.setUserLocal();
 		this.checkAvailables();
 	},
 	setUserLocal: function () {
@@ -270,10 +270,11 @@ Polymer({
 				hasTargetRaceIdx = true;
 			}
 		}
+
 		this.userLocal = {
-			birth_day: user.data.birth.day,
-			birth_month: user.data.birth.month,
-			birth_year: user.data.birth.year,
+			birth_day: user.data.birth && user.data.birth.day || 0,
+			birth_month: user.data.birth && user.data.birth.month || 0,
+			birth_year: user.data.birth && user.data.birth.year || 0,
 			gender: user.data.gender,
 			height: user.data.height,
 			city: user.data.city,
@@ -283,11 +284,11 @@ Polymer({
 			profileImg: user.getImage(),
 			about_me: aboutStr,
 			units: user.data.units,
-			age: this.getAge(
+			age: user.data.birth && this.getAge(
 				user.data.birth.year,
 				user.data.birth.month,
 				user.data.birth.day
-			),
+			) || 0,
 			targetRaceIdx: targetRaceIdx,
 			hasTargetRaceIdx: hasTargetRaceIdx
 		};
@@ -390,7 +391,7 @@ Polymer({
 		) {
 			this.availables.push('personal');
 		}
-		if (user.data.training_info.critical_power === 0) {
+		if (user.data.training_info && user.data.training_info.critical_power === 0) {
 			this.availables.push('baseline');
 		}
 		this.activateAvailables();
@@ -404,7 +405,10 @@ Polymer({
 	activateAvailables: function () {
 		if (this.availables.length > 0) {
 			this.addBlur();
-			this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.remove('hidden');
+			const el = this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`);
+			if (el) {
+				el.classList.remove('hidden');
+			}
 		} else {
 			this.removeBlur();
 			this.hide();
@@ -430,31 +434,31 @@ Polymer({
 	},
 	/* global heatDuration, spiderChart, performanceManagement */
 	addBlur: function () {
-		if (heatDuration) {
-			heatDuration.classList.add('blurred');
+		if (window.heatDuration) {
+			window.heatDuration.classList.add('blurred');
 		}
-		if (spiderChart) {
-			spiderChart.classList.add('blurred');
+		if (window.spiderChart) {
+			window.spiderChart.classList.add('blurred');
 		}
-		if (performanceManagement) {
-			performanceManagement.classList.add('blurred');
+		if (window.performanceManagement) {
+			window.performanceManagement.classList.add('blurred');
 		}
-		if (powerTrend) {
-			powerTrend.classList.add('blurred');
+		if (window.powerTrend) {
+			window.powerTrend.classList.add('blurred');
 		}
 	},
 	removeBlur: function () {
-		if (heatDuration) {
-			heatDuration.classList.remove('blurred');
+		if (window.heatDuration) {
+			window.heatDuration.classList.remove('blurred');
 		}
-		if (spiderChart) {
-			spiderChart.classList.remove('blurred');
+		if (window.spiderChart) {
+			window.spiderChart.classList.remove('blurred');
 		}
-		if (performanceManagement) {
-			performanceManagement.classList.remove('blurred');
+		if (window.performanceManagement) {
+			window.performanceManagement.classList.remove('blurred');
 		}
-		if (powerTrend) {
-			powerTrend.classList.remove('blurred');
+		if (window.powerTrend) {
+			window.powerTrend.classList.remove('blurred');
 		}
 	}
 });
