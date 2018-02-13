@@ -69,7 +69,7 @@
             .profile.active img {
                 border: 3px solid var(--primary-header-color);
             }
-    
+
             @media (max-width: 600px) {
                 :host {
                     @apply --layout-vertical;
@@ -144,12 +144,6 @@
     <script>
         /* globals users */
         console.log('loaded');
-        var mapReadyTrigger = false;
-        var mapReadyEvent = new CustomEvent('MapReady');
-        window.mapReady = function () {
-            mapReadyTrigger = true;
-            window.dispatchEvent(mapReadyEvent);
-        };
 
         if (typeof(Number.prototype.toRadians) === 'undefined') {
           Number.prototype.toRadians = function() {
@@ -157,9 +151,11 @@
           };
         }
 
-        Polymer({
-            is: 'map-stream',
-            ready: function () {
+        class MapStream extends Polymer.Element {
+            static get is() { return 'map-stream'; }
+
+            ready() {
+                super.ready();
                 this.route = 'summary';
                 console.log('ready');
                 this.mapAverage = this.querySelector('map-average');
@@ -169,18 +165,22 @@
                 };
 
                 this.mapObjs = [];
-                if (mapReadyTrigger) {
-                    this.setMap();
-                } else {
-                    window.addEventListener('MapReady', function() {
-                        this.setMap();
-                    }.bind(this));
-                }
-
                 this.users = users;
 
-            },
-            exportTimingData: function (userID) {
+                this.fetchGoogleMaps();
+            }
+
+            fetchGoogleMaps() {
+                const script = document.createElement('script');
+                script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg';
+                script.async = true;
+                script.defer = true;
+                script.onload = () => this.setMap();
+                script.onerror = err => console.error('cannot load Google Maps API', err);
+                document.body.appendChild(script);
+            }
+
+            exportTimingData(userID) {
                 var user = this.users[userID];
                 var receivedTimes = '', loggedTimes = '';
                 for (var i = 0; i < user.data.length; i++) {
@@ -190,8 +190,8 @@
                 var csvStr = receivedTimes + '\r\n' + loggedTimes;
                 var blob = new Blob([csvStr], {type: 'text/csv'});
                 console.log(window.URL.createObjectURL(blob));
-            },
-            switchUser: function (e) {
+            }
+            switchUser(e) {
                 // Find targeted element
                 var target = e.target;
                 while (!target.dataset.user) {
@@ -234,8 +234,8 @@
                         mapSummary.addPoint(lastPoint);
                     }
                 }
-            },
-            calcAvg: function () {
+            }
+            calcAvg() {
                 var user;
                 for (var key in this.users) {
                     if (this.users[key].active) {
@@ -265,24 +265,24 @@
                 user.avgs.cadence = user.avgs.cadence * oldWeight + tmp.cadence * newWeight;
                 user.avgs.pts = user.data.length;
                 this.mapAverage.addPoint(user.avgs);
-            },
-            router: function (e) {
+            }
+            router(e) {
                 var target = e.target;
                 while (!target.dataset.view) {
                     target = target.parentElement;
                 }
                 this.routerToggle(target.dataset.view);
                 this.route = target.dataset.view;
-            },
-            routerToggle: function (active) {
+            }
+            routerToggle(active) {
                 var anchor = this.querySelector('[data-view=\'' + active + '\']');
                 var current = this.querySelector('[data-view].active');
                 if (current) {
                     current.classList.remove('active');
                 }
                 anchor.classList.add('active');
-            },
-            getCoor: function (data) {
+            }
+            getCoor(data) {
                 if (typeof data ==='object' && 'lat' in data && 'lng' in data) {
                     return {
                         lat: data.lat,
@@ -291,8 +291,8 @@
                 } else {
                     return {};
                 }
-            },
-            calcHaversine: function (start, now) {
+            }
+            calcHaversine(start, now) {
                 if (('lat' in start) && start.lat !== undefined) {
                     var r = 6371;
                     var lat1 = start.lat.toRadians();
@@ -308,8 +308,8 @@
                 } else {
                     return 0;
                 }
-            },
-            setOld: function (id) {
+            }
+            setOld(id) {
                 var user = this.users.sarah;
                 for (var key in this.users) {
                     if (this.users[key].id === id) {
@@ -317,8 +317,8 @@
                     }
                 }
                 this.addPoint(user.data[user.data.length-1]);
-            },
-            addPoint: function (data) {
+            }
+            addPoint(data) {
                 console.log('data LOG', data);
                 if (!('lat' in data)) {
                     return false;
@@ -395,8 +395,8 @@
                         this.map.panTo(user.marker.getPosition());
                     }
                 }
-            },
-            setMap: function () {
+            }
+            setMap() {
                 console.log('setMap');
 
                 this.strydDarkId = 'strydDarkStyle';
@@ -444,8 +444,8 @@
                 );
                 this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
                 this.map.setMapTypeId(this.strydDarkId);
-            },
-            setDataReady: function (graphSegments) {
+            }
+            setDataReady(graphSegments) {
                 var i, path, step, graphSegment;
                 for (i = 0; i < this.mapObjs.length; i++) {
                     this.mapObjs[i].setMap(null);
@@ -508,7 +508,7 @@
                 });
                 this.mapObjs.push(stop);
             }
-        });
+        }
+        window.customElements.define(MapStream.is, MapStream);
     </script>
-    <script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady'></script>
 </dom-module>
