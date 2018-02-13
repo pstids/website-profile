@@ -251,7 +251,7 @@ Polymer({
 	},
 	attached: function () {
 		var path = `/b/api/v1/users/runnertrend`;
-		if (isLocal) {
+		if (window.isLocal) {
 			path = '/app/scripts/local/runnertrend.json';
 		}
 		superagent
@@ -262,8 +262,10 @@ Polymer({
 			.end((err, res) => {
 				if (res.ok) {
 					this.data = res.body;
-					this.createData(res.body);
-					this.createChart();
+					if (res.body) {
+						this.createData(res.body);
+						this.createChart();
+					}
 				} else {
 					console.log('Error: cannot fetch data');
 				}
