@@ -217,12 +217,16 @@
 	</paper-dialog>
 </template>
 <script>
-Polymer({
-	is: 'power-trend',
-	listeners: {
-		tap: 'eleTap'
-	},
-	eleTap: function (e) {
+class PowerTrend extends Polymer.Element {
+	static get is() { return 'power-trend'; }
+
+	static get listeners() {
+		return {
+			tap: 'eleTap'
+		}
+	}
+
+	eleTap(e) {
 		var target = e.target;
 		while (true) {
 			if ('stati' in target.dataset) {
@@ -248,8 +252,10 @@ Polymer({
 				return;
 			}
 		}
-	},
-	attached: function () {
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
 		var path = `/b/api/v1/users/runnertrend`;
 		if (window.isLocal) {
 			path = '/app/scripts/local/runnertrend.json';
@@ -270,8 +276,9 @@ Polymer({
 					console.log('Error: cannot fetch data');
 				}
 			});
-	},
-	ready: function () {
+	}
+	ready() {
+		super.ready();
 		this.chart = null;
 		this.data = null;
 		this.active = 'mf';
@@ -292,14 +299,14 @@ Polymer({
 		};
 		this.fitness = '';
 		this.fitness_type = this.types[this.active];
-	},
-	powerQuestion: function () {
+	}
+	powerQuestion() {
 		this.$.powerDialog.open();
-	},
-	howToUse: function () {
+	}
+	howToUse() {
 		this.$[`${this.active}Dialog`].open();
-	},
-	createData: function (data) {
+	}
+	createData(data) {
 		var length = data.metobolic_fitness_value.length;
 		var today = moment().subtract(length, 'days');
 		var hasNonZero = false;
@@ -339,8 +346,8 @@ Polymer({
 		}
 
 		this.fitness = this.fitnessers[this.active];
-	},
-	createChart: function () {
+	}
+	createChart() {
 		var lightOrange = '#F5A214';
 		var darkOrange = '#CD720D';
 		var lineAccent = '#2D2D2D';
@@ -536,5 +543,6 @@ Polymer({
 			dataProvider: this.data
 		});
 	}
-});
+}
+window.customElements.define(PowerTrend.is, PowerTrend);
 </script>
