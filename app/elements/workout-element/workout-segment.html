@@ -78,15 +78,20 @@
 		</div>
 	</template>
 	<script>
-		Polymer({
-			is: 'workout-segment',
-			properties: {
-				data: Object
-			},
-			ready: function () {
+		class WorkoutSegment extends Polymer.Element {
+			static get is() { return 'workout-segment'; }
+
+			static get properties() {
+				return {
+					data: Object
+				};
+			}
+
+			ready() {
+				super.ready();
 				this.display = {};
-			},
-			setData: function (data) {
+			}
+			setData(data) {
 				this.data = data;
 				this.order = data.order;
 				var segment = data.segments[0];
@@ -102,6 +107,7 @@
 				this.zone = segment.zone_selected;
 				//this.notify('display');
 			}
-		});
+		}
+		window.customElements.define(WorkoutSegment.is, WorkoutSegment);
 	</script>
 </dom-module>
