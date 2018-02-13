@@ -117,9 +117,11 @@
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'performance-management',
-		ready: function () {
+	class PerformanceManagement extends Polymer.Element {
+		static get is() { return 'performance-management'; }
+
+		ready() {
+			super.ready();
 			this.width = 860;
 			this.height = 400;
 
@@ -140,26 +142,27 @@
 					this.fillBars('weeks');
 				}
 			});
-		},
-		attached: function () {
+		}
+		connectedCallback() {
+			super.connectedCallback();
 			this.grabData();
-		},
-		getDayName: function (idx) {
+		}
+		getDayName(idx) {
 			return this.weekDays[idx % 7];
-		},
-		getWeekName: function (idx) {
+		}
+		getWeekName(idx) {
 			return this.weekNames[idx];
-		},
-		getID: function (idx) {
+		}
+		getID(idx) {
 			return this.weekIDS[idx];
-		},
-		grabData: function () {
+		}
+		grabData() {
 			this.processData(calendarManager.getPMActivities());
 			window.addEventListener('gotActivities', () => {
 				this.processData(calendarManager.getPMActivities());
 			});
-		},
-		processData: function (activities) {
+		}
+		processData(activities) {
 			if (activities === []) {
 				return;
 			}
@@ -173,8 +176,8 @@
 				}
 			}
 			this.fillInit();
-		},
-		fillInit: function () {
+		}
+		fillInit() {
 			this.graph = d3.select('#stress')
 				.attr('width', this.width + 100)
 				.attr('height', this.height + 100);
@@ -188,8 +191,8 @@
 
 			// d3.select(window).on('resize', this.resize.bind(this));
 			this.fillBars('weeks');
-		},
-		fillBars: function (time, idx) {
+		}
+		fillBars(time, idx) {
 			d3.select('#barchart')
 				.selectAll('*')
 				.remove();
@@ -367,8 +370,8 @@
 					}
 				});
 			}
-		},
-		zillBars: function (time, idx) {
+		}
+		zillBars(time, idx) {
 			d3.select('#barchart')
 				.selectAll('*')
 				.remove();
@@ -555,9 +558,9 @@
 			bars.transition()
 				.duration(300)
 				.attr('transform', 'translate(0, 0)');
-		},
+		}
 		/* unused: a */
-		callFun: function (a, e) {
+		callFun(a, e) {
 			var vis = d3.select('#barchart');
 			vis.selectAll('.stack').remove();
 			var on = this.querySelector('[data-toggle="on"]');
@@ -578,25 +581,25 @@
 				this.zillBars('weeks');
 				this.querySelector('[data-stat="zones"]').dataset.toggle = 'on';
 			}
-		},
-		getTimeType: function (dataType, timeType, idx) {
+		}
+		getTimeType(dataType, timeType, idx) {
 			if (timeType === 'days') {
 				return this.getDayType(dataType, idx);
 			} else if (timeType === 'weeks') {
 				return this.getWeekType(dataType);
 			}
-		},
-		wayBack: function (weeks) {
+		}
+		wayBack(weeks) {
 			var wayBack = moment().subtract(weeks, 'weeks');
 			return wayBack.subtract(
 				parseInt(wayBack.format('d'))-1,
 				'days'
 			);
-		},
-		sumFunction: function (a, b) {
+		}
+		sumFunction(a, b) {
 			return a + b;
-		},
-		getDayType: function (dataType, idx) {
+		}
+		getDayType(dataType, idx) {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			this.ids = [];
@@ -620,8 +623,8 @@
 				result.push(subResult);
 			}
 			return result[idx];
-		},
-		getWeekType: function (dataType) {
+		}
+		getWeekType(dataType) {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			this.weekNames = [];
@@ -640,8 +643,8 @@
 				result.push(subResult);
 			}
 			return result;
-		},
-		getZoneDayType: function (idx) {
+		}
+		getZoneDayType(idx) {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			for (var i = 0; i <= this.timeRange; i++) {
@@ -672,8 +675,8 @@
 				result.push(subResult);
 			}
 			return result[idx];
-		},
-		getZoneWeekType: function () {
+		}
+		getZoneWeekType() {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			for (var i = 0; i <= this.timeRange; i++) {
@@ -694,8 +697,8 @@
 				result.push(subResult);
 			}
 			return result;
-		},
-		getData: function (hash, type) {
+		}
+		getData(hash, type) {
 			if (type === 'zones') {
 				type = 'seconds_in_zones';
 			}
@@ -716,6 +719,7 @@
 			}
 			return result;
 		}
-	});
+	}
+	window.customElements.define(PerformanceManagement.is, PerformanceManagement);
 	</script>
 </dom-module
