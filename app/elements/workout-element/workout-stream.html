@@ -254,12 +254,14 @@
     <script src="../../scripts/amcharts/themes/stryd.js"></script>
     <script>
         /*jshint camelcase: false */
-        Polymer({
-            is: 'workout-stream',
-            ready: function () {
+        class WorkoutStream extends Polymer.Element {
+            static get is() { return 'workout-stream'; }
+
+            ready() {
+                super.ready();
                 AmCharts.handleLoad();
-            },
-            setChartData: function (data) {
+            }
+            setChartData(data) {
                 this.setLoading();
                 if ('chart' in this) {
                     this.bindToggles();
@@ -270,8 +272,8 @@
                 if (this.chartData.length > 0) {
                     this.fillChart();
                 }
-            },
-            waitForData: function () {
+            }
+            waitForData() {
                 this.data.push({
                     heartRate: 0,
                     power: 0,
@@ -279,18 +281,18 @@
                     vertical_osc: 0,
                     pace: 0
                 });
-            },
-            removeLoading: function () {
+            }
+            removeLoading() {
                 this.$.spinner.classList.remove('show');
                 this.$.spinner.classList.add('hide');
                 this.$.spinner.classList.add('fade');
-            },
-            setLoading: function () {
+            }
+            setLoading() {
                 this.$.spinner.classList.add('show');
                 this.$.spinner.classList.remove('hide');
                 this.$.spinner.classList.remove('fade');
-            },
-            bindToggles: function () {
+            }
+            bindToggles() {
                 this.graphs = {
                     heartRate: this.chart.getGraphById('heartRate'),
                     pace: this.chart.getGraphById('pace'),
@@ -306,8 +308,8 @@
                 this.chart.hideGraph(this.graphs.pace);
                 this.chart.hideGraph(this.graphs.ground_time);
                 this.chart.hideGraph(this.graphs.vertical_osc);
-            },
-            toggle: function (e) {
+            }
+            toggle(e) {
                 var target = e.target;
                 while (!('graph' in target.dataset)) {
                     target = target.parentElement;
@@ -320,8 +322,8 @@
                     target.dataset.toggle = 'on';
                     this.chart.showGraph(this.graphs[graph]);
                 }
-            },
-            calcAvgs: function (begin, end) {
+            }
+            calcAvgs(begin, end) {
                 var i, total = end - begin - 1;
                 var avgs = {
                     power: 0,
@@ -338,7 +340,7 @@
                     distance: unit.metersToMile(this.data[end-1].distance - this.data[begin].distance, 1),
                     exactDistance: unit.metersToMile(this.data[end-1].distance - this.data[begin].distance, 8)
                 };
-                
+
                 var step = 0;
                 var thisStep;
                 for (i = begin; i < end; i++) {
@@ -396,15 +398,15 @@
                 }
                 this.querySelector('[type="time"]').setAttribute('value', stats.timeHMS);
                 this.querySelector('[type="distance"]').setAttribute('value', stats.distance);
-            },
-            addPoint: function (pt) {
+            }
+            addPoint(pt) {
                 if (!('chartData' in this)) {
                     this.chartData = [];
                 }
                 this.chartData.push(pt);
                 //this.chart.dataProvider.push(pt);
-            },
-            refreshData: function () {
+            }
+            refreshData() {
                 if ('chart' in this) {
                     this.chart.dataProvider = this.chartData;
                 } else {
@@ -412,8 +414,8 @@
                 }
                 this.calcAvgs(0, this.chart.dataProvider.length - 1);
                 this.chart.validateData();
-            },
-            fillChart: function () {
+            }
+            fillChart() {
                 this.chart = AmCharts.makeChart(this.$.chartdiv, {
                     'type': 'serial',
                     'theme': 'stryd',
@@ -589,6 +591,7 @@
                     this.calcAvgs(e.startIndex, e.endIndex + 1);
                 }.bind(this));
             }
-        });
+        }
+        window.customElements.define(WorkoutStream.is, WorkoutStream);
     </script>
 </dom-module>
