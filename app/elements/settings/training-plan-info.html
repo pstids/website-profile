@@ -46,17 +46,22 @@
 		</paper-dialog>
 	</template>
 	<script>
-	Polymer({
-		is: 'training-plan-info',
-		properties: {
-			plan_available: Boolean
-		},
-		ready: function () {
+	class TrainingPlanInfo extends Polymer.Element {
+		static get is() { return 'training-plan-info'; }
+
+		static get properties() {
+			return {
+				plan_available: Boolean
+			};
+		}
+
+		ready() {
+			super.ready();
 			this.plan_available = false;
 			this.getPlan();
 			window.setTimeout(this.getPlan.bind(this), 3000);
-		},
-		getPlan: function () {
+		}
+		getPlan() {
 			if (trainingPlan && trainingPlan.hasPlan) {
 				this.plan_available = true;
 				this.plan_title = trainingPlan.plan.name;
@@ -64,14 +69,14 @@
 				this.plan_end = trainingPlan.targetDate.clone().add(trainingPlan.plan.week_duration, 'weeks').format('MMMM Do YYYY');
 				this.plan_description = trainingPlan.plan.description;
 			}
-		},
-		viewPlan: function () {
+		}
+		viewPlan() {
 			page.redirect('/analysis');
-		},
-		leavePlan: function () {
+		}
+		leavePlan() {
 			this.$.leavePlanDialog.open();
-		},
-		leavePlanConfirm: function () {
+		}
+		leavePlanConfirm() {
 			superagent
 				.del(`/b/api/v1/users/plan`)
 				.set('Accept', 'application/json')
@@ -84,10 +89,11 @@
 						console.log('Error: failure to set training plan', err);
 					}
 				});
-		},
-		viewPlans: function () {
+		}
+		viewPlans() {
 			document.location = 'https://www.stryd.com#section-coaching';
 		}
-	});
+	}
+	window.customElements.define(TrainingPlanInfo.is, TrainingPlanInfo);
 	</script>
 </dom-module>
