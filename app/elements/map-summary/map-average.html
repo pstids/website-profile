@@ -27,7 +27,7 @@
                 border-top: 1px solid #5B5B5B;
             }
             .summary {
-                background-color: rgba(41, 41, 39, 0.9); 
+                background-color: rgba(41, 41, 39, 0.9);
                 padding: 30px;
                 border-top-right-radius: 30px;
                 border-bottom-right-radius: 30px;
@@ -120,16 +120,15 @@
         </section>
     </template>
     <script>
-        Polymer({
-            is: 'map-average',
-            ready: function () {
-                
-            },
-            addPoint: function (data) {
+        class MapAverage extends Polymer.Element {
+            static get is() { return 'map-average'; }
+
+            addPoint(data) {
                 this.notifyPath('display.cadence', data.cadence.toFixed(2));
                 this.notifyPath('display.heart_rate', data.heart_rate.toFixed(2));
                 this.notifyPath('display.watts', data.power.toFixed(2));
             }
-        });
+        }
+        window.customElements.define(MapAverage.is, MapAverage);
     </script>
 </dom-module>
