@@ -12,19 +12,21 @@
     </template>
     <script>
         /*jshint camelcase: false */
-        Polymer({
-            is: 'performance-chart',
-            ready: function () {
+        class PerformanceChart extends Polymer.Element {
+            static get is() { return 'performance-chart'; }
+
+            ready() {
+                super.ready();
                 this.getData();
                 AmCharts.handleLoad();
                 this.mode = 'user';
                 this.user = '';
-            },
-            setMode: function (mode, user) {
+            }
+            setMode(mode, user) {
                 this.mode = mode;
                 this.user = user;
-            },
-            getData: function () {
+            }
+            getData() {
                 this.begDate = moment().subtract(60, 'days');
                 var srtDate = this.begDate.format('MM-DD-YYYY');
                 this.finDate = moment().add(2, 'days');
@@ -44,8 +46,8 @@
                             console.log('Error: cannot get data');
                         }
                     });
-            },
-            processData: function (activities) {
+            }
+            processData(activities) {
                 var data = [];
                 if (activities === null) {
                     return;
@@ -67,8 +69,8 @@
                     data.push(day);
                 }
                 this.fillChart(data);
-            },
-            fillChart: function (data) {
+            }
+            fillChart(data) {
                 this.chart = AmCharts.makeChart(
                     this.$.chartdiv,
                     {
@@ -201,6 +203,7 @@
                     0
                 );
             }
-        });
+        }
+        window.customElements.define(PerformanceChart.is, PerformanceChart);
     </script>
 </dom-module>
