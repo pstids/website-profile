@@ -64,9 +64,9 @@
 				}
 			}
 			@keyframes sk-bounce {
-				0%, 100% { 
+				0%, 100% {
 					transform: scale(0.0);
-				} 50% { 
+				} 50% {
 					transform: scale(1.0);
 				}
 			}
@@ -102,13 +102,15 @@
 	</template>
 	<script>
 		/*jshint camelcase: false */
-		Polymer({
-			is: 'rss-comparison',
-			ready: function () {
+		class RssComparison extends Polymer.Element {
+			static get is() { return 'rss-comparison'; }
+
+			ready() {
+				super.ready();
 				AmCharts.handleLoad();
 				this.date = 'Jan 1st, 2016';
-			},
-			calcTIZ: function (start, end) {
+			}
+			calcTIZ(start, end) {
 				var tz = user.data.training_info.training_zones;
 				var tiz = null;
 				if (tz !== null) {
@@ -124,27 +126,27 @@
 				}
 
 				this.$.tiz.setData(tiz, this.activity.stress);
-			},
-			removeLoading: function () {
+			}
+			removeLoading() {
 				this.$.spinner.classList.remove('show');
 				this.$.spinner.classList.add('hide');
 				this.$.spinner.classList.add('fade');
 				this.$.spinner.style.zIndex = -1;
-			},
-			setLoading: function () {
+			}
+			setLoading() {
 				this.$.spinner.classList.add('show');
 				this.$.spinner.classList.remove('hide');
 				this.$.spinner.classList.remove('fade');
 				this.$.spinner.style.zIndex = 12;
-			},
-			notSelected: function (status) {
+			}
+			notSelected(status) {
 				if (status) {
 					this.$.chartHolder.classList.add('hidden');
 				} else {
 					this.$.chartHolder.classList.remove('hidden');
 				}
-			},
-			setChartData: function (activity, data, maxPowerValue, maxRSSValue) {
+			}
+			setChartData(activity, data, maxPowerValue, maxRSSValue) {
 				if (activity === 0) {
 					this.notSelected(true);
 					this.removeLoading();
@@ -160,8 +162,8 @@
 
 					this.fillChart();
 				}
-			},
-			fillChart: function () {
+			}
+			fillChart() {
 				this.chart = AmCharts.makeChart(
 					this.$.chart,
 					{
@@ -288,6 +290,7 @@
 					this.calcTIZ(e.startIndex, e.endIndex);
 				});
 			}
-		});
+		}
+		window.customElements.define(RssComparison.is, RssComparison);
 	</script>
 </dom-module>
