@@ -8,11 +8,11 @@
 				@apply --layout-vertical;
 				padding: 20px;
 			}
-	
+
 			h1.header {
 				@apply --header;
 			}
-	
+
 			[data-select] {
 				@apply --layout-center;
 				@apply --layout-justified;
@@ -58,7 +58,7 @@
 					<div class="circle"></div>
 					<div class="type">Analysis</div>
 				</div>
-				<div data-select="comparison" on-click="router" data-toggle="off" >
+				<div data-select="comparison" id="linkComparison" on-click="router" data-toggle="off" >
 					<div class="circle"></div>
 					<div class="type">Comparison</div>
 				</div>
@@ -68,7 +68,7 @@
 				</div>
 			</div>
 		</div>
-		<compare-calendar class="hidden"></compare-calendar>
+		<compare-calendar id="calendar" class="hidden"></compare-calendar>
 	</template>
 	<script>
 		class HomeNavigation extends Polymer.Element {
@@ -84,13 +84,11 @@
 				this.availables = {};
 				this.title = 'Analysis';
 
-				this.compareCalendar = this.querySelector('compare-calendar');
-				this.selectComparison = this.querySelector('[data-select="comparison"]');
-				this.selectComparison.addEventListener('mouseenter', () => {
-					this.compareCalendar.classList.remove('hidden');
+				this.$.linkComparison.addEventListener('mouseenter', () => {
+					this.$.calendar.classList.remove('hidden');
 				});
-				this.compareCalendar.addEventListener('mouseleave', () => {
-					this.compareCalendar.classList.add('hidden');
+				this.$.calendar.addEventListener('mouseleave', () => {
+					this.$.calendar.classList.add('hidden');
 				});
 			}
 			router(e) {
