@@ -6,7 +6,7 @@
 				height: 240px;
 			}
 		</style>
-		<svg></svg>
+		<svg id$="[[selector]]"></svg>
 	</template>
 	<script>
 	class TimeInZone extends Polymer.Element {
@@ -20,9 +20,6 @@
 			}
 			this.selector = `svg-${property}`;
 			this.selectorID = `#svg-${property}`;
-			Polymer.RenderStatus.afterNextRender(this, () => {
-				this.querySelector('svg').id = this.selector;
-			});
 		}
 		setData(tizs, rss) {
 			if (isNaN(rss)) {
