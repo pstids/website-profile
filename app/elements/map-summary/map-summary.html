@@ -144,12 +144,10 @@
         </section>
     </template>
     <script>
-        Polymer({
-            is: 'map-summary',
-            ready: function () {
-                
-            },
-            addPoint: function (data) {
+        class MapSummary extends Polymer.Element {
+            static get is() { return 'map-summary'; }
+
+            addPoint(data) {
                 if (data === null || data === {}) {
                     data = {
                         distance: 0,
@@ -165,6 +163,7 @@
                 this.notifyPath('display.heart_rate', data.heartrate);
                 this.notifyPath('display.watts', data.total_p);
             }
-        });
+        }
+        window.customElements.define(MapSummary.is, MapSummary);
     </script>
 </dom-module>
