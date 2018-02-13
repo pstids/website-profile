@@ -9,18 +9,22 @@
 		<svg></svg>
 	</template>
 	<script>
-	Polymer({
-		is: 'time-in-zone',
-		ready: function () {
+	class TimeInZone extends Polymer.Element {
+		static get is() { return 'time-in-zone'; }
+
+		ready() {
+			super.ready();
 			var property = this.dataset.property;
 			if (property === '' || property === undefined) {
 				property = parseInt(Math.random() * 10000);
 			}
 			this.selector = `svg-${property}`;
 			this.selectorID = `#svg-${property}`;
-			this.querySelector('svg').id = this.selector;
-		},
-		setData: function (tizs, rss) {
+			Polymer.RenderStatus.afterNextRender(this, () => {
+				this.querySelector('svg').id = this.selector;
+			});
+		}
+		setData(tizs, rss) {
 			if (isNaN(rss)) {
 				rss = null;
 			}
@@ -113,6 +117,7 @@
 			}
 			return true;
 		}
-	});
+	}
+	window.customElements.define(TimeInZone.is, TimeInZone);
 	</script>
 </dom-module>
