@@ -146,12 +146,10 @@
         </div>
     </template>
     <script>
-        Polymer({
-            is: 'map-small',
-            ready: function () {
-                
-            },
-            addPoint: function (data) {
+        class MapSmall extends Polymer.Element {
+            static get is() { return 'map-small'; }
+
+            addPoint(data) {
                 if (data === null || data === {}) {
                     data = {
                         distance: 0,
@@ -182,6 +180,7 @@
                 this.notifyPath('d.vertical_osc', data.vertical_osc);
                 this.notifyPath('d.ground_time', data.ground_time);
             }
-        });
+        }
+        window.customElements.define(MapSmall.is, MapSmall);
     </script>
 </dom-module>
