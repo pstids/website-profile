@@ -94,7 +94,9 @@
 			<div class="top">
 				<h1>Training Load Bar Chart</h1>
 			</div>
-			<svg id="stress"></svg>
+			<svg id="stress">
+				<g id="barchart" transform="translate(50, 50)"></g>
+			</svg>
 			<div class="layout horizontal title">
 				<div class="layout horizontal flex">
 					<h1>Last <span>{{timeRange}}</span> weeks</h1>
@@ -179,13 +181,9 @@
 			this.fillInit();
 		}
 		fillInit() {
-			this.graph = d3.select('#stress')
+			this.graph = d3.select(this.$.stress)
 				.attr('width', this.width + 100)
 				.attr('height', this.height + 100);
-
-			this.graph.append('svg:g')
-				.attr('id', 'barchart')
-				.attr('transform', 'translate(50, 50)');
 
 			d3.selectAll('[data-stat]')
 				.on('click', this.callFun.bind(this));
@@ -194,7 +192,7 @@
 			this.fillBars('weeks');
 		}
 		fillBars(time, idx) {
-			d3.select('#barchart')
+			d3.select(this.$.barchart)
 				.selectAll('*')
 				.remove();
 
@@ -270,7 +268,7 @@
 					}
 				});
 
-			var vis = d3.select('#barchart');
+			var vis = d3.select(this.$.barchart);
 			vis.call(tip);
 
 			d3.selectAll('.axis').remove();
@@ -360,7 +358,7 @@
 			if (time === 'weeks') {
 				/* unused: d */
 				bars.on('click', (d, i) => {
-					this.fillBars('days', i);
+					this.fillBars(barchart, 'days', i);
 				});
 			} else {
 				bars.on('click', (d, i) => {
@@ -373,7 +371,7 @@
 			}
 		}
 		zillBars(time, idx) {
-			d3.select('#barchart')
+			d3.select(this.$.barchart)
 				.selectAll('*')
 				.remove();
 
@@ -457,7 +455,7 @@
 					}
 				});
 
-			var vis = d3.select('#barchart');
+			var vis = d3.select(this.$.barchart);
 			vis.call(tip);
 			d3.selectAll('.axis').remove();
 
@@ -562,7 +560,7 @@
 		}
 		/* unused: a */
 		callFun(a, e) {
-			var vis = d3.select('#barchart');
+			var vis = d3.select(this.$.barchart);
 			vis.selectAll('.stack').remove();
 			var on = this.querySelector('[data-toggle="on"]');
 			if (on) {
