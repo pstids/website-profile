@@ -139,6 +139,11 @@
             this.classList.remove('active');
         },
         setData: function (data) {
+            Polymer.RenderStatus.afterNextRender(this, function() {
+                this._setData(data);
+            });
+        },
+        _setData: function(data) {
             this.data = data;
             this.day = data.day;
             this.rgb = 'rgb(0, 0, 0)';

@@ -1,3 +1,7 @@
+
+<link rel="import" href="./compare-container.html">
+<link rel="import" href="./compare-day.html">
+
 <dom-module id="compare-calendar">
     <template>
         <style>
@@ -118,7 +122,7 @@
                     row.appendChild(node);
                     rowDom.push(node);
                 }
-                Polymer.dom(calendarContainer).appendChild(row);
+                calendarContainer.appendChild(row);
                 this.dom.push(rowDom);
             }
         },
