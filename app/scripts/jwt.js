@@ -15,7 +15,7 @@ class JWT {
 		this.data = {
 			id: 0
 		};
-		this.hasToken = false;
+		this.hasToken = isLocal;
 		this.checkToken();
 	}
 
