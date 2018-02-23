@@ -1,4 +1,5 @@
 
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
@@ -196,41 +197,45 @@
 	</paper-dialog>
 </template>
 <script>
-Polymer({
-	is: 'improve-stone',
-	properties: {
-		selected: {
-			type: Number,
-			notify: true
-		},
-		errMsgPace: {
-			type: String,
-			readOnly: true,
-			value: 'Invalid pace input!'
-		},
-		labelDuration5K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 23:00)'
-		},
-		labelDuration10K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 50:40)'
-		},
-		distanceTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
+class ImproveStone extends Polymer.Element {
+	static get is() { return 'improve-stone'; }
+
+	static get properties() {
+		return {
+			selected: {
+				type: Number,
+				notify: true
+			},
+			errMsgPace: {
+				type: String,
+				readOnly: true,
+				value: 'Invalid pace input!'
+			},
+			labelDuration5K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 23:00)'
+			},
+			labelDuration10K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 50:40)'
+			},
+			distanceTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			userLocal: {
+				type: Object,
+				notify: true
 			}
-		},
-		userLocal: {
-			type: Object,
-			notify: true
-		}
-	},
-	ready: function () {
+		};
+	}
+	ready() {
+		super.ready();
 		// if (!featureManagement.hasFeatures) {
 		// 	return;
 		// }
@@ -238,8 +243,9 @@ Polymer({
 		this.currentStep = 0;
 		this.availables = [];
 		this.targetRaces = ['5k', '10k', 'half marathon', 'marathon'];
-	},
-	attached: function () {
+	}
+	connectedCallback() {
+		super.connectedCallback();
 		// if (!featureManagement.hasFeatures) {
 		// 	return;
 		// }
@@ -253,8 +259,8 @@ Polymer({
 		}
 		this.setUserLocal();
 		this.checkAvailables();
-	},
-	setUserLocal: function () {
+	}
+	setUserLocal() {
 		var aboutStr = user.data.about_me;
 		if (!aboutStr) {
 			aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
@@ -292,8 +298,8 @@ Polymer({
 			targetRaceIdx: targetRaceIdx,
 			hasTargetRaceIdx: hasTargetRaceIdx
 		};
-	},
-	getAge: function (year, month, day) {
+	}
+	getAge(year, month, day) {
 		if (year === 0 && month === 0 && day === 0) {
 			return 0;
 		}
@@ -304,8 +310,8 @@ Polymer({
 				parseInt(day)
 		);
 		return today.getFullYear() - birth.getFullYear();
-	},
-	savePersonal: function () {
+	}
+	savePersonal() {
 		var updateParams = '?fields=gender,birth,race';
 
 		var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
@@ -335,8 +341,8 @@ Polymer({
 				toast(text);
 				this.nextAvailable();
 			});
-	},
-	calcTraining: function () {
+	}
+	calcTraining() {
 		let results = [];
 		switch (this.selected) {
 			case 0:
@@ -382,8 +388,8 @@ Polymer({
 				toast(text);
 				this.nextAvailable();
 			});
-	},
-	checkAvailables: function () {
+	}
+	checkAvailables() {
 		if (
 			this.userLocal.birth_year === 0 ||
 			this.userLocal.gender === '' ||
@@ -395,14 +401,14 @@ Polymer({
 			this.availables.push('baseline');
 		}
 		this.activateAvailables();
-	},
-	changeRace: function () {
+	}
+	changeRace() {
 		this.currentStep = 0;
 		this.availables = ['personal'];
 		this.show();
 		this.activateAvailables();
-	},
-	activateAvailables: function () {
+	}
+	activateAvailables() {
 		if (this.availables.length > 0) {
 			this.addBlur();
 			const el = this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`);
@@ -415,8 +421,8 @@ Polymer({
 			this.availables = [];
 			this.currentStep = 0;
 		}
-	},
-	nextAvailable: function () {
+	}
+	nextAvailable() {
 		this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.add('hidden');
 		this.currentStep++;
 		if (this.currentStep === this.availables.length) {
@@ -425,15 +431,15 @@ Polymer({
 		} else {
 			this.querySelector(`[data-stone=${this.availables[this.currentStep]}]`).classList.remove('hidden');
 		}
-	},
-	show: function () {
+	}
+	show() {
 		this.classList.remove('hidden');
-	},
-	hide: function () {
+	}
+	hide() {
 		this.classList.add('hidden');
-	},
+	}
 	/* global heatDuration, spiderChart, performanceManagement */
-	addBlur: function () {
+	addBlur() {
 		if (window.heatDuration) {
 			window.heatDuration.classList.add('blurred');
 		}
@@ -446,8 +452,8 @@ Polymer({
 		if (window.powerTrend) {
 			window.powerTrend.classList.add('blurred');
 		}
-	},
-	removeBlur: function () {
+	}
+	removeBlur() {
 		if (window.heatDuration) {
 			window.heatDuration.classList.remove('blurred');
 		}
@@ -461,6 +467,7 @@ Polymer({
 			window.powerTrend.classList.remove('blurred');
 		}
 	}
-});
+}
+window.customElements.define(ImproveStone.is, ImproveStone);
 </script>
 </dom-module>
