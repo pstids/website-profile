@@ -60,9 +60,9 @@ class PlanView extends Polymer.Element {
 
 		this.day_rss = '';
 
-		this.planList = this.querySelector('[data-tp="plan"]');
-		this.planChart = this.querySelector('[data-tp="chart"]');
-		this.planDescription = this.querySelector('[data-tp="description"]');
+		this.planList = this.root.querySelector('[data-tp="plan"]');
+		this.planChart = this.root.querySelector('[data-tp="chart"]');
+		this.planDescription = this.root.querySelector('[data-tp="description"]');
 
 		Ps.initialize(this.planList);
 	}
