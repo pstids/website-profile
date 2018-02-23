@@ -39,7 +39,7 @@
 		  :host:hover .toggles {
 				opacity: 1;
 		  }
-	  
+
 		  [data-stat] {
 				@apply --layout-center;
 				@apply --layout-justified;
@@ -96,17 +96,18 @@
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'bubble-stats',
-		setData: function (metrics) {
+	class BubbleStats extends Polymer.Element {
+		static get is() { return 'bubble-stats'; }
+
+		setData(metrics) {
 			this.$.bubble1.setData(metrics.pace);
 			this.$.bubble2.setData(metrics.time);
 			this.$.bubble3.setData(metrics.power);
 			this.$.bubble4.setData(metrics.heartRate);
 			this.$.bubble5.setData(metrics.dynamics);
 			this.$.bubble6.setData(metrics.misc);
-		},
-		toggleMetrics: function (e) {
+		}
+		toggleMetrics(e) {
 			var target = e.target;
 			while (!('stat' in target.dataset)) {
 				target = target.parentElement;
@@ -117,16 +118,17 @@
 			var active = this.querySelector('[data-toggle="on"]');
 			active.dataset.toggle = 'off';
 			target.dataset.toggle = 'on';
-			
+
 			var bubbles = this.querySelectorAll('bubble-stat');
 			for (var bubble of bubbles) {
 				bubble.opt = opt;
 				bubble.setMode();
 			}
-		},
-		giveToggle: function () {
+		}
+		giveToggle() {
 			//this.$.toggles.classList.remove('hidden');
 		}
-	});
+	}
+	window.customElements.define(BubbleStats.is, BubbleStats);
 	</script>
 </dom-module>
