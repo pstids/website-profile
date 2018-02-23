@@ -1,4 +1,5 @@
 
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./compare-container.html">
 <link rel="import" href="./compare-day.html">
 
@@ -22,7 +23,7 @@
                 border: 1px solid #4d4d4d;
                 border-bottom: 0;
             }
-    
+
             .days {
                 border-top: 1px solid #4d4d4d !important;
             }
@@ -40,13 +41,13 @@
             .day:last-child {
                 border-right: 0;
             }
-    
+
             .row {
                 @apply --layout-horizontal;
                 border: 1px solid #4d4d4d;
                 border-top: 0;
             }
-    
+
             button {
                 margin-left: 20px;
                 margin-top: 5px;
@@ -79,9 +80,11 @@
         </div>
     </template>
     <script>
-    Polymer({
-        is: 'compare-calendar',
-        ready: function () {
+    class CompareCalendar extends Polymer.Element {
+        static get is() { return 'compare-calendar'; }
+
+        ready() {
+            super.ready();
             this.dom = [];
             this.dates = [];
 
@@ -98,8 +101,9 @@
                     this.callMonth();
                 }
             });
-        },
-        attached: function () {
+        }
+        connectedCallback() {
+            super.connectedCallback();
             if (jwt.hasToken) {
                 setTimeout(() => {
                     if (!this.hasLoaded) {
@@ -109,9 +113,9 @@
                     }
                 }, 1000);
             }
-        },
+        }
         // Creates dom structure of 5 rows of 7 columns of log-day elements
-        assembleDOM: function () {
+        assembleDOM() {
             var calendarContainer = this.$.calendarContainer;
             for (var i = 0; i < 5; i++) {
                 var row = document.createElement('div');
@@ -125,17 +129,17 @@
                 calendarContainer.appendChild(row);
                 this.dom.push(rowDom);
             }
-        },
+        }
         // // Grabs array of activity data to populate calendar for month (int) and year (int)
-        fetchMonth: function (month, year) {
+        fetchMonth(month, year) {
             this.dRange = this.dateRange(month, year);
             this.switchMonthContext(this.dRange.firstMonday);
             setTimeout(() => {
                 calendarManager.requestActivities2(this.dRange.firstMonday, this.dRange.lastSunday);
             }, 1000);
-        },
+        }
         // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
-        dateRange: function (monthInt, year) {
+        dateRange(monthInt, year) {
             var month = moment({
                 month: monthInt,
                 year: year
@@ -148,13 +152,13 @@
                 firstMonday: firstMonday,
                 lastSunday: lastSunday
             };
-        },
-        processActivities: function (activities) {
+        }
+        processActivities(activities) {
             for (var activity of activities) {
                 this.addActivity(activity);
             }
-        },
-        switchMonthContext: function (firstMonday) {
+        }
+        switchMonthContext(firstMonday) {
             this.dates = [];
             var movingDay = moment(firstMonday);
             for (var row of this.dom) {
@@ -186,8 +190,8 @@
                 }
                 this.dates.push(dateRow);
             }
-        },
-        addActivity: function (activity) {
+        }
+        addActivity(activity) {
             var activityMoment = moment
                 .unix(activity.start_time);
             for (var i = 0; i < this.dates.length; i++) {
@@ -211,8 +215,8 @@
                 }
             }
             }
-        },
-        removeActivity: function (id) {
+        }
+        removeActivity(id) {
             for (var row of this.dom) {
                 for (var container of row) {
                     if (container.hasID(id)) {
@@ -221,8 +225,8 @@
                     }
                 }
             }
-        },
-        nextMonth: function () {
+        }
+        nextMonth() {
             this.displayedTime.add(1, 'months');
             this.fetchMonth(
                 this.displayedTime.month(),
@@ -234,8 +238,8 @@
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
-        },
-        prevMonth: function () {
+        }
+        prevMonth() {
             this.displayedTime.subtract(1, 'months');
             this.fetchMonth(
                 this.displayedTime.month(),
@@ -247,16 +251,16 @@
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
-        },
-        callMonth: function () {
+        }
+        callMonth() {
             this.fetchMonth(
                 this.displayedTime.month(),
                 this.displayedTime.year()
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
             this.removeActive();
-        },
-        setActive: function (id) {
+        }
+        setActive(id) {
             var logDayActive = this.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
@@ -268,13 +272,14 @@
                     }
                 }
             }
-        },
-        removeActive: function () {
+        }
+        removeActive() {
             var logDayActive = this.querySelector('log-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
         }
-    });
+    }
+    window.customElements.define(CompareCalendar.is, CompareCalendar);
     </script>
 </dom-module>
