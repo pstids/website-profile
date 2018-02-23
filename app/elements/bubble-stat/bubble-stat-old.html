@@ -1,4 +1,5 @@
 
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
 <dom-module id="bubble-stat">
@@ -126,16 +127,19 @@
 		</div>
 	</template>
 	<script>
-		Polymer({
-			is: 'bubble-stat',
-			listeners: {
-				'click': 'click'
-			},
-			click: function () {
+		class BubbleStat extends Polymer.Element {
+			static get is() { return 'bubble-stat'; }
+
+			static get listeners() {
+				return {
+					'click': 'click'
+				};
+			}
+			click() {
 				console.log('That is what I call a click!');
 				this.$.pop.classList.toggle('popped');
-			},
-			setData: function (obj) {
+			}
+			setData(obj) {
 				for (var i = 0; i < obj.length; i++) {
 					var idx = i + 1;
 					this.notifyPath('obj' + idx + '.icon', obj[i].icon);
@@ -143,9 +147,8 @@
 					this.notifyPath('obj' + idx + '.value', obj[i].value);
 					this.notifyPath('obj' + idx + '.unit', obj[i].unit);
 				}
-			},
-			ready: function () {
 			}
-		});
+		}
+		window.customElements.define(BubbleStat.is, BubbleStat);
 	</script>
 </dom-module>
