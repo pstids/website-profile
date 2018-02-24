@@ -532,9 +532,9 @@
 				});
 		},
 		processEntries: function (max, highlight, entries) {
-			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			while (Polymer.dom(rssContainer).firstChild) {
-				Polymer.dom(rssContainer).removeChild(Polymer.dom(rssContainer).firstChild);
+			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+			while (rssContainer.firstChild) {
+				rssContainer.removeChild(rssContainer.firstChild);
 			}
 
 			var i = 0;
@@ -657,8 +657,8 @@
 			}
 			Polymer.dom(li).appendChild(small);
 
-			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			Polymer.dom(rssContainer).appendChild(li);
+			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+			rssContainer.appendChild(li);
 		},
 		// Add title element
 		addTitle: function (title, highlight) {
@@ -689,8 +689,8 @@
 				}
 				Polymer.dom(li).appendChild(small);
 
-				var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-				Polymer.dom(rssContainer).appendChild(li);
+				var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+				rssContainer.appendChild(li);
 			} else {
 				this.addBridge(highlight);
 			}
@@ -709,8 +709,8 @@
 			Polymer.dom(li).appendChild(icon2);
 			Polymer.dom(li).appendChild(icon3);
 
-			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			Polymer.dom(rssContainer).appendChild(li);
+			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+			rssContainer.appendChild(li);
 		},
 		createCommitChart: function (data) {
 			// clear old
