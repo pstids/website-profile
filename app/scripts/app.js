@@ -38,6 +38,8 @@ var toastEle = null, toast = function (message) {
 	}
 };
 
+window.addEventListener('WebComponentsReady', function() {
+
 var app = document.querySelector('#app');
 
 var bubbleStats,
@@ -65,7 +67,6 @@ var currentID = null;
 
 // Listen for template bound event to know when bindings
 // have resolved and content has been stamped to the page
-app.addEventListener('dom-change', () => {
 	console.log('Stryd is ready to rock!');
 
 	bubbleStats = document.querySelector('bubble-stats');
@@ -360,7 +361,6 @@ app.addEventListener('dom-change', () => {
 		// );
 		bubbleStats.giveToggle();
 	}
-});
 
 app.logout = function () {
 	jwt.logout();
@@ -521,3 +521,5 @@ app.clearChildren = function (parent) {
 		Polymer.dom(parent).removeChild(Polymer.dom(parent).firstChild);
 	}
 };
+
+});
