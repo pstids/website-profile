@@ -355,15 +355,19 @@
 	</template>
 	<script>
 	/*jshint camelcase: false*/
-	Polymer({
-		is: 'header-element',
-		properties: {
-			weekly: Object,
-			units: String,
-			user: Object,
-			date: String
-		},
-		ready: function () {
+	class HeaderElement extends Polymer.Element {
+		static get is() { return 'header-element'; }
+
+		static get properties() {
+			return {
+				weekly: Object,
+				units: String,
+				user: Object,
+				date: String
+			};
+		}
+		ready() {
+			super.ready();
 			this.date = moment().add(3, 'months').format('YYYY-MM-DD');
 			console.log(moment().add(3, 'months').format('YYYY-MM-DD'));
 			this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
@@ -403,12 +407,12 @@
 			// if (featureManagement.hasFeatures) {
 			// 	this.enable();
 			// }
-		},
-		logout: function () {
+		}
+		logout() {
 			jwt.logout();
 			user.clearData();
-		},
-		toggleActive: function (active) {
+		}
+		toggleActive(active) {
 			var current = this.querySelector('.active');
 			if (current) {
 				current.classList.remove('active');
@@ -418,8 +422,8 @@
 				var anchor = this.querySelector(`[data-selector=${active}]`);
 				anchor.parentElement.classList.add('active');
 			}
-		},
-		grabStats: function () {
+		}
+		grabStats() {
 			if (jwt.hasToken) {
 				superagent
 					.get('/b/api/v1/activities/weekly-stat')
@@ -440,8 +444,8 @@
 						}
 					});
 			}
-		},
-		checkTraining: function () {
+		}
+		checkTraining() {
 			var trainingPlanID = localStorage.getItem('training-plan');
 			if (trainingPlanID !== null && trainingPlanID !== undefined) {
 				if (
@@ -473,11 +477,11 @@
 					this.$.dialogTraining.open();
 				}
 			}
-		},
-		trainingNo: function () {
+		}
+		trainingNo() {
 			localStorage.removeItem('training-plan');
-		},
-		trainingYes: function () {
+		}
+		trainingYes() {
 			var trainingStart;
 			if (this.type_selected === 'next_monday') {
 				trainingStart = this.monday.format('X');
@@ -509,6 +513,7 @@
 					}
 				});
 		}
-	});
+	}
+	window.customElements.define(HeaderElement.is, HeaderElement);
 	</script>
 </dom-module>
