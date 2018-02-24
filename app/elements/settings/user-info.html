@@ -336,17 +336,23 @@
 				}
 			}
 			var age = 0;
+			var birthDay = 0;
+			var birthMonth = 0;
+			var birthYear = 0;
 			if ('birth' in user.data) {
 				age = this.getAge(
 					user.data.birth.year,
 					user.data.birth.month,
 					user.data.birth.day
 				);
+				birthDay = user.data.birth.day;
+				birthMonth = user.data.birth.month;
+				birthYear = user.data.birth.year;
 			}
 			this.userLocal = {
-				birth_day: user.data.birth.day,
-				birth_month: user.data.birth.month,
-				birth_year: user.data.birth.year,
+				birth_day: birthDay,
+				birth_month: birthMonth,
+				birth_year: birthYear,
 				gender: user.data.gender,
 				height: user.data.height,
 				city: user.data.city,
