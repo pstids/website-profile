@@ -80,7 +80,7 @@
 		}
 		ul.navigation li.active a {
 			background-size: 100% 60%;
-			background-image: url('/powercenter/images/mountain_filled.png');
+			background-image: url('/app/images/mountain_filled.png');
 			background-position: center bottom;
 			background-repeat: no-repeat;
 			background-color: var(--primary-background-color);
@@ -252,16 +252,16 @@
 			</div>
 			<ul class="navigation">
 				<li>
-					<a data-selector="profile" href="/powercenter/">Analyze</a>
+					<a data-selector="profile" href="/app/">Analyze</a>
 				</li>
 				<li id="improve">
-					<a data-selector="improve" href="/powercenter/improve">Improve</a>
+					<a data-selector="improve" href="/app/improve">Improve</a>
 				</li>
 				<li>
-					<a data-selector="leaderboard" href="/powercenter/leaderboard">Compete</a>
+					<a data-selector="leaderboard" href="/app/leaderboard">Compete</a>
 				</li>
 				<li>
-					<a data-selector="settings" href="/powercenter/settings">Settings</a>
+					<a data-selector="settings" href="/app/settings">Settings</a>
 				</li>
 			</ul>
 			<div class="space-taker"></div>
@@ -306,7 +306,7 @@
 					<div class="content">
 						<p style="color: orange; font-size: 11px; margin: 0;">NEW!</p>
 						<h1 style="margin: 0 0 0 0; font-size: 18px;">FINALSURGE SYNC</h1>
-						<p style="font-size: 11px; color: white; padding-top: 0; margin-top: 0;">Auto sync with <a href="http://finalsurge.com/">FinalSurge</a>. Visit 'Settings' tab. <a href="/powercenter/connect">Check it out.</a></p>
+						<p style="font-size: 11px; color: white; padding-top: 0; margin-top: 0;">Auto sync with <a href="http://finalsurge.com/">FinalSurge</a>. Visit 'Settings' tab. <a href="/app/connect">Check it out.</a></p>
 					</div>
 					<div class="bar"></div>
 				</div>
@@ -432,7 +432,7 @@
 							incomingWeekly.total_time = hrTime(res.body.total_time * 1000);
 							incomingWeekly.total_distance = unit.distanceValue(res.body.total_distance, user.data.units);
 							this.units = unit.distanceUnit(user.data.units);
-							
+
 							incomingWeekly.average_power = Math.round(res.body.average_power);
 							this.weekly = incomingWeekly;
 						} else {

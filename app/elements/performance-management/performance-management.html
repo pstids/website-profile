@@ -359,9 +359,9 @@
 			} else {
 				bars.on('click', (d, i) => {
 					if (this.ids[i].length > 1) {
-						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+						page.redirect(`/app/run/${this.ids[i][0]}`);
 					} else {
-						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+						page.redirect(`/app/run/${this.ids[i][0]}`);
 					}
 				});
 			}
@@ -392,7 +392,7 @@
 			}
 
 			var xData = [0, 1, 2, 3, 4];
-			
+
 			this.x = d3.scale.ordinal()
 				.domain(d3.range(this.data.length))
 				.range([0, this.width])
@@ -445,7 +445,7 @@
 					var msg = `<div class="float-tag">Zone ${zone} </div><div class="float-value">for ${time}</div>`;
 					if (time === 'days') {
 						var id = this.getID(d.x);
-						return `${msg}<br><a href="/powercenter/run/${id}"><span style="color:rgb(236,176,31)">TAP FOR RUN</span>`;
+						return `${msg}<br><a href="/app/run/${id}"><span style="color:rgb(236,176,31)">TAP FOR RUN</span>`;
 					} else {
 						return msg;
 					}
@@ -546,7 +546,7 @@
 			} else {
 				/* unused: d */
 				bars.on('click', (d, i) => {
-					page.redirect(`/powercenter/run/${this.ids[i]}`);
+					page.redirect(`/app/run/${this.ids[i]}`);
 				});
 			}
 

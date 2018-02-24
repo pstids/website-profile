@@ -168,7 +168,7 @@
 		<h1>Your Trends</h1>
 		<p>Blood, sweat and tears -- that’s what it’s all about.  That’s why you put in the work every day.  The prizes and accolades are nice, but it's also about the process.  That daily grind.  Everyday you sweat.  Sometimes you bleed.  Occasionally, you even cry (just a little).  There’s that internal satisfaction at the end of the knowing that you are getting closer and closer to your goal.
 
-		But... wouldn’t it be nice if you could see that progress?  
+		But... wouldn’t it be nice if you could see that progress?
 		<ul>
 			<li><b>Metabolic Fitness</b> is useful in preparing for a race.</li>
 			<li><b>Muscle Power</b> is useful for telling you how much your running economy is improving.</li>
@@ -246,7 +246,7 @@ Polymer({
 	attached: function () {
 		var path = `/b/api/v1/users/runnertrend`;
 		if (isLocal) {
-			path = '/powercenter/scripts/local/runnertrend.json';
+			path = '/app/scripts/local/runnertrend.json';
 		}
 		superagent
 			.get(path)

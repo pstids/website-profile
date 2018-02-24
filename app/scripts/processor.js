@@ -6,7 +6,7 @@
 /*global Dexie:true*/
 /*global self*/
 
-importScripts('/powercenter/scripts/processor.min.js');
+importScripts('/app/scripts/processor.js');
 
 var data = {};
 var guestToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
@@ -383,12 +383,12 @@ var workoutProcessing = function (workout, id) {
 		// sum = workout.elevation_device_list.slice(0, 10).reduce(add, 0);
 		// if (sum > 0) {
 		availableMetrics.push('deviceElevation');
-		// }  
+		// }
 	}
 	if ('stress_list' in workout && workout.stress_list !== null) {
 		// sum = workout.stress_list.slice(0, 10).reduce(add, 0);
 		// if (sum > 0) {
-		availableMetrics.push('rss'); 
+		availableMetrics.push('rss');
 		// }
 	}
 

@@ -7,7 +7,7 @@ processor is a webworker than handles workout fetching.
 It requests the data from the API and operates on it
 for display.
 */
-var processor = new Worker('/powercenter/scripts/processor.js');
+var processor = new Worker('/app/scripts/processor.js');
 
 var updatedTime = '';
 
@@ -153,7 +153,7 @@ app.addEventListener('dom-change', () => {
 		}
 	};
 
-	page.base('/powercenter');
+	page.base('/app');
 
 	page('/', () => {
 		if (jwt.hasToken) {

@@ -332,7 +332,7 @@ Polymer({
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;
 		if (isLocal) {
-			path = '/powercenter/scripts/local/powerduration.json';
+			path = '/app/scripts/local/powerduration.json';
 		}
 		superagent
 			.get(path)
@@ -383,7 +383,7 @@ Polymer({
 			}
 			var path = `/b/internal/plan/zoneproportion?race=${this.raceKey}`;
 			if (isLocal) {
-				path = '/powercenter/scripts/local/zoneproportion.json';
+				path = '/app/scripts/local/zoneproportion.json';
 			}
 			superagent
 				.get(path)
@@ -613,7 +613,7 @@ Polymer({
 				this.$.floater.style.top = `${this.boxY}px`;
 				this.$.floater.classList.remove('hidden');
 				this.lTimer = setInterval(this.moveFloat.bind(this), 10);
-				
+
 				focus.style('display', null);
 			})
 			.on('mouseout', () => {
@@ -623,7 +623,7 @@ Polymer({
 				this.$.floater.style.left = `${this.boxX}px`;
 				this.$.floater.style.top = `${this.boxY}px`;
 				this.$.floater.classList.add('hidden');
-				
+
 				focus.style('display', 'none');
 			})
 			.on('mousemove', function () {

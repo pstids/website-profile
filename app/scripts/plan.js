@@ -5,7 +5,7 @@
     'use strict';
 
     let app = document.querySelector('#app');
-    page.base('/powercenter/plan');
+    page.base('/app/plan');
 
     page('/', () => {
         console.log('here');

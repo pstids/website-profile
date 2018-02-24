@@ -202,7 +202,7 @@
                 // }
                 // console.log('activeUser', activeUser);
                 // if (activeUser) {
-                //     activeUserEle 
+                //     activeUserEle
                 //     activeUser.classList.remove('active');
                 //     if ('marker' in activeUser) {
                 //         activeUser.path.setMap(null);
@@ -212,7 +212,7 @@
                 // }
                 // Toggle on selected user
                 var user = this.users[target.dataset.user];
-                
+
                 target.classList.toggle('active');
                 user.active = !user.active;
                 if ('marker' in user) {
@@ -297,7 +297,7 @@
                     var deltaLng = (now.lng - start.lng).toRadians();
 
                     var a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
-                            Math.cos(lat1) * Math.cos(lat2) * 
+                            Math.cos(lat1) * Math.cos(lat2) *
                             Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
                     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                     return r * c;
@@ -376,7 +376,7 @@
                         zIndex: 1
                     };
                     user.marker = new google.maps.Marker(marker);
-                    
+
                     user.path = new google.maps.Polyline({
                         path: user.pts,
                         geodesic: false,
@@ -479,7 +479,7 @@
                     },
                     map: this.map,
                     icon: {
-                        url: '/powercenter/images/green_circle.png',
+                        url: '/app/images/green_circle.png',
                         size: new google.maps.Size(25, 25),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(12, 12),
@@ -495,7 +495,7 @@
                     },
                     map: this.map,
                     icon: {
-                        url: '/powercenter/images/red_circle.png',
+                        url: '/app/images/red_circle.png',
                         size: new google.maps.Size(25, 25),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(12, 12),

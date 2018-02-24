@@ -364,7 +364,7 @@ Polymer({
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/runnerprofile?srtDate=${pastFMT}&endDate=${todayFMT}`;
 		if (isLocal) {
-			path = '/powercenter/scripts/local/runnerprofile.json';
+			path = '/app/scripts/local/runnerprofile.json';
 		}
 		superagent
 			.get(path)
