@@ -37,40 +37,45 @@
         </div>
     </template>
     <script>
-        Polymer({
-            is: 'workout-shared',
-            properties: {
-                activity: Object,
-                runDate: String
-            },
-            ready: function () {
+        class WorkoutShared extends Polymer.Element {
+            static get is() { return 'workout-shared'; }
+
+            static get properties() {
+                return {
+                    activity: Object,
+                    runDate: String
+                };
+            }
+            ready() {
+                super.ready();
                 this.user = {};
                 this.activity = {};
                 this.userName = '';
                 this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
                 this.userImage = this.defaultURL;
-            },
-            getImage: function (user) {
+            }
+            getImage(user) {
                 if ('photo' in user && user.photo !== '' && user.photo !== undefined) {
                     return user.photo;
                 } else {
                     return this.defaultURL;
                 }
-            },
-            fetchUser: function (activity) {
+            }
+            fetchUser(activity) {
                 this.user.fullname = activity.name;
                 this.userName = activity.name;
                 this.userImage = this.getImage(activity);
                 this.notifyPath('userName', activity.name);
                 this.notifyPath('userImage', this.getImage(activity));
-            },
-            setData: function (activity) {
+            }
+            setData(activity) {
                 this.activity = activity;
                 this.fetchUser(activity);
                 this.runDate = moment
                     .unix(activity.start_time)
                     .format('LL');
             }
-        });
+        }
+        window.customElements.define(WorkoutShared.is, WorkoutShared);
     </script>
 </dom-module>
