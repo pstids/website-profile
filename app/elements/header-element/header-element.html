@@ -415,13 +415,13 @@
 			user.clearData();
 		}
 		toggleActive(active) {
-			var current = this.querySelector('.active');
+			var current = this.root.querySelector('.active');
 			if (current) {
 				current.classList.remove('active');
 			}
 
 			if (active !== null) {
-				var anchor = this.querySelector(`[data-selector=${active}]`);
+				var anchor = this.root.querySelector(`[data-selector=${active}]`);
 				anchor.parentElement.classList.add('active');
 			}
 		}
