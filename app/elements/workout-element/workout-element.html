@@ -232,9 +232,10 @@
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'workout-element',
-		switchMetric: function (metric, state) {
+	class WorkoutElement extends Polymer.Element {
+		static get is() { return 'workout-element'; }
+
+		switchMetric(metric, state) {
 			if (!this.chart) {
 				return;
 			}
@@ -256,8 +257,8 @@
 					this.chart.showGraph(graph);
 				}
 			}
-		},
-		addGuide: function (from, to, zone) {
+		}
+		addGuide(from, to, zone) {
 			if ('chart' in this) {
 				this.removeGuide();
 				var fromDiff = from.getTime() - this.startTime.getTime();
@@ -276,13 +277,14 @@
 				};
 				this.chart.categoryAxis.addGuide(this.guide);
 			}
-		},
-		removeGuide: function () {
+		}
+		removeGuide() {
 			if ('chart' in this) {
 				this.chart.categoryAxis.removeGuide(this.guide);
 			}
-		},
-		ready: function () {
+		}
+		ready() {
+            super.ready();
 			this.activity = null;
 			this.descriptionText = '';
 			this.guide = {};
@@ -641,13 +643,13 @@
 					}
 				}
 			};
-		},
-		toggleView: function () {
+		}
+		toggleView() {
 			if ('chart' in this && this.chart !== null) {
 				this.chart.handleResize();
 			}
-		},
-		setChartData: function (data, activity, activityMetrics) {
+		}
+		setChartData(data, activity, activityMetrics) {
 			this.setLoading();
 
 			this.activity = activity;
@@ -695,20 +697,20 @@
 			}
 
 			this.fillChart(valueAxes, graphs);
-		},
-		removeLoading: function () {
+		}
+		removeLoading() {
 			this.$.spinner.classList.remove('show');
 			this.$.spinner.classList.add('hide');
 			this.$.spinner.classList.add('fade');
 			this.$.spinner.style.zIndex = -1;
-		},
-		setLoading: function () {
+		}
+		setLoading() {
 			this.$.spinner.classList.add('show');
 			this.$.spinner.classList.remove('hide');
 			this.$.spinner.classList.remove('fade');
 			this.$.spinner.style.zIndex = 12;
-		},
-		bindToggles: function () {
+		}
+		bindToggles() {
 			for (var key in this.metrics) {
 				if (this.availableMetrics.indexOf(key) === -1) {
 					this.metrics[key].toggle.classList.add('hidden');
@@ -728,16 +730,16 @@
 				this.switchMetric('formPower', 'off');
 			}
 			this.switchMetric('power', 'on');
-		},
-		toggle: function (e) {
+		}
+		toggle(e) {
 			var target = e.target;
 			while (!('graph' in target.dataset)) {
 				target = target.parentElement;
 			}
 			var graph = target.dataset.graph;
 			this.switchMetric(graph, 'flip');
-		},
-		fillChart: function (valueAxes, graphs) {
+		}
+		fillChart(valueAxes, graphs) {
 			this.chart = AmCharts.makeChart(
 				this.$.chart,
 				{
@@ -812,6 +814,7 @@
 				);
 			});
 		}
-	});
+	}
+	window.customElements.define(WorkoutElement.is, WorkoutElement);
 	</script>
 </dom-module>
