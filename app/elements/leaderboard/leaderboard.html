@@ -1,4 +1,4 @@
-
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../workout-element/time-in-zone.html">
@@ -370,12 +370,10 @@
 		</paper-dialog>
 	</template>
 	<script>
-	Polymer({
-		is: 'social-leaderboard',
-		listeners: {
-			'tap': 'eleTap'
-		},
-		eleTap: function (e) {
+	class SocialLeaderBoard extends Polymer.Element {
+		static get is() { return 'social-leaderboard'; }
+
+		eleTap(e) {
 			var target = e.target;
 			while (true) {
 				if (target === this) {
@@ -389,8 +387,8 @@
 					return;
 				}
 			}
-		},
-		fetchUserData: function (username) {
+		}
+		fetchUserData(username) {
 			var srtDate = moment().subtract(12, 'weeks').format('MM-DD-YYYY');
 			var endDate = moment().add(2, 'days').format('MM-DD-YYYY');
 			this.statUsername = username;
@@ -409,8 +407,8 @@
 						console.log(err);
 					}
 				});
-		},
-		processUserData: function (activities) {
+		}
+		processUserData(activities) {
 			var rss = 0, time = 0, max_power = 0, distance = 0;
 			var frequency = {};
 			var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], names = [], tiz = [0, 0, 0, 0, 0];
@@ -446,8 +444,8 @@
 			this.createCommitChart(frequency);
 			this.createRSSProgression(weeks, names);
 			this.$.dialog.open();
-		},
-		checkHasCP: function () {
+		}
+		checkHasCP() {
             superagent
                 .get('/b/api/v1/training')
                 .set('Accept', 'application/json')
@@ -461,8 +459,8 @@
                       console.log(err);
                     }
                 });
-		},
-		callPath: function (path, resolve) {
+		}
+		callPath(path, resolve) {
 			superagent
 				.get(path)
 				.set('Accept', 'application/json')
@@ -474,8 +472,10 @@
 						resolve(null);
 					}
 				});
-		},
-		ready: function () {
+		}
+		ready() {
+			super.ready();
+			this.addEventListener('tap', e => this.eleTap(e));
 			this.statRSS = 0;
 			this.statDistance = 0;
 			this.statTime = 0;
@@ -530,8 +530,8 @@
 						this.$.boardEff.classList.add('hidden');
 					}
 				});
-		},
-		processEntries: function (max, highlight, entries) {
+		}
+		processEntries(max, highlight, entries) {
 			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 			while (rssContainer.firstChild) {
 				rssContainer.removeChild(rssContainer.firstChild);
@@ -606,9 +606,9 @@
 					}
 				}
 			}
-		},
+		}
 		// Add run entry
-		addEntry: function (image, name, entry, order, active, highlight) {
+		addEntry(image, name, entry, order, active, highlight) {
 			if (name.toLowerCase() === 'djfaithful') {
 				return;
 			}
@@ -659,9 +659,9 @@
 
 			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 			rssContainer.appendChild(li);
-		},
+		}
 		// Add title element
-		addTitle: function (title, highlight) {
+		addTitle(title, highlight) {
 			if (title === 'top') {
 				var li = document.createElement('li');
 
@@ -694,9 +694,9 @@
 			} else {
 				this.addBridge(highlight);
 			}
-		},
+		}
 		// Add ellipsis
-		addBridge: function (highlight) {
+		addBridge(highlight) {
 			var li = document.createElement('li');
 			var icon1 = document.createElement('iron-icon');
 			Polymer.dom(icon1).setAttribute('icon', 'image:brightness-1');
@@ -711,8 +711,8 @@
 
 			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 			rssContainer.appendChild(li);
-		},
-		createCommitChart: function (data) {
+		}
+		createCommitChart(data) {
 			// clear old
 			while (Polymer.dom(this.$.commit).firstChild) {
 				Polymer.dom(
@@ -750,8 +750,8 @@
 				}
 				Polymer.dom(this.$.commit).appendChild(div);
 			}
-		},
-		createRSSProgression: function (data, days) {
+		}
+		createRSSProgression(data, days) {
 			var width = 760;
 			var height = 250;
 			var mColor = '#f7a017';
@@ -892,6 +892,7 @@
 					return `translate(${first}, 0)`;
 				});
 		}
-	});
+	}
+	window.customElements.define(SocialLeaderBoard.is, SocialLeaderBoard);
 	</script>
 </dom-module>
