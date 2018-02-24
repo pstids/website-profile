@@ -473,8 +473,8 @@ class CalendarManager {
 				if (this.mode === 'admin') {
 					return;
 				}
-				if (res.ok) {
-					if (res.body !== null && res.body.activities !== null) {
+				if (res.ok && res.body !== null) {
+					if (res.body.activities !== null) {
 						this.saveActivities(res.body.activities);
 						this.lastActivity = res.body.last_activity;
 						window.dispatchEvent(this.gotActivityEvent);
@@ -511,8 +511,8 @@ class CalendarManager {
 				if (this.mode === 'user') {
 					return;
 				}
-				if (res.ok) {
-					if (res.body !== null && res.body.activities !== null) {
+				if (res.ok && res.body !== null) {
+					if (res.body.activities !== null) {
 						this.activities = {};
 						this.saveActivities(res.body.activities);
 						this.lastActivity = res.body.last_activity;
