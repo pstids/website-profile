@@ -4,9 +4,9 @@
 /*global processor*/
 /*global fbq*/
 
-var isLocal = false;
+window.isLocal = false;
 if (window.location.hostname === 'stryd.dev') {
-	isLocal = true;
+	window.isLocal = true;
 }
 
 class JWT {
@@ -85,7 +85,7 @@ class JWT {
 	}
 }
 
-var jwt = new JWT();
+window.jwt = new JWT();
 
 class User {
 	constructor() {
@@ -171,7 +171,7 @@ class User {
 	}
 }
 
-var user = new User();
+window.user = new User();
 
 class TrainingPlan {
 	constructor() {
@@ -334,7 +334,7 @@ class TrainingPlan {
 	}
 }
 
-var trainingPlan = new TrainingPlan();
+window.trainingPlan = new TrainingPlan();
 
 class ColorInterpolate {
 	constructor() {
@@ -381,7 +381,7 @@ class ColorInterpolate {
 	}
 }
 
-var colorInterpolate = new ColorInterpolate();
+window.colorInterpolate = new ColorInterpolate();
 
 class URLManager {
 	constructor() {
@@ -444,7 +444,7 @@ class URLManager {
 	}
 }
 
-var urlManager = new URLManager();
+window.urlManager = new URLManager();
 
 class CalendarManager {
 	constructor() {
@@ -655,7 +655,7 @@ class CalendarManager {
 	}
 }
 
-var calendarManager = new CalendarManager();
+window.calendarManager = new CalendarManager();
 
 class FeatureManagement {
 	constructor() {
@@ -691,4 +691,4 @@ class FeatureManagement {
 	}
 }
 
-var featureManagement = new FeatureManagement();
+window.featureManagement = new FeatureManagement();
