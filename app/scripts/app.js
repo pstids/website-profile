@@ -97,9 +97,6 @@ var currentID = null;
 		mapRunEle.setReady();
 	};
 
-	app.loadMap();
-	app.suuntoProcessing();
-
 	processor.onmessage = (event) => {
 		if ('error' in event.data && event.data.error === true) {
 			toast('Cannot load workout! Visit the calendar to select another.');
@@ -521,5 +518,8 @@ app.clearChildren = function (parent) {
 		Polymer.dom(parent).removeChild(Polymer.dom(parent).firstChild);
 	}
 };
+
+app.loadMap();
+app.suuntoProcessing();
 
 });
