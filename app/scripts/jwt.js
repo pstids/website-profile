@@ -626,10 +626,18 @@ class CalendarManager {
 		return results;
 	}
 	giveActivities(results) {
-		app.giveActivities(results);
+		if (app.giveActivities) {
+			app.giveActivities(results);
+		} else {
+			console.warn('no app for jwt.giveActivities()');
+		}
 	}
 	giveActivities2(results) {
-		app.giveActivities2(results);
+		if (app.giveActivities2) {
+			app.giveActivities2(results);
+		} else {
+			console.warn('no app for jwt.giveActivities2()');
+		}
 	}
 	loadLast() {
 		page(`/powercenter/run/${this.lastActivity}`);
