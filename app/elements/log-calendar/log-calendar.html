@@ -1,62 +1,62 @@
 <dom-module id="log-calendar">
-    <style>
-        :host {
-            @apply(--layout-vertical);
-            font-family: "Stryd", sans-serif;
-            background-color: var(--dark-background-color);
-            padding: 0 20px 20px;
-        }
-
-        #calendarContainer {
-            min-width: 770px;
-        }
-
-        @media (max-width: 770px) {
-            #calendarContainer {
-                overflow-x: auto;
-                overflow-y: hidden;
-            }
-        }
-
-        h1.header {
-            @apply(--header);
-        }
-        .title {
-            padding: 20px;
-            @apply(--layout-end);
-        }
-
-        .day {
-            @apply(--layout-flex);
-            @apply(--layout-center-justified);
-            border-right: 1px solid #4d4d4d;
-            font-size: 20px;
-            height: 64px;
-            color: white;
-            text-transform: uppercase;
-            text-align: center;
-            line-height: 64px;
-            min-width: 110px;
-        }
-        .day:last-child {
-            border-right: 0;
-        }
-
-        .days {
-            border-top: 1px solid #4d4d4d !important;
-        }
-
-        .row {
-            @apply(--layout-horizontal);
-            border: 1px solid #4d4d4d;
-            border-top: 0;
-        }
-
-        button {
-            margin-left: 20px;
-        }
-    </style>
     <template>
+        <style>
+            :host {
+                @apply --layout-vertical;
+                font-family: "Stryd", sans-serif;
+                background-color: var(--dark-background-color);
+                padding: 0 20px 20px;
+            }
+
+            #calendarContainer {
+                min-width: 770px;
+            }
+
+            @media (max-width: 770px) {
+                #calendarContainer {
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                }
+            }
+
+            h1.header {
+                @apply --header;
+            }
+            .title {
+                padding: 20px;
+                @apply --layout-end;
+            }
+
+            .day {
+                @apply --layout-flex;
+                @apply --layout-center-justified;
+                border-right: 1px solid #4d4d4d;
+                font-size: 20px;
+                height: 64px;
+                color: white;
+                text-transform: uppercase;
+                text-align: center;
+                line-height: 64px;
+                min-width: 110px;
+            }
+            .day:last-child {
+                border-right: 0;
+            }
+
+            .days {
+                border-top: 1px solid #4d4d4d !important;
+            }
+
+            .row {
+                @apply --layout-horizontal;
+                border: 1px solid #4d4d4d;
+                border-top: 0;
+            }
+
+            button {
+                margin-left: 20px;
+            }
+        </style>
         <div class="layout horizontal title">
             <div class="flex">
                 <h1 class="header">{{month}}</h1>
