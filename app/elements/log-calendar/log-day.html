@@ -218,12 +218,10 @@
 	</template>
 	<script>
 	/*global updatedTime:true*/
-	Polymer({
-		is: 'log-day',
-		listeners: {
-			'tap': 'eleTap'
-		},
-		eleTap: function (e) {
+	class LogDay extends Polymer.Element {
+		static get is() { return 'log-day'; }
+
+		eleTap(e) {
 			var target = e.target;
 			while (true) {
 				if (target === this.$.container) {
@@ -261,18 +259,20 @@
 					return;
 				}
 			}
-		},
-		ready: function () {
+		}
+		ready() {
+			super.ready();
+			this.addEventListener('tap', e => this.eleTap(e));
 			this.data = {
 				day: 0
 			};
 			this.setData(this.data);
-		},
-		clearWorkout: function () {
+		}
+		clearWorkout() {
 			this.data = {};
 			this.classList.remove('active');
-		},
-		setData: function (data) {
+		}
+		setData(data) {
 			this.data = data;
 			this.day = data.day;
 			this.rgb = 'rgb(0, 0, 0)';
@@ -344,8 +344,8 @@
 				this.power = '';
 				this.$.header.style.backgroundColor = this.rgb;
 			}
-		},
-		viewWorkout: function () {
+		}
+		viewWorkout() {
 			if (
 				('id' in this.data) ||
 				(
@@ -364,26 +364,27 @@
 				}
 				urlManager.setURL(id, hash);
 			}
-		},
+		}
 		// returns bool based on if workout has been inserted
-		hasWorkout: function () {
+		hasWorkout() {
 			if ('power' in this.data) {
 				return true;
 			}
 			return false;
-		},
-		getID: function () {
+		}
+		getID() {
 			if ('id' in this.data) {
 				return this.data.id;
 			}
 			return 0;
-		},
-		getDay: function () {
+		}
+		getDay() {
 			if ('day' in this.data) {
 				return this.data.day;
 			}
 			return 0;
 		}
-	});
+	}
+	window.customElements.define(LogDay.is, LogDay);
 	</script>
 </dom-module>
