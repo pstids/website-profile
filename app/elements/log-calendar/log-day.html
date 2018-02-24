@@ -273,6 +273,11 @@
 			this.classList.remove('active');
 		}
 		setData(data) {
+			Polymer.RenderStatus.afterNextRender(this, () => {
+				this._setData(data);
+			});
+		}
+		_setData(data) {
 			this.data = data;
 			this.day = data.day;
 			this.rgb = 'rgb(0, 0, 0)';
