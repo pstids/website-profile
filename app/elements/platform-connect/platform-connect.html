@@ -155,15 +155,15 @@
             }
             suuntoAuth() {
                 this.suunto = {
-                    connect: this.querySelector('[data-suunto="connect"]'),
-                    email: this.querySelector('[data-suunto="email"]'),
-                    auth: this.querySelector('[data-suunto="auth"]'),
-                    authStep: this.querySelector('[data-suunto="authStep"]'),
-                    confirm: this.querySelector('[data-suunto="confirm"]'),
-                    fetch: this.querySelector('[data-suunto="fetch"]'),
-                    fetching: this.querySelector('[data-suunto="fetching"]'),
-                    alert: this.querySelector('[data-suunto="alert"]'),
-                    disconnect: this.querySelector('[data-suunto="disconnect"]')
+                    connect: this.root.querySelector('[data-suunto="connect"]'),
+                    email: this.root.querySelector('[data-suunto="email"]'),
+                    auth: this.root.querySelector('[data-suunto="auth"]'),
+                    authStep: this.root.querySelector('[data-suunto="authStep"]'),
+                    confirm: this.root.querySelector('[data-suunto="confirm"]'),
+                    fetch: this.root.querySelector('[data-suunto="fetch"]'),
+                    fetching: this.root.querySelector('[data-suunto="fetching"]'),
+                    alert: this.root.querySelector('[data-suunto="alert"]'),
+                    disconnect: this.root.querySelector('[data-suunto="disconnect"]')
                 };
                 this.suunto.fetch.addEventListener('click', () => {
                     this.suunto.fetch.classList.add('hidden');
