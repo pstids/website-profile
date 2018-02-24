@@ -115,9 +115,11 @@
     </template>
     <script>
         /*jshint camelcase: false */
-        Polymer({
-            is: 'platform-connect',
-            ready: function() {
+        class PlatformConnect extends Polymer.Element {
+            static get is() { return 'platform-connect'; }
+
+            ready() {
+                super.ready();
                 this.update();
                 this.suuntoAuth();
                 document.addEventListener(
@@ -126,12 +128,12 @@
                     false
                 );
                 this.suuntoCheck();
-            },
-            notify: function (message) {
+            }
+            notify(message) {
                 this.suunto.alert.text = message;
                 this.suunto.alert.show();
-            },
-            suuntoCheck: function () {
+            }
+            suuntoCheck() {
                 if (document.visibilityState === 'visible' &&
                     !this.suunto.confirm.classList.contains('hidden')) {
                     superagent
@@ -149,8 +151,8 @@
                             }
                         });
                 }
-            },
-            suuntoAuth: function () {
+            }
+            suuntoAuth() {
                 this.suunto = {
                     connect: this.querySelector('[data-suunto="connect"]'),
                     email: this.querySelector('[data-suunto="email"]'),
@@ -218,8 +220,8 @@
                         this.suunto.connect.classList.remove('hidden');
                     });
                 });
-            },
-            oauthDisconnect: function (platform, cb) {
+            }
+            oauthDisconnect(platform, cb) {
                 superagent
                     .del(`/b/platform/oauth/${platform}`)
                     .send()
@@ -231,8 +233,8 @@
                             this.notify(res.body.message);
                         }
                     });
-            },
-            oauthConnect: function (e) {
+            }
+            oauthConnect(e) {
                 var platform = e.target.getAttribute('id');
                 var ele = this.$[platform];
                 if (this.$[platform].dataset.toggle === 'on') {
@@ -254,8 +256,8 @@
                             }
                         });
                 }
-            },
-            update: function () {
+            }
+            update() {
                 if (jwt.data.id) {
                     superagent
                         .get('/b/internal/platforms')
@@ -268,8 +270,8 @@
                             }
                         });
                 }
-            },
-            updateView: function (platforms) {
+            }
+            updateView(platforms) {
                 var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak', 'finalsurge'], verifyPlatforms = ['suunto'];
                 var platform, i;
                 for (i = 0; i < platforms.length; i++) {
@@ -280,8 +282,8 @@
                         this.verifyPlatformsController(platform);
                     }
                 }
-            },
-            oauthPlatformsController: function (platform) {
+            }
+            oauthPlatformsController(platform) {
                 if (platform.connected && platform.platform in this.$) {
                     this.$[platform.platform].dataset.toggle = 'on';
                     this.$[platform.platform].textContent = 'Disconnect';
@@ -289,8 +291,8 @@
                     this.$[platform.platform].dataset.toggle = 'off';
                     this.$[platform.platform].textContent = 'Connect';
                 }
-            },
-            verifyPlatformsController: function (platform) {
+            }
+            verifyPlatformsController(platform) {
                 if (platform.platform === 'suunto') {
                     if (platform.status === 1) {
                         this.suunto.connect.classList.add('hidden');
@@ -303,6 +305,7 @@
                     }
                 }
             }
-        });
+        }
+        window.customElements.define(PlatformConnect.is, PlatformConnect);
     </script>
 </dom-module>
