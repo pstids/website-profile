@@ -107,6 +107,7 @@
 	<link rel="import" href="bower_components/polymer/polymer.html">
 	<link rel="import" href="bower_components/paper-toast/paper-toast.html">
 	<link rel="import" href="bower_components/iron-pages/iron-pages.html">
+	<link rel="import" href="styles/app-theme.html">
 	<link rel="import" href="elements/bubble-stat/bubble-stats.html">
 	<link rel="import" href="elements/home-navigation/home-navigation.html">
 	<link rel="import" href="elements/footer-elementa/footer-elementa.html">
@@ -131,6 +132,10 @@
 
 <body unresolved class="fullbleed layout vertical">
 <span id="browser-sync-binding"></span>
+
+<custom-style>
+	<style is="custom-style" include="app-theme"></style>
+</custom-style>
 
 <dom-bind>
 <template is="dom-bind" id="app">
