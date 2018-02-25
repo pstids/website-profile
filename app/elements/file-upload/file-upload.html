@@ -1,3 +1,6 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
 <dom-module id="file-upload">
 	<template>
 		<style>
@@ -38,9 +41,11 @@
 	</template>
 	<script>
 	/*global Dropzone*/
-	Polymer({
-		is: 'file-upload',
-		ready: function () {
+	class FileUpload extends Polymer.Element {
+		static get is() { return 'file-upload'; }
+
+		ready() {
+			super.ready();
 			Dropzone.autoDiscover = false;
 			new Dropzone(
 				this.$.file,
@@ -86,6 +91,7 @@
 				}
 			);
 		}
-	});
+	}
+	window.customElements.define(FileUpload.is, FileUpload);
 	</script>
 </dom-module>
