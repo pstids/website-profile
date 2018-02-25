@@ -19,7 +19,7 @@
     "app/bower_components/webcomponentsjs/webcomponents-sd-ce.js"
   ],
   "lint": {
-    "rules": ["polymer-2-hybrid"]
+    "rules": ["polymer-2"]
   },
   "builds": [{
     "bundle": false,
