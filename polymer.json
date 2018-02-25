@@ -10,7 +10,13 @@
   ],
   "extraDependencies": [
     "app/manifest.json",
-    "app/bower_components/webcomponentsjs/webcomponents-lite.js"
+    "app/bower_components/webcomponentsjs/webcomponents-hi-ce.js",
+    "app/bower_components/webcomponentsjs/webcomponents-hi-sd-ce.js",
+    "app/bower_components/webcomponentsjs/webcomponents-hi-sd.js",
+    "app/bower_components/webcomponentsjs/webcomponents-hi.js",
+    "app/bower_components/webcomponentsjs/webcomponents-lite.js",
+    "app/bower_components/webcomponentsjs/webcomponents-loader.js",
+    "app/bower_components/webcomponentsjs/webcomponents-sd-ce.js"
   ],
   "lint": {
     "rules": ["polymer-2-hybrid"]
