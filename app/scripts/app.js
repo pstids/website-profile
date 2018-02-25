@@ -151,211 +151,6 @@ var currentID = null;
 		}
 	};
 
-	let rootPath = Polymer.rootPath;
-	if (rootPath.endsWith('/')) {
-		rootPath = rootPath.substring(0, rootPath.length - 1);
-	}
-	page.base(rootPath);
-
-	page('/', () => {
-		if (jwt.hasToken) {
-			page('/analysis');
-			calendarManager.loadNew = true;
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/analysis', () => {
-		if (jwt.hasToken) {
-			app.route = 'profile';
-			header.toggleActive('profile');
-			calendarManager.loadFirst();
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/improve', () => {
-		if (jwt.hasToken) {
-			app.route = 'improve';
-			header.toggleActive('improve');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/trends', () => {
-		if (jwt.hasToken) {
-			app.route = 'improve';
-			header.toggleActive('improve');
-			powerTrend.scrollIntoView();
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/run/:idPrimary/run/:idSecondary', (data) => {
-		app.route = 'profile';
-		app.params = data.params;
-		app.home = 'comparison';
-		header.toggleActive('profile');
-		homeNavigation.select('comparison');
-
-		processor.postMessage({
-			token: jwt.token,
-			type: 'workoutComparison',
-			params: data.params,
-			updated_time: updatedTime
-		});
-
-		if (firstLoad) {
-			urlManager.setNavigation(+app.params.idPrimary, 0);
-			urlManager.compareID = +app.params.idSecondary;
-			firstLoad = false;
-		} else {
-			window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
-		}
-		logCalendar.setActive(+app.params.idPrimary);
-		compareCalendar.setActive(+app.params.idPrimary);
-		if (!workoutSummary.hasWorkout) {
-			app.workoutFetching(app.params.idPrimary);
-			currentID = app.params.idPrimary;
-		}
-	});
-
-	page('/run/:id', (data) => {
-		app.route = 'profile';
-		app.params = data.params;
-		app.home = 'analysis';
-		header.toggleActive('profile');
-		homeNavigation.select('analysis');
-
-		logCalendar.setActive(+app.params.id);
-
-		mapRunEle.classList.remove('hidden');
-		mapRunEle.resizeMap();
-		workoutElement.switchMetric('power', 'on');
-		workoutElement.classList.remove('hidden');
-		lapOverview.classList.remove('hidden');
-
-		if (firstLoad) {
-			urlManager.setNavigation(app.params.id, 0);
-			firstLoad = false;
-		} else {
-			window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
-		}
-
-		if (currentID !== app.params.id || forceLoad) {
-			workoutElement.setLoading();
-			currentID = app.params.id;
-			app.workoutFetching(currentID);
-			forceLoad = false;
-		}
-		workoutElement.toggleView();
-	});
-
-	page('/training/:hash', (data) => {
-		app.params = data.params;
-		app.route = 'profile';
-		app.home = 'training';
-		header.toggleActive('profile');
-
-		if (firstLoad) {
-			urlManager.setNavigation(0, app.params.hash);
-			firstLoad = false;
-		} else {
-			window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
-		}
-
-		planView.chartToggle(true);
-		planView.setStartHash(data.params.hash);
-		planView.classList.add('hasWorkout');
-	});
-
-	page('/settings', () => {
-		if (jwt.hasToken) {
-			app.route = 'settings';
-			header.toggleActive('settings');
-			settingsElement.toggle('profile');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/connect', () => {
-		if (jwt.hasToken) {
-			app.route = 'settings';
-			header.toggleActive('settings');
-			settingsElement.toggle('connect');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/zones', () => {
-		if (jwt.hasToken) {
-			app.route = 'settings';
-			header.toggleActive('settings');
-			settingsElement.toggle('zone');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/leaderboard', () => {
-		if (jwt.hasToken) {
-			app.route = 'leaderboard';
-			header.toggleActive('leaderboard');
-			ga('send', 'event', 'view', 'leaderboard');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/a/:name', (data) => {
-		if (jwt.hasToken) {
-			calendarManager.loadNew = true;
-			calendarManager.setAdmin(data.params.name);
-			page('/analysis');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/plan', () => {
-		if (jwt.hasToken) {
-			app.route = 'plan';
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/plan/:id', (data) => {
-		app.route = 'new-plan';
-		app.planID = data.params.id;
-	});
-
-	page('/plan/:id/detail', (data) => {
-		app.route = 'plan-detail';
-		app.planID = data.params.id;
-	});
-
-	page('/efficiency', () => {
-		app.route = 'profile';
-		header.toggleActive('profile');
-		workoutSummary.setEfficiency();
-		page('/run/4951793020698624');
-	});
-
-	page('*', () => {
-		document.location = '/signin';
-	});
-
-	page({
-		hashbang: false
-	});
-
 	if (featureManagement.hasFeatures) {
 		// document.querySelector('[data-route="improve"]').appendChild(
 		// 	document.querySelector('performance-management')
@@ -522,6 +317,211 @@ app.clearChildren = function (parent) {
 		Polymer.dom(parent).removeChild(Polymer.dom(parent).firstChild);
 	}
 };
+
+let rootPath = Polymer.rootPath;
+if (rootPath.endsWith('/')) {
+	rootPath = rootPath.substring(0, rootPath.length - 1);
+}
+page.base(rootPath);
+
+page('/', () => {
+	if (jwt.hasToken) {
+		page('/analysis');
+		calendarManager.loadNew = true;
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/analysis', () => {
+	if (jwt.hasToken) {
+		app.route = 'profile';
+		header.toggleActive('profile');
+		calendarManager.loadFirst();
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/improve', () => {
+	if (jwt.hasToken) {
+		app.route = 'improve';
+		header.toggleActive('improve');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/trends', () => {
+	if (jwt.hasToken) {
+		app.route = 'improve';
+		header.toggleActive('improve');
+		powerTrend.scrollIntoView();
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/run/:idPrimary/run/:idSecondary', (data) => {
+	app.route = 'profile';
+	app.params = data.params;
+	app.home = 'comparison';
+	header.toggleActive('profile');
+	homeNavigation.select('comparison');
+
+	processor.postMessage({
+		token: jwt.token,
+		type: 'workoutComparison',
+		params: data.params,
+		updated_time: updatedTime
+	});
+
+	if (firstLoad) {
+		urlManager.setNavigation(+app.params.idPrimary, 0);
+		urlManager.compareID = +app.params.idSecondary;
+		firstLoad = false;
+	} else {
+		window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+	}
+	logCalendar.setActive(+app.params.idPrimary);
+	compareCalendar.setActive(+app.params.idPrimary);
+	if (!workoutSummary.hasWorkout) {
+		app.workoutFetching(app.params.idPrimary);
+		currentID = app.params.idPrimary;
+	}
+});
+
+page('/run/:id', (data) => {
+	app.route = 'profile';
+	app.params = data.params;
+	app.home = 'analysis';
+	header.toggleActive('profile');
+	homeNavigation.select('analysis');
+
+	logCalendar.setActive(+app.params.id);
+
+	mapRunEle.classList.remove('hidden');
+	mapRunEle.resizeMap();
+	workoutElement.switchMetric('power', 'on');
+	workoutElement.classList.remove('hidden');
+	lapOverview.classList.remove('hidden');
+
+	if (firstLoad) {
+		urlManager.setNavigation(app.params.id, 0);
+		firstLoad = false;
+	} else {
+		window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+	}
+
+	if (currentID !== app.params.id || forceLoad) {
+		workoutElement.setLoading();
+		currentID = app.params.id;
+		app.workoutFetching(currentID);
+		forceLoad = false;
+	}
+	workoutElement.toggleView();
+});
+
+page('/training/:hash', (data) => {
+	app.params = data.params;
+	app.route = 'profile';
+	app.home = 'training';
+	header.toggleActive('profile');
+
+	if (firstLoad) {
+		urlManager.setNavigation(0, app.params.hash);
+		firstLoad = false;
+	} else {
+		window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+	}
+
+	planView.chartToggle(true);
+	planView.setStartHash(data.params.hash);
+	planView.classList.add('hasWorkout');
+});
+
+page('/settings', () => {
+	if (jwt.hasToken) {
+		app.route = 'settings';
+		header.toggleActive('settings');
+		settingsElement.toggle('profile');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/connect', () => {
+	if (jwt.hasToken) {
+		app.route = 'settings';
+		header.toggleActive('settings');
+		settingsElement.toggle('connect');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/zones', () => {
+	if (jwt.hasToken) {
+		app.route = 'settings';
+		header.toggleActive('settings');
+		settingsElement.toggle('zone');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/leaderboard', () => {
+	if (jwt.hasToken) {
+		app.route = 'leaderboard';
+		header.toggleActive('leaderboard');
+		ga('send', 'event', 'view', 'leaderboard');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/a/:name', (data) => {
+	if (jwt.hasToken) {
+		calendarManager.loadNew = true;
+		calendarManager.setAdmin(data.params.name);
+		page('/analysis');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/plan', () => {
+	if (jwt.hasToken) {
+		app.route = 'plan';
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/plan/:id', (data) => {
+	app.route = 'new-plan';
+	app.planID = data.params.id;
+});
+
+page('/plan/:id/detail', (data) => {
+	app.route = 'plan-detail';
+	app.planID = data.params.id;
+});
+
+page('/efficiency', () => {
+	app.route = 'profile';
+	header.toggleActive('profile');
+	workoutSummary.setEfficiency();
+	page('/run/4951793020698624');
+});
+
+page('*', () => {
+	document.location = '/signin';
+});
+
+page({
+	hashbang: false
+});
 
 app.loadMap();
 app.suuntoProcessing();
