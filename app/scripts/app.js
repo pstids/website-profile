@@ -7,7 +7,7 @@ processor is a webworker than handles workout fetching.
 It requests the data from the API and operates on it
 for display.
 */
-var processor = new Worker('/app/scripts/processor.js');
+var processor = new Worker('scripts/processor.js');
 
 var updatedTime = '';
 
@@ -151,7 +151,11 @@ var currentID = null;
 		}
 	};
 
-	page.base('/app');
+	let rootPath = Polymer.rootPath;
+	if (rootPath.endsWith('/')) {
+		rootPath = rootPath.substring(0, rootPath.length - 1);
+	}
+	page.base(rootPath);
 
 	page('/', () => {
 		if (jwt.hasToken) {

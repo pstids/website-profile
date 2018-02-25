@@ -338,7 +338,7 @@ class HeatDuration extends Polymer.Element {
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;
 		if (window.isLocal) {
-			path = '/app/scripts/local/powerduration.json';
+			path = `${Polymer.rootPath}scripts/local/powerduration.json`;
 		}
 		superagent
 			.get(path)
@@ -394,7 +394,7 @@ class HeatDuration extends Polymer.Element {
 			}
 			var path = `/b/internal/plan/zoneproportion?race=${this.raceKey}`;
 			if (window.isLocal) {
-				path = '/app/scripts/local/zoneproportion.json';
+				path = `${Polymer.rootPath}scripts/local/zoneproportion.json`;
 			}
 			superagent
 				.get(path)

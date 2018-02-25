@@ -16,10 +16,10 @@
 
 		Note: If you intend to serve from a non-root path, see [polymer-root-path] below.
 	-->
-	<base href="/app">
+	<base href="/app/">
 
 	<!-- Place favicon.ico in the `app/` directory -->
-	<link rel="shortcut icon" href="/app/images/favicon.png">
+	<link rel="shortcut icon" href="images/favicon.png">
 
 	<!-- Chrome for Android theme color -->
 	<meta name="theme-color" content="#303F9F">
@@ -28,14 +28,14 @@
 	<!-- Add to homescreen for Chrome on Android -->
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="application-name" content="Stryd PowerCenter">
-	<link rel="icon" sizes="192x192" href="/app/images/favicon.png">
+	<link rel="icon" sizes="192x192" href="images/favicon.png">
 	<!-- Add to homescreen for Safari on iOS -->
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta name="apple-mobile-web-app-title" content="Stryd PowerCenter">
-	<link rel="apple-touch-icon" href="/app/images/favicon.png">
+	<link rel="apple-touch-icon" href="images/favicon.png">
 	<!-- Tile icon for Win8 (144x144) -->
-	<meta name="msapplication-TileImage" content="/app/images/favicon.png">
+	<meta name="msapplication-TileImage" content="images/favicon.png">
 
 	<!-- Web Application Manifest -->
 	<!-- link rel="manifest" href="manifest.json"> -->
@@ -53,7 +53,7 @@
 		* to indicate the path from which you'll be serving, including leading
 		* and trailing slashes (e.g., `/my-app/`).
 		*/
-		window.Polymer = {rootPath: '/app'};
+		window.Polymer = {rootPath: '/powercenter/'};
 
 		/* Use Shady DOM instead of Shadow DOM */
 		window.ShadyDOM = {force: true};
@@ -61,7 +61,7 @@
 	</script>
 
 	<!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
-	<script src="/app/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+	<script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -89,44 +89,44 @@
     <!-- DO NOT MODIFY -->
     <!-- End Facebook Pixel Code -->
 
-	<script src="/app/scripts/amcharts/amcharts.js"></script>
-	<script src="/app/scripts/amcharts/serial.js"></script>
-	<script src="/app/scripts/amcharts/radar.js"></script>
-	<script src="/app/scripts/d3.js"></script>
-	<script src="/app/scripts/d3.tip.js"></script>
-	<script src="/app/scripts/dexie.js"></script>
-	<script src="/app/scripts/dropzone.js"></script>
-	<script src="/app/scripts/external.js"></script>
-	<script src="/app/scripts/jwt.js"></script>
-	<script src="/app/scripts/toolbox.js"></script>
-	<script src="/app/scripts/moment.js"></script>
-	<script src="/app/scripts/superagent.js"></script>
-	<script src="/app/scripts/app.js"></script>
+	<script src="scripts/amcharts/amcharts.js"></script>
+	<script src="scripts/amcharts/serial.js"></script>
+	<script src="scripts/amcharts/radar.js"></script>
+	<script src="scripts/d3.js"></script>
+	<script src="scripts/d3.tip.js"></script>
+	<script src="scripts/dexie.js"></script>
+	<script src="scripts/dropzone.js"></script>
+	<script src="scripts/external.js"></script>
+	<script src="scripts/jwt.js"></script>
+	<script src="scripts/toolbox.js"></script>
+	<script src="scripts/moment.js"></script>
+	<script src="scripts/superagent.js"></script>
+	<script src="scripts/app.js"></script>
 
-	<link rel="stylesheet" href="/app/styles/main.css">
-	<link rel="import" href="/app/bower_components/polymer/polymer.html">
-	<link rel="import" href="/app/bower_components/paper-toast/paper-toast.html">
-	<link rel="import" href="/app/bower_components/iron-pages/iron-pages.html">
-	<link rel="import" href="/app/elements/bubble-stat/bubble-stats.html">
-	<link rel="import" href="/app/elements/home-navigation/home-navigation.html">
-	<link rel="import" href="/app/elements/footer-elementa/footer-elementa.html">
-	<link rel="import" href="/app/elements/heat-duration/heat-duration.html">
-	<link rel="import" href="/app/elements/header-element/header-element.html">
-	<link rel="import" href="/app/elements/improve-stone/improve-stone.html">
-	<link rel="import" href="/app/elements/leaderboard/leaderboard.html">
-	<link rel="import" href="/app/elements/log-calendar/log-calendar.html">
-	<link rel="import" href="/app/elements/log-calendar/log-options.html">
-	<link rel="import" href="/app/elements/log-calendar/log-overview.html">
-	<link rel="import" href="/app/elements/map-run/map-run.html">
-	<link rel="import" href="/app/elements/performance-management/performance-management.html">
-	<link rel="import" href="/app/elements/plan-view/plan-view.html">
-	<link rel="import" href="/app/elements/power-trend/power-trend.html">
-	<link rel="import" href="/app/elements/rss-comparison/rss-comparison.html">
-	<link rel="import" href="/app/elements/spider-chart/spider-chart.html">
-	<link rel="import" href="/app/elements/settings/stryd-settings.html">
-	<link rel="import" href="/app/elements/workout-element/lap-overview.html">
-	<link rel="import" href="/app/elements/workout-element/workout-element.html">
-	<link rel="import" href="/app/elements/workout-summary/workout-summary.html">
+	<link rel="stylesheet" href="styles/main.css">
+	<link rel="import" href="bower_components/polymer/polymer.html">
+	<link rel="import" href="bower_components/paper-toast/paper-toast.html">
+	<link rel="import" href="bower_components/iron-pages/iron-pages.html">
+	<link rel="import" href="elements/bubble-stat/bubble-stats.html">
+	<link rel="import" href="elements/home-navigation/home-navigation.html">
+	<link rel="import" href="elements/footer-elementa/footer-elementa.html">
+	<link rel="import" href="elements/heat-duration/heat-duration.html">
+	<link rel="import" href="elements/header-element/header-element.html">
+	<link rel="import" href="elements/improve-stone/improve-stone.html">
+	<link rel="import" href="elements/leaderboard/leaderboard.html">
+	<link rel="import" href="elements/log-calendar/log-calendar.html">
+	<link rel="import" href="elements/log-calendar/log-options.html">
+	<link rel="import" href="elements/log-calendar/log-overview.html">
+	<link rel="import" href="elements/map-run/map-run.html">
+	<link rel="import" href="elements/performance-management/performance-management.html">
+	<link rel="import" href="elements/plan-view/plan-view.html">
+	<link rel="import" href="elements/power-trend/power-trend.html">
+	<link rel="import" href="elements/rss-comparison/rss-comparison.html">
+	<link rel="import" href="elements/spider-chart/spider-chart.html">
+	<link rel="import" href="elements/settings/stryd-settings.html">
+	<link rel="import" href="elements/workout-element/lap-overview.html">
+	<link rel="import" href="elements/workout-element/workout-element.html">
+	<link rel="import" href="elements/workout-summary/workout-summary.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">

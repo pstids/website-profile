@@ -258,7 +258,7 @@ class PowerTrend extends Polymer.Element {
 		super.connectedCallback();
 		var path = `/b/api/v1/users/runnertrend`;
 		if (window.isLocal) {
-			path = '/app/scripts/local/runnertrend.json';
+			path = `${Polymer.rootPath}scripts/local/runnertrend.json`;
 		}
 		superagent
 			.get(path)

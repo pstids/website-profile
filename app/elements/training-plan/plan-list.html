@@ -29,7 +29,7 @@
                 <template is="dom-repeat" items="{{plans}}">
                     <div class="layout horizontal center">
                         <div>{{index}}.</div>
-                        <paper-item class="flex"><a href="/app/plan/{{item.plan_id}}">{{item.name}}</a></paper-item>
+                        <paper-item class="flex"><a href="[[rootPath]]plan/{{item.plan_id}}">{{item.name}}</a></paper-item>
                     </div>
                 </template>
             </paper-listbox>

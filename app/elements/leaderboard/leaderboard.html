@@ -489,21 +489,21 @@
 			var stress = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/7';
 				if (window.isLocal) {
-					path = '/app/scripts/local/leaderboard-rss.json';
+					path = `${Polymer.rootPath}scripts/local/leaderboard-rss.json`;
 				}
 				this.callPath(path, resolve);
 			});
 			var today = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/1';
 				if (window.isLocal) {
-					path = '/app/scripts/local/leaderboard-rss.json';
+					path = `${Polymer.rootPath}scripts/local/leaderboard-rss.json`;
 				}
 				this.callPath(path, resolve);
 			});
 			var cp = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/cp';
 				if (window.isLocal) {
-					path = '/app/scripts/local/leaderboard-cp.json';
+					path = `${Polymer.rootPath}scripts/local/leaderboard-cp.json`;
 				}
 				this.callPath(path, resolve);
 			});

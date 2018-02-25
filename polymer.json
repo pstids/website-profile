@@ -1,5 +1,5 @@
 {
-  "basePath": "/app",
+  "basePath": "/powercenter/",
   "entrypoint": "app/index.html",
   "sources": [
     "app/elements/**",
