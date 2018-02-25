@@ -209,8 +209,8 @@
             }
 
             toggle(active) {
-                var anchor = this.querySelector(`[data-view='${active}']`);
-                var current = this.querySelector('.active');
+                var anchor = this.root.querySelector(`[data-view='${active}']`);
+                var current = this.root.querySelector('.active');
                 if (current) {
                     current.classList.remove('active');
                 }
