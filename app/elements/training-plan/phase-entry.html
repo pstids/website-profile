@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <dom-module id="phase-entry">
@@ -55,34 +56,35 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'phase-entry',
-            properties: {
-                num: {
-                    type: Number,
-                    value: 1
-                },
-                weekStart: {
-                    type: Number,
-                    value: 1,
-                },
-                weekEnd: {
-                    type: Number,
-                    value: 4,
-                },
-                name: {
-                    type: String,
-                    value: ''
-                },
-                summary: {
-                    type: String,
-                    value: ''
-                },
-            },
-            ready: function () {
-            },
+        class PhaseEntry extends Polymer.Element {
+            static get is() { return 'phase-entry'; }
+
+            static get properties() {
+                return {
+                    num: {
+                        type: Number,
+                        value: 1
+                    },
+                    weekStart: {
+                        type: Number,
+                        value: 1,
+                    },
+                    weekEnd: {
+                        type: Number,
+                        value: 4,
+                    },
+                    name: {
+                        type: String,
+                        value: ''
+                    },
+                    summary: {
+                        type: String,
+                        value: ''
+                    }
+                };
+            }
             // return data in internal format
-            data: function () {
+            data() {
                 let data = {
                     phase_seq: parseInt(this.num)-1,
                     phase_name: this.name,
@@ -91,8 +93,8 @@
                     phase_summary: this.summary
                 };
                 return data;
-            },
-            setData: function (data) {
+            }
+            setData(data) {
                 if (Object.keys(data).length <= 0) {
                     return;
                 }
@@ -100,9 +102,9 @@
                 this.weekStart = data.phase_start_week;
                 this.weekEnd = data.phase_end_week;
                 this.summary = data.phase_summary;
-            },
-        });
-
+            }
+        }
+        window.customElements.define(PhaseEntry.is, PhaseEntry);
     </script>
 
 </dom-module>
