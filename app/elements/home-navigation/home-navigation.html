@@ -96,7 +96,7 @@
 				while (target.dataset.select === undefined) {
 					target = target.parentElement;
 				}
-				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+				this.root.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
 				target.dataset.toggle = 'on';
 
 				var select = target.dataset.select;
@@ -116,8 +116,8 @@
 			}
 			select(select) {
 				console.log(select);
-				this.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
-				this.querySelector(`[data-select="${select}"]`).dataset.toggle = 'on';
+				this.root.querySelector('[data-toggle="on"]').dataset.toggle = 'off';
+				this.root.querySelector(`[data-select="${select}"]`).dataset.toggle = 'on';
 				if (select === 'analysis') {
 					this.title = 'Analysis';
 				} else if (select === 'comparison') {
@@ -130,7 +130,7 @@
 				var navs = ['analysis', 'comparison', 'training'];
 				this.availables = availables;
 				for (var nav of navs) {
-					var navEle = this.querySelector(`[data-select="${nav}"]`);
+					var navEle = this.root.querySelector(`[data-select="${nav}"]`);
 					if (availables.indexOf(nav) !== -1) {
 						navEle.classList.remove('hidden');
 					} else {
