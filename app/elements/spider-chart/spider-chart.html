@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
@@ -260,12 +261,10 @@
 	</paper-dialog>
 </template>
 <script>
-Polymer({
-	is: 'spider-chart',
-	listeners: {
-		tap: 'eleTap'
-	},
-	eleTap: function (e) {
+class SpiderChart extends Polymer.Element {
+	static get is() { return 'spider-chart'; }
+
+	eleTap(e) {
 		var target = e.target;
 		while (true) {
 			if (target === this) {
@@ -288,14 +287,16 @@ Polymer({
 				return;
 			}
 		}
-	},
-	profileQuestion: function () {
+	}
+	profileQuestion() {
 		this.$.profileDialog.open();
-	},
-	recommendationQuestion: function () {
+	}
+	recommendationQuestion() {
 		this.$.recommendationDialog.open();
-	},
-	ready: function () {
+	}
+	ready() {
+		super.ready();
+		this.addEventListener('tap', e => this.eleTap(e));
 		// if (!featureManagement.hasFeatures) {
 		// 	return;
 		// }
@@ -393,8 +394,8 @@ Polymer({
 		if ('race' in user.data && user.data.race !== '') {
 			this.raceKey = user.data.race;
 		}
-	},
-	highlightRecs: function (highlights) {
+	}
+	highlightRecs(highlights) {
 		for (var key of Object.keys(this.categories)) {
 			var eles = this.querySelectorAll(`[data-highlight="${key}"]`);
 			if (highlights.indexOf(key) > -1) {
@@ -407,8 +408,8 @@ Polymer({
 				}
 			}
 		}
-	},
-	findHighlights: function (profile) {
+	}
+	findHighlights(profile) {
 		var profileArr = [];
 		for (var key of Object.keys(profile)) {
 			profileArr.push({
@@ -441,8 +442,8 @@ Polymer({
 		}
 
 		this.highlightRecs(highlightKeys);
-	},
-	processData: function () {
+	}
+	processData() {
 		if (!this.data) {
 			return;
 		}
@@ -452,8 +453,8 @@ Polymer({
 				units: Math.floor(this.data[key] * 100)
 			});
 		}
-	},
-	createChart: function () {
+	}
+	createChart() {
 		this.chart = AmCharts.makeChart(
 			this.$.spider,
 			{
@@ -493,6 +494,7 @@ Polymer({
 			}
 		);
 	}
-});
+}
+window.customElements.define(SpiderChart.is, SpiderChart);
 </script>
 </dom-module>
