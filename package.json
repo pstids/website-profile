@@ -44,7 +44,8 @@
   },
   "scripts": {
     "test": "gulp test:local",
-    "start": "gulp serve"
+    "start": "gulp serve",
+    "serve": "polymer serve --proxy-path b --proxy-target http://localhost:8888"
   },
   "engines": {
     "node": ">=0.10.0"
