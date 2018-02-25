@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../workout-element/time-in-zone.html">
@@ -370,7 +371,7 @@
 		</paper-dialog>
 	</template>
 	<script>
-	class SocialLeaderBoard extends Polymer.Element {
+	class SocialLeaderBoard extends Polymer.GestureEventListeners(Polymer.Element) {
 		static get is() { return 'social-leaderboard'; }
 
 		static get properties() {
@@ -383,6 +384,18 @@
 			};
 		}
 
+		constructor() {
+			super();
+			this._eleTap = this.eleTap.bind(this);
+		}
+		connectedCallback() {
+			super.connectedCallback();
+			Polymer.Gestures.addListener(this, 'tap', this._eleTap);
+		}
+		disconnectedCallback() {
+			super.disconnectedCallback();
+			Polymer.Gestures.removeListener(this, 'tap', this._eleTap);
+		}
 		eleTap(e) {
 			var target = e.target;
 			while (true) {
@@ -485,7 +498,6 @@
 		}
 		ready() {
 			super.ready();
-			this.addEventListener('tap', e => this.eleTap(e));
 			this.statRSS = 0;
 			this.statDistance = 0;
 			this.statTime = 0;

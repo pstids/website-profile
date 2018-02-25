@@ -130,10 +130,17 @@
 		class BubbleStat extends Polymer.Element {
 			static get is() { return 'bubble-stat'; }
 
-			static get listeners() {
-				return {
-					'click': 'click'
-				};
+			constructor() {
+				super();
+				this._click = this.click.bind(this);
+			}
+			connectedCallback() {
+				super.connectedCallback();
+				this.addEventListener('click', this._click);
+			}
+			disconnectedCallback() {
+				super.disconnectedCallback();
+				this.removeEventListener('click', this._click);
 			}
 			click() {
 				console.log('That is what I call a click!');

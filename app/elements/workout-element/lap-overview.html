@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
@@ -120,18 +121,25 @@
 		</div>
 	</template>
 	<script>
-	class LapOverview extends Polymer.Element {
+	class LapOverview extends Polymer.GestureEventListeners(Polymer.Element) {
 		static get is() { return 'lap-overview'; }
-		static get listeners() {
-			return {
-				'tap': 'eleTap'
-			};
-		}
 		static get properties() {
 			return {
 				lap_number: Number,
 				selected_lap: Number,
 			};
+		}
+		constructor() {
+			super();
+			this._eleTap = this.eleTap.bind(this);
+		}
+		connectedCallback() {
+			super.connectedCallback();
+			Polymer.Gestures.addListener(this, 'tap', this._eleTap);
+		}
+		disconnectedCallback() {
+			super.disconnectedCallback();
+			Polymer.Gestures.removeListener(this, 'tap', this._eleTap);
 		}
 		ready() {
 			super.ready();

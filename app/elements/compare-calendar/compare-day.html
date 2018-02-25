@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
 <dom-module id="compare-day">
@@ -110,7 +111,7 @@
         </div>
     </template>
     <script>
-    class CompareDay extends Polymer.Element {
+    class CompareDay extends Polymer.GestureEventListeners(Polymer.Element) {
         static get is() { return 'compare-day'; }
 
         static get properties() {
@@ -122,6 +123,18 @@
             };
         }
 
+        constructor() {
+            super();
+            this._eleTap = this.eleTap.bind(this);
+        }
+        connectedCallback() {
+            super.connectedCallback();
+            Polymer.Gestures.addListener(this, 'tap', this._eleTap);
+        }
+        disconnectedCallback() {
+            super.disconnectedCallback();
+            Polymer.Gestures.removeListener(this, 'tap', this._eleTap);
+        }
         eleTap(e) {
             var target = e.target;
             while (true) {
@@ -138,7 +151,6 @@
         }
         ready() {
             super.ready();
-            this.addEventListener('tap', e => this.eleTap(e));
             this.data = {
                 day: 0
             };

@@ -1,6 +1,5 @@
-
-
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
 <dom-module id="bubble-stat">
@@ -111,7 +110,7 @@
 		</div>
 	</template>
 	<script>
-		class BubbleStat extends Polymer.Element {
+		class BubbleStat extends Polymer.GestureEventListeners(Polymer.Element) {
 			static get is() { return 'bubble-stat'; }
 
 			static get properties() {
@@ -122,6 +121,18 @@
 				};
 			}
 
+			constructor() {
+				super();
+				this._bubblePop = this.bubblePop.bind(this);
+			}
+			connectedCallback() {
+				super.connectedCallback();
+				Polymer.Gestures.addListener(this, 'tap', this._bubblePop);
+			}
+			disconnectedCallback() {
+				super.disconnectedCallback();
+				Polymer.Gestures.removeListener(this, 'tap', this._bubblePop);
+			}
 			setMode() {
 				var activeKeys = this.objects.active;
 				for (var i = 0; i < activeKeys.length; i++) {
@@ -190,7 +201,6 @@
 			}
 			ready() {
 				super.ready();
-				this.addEventListener('tap', e => this.bubblePop(e));
 				this.obja = {};
 				this.objb = {};
 				this.objc = {};
