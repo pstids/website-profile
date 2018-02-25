@@ -1,4 +1,5 @@
 
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
@@ -38,14 +39,18 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'plan-list',
-            properties: {
-                plans: {
-                    type: Array
-                }
-            },
-            ready: function () {
+        class PlanList extends Polymer.Element {
+            static get is() { return 'plan-list'; }
+
+            static get properties() {
+                return {
+                    plans: {
+                        type: Array
+                    }
+                };
+            }
+            ready() {
+                super.ready();
                 superagent
                     .get('/b/api/v1/training/plan/all')
                     .set('Accept', 'application/json')
@@ -60,12 +65,13 @@
                             toast('Failed to fetch your training plans. Please try again later');
                         }
                     });
-            },
-            onAddPlan: function () {
+            }
+            onAddPlan() {
                 let ID = (new Date()).valueOf() + Math.ceil(Math.random() * 97);
                 page(`/plan/${ID}`);
             }
-        });
+        }
+        window.customElements.define(PlanList.is, PlanList);
 
     </script>
 
