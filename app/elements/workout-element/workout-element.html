@@ -308,7 +308,7 @@
 			AmCharts.handleLoad();
 			this.metrics = {
 				heartRate: {
-					toggle: this.querySelector('[data-graph="heartRate"]'),
+					toggle: this.root.querySelector('[data-graph="heartRate"]'),
 					graph: () => {
 						return this.chart.getGraphById('heartRate');
 					},
@@ -339,7 +339,7 @@
 					}
 				},
 				power: {
-					toggle: this.querySelector('[data-graph="power"]'),
+					toggle: this.root.querySelector('[data-graph="power"]'),
 					graph: () => {
 						return this.chart.getGraphById('power');
 					},
@@ -371,7 +371,7 @@
 					}
 				},
 				formPower: {
-					toggle: this.querySelector('[data-graph="formPower"]'),
+					toggle: this.root.querySelector('[data-graph="formPower"]'),
 					graph: () => {
 						return this.chart.getGraphById('formPower');
 					},
@@ -403,7 +403,7 @@
 					}
 				},
 				pace: {
-					toggle: this.querySelector('[data-graph="pace"]'),
+					toggle: this.root.querySelector('[data-graph="pace"]'),
 					graph: () => {
 						return this.chart.getGraphById('pace');
 					},
@@ -441,7 +441,7 @@
 					}
 				},
 				cadence : {
-					toggle: this.querySelector('[data-graph="cadence"]'),
+					toggle: this.root.querySelector('[data-graph="cadence"]'),
 					graph: () => {
 						return this.chart.getGraphById('cadence');
 					},
@@ -474,7 +474,7 @@
 					}
 				},
 				elevation: {
-					toggle: this.querySelector('[data-graph="elevation"]'),
+					toggle: this.root.querySelector('[data-graph="elevation"]'),
 					graph: () => {
 						return this.chart.getGraphById('elevation');
 					},
@@ -509,7 +509,7 @@
 					}
 				},
 				groundTime: {
-					toggle: this.querySelector('[data-graph="groundTime"]'),
+					toggle: this.root.querySelector('[data-graph="groundTime"]'),
 					graph: () => {
 						return this.chart.getGraphById('groundTime');
 					},
@@ -542,7 +542,7 @@
 					}
 				},
 				vertOsc: {
-					toggle: this.querySelector('[data-graph="vertOsc"]'),
+					toggle: this.root.querySelector('[data-graph="vertOsc"]'),
 					graph: () => {
 						return this.chart.getGraphById('vertOsc');
 					},
@@ -575,7 +575,7 @@
 					}
 				},
 				legSpring: {
-					toggle: this.querySelector('[data-graph="legSpring"]'),
+					toggle: this.root.querySelector('[data-graph="legSpring"]'),
 					graph: () => {
 						return this.chart.getGraphById('legSpring');
 					},
@@ -609,7 +609,7 @@
 					}
 				},
 				rss: {
-					toggle: this.querySelector('[data-graph="rss"]'),
+					toggle: this.root.querySelector('[data-graph="rss"]'),
 					graph: () => {
 						return this.chart.getGraphById('rss');
 					},
