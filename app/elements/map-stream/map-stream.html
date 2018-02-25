@@ -165,7 +165,7 @@
                 super.ready();
                 this.route = 'summary';
                 console.log('ready');
-                this.mapAverage = this.querySelector('map-average');
+                this.mapAverage = this.root.querySelector('map-average');
                 this.center = {
                     lat: 0,
                     lng: 0
@@ -237,7 +237,7 @@
                         this.calcAvg();
                         var lastPoint = user.data[user.data.length-1];
                         lastPoint.distance = user.distance;
-                        var mapSummary = this.querySelector('[user=\'' + user.name + '\']');
+                        var mapSummary = this.root.querySelector('[user=\'' + user.name + '\']');
                         mapSummary.addPoint(lastPoint);
                     }
                 }
@@ -282,8 +282,8 @@
                 this.route = target.dataset.view;
             }
             routerToggle(active) {
-                var anchor = this.querySelector('[data-view=\'' + active + '\']');
-                var current = this.querySelector('[data-view].active');
+                var anchor = this.root.querySelector('[data-view=\'' + active + '\']');
+                var current = this.root.querySelector('[data-view].active');
                 if (current) {
                     current.classList.remove('active');
                 }
@@ -355,7 +355,7 @@
                     data.distance = user.distance;
                     // data.speed = data.speed.toFixed(2);
                 }
-                var mapSummary = this.querySelector('[user=\'' + user.name + '\']');
+                var mapSummary = this.root.querySelector('[user=\'' + user.name + '\']');
                 mapSummary.addPoint(data);
 
                 if ('marker' in user) {
