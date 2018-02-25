@@ -1,4 +1,4 @@
-
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
@@ -27,19 +27,21 @@
         </paper-dialog>
     </template>
     <script>
-        Polymer({
-            is: 'log-options',
-            attached: function () {
+        class LogOptions extends Polymer.Element {
+            static get is() { return 'log-options'; }
+            connectedCallback () {
+                super.connectedCallback();
                 this.logCalendar = document.querySelector('log-calendar');
-            },
-            ready: function () {
+            }
+            ready() {
+                super.ready();
                 this.shareBox = this.querySelector('[data-shareURL]');
                 this.deleteID = null;
                 this.shareID = null;
                 this.descriptionID = null;
                 this.logCalendar = null;
-            },
-            getFit: function (id) {
+            }
+            getFit(id) {
                 superagent
                     .post(`/b/api/v1/activities/${id}/fit`)
                     .send()
@@ -52,18 +54,18 @@
                             console.log('Error: get download link failed', err);
                         }
                     });
-            },
-            callDelete: function (id) {
+            }
+            callDelete(id) {
                 this.deleteID = id;
                 this.$.dialogDelete.open();
-            },
-            callShare: function (id) {
+            }
+            callShare(id) {
                 this.shareID = id;
                 this.shareBox.value = `https://www.stryd.com/powercenter/run/${this.shareID}`;
                 this.$.dialogShare.open();
                 this.shareID = null;
-            },
-            callRecalculate: function (id) {
+            }
+            callRecalculate(id) {
                 superagent
                     .post(`/b/api/v1/activities/${id}/recalculate`)
                     .send()
@@ -77,8 +79,8 @@
                             console.log('failed to recalculate');
                         }
                     });
-            },
-            handleDelete: function () {
+            }
+            handleDelete() {
                 if (this.deleteID !== null) {
                     superagent
                         .del(`/b/api/v1/activities/${this.deleteID}`)
@@ -98,6 +100,7 @@
                 }
                 this.$.dialogDelete.close();
             }
-        });
+        }
+        window.customElements.define(LogOptions.is, LogOptions);
     </script>
 </dom-module>
