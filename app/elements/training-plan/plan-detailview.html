@@ -1,4 +1,5 @@
 
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">
 
 <dom-module id="plan-detailview">
@@ -122,42 +123,45 @@
     </template>
 
     <script>
+        class PlanDetailView extends Polymer.Element {
+            static get is() { return 'plan-detailview'; }
 
-        Polymer({
-            is: 'plan-detailview',
-            properties: {
-                planId: {
-                    type: Number,
-                    observer: '_fetchPlan'
-                },
-                selectWeek: {
-                    type: Number,
-                    value: 0
-                },
-                selectDay: {
-                    type: Number,
-                    value: 0
-                },
-                planTitle: {
-                    type: String,
-                    value: ''
-                },
-                weekViewCnt: {
-                    type: Number,
-                    value: 0
-                },
-                copyData: {
-                    type: Object,
-                },
-                summaryData: {
-                    type: Object,
-                }
-            },
-            ready: function () {
+            static get properties() {
+                return {
+                    planId: {
+                        type: Number,
+                        observer: '_fetchPlan'
+                    },
+                    selectWeek: {
+                        type: Number,
+                        value: 0
+                    },
+                    selectDay: {
+                        type: Number,
+                        value: 0
+                    },
+                    planTitle: {
+                        type: String,
+                        value: ''
+                    },
+                    weekViewCnt: {
+                        type: Number,
+                        value: 0
+                    },
+                    copyData: {
+                        type: Object,
+                    },
+                    summaryData: {
+                        type: Object,
+                    }
+                };
+            }
+            ready() {
+                super.ready();
                 this.$.loading.hidden = true;
-            },
+            }
 
-            _fetchPlan: function () {
+            _fetchPlan() {
                 if (this.planID === 'undefined') {
                     return;
                 }
@@ -181,9 +185,9 @@
                             toast('Can not load the training plan. Please try later.');
                         }
                     });
-            },
+            }
 
-            _fillData: function (data) {
+            _fillData(data) {
                 this.planTitle = data.name;
                 if (data.workouts === null) {
                     return;
@@ -206,9 +210,9 @@
                 }
                 this.summaryData = list;
                 console.log('summary data', this.summaryData);
-            },
+            }
 
-            _extractSegmentSummary: function (segData) {
+            _extractSegmentSummary(segData) {
                 let msg = 'Run for ';
                 switch (segData.duration_type) {
                     case 'time':
@@ -237,18 +241,18 @@
                 }
                 msg += '.';
                 return msg;
-            },
-            _isValidTraining: function (day) {
+            }
+            _isValidTraining(day) {
                 if (day.type === undefined) {
                     return false;
                 }
                 return day.type.length > 0;
-            },
-            _isValidNote: function (note) {
+            }
+            _isValidNote(note) {
                 return note.length > 0;
             }
-        });
-
+        }
+        window.customElements.define(PlanDetailView.is, PlanDetailView);
     </script>
 
 </dom-module>
