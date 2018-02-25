@@ -55,6 +55,15 @@ function setupApiProxy(app) {
   app.post('/api/v1/activities/:id/recalculate', (req, res, next) => {
     res.json(require('./app/scripts/local/activities_id_recalculate.json'));
   });
+  app.get('/activities/:id(\\d+)', (req, res, next) => {
+    const id = req.params.id;
+    const activities = require('./app/scripts/local/activities_calendar.json').activities;
+    const activity = activities.find(a => !Number.isNaN(a.id) && Number(a.id) === Number(id));
+    if (!activity) {
+      console.log('activity not found by id:', id);
+    }
+    res.json(activity || {});
+  });
   app.delete('/api/v1/activities/:id', (req, res, next) => {
     res.json(require('./app/scripts/local/ok.json'));
   });
