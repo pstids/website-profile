@@ -10,7 +10,8 @@
   "scripts": {
     "build": "polymer build",
     "lint": "jshint --reporter=node_modules/jshint-stylish **/*.js",
-    "serve": "node serve.js"
+    "serve": "node serve.js",
+    "start": "npm run serve"
   },
   "engines": {
     "node": ">=0.10.0"
