@@ -828,8 +828,8 @@ class TrainingInfo extends Polymer.Element {
 				unit: 'Watts'
 			}
 		};
-		this.querySelector('[type="pace"]').setData(pace);
-		this.querySelector('[type="power"]').setData(power);
+		this.root.querySelector('[type="pace"]').setData(pace);
+		this.root.querySelector('[type="power"]').setData(power);
 
 		// For now we only update 3/6 laps test result because it's the only test whose result
 		// could come from outside source
