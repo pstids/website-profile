@@ -27,7 +27,9 @@ function setupApiProxy(app) {
     res.json(require('./app/scripts/local/activities_weekly-stat.json'));
   });
   app.get('/api/v1/users/plan', (req, res, next) => {
-    res.json(require('./app/scripts/local/users_plan.json'));
+    const data = require('./app/scripts/local/users_plan.json');
+    data.training_plan = require('./app/scripts/local/plan.json').plan;
+    res.json(data);
   });
   app.delete('/api/v1/users/plan', (req, res, next) => {
     res.json(require('./app/scripts/local/ok.json'));
