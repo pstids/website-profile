@@ -1,4 +1,5 @@
 
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
@@ -65,32 +66,33 @@
     </div>
   </template>
   <script>
-    Polymer({
-      is: 'plan-weekview',
-      properties: {
-        weekNum: Number,
-        weekSummary: String,
-        selectedSummary: {
-          type: Number,
-          value: 0
-        },
-      },
-      ready: function () {
-      },
-      setReadOnly: function () {
+    class PlanWeekView extends Polymer.Element {
+      static get is() { return 'plan-weekview'; }
+
+      static get properties() {
+        return {
+          weekNum: Number,
+          weekSummary: String,
+          selectedSummary: {
+            type: Number,
+            value: 0
+          }
+        };
+      }
+      setReadOnly() {
         let cardDiv = Polymer.dom(this.$.content).children;
         for (let i = 0; i < cardDiv.length; i++) {
           cardDiv[i].readOnly = true;
         }
-      },
-      addCardData: function (day, info) {
+      }
+      addCardData(day, info) {
         let cardDiv = Polymer.dom(this.$.content).children;
         cardDiv[day].addTrainingInfo(info);
-      },
-      setSummary: function (summary) {
+      }
+      setSummary(summary) {
         this.weekSummary = summary;
-      },
-      data: function (planID) {
+      }
+      data(planID) {
         let cardDiv = Polymer.dom(this.$.content).children;
         let infos = [];
         let days = [];
@@ -115,14 +117,15 @@
             week_summary: this.weekSummary,
           }
         };
-      },
+      }
 
-      _editSummaryHandler: function () {
+      _editSummaryHandler() {
         this.selectedSummary = 1;
-      },
-      _saveSummaryHandler: function () {
+      }
+      _saveSummaryHandler() {
         this.selectedSummary = 0;
-      },
-    });
+      }
+    }
+    window.customElements.define(PlanWeekView.is, PlanWeekView);
   </script>
 </dom-module>
