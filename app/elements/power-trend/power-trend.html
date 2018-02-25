@@ -232,12 +232,12 @@ class PowerTrend extends Polymer.Element {
 			if ('stati' in target.dataset) {
 				var select = target.dataset.stati;
 				if (this.chart) {
-					this.querySelector(`[data-stati="${this.active}"]`).dataset.toggle = 'off';
+					this.root.querySelector(`[data-stati="${this.active}"]`).dataset.toggle = 'off';
 					this.chart.hideGraph(this.chart.getGraphById(`${this.active}v`));
 					this.chart.hideGraph(this.chart.getGraphById(`${this.active}t`));
 					this.chart.showGraph(this.chart.getGraphById(`${select}t`));
 					this.chart.showGraph(this.chart.getGraphById(`${select}v`));
-					this.querySelector(`[data-stati="${select}"]`).dataset.toggle = 'on';
+					this.root.querySelector(`[data-stati="${select}"]`).dataset.toggle = 'on';
 					this.active = select;
 					this.fitness = this.fitnessers[this.active];
 					this.fitness_type = this.types[this.active];
