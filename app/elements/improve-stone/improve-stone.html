@@ -411,7 +411,7 @@ class ImproveStone extends Polymer.Element {
 	activateAvailables() {
 		if (this.availables.length > 0) {
 			this.addBlur();
-			const el = this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`);
+			const el = this.root.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`);
 			if (el) {
 				el.classList.remove('hidden');
 			}
@@ -423,13 +423,13 @@ class ImproveStone extends Polymer.Element {
 		}
 	}
 	nextAvailable() {
-		this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.add('hidden');
+		this.root.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.add('hidden');
 		this.currentStep++;
 		if (this.currentStep === this.availables.length) {
 			this.removeBlur();
 			this.hide();
 		} else {
-			this.querySelector(`[data-stone=${this.availables[this.currentStep]}]`).classList.remove('hidden');
+			this.root.querySelector(`[data-stone=${this.availables[this.currentStep]}]`).classList.remove('hidden');
 		}
 	}
 	show() {
