@@ -147,6 +147,10 @@ var createChartData = function (workout) {
 	var lastEntry = {}, entry = {};
 	var suuntoDrop = true;
 
+	if (!workout || !workout.total_power_list) {
+		return chartData;
+	}
+
 	for (var i = 0; i < workout.total_power_list.length; i += 1) {
 		suuntoDrop = true;
 		entry = {};
@@ -309,7 +313,7 @@ var add = function (a, b) {
 };
 
 var workoutProcessing = function (workout, id) {
-	if (workout.total_power_list === null) {
+	if (!workout.total_power_list) {
 		data.error = true;
 		postMessage(data);
 		return;
@@ -520,7 +524,7 @@ var workoutFetchingAJAX = function (workoutID) {
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
 		.end((err, res) => {
-			if (res.ok) {
+			if (res.ok && res.body && Object.keys(res.body).length > 0) {
 				workoutSave(res.body, workoutID);
 				workoutProcessing(res.body, workoutID);
 			} else {
@@ -681,7 +685,7 @@ var suuntoProcessing = function () {
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
 		.end((err, res) => {
-			if (res.ok && res.body.workouts !== null) {
+			if (res.ok && res.body.workouts) {
 				for (let workoutID of res.body.workouts) {
 					addLog(workoutID);
 				}
