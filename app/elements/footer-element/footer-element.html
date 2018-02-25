@@ -1,3 +1,5 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
 <dom-module id="footer-element">
   <template>
     <style>
@@ -36,8 +38,9 @@
     </footer>
   </template>
   <script>
-    Polymer({
-        is: 'footer-element'
-    });
+    class FooterElement extends Polymer.Element {
+        static get is() { return 'footer-element'; }
+    }
+    window.customElements.define(FooterElement.is, FooterElement);
   </script>
 </dom-module>
