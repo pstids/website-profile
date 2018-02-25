@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <dom-module id="zone-entry">
@@ -75,26 +76,26 @@
     </template>
     <script>
         /*jshint camelcase: false*/
-        Polymer({
-            is: 'zone-entry',
-            properties: {
-                name: String,
-                power_low: String,
-                power_high: String,
-                pace_low: String,
-                pace_high: String
-            },
-            ready: function () {
+        class ZoneEntry extends Polymer.Element {
+            static get is() { return 'zone-entry'; }
 
-            },
-            import: function (data) {
+            static get properties() {
+                return {
+                    name: String,
+                    power_low: String,
+                    power_high: String,
+                    pace_low: String,
+                    pace_high: String
+                };
+            }
+            import(data) {
                 this.name = data.name;
                 this.power_low = data.power_low;
                 this.power_high = data.power_high;
                 this.pace_low = data.pace_low;
                 this.pace_high = data.pace_high;
-            },
-            export: function (unit) {
+            }
+            export(unit) {
                 // km by default
                 let coeff = 1;
                 if (unit === 'feet') {
@@ -109,10 +110,11 @@
                     speed_low: speedLow,
                     speed_high: speedHigh
                 };
-            },
-            delete: function () {
+            }
+            delete() {
                 this.parentNode.removeChild(this);
             }
-        });
+        }
+        window.customElements.define(ZoneEntry.is, ZoneEntry);
     </script>
 </dom-module>
