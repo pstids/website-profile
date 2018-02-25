@@ -240,7 +240,7 @@
                 false
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-            var logDayActive = this.querySelector('compare-container.active');
+            var logDayActive = this.root.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
@@ -253,7 +253,7 @@
                 false
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-            var logDayActive = this.querySelector('compare-container.active');
+            var logDayActive = this.root.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
@@ -267,7 +267,7 @@
             this.removeActive();
         }
         setActive(id) {
-            var logDayActive = this.querySelector('compare-container.active');
+            var logDayActive = this.root.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
@@ -280,7 +280,7 @@
             }
         }
         removeActive() {
-            var logDayActive = this.querySelector('log-container.active');
+            var logDayActive = this.root.querySelector('log-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
