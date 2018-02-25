@@ -144,7 +144,7 @@
           <paper-radio-button name="general">General</paper-radio-button>
         </paper-radio-group>
         <paper-dropdown-menu id="goalDistance" label="Goal Distance" no-animations>
-          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}">
+          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}" slot="dropdown-content">
             <paper-item name="5k">5k</paper-item>
             <paper-item name="10k">10k</paper-item>
             <paper-item name="half marathon">Half Marathon</paper-item>
@@ -160,7 +160,7 @@
         </paper-dropdown-menu>
         <paper-input id="durationInput" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
                      value="{{weekNum}}" on-blur="onWeekInput">
-          <div suffix>Weeks</div>
+          <div suffix slot="suffix">Weeks</div>
         </paper-input>
       </div>
       <div class="layout horizontal end justified plan-header-content">

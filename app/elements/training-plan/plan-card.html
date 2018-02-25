@@ -97,8 +97,8 @@
                 <span>{{item.workout_duration}}</span>
               </div>
               <paper-menu-button vertical-align="bottom" horizontal-align="right">
-                <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
-                <paper-menu class="dropdown-content">
+                <paper-icon-button icon="menu" class="dropdown-trigger" slot="dropdown-trigger"></paper-icon-button>
+                <paper-menu class="dropdown-content" slot="dropdown-content">
                   <paper-item data-index$="{{index}}" on-click="_copy">Copy</paper-item>
                   <paper-item data-index$="{{index}}" on-click="_delete">Delete</paper-item>
                 </paper-menu>
@@ -109,8 +109,8 @@
         </div>
         <div id="menu" class="flex-1" >
           <paper-menu-button vertical-align="bottom" horizontal-align="right">
-            <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
-            <paper-menu class="dropdown-content">
+            <paper-icon-button icon="menu" class="dropdown-trigger" slot="dropdown-trigger"></paper-icon-button>
+            <paper-menu class="dropdown-content" slot="dropdown-content">
               <paper-item on-click="_showDialog">Add</paper-item>
               <paper-item on-click="_paste">Paste</paper-item>
             </paper-menu>

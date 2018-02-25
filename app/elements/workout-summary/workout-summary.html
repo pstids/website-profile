@@ -161,7 +161,7 @@
 			<time-in-zone data-property="tiz2" id="tiz" class="tiz-container"></time-in-zone>
 			<div class="flex layout vertical center center-justified">
 				<paper-dropdown-menu label="Workout Type" style="margin-bottom: 50px;">
-					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType">
+					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType" slot="dropdown-content">
 						<paper-item>None</paper-item>
 						<paper-item>Easy Run</paper-item>
 						<paper-item>Long Run</paper-item>
@@ -177,7 +177,7 @@
 					</paper-menu>
 				</paper-dropdown-menu>
 				<paper-dropdown-menu label="Post Run RPE">
-					<paper-menu class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE">
+					<paper-menu class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE" slot="dropdown-content">
 						<paper-item>None</paper-item>
 						<paper-item>RPE 1</paper-item>
 						<paper-item>RPE 2</paper-item>

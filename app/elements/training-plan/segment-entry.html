@@ -73,8 +73,8 @@
                 </paper-radio-group>
                 <iron-pages selected="{{durationType}}" attr-for-selected="type">
                     <paper-input-container type="time" always-float-label attr-for-value="value">
-                        <label>Duration (h:m:s)</label>
-                        <div style="display: inline-block;" class="layout horizontal">
+                        <label slot="input">Duration (h:m:s)</label>
+                        <div style="display: inline-block;" class="layout horizontal" slot="input">
                             <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.hour}}">
                             <span class="colon">:</span>
                             <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.minute}}">
@@ -84,8 +84,8 @@
                     </paper-input-container>
                     <div type="distance">
                         <paper-input label="Distance" placeholder="e.g. 3" allowed-pattern="[0-9]|." value="{{durationDistance}}" class="with-unit-dropdown">
-                            <paper-dropdown-menu suffix id="unit" label="Unit" no-animations no-label-float>
-                                <paper-menu class="dropdown-content" attr-for-selected="unit" selected="{{distanceUnitSelected}}">
+                            <paper-dropdown-menu suffix id="unit" label="Unit" no-animations no-label-float slot="suffix">
+                                <paper-menu class="dropdown-content" attr-for-selected="unit" selected="{{distanceUnitSelected}}" slot="dropdown-content">
                                     <paper-item unit="mile">Miles</paper-item>
                                     <paper-item unit="km">KM</paper-item>
                                     <paper-item unit="meter">Meters</paper-item>
@@ -103,7 +103,7 @@
                 </paper-radio-group>
                 <iron-pages attr-for-selected="type" selected="{{intensityType}}">
                     <paper-dropdown-menu type="zone" label="" no-animations>
-                        <paper-menu class="dropdown-content" selected="{{zoneSelected}}">
+                        <paper-menu class="dropdown-content" selected="{{zoneSelected}}" slot="dropdown-content">
                             <paper-item>Zone 1 (Easy/recovery)</paper-item>
                             <paper-item>Zone 2 (Tempo/marathon)</paper-item>
                             <paper-item>Zone 3 (Threshold)</paper-item>
@@ -113,15 +113,15 @@
                     </paper-dropdown-menu>
                     <div class="layout horizontal end" type="percentage">
                         <paper-input label="Low" placeholder="0" class="with-unit" allowed-pattern="[0-9]" value="{{intensityPercent.low}}">
-                            <div suffix>%</div>
+                            <div suffix slot="suffix">%</div>
                         </paper-input>
                         <p class="separator">TO</p>
                         <paper-input label="High" placeholder="0" class="with-unit" allowed-pattern="[0-9]" value="{{intensityPercent.high}}">
-                            <div suffix>%</div>
+                            <div suffix slot="suffix">%</div>
                         </paper-input>
                     </div>
                     <paper-dropdown-menu label="" no-animations type="pace">
-                        <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{paceSelected}}">
+                        <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{paceSelected}}" slot="dropdown-content">
                             <paper-item name="mile">Mile pace</paper-item>
                             <paper-item name="5k">5K pace</paper-item>
                             <paper-item name="10k">10K pace</paper-item>

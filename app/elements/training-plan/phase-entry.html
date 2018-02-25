@@ -43,7 +43,7 @@
             <p>Phase {{num}}:</p>
             <paper-input id="phase-name" label="Name" placeholder="e.g. Foundation Phase" value="{{name}}" char-counter maxlength="30"></paper-input>
             <paper-input-container always-float-label>
-                <div class="layout horizontal">
+                <div class="layout horizontal" slot="input">
                     <p>Week</p>
                     <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekStart}}">
                     <p class="separator"> - </p>

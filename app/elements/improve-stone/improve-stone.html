@@ -85,7 +85,7 @@
 		<h1 class="header">Get Personalized Insight</h1>
 		<div class="layout vertical holder">
 			<paper-dropdown-menu label="Target Race Distance">
-				<paper-menu class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType">
+				<paper-menu class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType" slot="dropdown-content">
 					<paper-item>5 Kilometer</paper-item>
 					<paper-item>10 Kilometer</paper-item>
 					<paper-item>Half Marathon</paper-item>
@@ -152,7 +152,7 @@
 		<div class="layout vertical holder">
 			<div class="layout horizontal">
 				<paper-dropdown-menu label="Critical Power Test Method" no-animations style="padding: 2vw">
-					<paper-menu class="dropdown-content" selected="{{selected}}">
+					<paper-menu class="dropdown-content" selected="{{selected}}" slot="dropdown-content">
 						<paper-item>5k estimation</paper-item>
 						<paper-item>10k estimation</paper-item>
 					</paper-menu>
