@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/image-icons.html">
@@ -120,29 +121,26 @@
   </template>
 
   <script>
-    Polymer({
-      is: 'plan-card',
-      properties: {
-        trainingInfos: {
-          type: Array,
-          value: function () {
-            return [];
-          },
-        },  // Training info in internal format
-        week: Number,
-        day: Number,    // Zero-based
-        readOnly: {
-          type: Boolean,
-          value: false,
-          observer: '_permissionChanged'
-        }
-      },
-      listeners: {
-//                'tap': 'showDialog'
-      },
-      ready: function () {
-      },
-      addTrainingInfo: function (i) {
+    class PlanCard extends Polymer.Element {
+      static get is() { return 'plan-card'; }
+      static get properties() {
+        return {
+          trainingInfos: {
+            type: Array,
+            value: function () {
+              return [];
+            },
+          },  // Training info in internal format
+          week: Number,
+          day: Number,    // Zero-based
+          readOnly: {
+            type: Boolean,
+            value: false,
+            observer: '_permissionChanged'
+          }
+        };
+      }
+      addTrainingInfo(i) {
         console.log('add training info');
         var info = JSON.parse(JSON.stringify(i));
         if (Object.keys(info).length === 0) {
@@ -155,8 +153,8 @@
         } else {
           this.push('trainingInfos', info);
         }
-      },
-      _showDialog: function (e) {
+      }
+      _showDialog(e) {
         if (this.readOnly) {
           return;
         }
@@ -169,29 +167,29 @@
         let info = this.get(['trainingInfos', arg]);
         // Used to fill current information on to training-entry dialog
         this.fire('card-tap', {'info': info, 'week': this.week, 'day': this.day, 'seq': arg});
-      },
-      _copy: function (e) {
+      }
+      _copy(e) {
         let arg = parseInt(e.target.getAttribute('data-index'));
         if (!isNaN(arg)) {
           this.fire('card-copy', {'info': this.get(['trainingInfos', arg])});
         }
-      },
-      _paste: function () {
+      }
+      _paste() {
         this.fire('card-paste', {'week': this.week, 'day': this.day, 'seq': this.trainingInfos.length});
-      },
-      _delete: function (e) {
+      }
+      _delete(e) {
         let arg = parseInt(e.target.getAttribute('data-index'));
         if (!isNaN(arg)) {
           this.splice('trainingInfos', arg, 1);
         }
-      },
-      _permissionChanged: function () {
+      }
+      _permissionChanged() {
         if (this.readOnly) {
           this.$.menu.style.display = 'none';
         }
-      },
+      }
       // TODO: Broken
-      _showSummary: function (e) {
+      _showSummary(e) {
         if (!this.readOnly) {
           return;
         }
@@ -207,15 +205,15 @@
         }
         this.fire('card-show-summary',
           {'info': this.trainingInfos, 'week': this.week, 'day': this.day, 'x': x, 'y': y, 'pos': pos});
-      },
-      _hideSummary: function () {
+      }
+      _hideSummary() {
         if (!this.readOnly) {
           return;
         }
         this.fire('card-hide-summary');
-      },
-    });
-
+      }
+    }
+    window.customElements.define(PlanCard.is, PlanCard);
   </script>
 
 </dom-module>
