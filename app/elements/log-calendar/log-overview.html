@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
@@ -84,7 +85,7 @@
 			table a:hover .activity-indicator {
 				opacity: 0;
 			}
-	
+
 			#action {
 				position: absolute;
 				display: none;
@@ -124,12 +125,10 @@
 		</paper-material>
 	</template>
 	<script>
-		Polymer({
-			is: 'log-overview',
-			listeners: {
-				// 'tap': 'eleTap2'
-			},
-			eleTap: function (e) {
+		class LogOverview extends Polymer.Element {
+			static get is() { return 'log-overview'; }
+
+			eleTap(e) {
 				var target = e.target;
 				while (true) {
 					if (target === this.$.container) {
@@ -154,12 +153,14 @@
 						return;
 					}
 				}
-			},
-			ready: function () {
+			}
+			ready() {
+				super.ready();
 				this.primarySelected = null;
 				this.secondarySelected = null;
-			},
-			attached: function () {
+			}
+			connectedCallback() {
+				super.connectedCallback();
 				this.createCalendar();
 				// window.addEventListener('scroll', () => {
 				// 	if (this.$.action.style.display !== 'none') {
@@ -169,8 +170,8 @@
 				window.addEventListener('gotActivities', () => {
 					this.createCalendar();
 				});
-			},
-			createCalendar: function () {
+			}
+			createCalendar() {
 				while (Polymer.dom(this.$.container).firstChild) {
 					Polymer.dom(this.$.container).removeChild(Polymer.dom(this.$.container).firstChild);
 				}
@@ -201,16 +202,16 @@
 					var row = this.addRow(days);
 					Polymer.dom(this.$.container).appendChild(row);
 				}
-			},
-			addRow: function (days) {
+			}
+			addRow(days) {
 				var row = document.createElement('tr');
 				for (var day of days) {
 					var dayEle = this.addDay(day);
 					Polymer.dom(row).appendChild(dayEle);
 				}
 				return row;
-			},
-			addDay: function (day) {
+			}
+			addDay(day) {
 				var td = document.createElement('td');
 				Polymer.dom(td).classList.add('day-wrapper');
 				if ('timestamp' in day) {
@@ -232,17 +233,18 @@
 
 				Polymer.dom(td).appendChild(a);
 				return td;
-			},
-			view: function (e) {
+			}
+			view(e) {
 				var id = +e.target.dataset.view;
 				urlManager.setURL(id, 0);
 				this.$.action.style.display = 'none';
-			},
-			compare: function (e) {
+			}
+			compare(e) {
 				var id = +e.target.dataset.compare;
 				urlManager.compareRun(id);
 				this.$.action.style.display = 'none';
 			}
-		});
+		}
+		window.customElements.define(LogOverview.is, LogOverview);
 	</script>
 </dom-module>
