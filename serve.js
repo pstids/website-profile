@@ -34,9 +34,6 @@ function setupApiProxy(app) {
   app.delete('/api/v1/users/plan', (req, res, next) => {
     res.json(require('./app/scripts/local/ok.json'));
   });
-  app.get('/api/v1/activities/calendar', (req, res, next) => {
-    res.json(require('./app/scripts/local/activities_calendar.json'));
-  });
   app.put('/api/v1/users/:id', (req, res, next) => {
     res.json(require('./app/scripts/local/users_id.json'));
   });
