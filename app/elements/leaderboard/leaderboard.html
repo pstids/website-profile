@@ -373,6 +373,16 @@
 	class SocialLeaderBoard extends Polymer.Element {
 		static get is() { return 'social-leaderboard'; }
 
+		static get properties() {
+			return {
+				statUsername: String,
+				statRSS: String,
+				statTime: String,
+				statPower: String,
+				statDistance: String,
+			};
+		}
+
 		eleTap(e) {
 			var target = e.target;
 			while (true) {

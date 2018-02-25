@@ -150,6 +150,13 @@
         class MapSmall extends Polymer.Element {
             static get is() { return 'map-small'; }
 
+            static get properties() {
+                return {
+                    d: Object,
+                    img: String,
+                };
+            }
+
             addPoint(data) {
                 if (data === null || data === {}) {
                     data = {

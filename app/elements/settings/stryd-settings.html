@@ -189,6 +189,12 @@
         class StrydSettings extends Polymer.Element {
             static get is() { return 'stryd-settings'; }
 
+            static get properties() {
+                return {
+                    route: String,
+                };
+            }
+
             ready() {
                 super.ready();
                 this.route = 'profile';

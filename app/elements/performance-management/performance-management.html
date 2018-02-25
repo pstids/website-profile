@@ -123,6 +123,12 @@
 	class PerformanceManagement extends Polymer.Element {
 		static get is() { return 'performance-management'; }
 
+		static get properties() {
+			return {
+				timeRange: String,
+			};
+		}
+
 		ready() {
 			super.ready();
 			this.width = 860;

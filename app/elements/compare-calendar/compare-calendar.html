@@ -83,6 +83,12 @@
     class CompareCalendar extends Polymer.Element {
         static get is() { return 'compare-calendar'; }
 
+        static get properties() {
+            return {
+                month: String
+            };
+        }
+
         ready() {
             super.ready();
             this.dom = [];

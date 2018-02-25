@@ -54,6 +54,14 @@
 class PlanView extends Polymer.Element {
 	static get is() { return 'plan-view'; }
 
+	static get properties() {
+		return {
+			day_description: String,
+			day_rss: String,
+			day_title: String,
+		};
+	}
+
 	ready() {
 		super.ready();
 		this.dateHash = '';

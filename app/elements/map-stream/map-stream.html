@@ -155,6 +155,12 @@
         class MapStream extends Polymer.Element {
             static get is() { return 'map-stream'; }
 
+            static get properties() {
+                return {
+                    route: String,
+                };
+            }
+
             ready() {
                 super.ready();
                 this.route = 'summary';

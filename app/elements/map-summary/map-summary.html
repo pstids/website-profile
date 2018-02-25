@@ -148,6 +148,12 @@
         class MapSummary extends Polymer.Element {
             static get is() { return 'map-summary'; }
 
+            static get properties() {
+                return {
+                    display: Object,
+                };
+            }
+
             addPoint(data) {
                 if (data === null || data === {}) {
                     data = {

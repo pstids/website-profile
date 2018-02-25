@@ -105,6 +105,12 @@
 		class RssComparison extends Polymer.Element {
 			static get is() { return 'rss-comparison'; }
 
+			static get properties() {
+				return {
+					date: String,
+				};
+			}
+
 			ready() {
 				super.ready();
 				AmCharts.handleLoad();

@@ -221,6 +221,19 @@
 	class LogDay extends Polymer.Element {
 		static get is() { return 'log-day'; }
 
+		static get properties() {
+				return {
+						day: String,
+						distance: String,
+						plan_rss: String,
+						power: String,
+						power_icon: String,
+						time: String,
+						workout_type: String,
+						workout_surface: String,
+				};
+		}
+
 		eleTap(e) {
 			var target = e.target;
 			while (true) {

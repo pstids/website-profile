@@ -264,6 +264,14 @@
 class SpiderChart extends Polymer.Element {
 	static get is() { return 'spider-chart'; }
 
+	static get properties() {
+		return {
+			timeRange: String,
+			workoutDescription: String,
+			workoutTitle: String,
+		};
+	}
+
 	eleTap(e) {
 		var target = e.target;
 		while (true) {

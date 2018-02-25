@@ -113,9 +113,12 @@
     class CompareDay extends Polymer.Element {
         static get is() { return 'compare-day'; }
 
-        static get listeners() {
+        static get properties() {
             return {
-                'tap': 'eleTap'
+                day: String,
+                power: String,
+                distance: String,
+                power_icon: String,
             };
         }
 
@@ -135,6 +138,7 @@
         }
         ready() {
             super.ready();
+            this.addEventListener('tap', e => this.eleTap(e));
             this.data = {
                 day: 0
             };

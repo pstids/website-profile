@@ -123,6 +123,12 @@
         class MapAverage extends Polymer.Element {
             static get is() { return 'map-average'; }
 
+            static get properties() {
+                return {
+                    display: Object,
+                };
+            }
+
             addPoint(data) {
                 this.notifyPath('display.cadence', data.cadence.toFixed(2));
                 this.notifyPath('display.heart_rate', data.heart_rate.toFixed(2));

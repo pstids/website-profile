@@ -13,6 +13,12 @@
 	class TimeInZone extends Polymer.Element {
 		static get is() { return 'time-in-zone'; }
 
+		static get properties() {
+			return {
+				selector: String,
+			};
+		}
+
 		ready() {
 			super.ready();
 			var property = this.dataset.property;

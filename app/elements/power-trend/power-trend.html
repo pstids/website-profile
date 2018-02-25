@@ -220,10 +220,10 @@
 class PowerTrend extends Polymer.Element {
 	static get is() { return 'power-trend'; }
 
-	static get listeners() {
+	static get properties() {
 		return {
-			tap: 'eleTap'
-		}
+			fitness_type: String,
+		};
 	}
 
 	eleTap(e) {
@@ -279,6 +279,7 @@ class PowerTrend extends Polymer.Element {
 	}
 	ready() {
 		super.ready();
+		this.addEventListener('tap', e => this.eleTap(e));
 		this.chart = null;
 		this.data = null;
 		this.active = 'mf';

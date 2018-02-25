@@ -86,6 +86,12 @@
     class LogCalendar extends Polymer.Element {
         static get is() { return 'log-calendar'; }
 
+        static get properties() {
+            return {
+                month: String,
+            };
+        }
+
         ready() {
             super.ready();
             this.dom = [];
