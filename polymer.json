@@ -10,6 +10,7 @@
   ],
   "extraDependencies": [
     "app/manifest.json",
+    "app/bower_components/webcomponentsjs/custom-elements-es5-adapter.js",
     "app/bower_components/webcomponentsjs/webcomponents-hi-ce.js",
     "app/bower_components/webcomponentsjs/webcomponents-hi-sd-ce.js",
     "app/bower_components/webcomponentsjs/webcomponents-hi-sd.js",
