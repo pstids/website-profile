@@ -115,11 +115,11 @@
 			var opt = target.dataset.stat;
 
 			/* Change visual state */
-			var active = this.querySelector('[data-toggle="on"]');
+			var active = this.root.querySelector('[data-toggle="on"]');
 			active.dataset.toggle = 'off';
 			target.dataset.toggle = 'on';
 
-			var bubbles = this.querySelectorAll('bubble-stat');
+			var bubbles = this.root.querySelectorAll('bubble-stat');
 			for (var bubble of bubbles) {
 				bubble.opt = opt;
 				bubble.setMode();
