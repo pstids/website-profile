@@ -278,7 +278,7 @@
             this.removeActive();
         }
         removeActive() {
-            var logDayActive = this.querySelector('log-container.active');
+            var logDayActive = this.root.querySelector('log-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
