@@ -405,7 +405,7 @@ class SpiderChart extends Polymer.Element {
 	}
 	highlightRecs(highlights) {
 		for (var key of Object.keys(this.categories)) {
-			var eles = this.querySelectorAll(`[data-highlight="${key}"]`);
+			var eles = this.root.querySelectorAll(`[data-highlight="${key}"]`);
 			if (highlights.indexOf(key) > -1) {
 				for (let ele of eles) {
 					ele.classList.add('active');
