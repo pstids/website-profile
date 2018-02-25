@@ -152,7 +152,7 @@
 			}
 			setData(objs) {
 				for (var x = 1; x <= 3; x++) {
-					Polymer.dom(this.querySelector(`[data-bubble="${x}"]`)).classList.remove('hidden');
+					this.root.querySelector(`[data-bubble="${x}"]`).classList.remove('hidden');
 				}
 				this.objects = objs;
 				var props = ['a', 'b', 'c'];
@@ -184,7 +184,7 @@
 					this.classList.remove('hidden');
 				}
 				for (; i < 3; i++) {
-					Polymer.dom(this.querySelector(`[data-bubble="${i+1}"]`)).classList.add('hidden');
+					this.root.querySelector(`[data-bubble="${i+1}"]`).classList.add('hidden');
 				}
 				this.setMode();
 			}
@@ -208,7 +208,7 @@
 						break;
 					}
 				}
-				var activeBubble = this.querySelector('[data-bubble].active');
+				var activeBubble = this.root.querySelector('[data-bubble].active');
 				if (activeBubble) {
 					activeBubble.classList.remove('active');
 				}
