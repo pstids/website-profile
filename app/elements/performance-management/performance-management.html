@@ -568,7 +568,7 @@
 		callFun(a, e) {
 			var vis = d3.select(this.$.barchart);
 			vis.selectAll('.stack').remove();
-			var on = this.querySelector('[data-toggle="on"]');
+			var on = this.root.querySelector('[data-toggle="on"]');
 			if (on) {
 				on.dataset.toggle = 'off';
 			}
@@ -576,15 +576,15 @@
 			if (e === 3) {
 				this.state = 'distance';
 				this.fillBars('weeks');
-				this.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
+				this.root.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
 			} else if (e === 2) {
 				this.state = 'stress';
 				this.fillBars('weeks');
-				this.querySelector('[data-stat="stress"]').dataset.toggle = 'on';
+				this.root.querySelector('[data-stat="stress"]').dataset.toggle = 'on';
 			} else if (e === 4) {
 				this.state = 'tiz';
 				this.zillBars('weeks');
-				this.querySelector('[data-stat="zones"]').dataset.toggle = 'on';
+				this.root.querySelector('[data-stat="zones"]').dataset.toggle = 'on';
 			}
 		}
 		getTimeType(dataType, timeType, idx) {
