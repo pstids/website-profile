@@ -301,11 +301,11 @@
                     power: this.chart.getGraphById('power'),
                     ground_time: this.chart.getGraphById('ground_time')
                 };
-                this.querySelector('[data-graph="heartRate"]').dataset.toggle = 'on';
-                this.querySelector('[data-graph="power"]').dataset.toggle = 'on';
-                this.querySelector('[data-graph="pace"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="vertical_osc"]').dataset.toggle = 'off';
-                this.querySelector('[data-graph="ground_time"]').dataset.toggle = 'off';
+                this.root.querySelector('[data-graph="heartRate"]').dataset.toggle = 'on';
+                this.root.querySelector('[data-graph="power"]').dataset.toggle = 'on';
+                this.root.querySelector('[data-graph="pace"]').dataset.toggle = 'off';
+                this.root.querySelector('[data-graph="vertical_osc"]').dataset.toggle = 'off';
+                this.root.querySelector('[data-graph="ground_time"]').dataset.toggle = 'off';
                 this.chart.hideGraph(this.graphs.pace);
                 this.chart.hideGraph(this.graphs.ground_time);
                 this.chart.hideGraph(this.graphs.vertical_osc);
@@ -384,21 +384,21 @@
                 var pace = (minutes / stats.exactDistance).toFixed(2);
                 avgs.pace = unit.paceFormat(pace);
 
-                this.querySelector('[type="avg_power"]').setAttribute('value', avgs.power.stat());
+                this.root.querySelector('[type="avg_power"]').setAttribute('value', avgs.power.stat());
 
                 // if (avgs.pace === null) {
-                //     this.querySelector('[type="avg_pace"]').classList.add('hidden');
+                //     this.root.querySelector('[type="avg_pace"]').classList.add('hidden');
                 // } else {
-                //     this.querySelector('[type="avg_pace"]').classList.remove('hidden');
-                //     this.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
+                //     this.root.querySelector('[type="avg_pace"]').classList.remove('hidden');
+                //     this.root.querySelector('[type="avg_pace"]').setAttribute('value', avgs.pace);
                 // }
                 if (isNaN(avgs.heartRate)) {
-                    this.querySelector('[type="avg_hr"]').classList.add('hidden');
+                    this.root.querySelector('[type="avg_hr"]').classList.add('hidden');
                 } else {
-                    this.querySelector('[type="avg_hr"]').setAttribute('value', avgs.heartRate.stat());
+                    this.root.querySelector('[type="avg_hr"]').setAttribute('value', avgs.heartRate.stat());
                 }
-                this.querySelector('[type="time"]').setAttribute('value', stats.timeHMS);
-                this.querySelector('[type="distance"]').setAttribute('value', stats.distance);
+                this.root.querySelector('[type="time"]').setAttribute('value', stats.timeHMS);
+                this.root.querySelector('[type="distance"]').setAttribute('value', stats.distance);
             }
             addPoint(pt) {
                 if (!('chartData' in this)) {
