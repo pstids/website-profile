@@ -212,7 +212,7 @@
 				if (target.dataset === undefined) {
 					return;
 				}
-				while (!('bubble' in target.dataset)) {
+				while (target.dataset && !('bubble' in target.dataset)) {
 					target = target.parentNode;
 					if (this === target) {
 						break;
@@ -222,7 +222,9 @@
 				if (activeBubble) {
 					activeBubble.classList.remove('active');
 				}
-				target.classList.add('active');
+				if (target.classList) {
+					target.classList.add('active');
+				}
 				this.classList.toggle('popped');
 			}
 		}
