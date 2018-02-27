@@ -1,9 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
@@ -144,7 +143,7 @@
           <paper-radio-button name="general">General</paper-radio-button>
         </paper-radio-group>
         <paper-dropdown-menu id="goalDistance" label="Goal Distance" no-animations>
-          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}" slot="dropdown-content">
+          <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}" slot="dropdown-content">
             <paper-item name="5k">5k</paper-item>
             <paper-item name="10k">10k</paper-item>
             <paper-item name="half marathon">Half Marathon</paper-item>
@@ -156,7 +155,7 @@
             <paper-item name="half ironman">Half Ironman</paper-item>
             <paper-item name="ironman">Ironman</paper-item>
             <paper-item name="other">Other</paper-item>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
         <paper-input id="durationInput" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
                      value="{{weekNum}}" on-blur="onWeekInput">

@@ -6,7 +6,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 
 <dom-module id="segment-entry">
     <template>
@@ -85,11 +85,11 @@
                     <div type="distance">
                         <paper-input label="Distance" placeholder="e.g. 3" allowed-pattern="[0-9]|." value="{{durationDistance}}" class="with-unit-dropdown">
                             <paper-dropdown-menu suffix id="unit" label="Unit" no-animations no-label-float slot="suffix">
-                                <paper-menu class="dropdown-content" attr-for-selected="unit" selected="{{distanceUnitSelected}}" slot="dropdown-content">
+                                <paper-listbox class="dropdown-content" attr-for-selected="unit" selected="{{distanceUnitSelected}}" slot="dropdown-content">
                                     <paper-item unit="mile">Miles</paper-item>
                                     <paper-item unit="km">KM</paper-item>
                                     <paper-item unit="meter">Meters</paper-item>
-                                </paper-menu>
+                                </paper-listbox>
                             </paper-dropdown-menu>
                         </paper-input>
                     </div>
@@ -103,13 +103,13 @@
                 </paper-radio-group>
                 <iron-pages attr-for-selected="type" selected="{{intensityType}}">
                     <paper-dropdown-menu type="zone" label="" no-animations>
-                        <paper-menu class="dropdown-content" selected="{{zoneSelected}}" slot="dropdown-content">
+                        <paper-listbox class="dropdown-content" selected="{{zoneSelected}}" slot="dropdown-content">
                             <paper-item>Zone 1 (Easy/recovery)</paper-item>
                             <paper-item>Zone 2 (Tempo/marathon)</paper-item>
                             <paper-item>Zone 3 (Threshold)</paper-item>
                             <paper-item>Zone 4 (Interval)</paper-item>
                             <paper-item>Zone 5 (Repetition)</paper-item>
-                        </paper-menu>
+                        </paper-listbox>
                     </paper-dropdown-menu>
                     <div class="layout horizontal end" type="percentage">
                         <paper-input label="Low" placeholder="0" class="with-unit" allowed-pattern="[0-9]" value="{{intensityPercent.low}}">
@@ -121,7 +121,7 @@
                         </paper-input>
                     </div>
                     <paper-dropdown-menu label="" no-animations type="pace">
-                        <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{paceSelected}}" slot="dropdown-content">
+                        <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{paceSelected}}" slot="dropdown-content">
                             <paper-item name="mile">Mile pace</paper-item>
                             <paper-item name="5k">5K pace</paper-item>
                             <paper-item name="10k">10K pace</paper-item>
@@ -129,7 +129,7 @@
                             <paper-item name="recovery">Recovery(Easy) pace</paper-item>
                             <paper-item name="halfmarathon">Half Marathon</paper-item>
                             <paper-item name="marathon">Marathon</paper-item>
-                        </paper-menu>
+                        </paper-listbox>
                     </paper-dropdown-menu>
                 </iron-pages>
             </div>

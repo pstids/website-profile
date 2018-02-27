@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
@@ -162,7 +162,7 @@
 			<time-in-zone data-property="tiz2" id="tiz" class="tiz-container"></time-in-zone>
 			<div class="flex layout vertical center center-justified">
 				<paper-dropdown-menu label="Workout Type" style="margin-bottom: 50px;">
-					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType" slot="dropdown-content">
+					<paper-listbox class="dropdown-content" selected="{{selected_type}}" id="workoutType" slot="dropdown-content">
 						<paper-item>None</paper-item>
 						<paper-item>Easy Run</paper-item>
 						<paper-item>Long Run</paper-item>
@@ -175,10 +175,10 @@
 						<paper-item>Race Pace Training</paper-item>
 						<paper-item>Race</paper-item>
 						<paper-item>Critical Test Run</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 				<paper-dropdown-menu label="Post Run RPE">
-					<paper-menu class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE" slot="dropdown-content">
+					<paper-listbox class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE" slot="dropdown-content">
 						<paper-item>None</paper-item>
 						<paper-item>RPE 1</paper-item>
 						<paper-item>RPE 2</paper-item>
@@ -190,7 +190,7 @@
 						<paper-item>RPE 8</paper-item>
 						<paper-item>RPE 9</paper-item>
 						<paper-item>RPE 10</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 			</div>
 		</div>

@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -183,12 +183,12 @@
 			<h1 class="title">Critical Power Test</h1>
 			<div class="layout horizontal center" style="padding: 2vw">
 				<paper-dropdown-menu label="Critical Power Test Method" no-animations>
-					<paper-menu class="dropdown-content" selected="{{selected}}" slot="dropdown-content">
+					<paper-listbox class="dropdown-content" selected="{{selected}}" slot="dropdown-content">
 						<paper-item>3-6 laps test</paper-item>
 						<paper-item>3-9 minutes test</paper-item>
 						<paper-item>5k estimation</paper-item>
 						<paper-item>10k estimation</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 			</div>
 			<div>

@@ -1,7 +1,7 @@
 
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
@@ -86,12 +86,12 @@
 		<h1 class="header">Get Personalized Insight</h1>
 		<div class="layout vertical holder">
 			<paper-dropdown-menu label="Target Race Distance">
-				<paper-menu class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType" slot="dropdown-content">
+				<paper-listbox class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType" slot="dropdown-content">
 					<paper-item>5 Kilometer</paper-item>
 					<paper-item>10 Kilometer</paper-item>
 					<paper-item>Half Marathon</paper-item>
 					<paper-item>Marathon</paper-item>
-				</paper-menu>
+				</paper-listbox>
 			</paper-dropdown-menu>
 			<div class="information">
 				<div class="info">
@@ -153,10 +153,10 @@
 		<div class="layout vertical holder">
 			<div class="layout horizontal">
 				<paper-dropdown-menu label="Critical Power Test Method" no-animations style="padding: 2vw">
-					<paper-menu class="dropdown-content" selected="{{selected}}" slot="dropdown-content">
+					<paper-listbox class="dropdown-content" selected="{{selected}}" slot="dropdown-content">
 						<paper-item>5k estimation</paper-item>
 						<paper-item>10k estimation</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 				<iron-pages selected="{{selected}}">
 					<div class="test-input" style="padding: 2vw">

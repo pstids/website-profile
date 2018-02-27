@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="./time-in-zone.html">
 
 <dom-module id="lap-overview">
@@ -86,11 +86,11 @@
 					</div>
 					<div class="flex layout horizontal end-justified">
 						<paper-dropdown-menu class="test-selector" label="Lap Selection">
-							<paper-menu class="dropdown-content" selected="{{selected_lap}}" id="lapType" slot="dropdown-content">
+							<paper-listbox class="dropdown-content" selected="{{selected_lap}}" id="lapType" slot="dropdown-content">
 								<paper-item>Miles</paper-item>
 								<paper-item>Kilometers</paper-item>
 								<paper-item>Splits</paper-item>
-							</paper-menu>
+							</paper-listbox>
 						</paper-dropdown-menu>
 					</div>
 				</div>

@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
@@ -52,7 +52,7 @@
                         value="{{planObjective}}" max-rows="3">
         </paper-textarea>
         <paper-dropdown-menu class="" label="Run Type" no-animations>
-          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}" slot="dropdown-content">
+          <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}" slot="dropdown-content">
             <paper-item name="easy">Easy</paper-item>
             <paper-item name="long">Long</paper-item>
             <paper-item name="fartlek">Fartlek</paper-item>
@@ -63,15 +63,15 @@
             <paper-item name="pace">Pace</paper-item>
             <paper-item name="race">Race</paper-item>
             <paper-item name="other">Other</paper-item>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu class="" label="Surface Type" no-animations>
-          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{surfaceSelected}}" slot="dropdown-content">
+          <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{surfaceSelected}}" slot="dropdown-content">
             <paper-item name="hill">Hill</paper-item>
             <paper-item name="track">Track</paper-item>
             <paper-item name="road">Road</paper-item>
             <paper-item name="trail">Trail</paper-item>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
       <paper-dialog-scrollable id="scroll">
