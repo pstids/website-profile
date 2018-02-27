@@ -5,12 +5,13 @@
   "devDependencies": {
     "jshint": "^2.9.5",
     "jshint-stylish": "^2.2.1",
-    "polyserve": "^0.23.0"
+    "polyserve": "^0.23.0",
+    "route-map": "github:tony19/route-map#0.0.1"
   },
   "scripts": {
     "build": "polymer build",
     "lint": "jshint --reporter=node_modules/jshint-stylish **/*.js",
-    "serve": "node serve.js",
+    "serve": "node server",
     "start": "npm run serve"
   },
   "engines": {
