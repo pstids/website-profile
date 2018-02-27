@@ -346,9 +346,6 @@ class HeatDuration extends Polymer.Element {
 		var todayFMT = today.format('MM-DD-YYYY');
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/powerduration?srtDate=${pastFMT}&endDate=${todayFMT}`;
-		if (window.isLocal) {
-			path = `${Polymer.rootPath}scripts/local/powerduration.json`;
-		}
 		superagent
 			.get(path)
 			.send()
@@ -402,9 +399,6 @@ class HeatDuration extends Polymer.Element {
 				this.raceKey = user.data.race;
 			}
 			var path = `/b/internal/plan/zoneproportion?race=${this.raceKey}`;
-			if (window.isLocal) {
-				path = `${Polymer.rootPath}scripts/local/zoneproportion.json`;
-			}
 			superagent
 				.get(path)
 				.send()

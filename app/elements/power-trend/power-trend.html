@@ -267,9 +267,6 @@ class PowerTrend extends Polymer.GestureEventListeners(Polymer.Element) {
 		super.connectedCallback();
 		Polymer.Gestures.addListener(this, 'tap', this._eleTap);
 		var path = `/b/api/v1/users/runnertrend`;
-		if (window.isLocal) {
-			path = `${Polymer.rootPath}scripts/local/runnertrend.json`;
-		}
 		superagent
 			.get(path)
 			.send()

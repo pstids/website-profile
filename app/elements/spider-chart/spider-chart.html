@@ -389,9 +389,6 @@ class SpiderChart extends Polymer.GestureEventListeners(Polymer.Element) {
 		var todayFMT = today.format('MM-DD-YYYY');
 		var pastFMT = past.format('MM-DD-YYYY');
 		var path = `/b/api/v1/users/runnerprofile?srtDate=${pastFMT}&endDate=${todayFMT}`;
-		if (window.isLocal) {
-			path = `${Polymer.rootPath}scripts/local/runnerprofile.json`;
-		}
 		superagent
 			.get(path)
 			.send()
