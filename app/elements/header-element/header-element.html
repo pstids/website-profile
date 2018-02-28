@@ -384,7 +384,7 @@
 			super.ready();
 			this.date = moment().add(3, 'months').format('YYYY-MM-DD');
 			console.log(moment().add(3, 'months').format('YYYY-MM-DD'));
-			this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+			this.defaultURL = `${this.rootPath}images/favicon.png`;
 			this.username = jwt.data.username;
 			this.user = user.getData();
 			this.grabStats();
