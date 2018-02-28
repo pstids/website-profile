@@ -42,6 +42,7 @@
       "js": {
         "compile": {
           "exclude": [
+            "*/processor.js",
             "*.min.js",
             "*/external.js",
             "*/d3.js",
