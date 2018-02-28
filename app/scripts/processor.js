@@ -1100,14 +1100,14 @@ var calcLaps = function (type, activityID, zones, userUnit) {
 	resetLap();
 	activityID = +activityID;
 
-	var activity = seriesMemory[activityID];
+	var activity = seriesMemory[activityID] || [];
 	var oActivity = activeMemory[activityID];
 
 	var lapTimestamps = [];
 	var lastLapTimestamp = null;
 	var lastLapTimestampIter = 0;
 
-	if (oActivity.lap_timestamp_list === null || oActivity.lap_timestamp_list.length === 0) {
+	if (!oActivity || !oActivity.lap_timestamp_list || oActivity.lap_timestamp_list.length === 0) {
 		lapTimestamps = [];
 		lastLapTimestamp = null;
 	} else {
@@ -1124,7 +1124,7 @@ var calcLaps = function (type, activityID, zones, userUnit) {
 
 	var samples = 0;
 	var lastDistance = 0;
-	var lastTimestamp = activity[0].date;
+	var lastTimestamp = activity.length > 0 && activity[0].date;
 	var lastRSS = 0;
 
 	var lapSwitch = false;
