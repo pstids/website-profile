@@ -569,7 +569,7 @@ var workoutFetching = function (workoutID, workoutUpdated) {
 };
 
 var workoutProcessingComparison = function (workout) {
-	if (workout.total_power_list === null) {
+	if (!workout.total_power_list) {
 		return [];
 	}
 	var data = [];
