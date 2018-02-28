@@ -204,15 +204,11 @@ app.setDownload = function (url) {
 };
 
 app.giveActivities = function (activities) {
-	if (logCalendar) {
-		logCalendar.processActivities(activities);
-	}
+	logCalendar.processActivities(activities);
 };
 
 app.giveActivities2 = function (activities) {
-	if (compareCalendar) {
-		compareCalendar.processActivities(activities);
-	}
+	compareCalendar.processActivities(activities);
 };
 
 app.setHomeNavigation = function (availables) {
