@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
 <link rel="import" href="./log-container.html">
 <link rel="import" href="./log-day.html">
 
@@ -66,8 +67,8 @@
                 <h1 class="header">{{month}}</h1>
             </div>
             <div class="flex layout horizontal end-justified">
-                <button on-click="prevMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-back"></iron-icon></button>
-                <button on-click="nextMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-forward"></iron-icon></button>
+                <stryd-button on-click="prevMonth" class="self-end"><iron-icon icon="icons:arrow-back"></iron-icon></stryd-button>
+                <stryd-button on-click="nextMonth" class="self-end"><iron-icon icon="icons:arrow-forward"></iron-icon></stryd-button>
             </div>
         </div>
         <div id="calendarContainer">
