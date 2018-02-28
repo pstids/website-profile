@@ -238,6 +238,10 @@
 			this.laps = laps;
 			this.clearChildren(this.$.laps);
 			this.clearChildren(this.$.lapf);
+			if (!laps || !laps.length) {
+				this.$.tizContainer.classList.add('hidden');
+				return;
+			}
 			var availables = this.createHeader(laps[0]);
 			for (var lap of laps) {
 				var row = this.createRow(lap, availables);
