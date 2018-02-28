@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bubble-stat/bubble-stat.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
 <link rel="import" href="./zone-entry.html">
 
 <dom-module id="training-info">
@@ -261,7 +262,7 @@
 				</iron-pages>
 			</div>
 
-			<button is="stryd-button" on-click="calculateTrainingInfo" style="min-width: 25vw; margin: 5vh auto;">Calculate</button>
+			<stryd-button on-click="calculateTrainingInfo" style="min-width: 25vw; margin: 5vh auto;">Calculate</stryd-button>
 
 			<div class="test-desc">
 				<h3>Instructions</h3>
@@ -356,7 +357,7 @@
 				</div>
 			</div>
 			<div class="zones" id="zones"></div>
-			<button is="stryd-button" on-click="saveZones" style="min-width: 25vw;">Save</button>
+			<stryd-button on-click="saveZones" style="min-width: 25vw;">Save</stryd-button>
 		</div>
 
 		<paper-dialog id="invalid">
