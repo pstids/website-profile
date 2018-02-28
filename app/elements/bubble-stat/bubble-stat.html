@@ -135,6 +135,9 @@
 			}
 			setMode() {
 				var activeKeys = this.objects.active;
+				if (!activeKeys) {
+					return;
+				}
 				for (var i = 0; i < activeKeys.length; i++) {
 					var activeKey = activeKeys[i];
 					if (Object.keys(this.objects).indexOf(activeKey) < 0) {
