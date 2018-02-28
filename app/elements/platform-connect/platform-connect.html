@@ -1,7 +1,7 @@
-
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
 
 <dom-module id="platform-connect">
     <template>
@@ -64,21 +64,22 @@
                     <a href="https://www.garmin.com">
                         <img class="logo" src="[[rootPath]]images/logos/logo_garmin.png" width="150px" height="48px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="garmin" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="garmin" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div data-suunto="container">
                     <a href="https://www.suunto.com">
                         <img class="logo" src="[[rootPath]]images/logos/logo_suunto.png" width="150px" height="48px"/>
                     </a>
-                    <button is="stryd-button" data-suunto="connect">Connect</button>
+                    <stryd-button data-suunto="connect">Connect</stryd-button>
                     <div data-suunto="authStep" class="hidden">
                         <paper-input no-label-float type="text" placeholder="Email" name="email" data-suunto="email"></paper-input>
-                        <button is="stryd-button" data-suunto="auth">Connect to Movescount</button>
+                        <stryd-button data-suunto="auth">Connect to Movescount</stryd-button>
                     </div>
+                    <!-- TODO: How do we upgrade this link? It's not a button -->
                     <a is="stryd-button" data-suunto="confirm" href="http://www.movescount.com/settings#connections" class="hidden" target="_blank">Visit Movescount to Confirm</a>
-                    <button is="stryd-button" data-suunto="fetch" class="hidden">Fetch New Workouts</button>
-                    <button is="stryd-button" data-suunto="fetching" class="hidden" disabled>Fetching</button>
-                    <button is="stryd-button" data-suunto="disconnect" class="hidden">Disconnect</button>
+                    <stryd-button data-suunto="fetch" class="hidden">Fetch New Workouts</stryd-button>
+                    <stryd-button data-suunto="fetching" class="hidden" disabled>Fetching</stryd-button>
+                    <stryd-button data-suunto="disconnect" class="hidden">Disconnect</stryd-button>
                 </div>
                 <div style="width:150px;"></div>
             </div>
@@ -90,25 +91,25 @@
                     <a href="https://www.finalsurge.com/">
                         <img class="logo" src="[[rootPath]]images/logos/logo_finalsurge.png" width="114px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="finalsurge" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="finalsurge" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div class="aplatform">
                     <a href="https://www.trainingpeaks.com">
                         <img class="logo" src="[[rootPath]]images/logos/logo_tp.png" width="150px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div class="aplatform">
                     <a href="https://www.strava.com">
                         <img class="logo" src="[[rootPath]]images/logos/logo_strava.png" width="150px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="strava" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="strava" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div class="aplatform">
                     <a href="https://www.2peak.com">
                         <img class="logo" src="[[rootPath]]images/logos/logo_2peak.png" width="150px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="2peak" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="2peak" on-click="oauthConnect">Connect</stryd-button>
                 </div>
             </div>
         </div>
