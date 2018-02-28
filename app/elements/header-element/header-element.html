@@ -261,16 +261,16 @@
 			</div>
 			<ul class="navigation">
 				<li>
-					<a data-selector="profile" href="[[rootPath]]">Analyze</a>
+					<a data-selector="profile" on-click="onLinkClick" href="[[rootPath]]">Analyze</a>
 				</li>
 				<li id="improve">
-					<a data-selector="improve" href="[[rootPath]]improve">Improve</a>
+					<a data-selector="improve" on-click="onLinkClick" href="[[rootPath]]improve">Improve</a>
 				</li>
 				<li>
-					<a data-selector="leaderboard" href="[[rootPath]]leaderboard">Compete</a>
+					<a data-selector="leaderboard" on-click="onLinkClick" href="[[rootPath]]leaderboard">Compete</a>
 				</li>
 				<li>
-					<a data-selector="settings" href="[[rootPath]]settings">Settings</a>
+					<a data-selector="settings" on-click="onLinkClick" href="[[rootPath]]settings">Settings</a>
 				</li>
 			</ul>
 			<div class="space-taker"></div>
@@ -526,6 +526,9 @@
 						console.log('Error: failure to set training plan', err);
 					}
 				});
+		}
+		onLinkClick(e) {
+			app.handleAnchorClick(e);
 		}
 	}
 	window.customElements.define(HeaderElement.is, HeaderElement);

@@ -522,6 +522,18 @@ page({
 	hashbang: false
 });
 
+app.handleAnchorClick = function(e) {
+	const href = e.target && e.target.href || '';
+	let idx = href.lastIndexOf(rootPath);
+	if (idx > -1) {
+		// Abort the default navigation, which would cause a page-reload.
+		// Redirect the request to the client-side router (PageJS).
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		page(href.substring(idx));
+	}
+};
+
 app.loadMap();
 app.suuntoProcessing();
 
