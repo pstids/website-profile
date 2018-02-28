@@ -24,6 +24,7 @@
     "rules": ["polymer-2"]
   },
   "builds": [{
+    "basePath": "/powercenter/",
     "bundle": false,
     "js": {"minify": false},
     "css": {"minify": false},
