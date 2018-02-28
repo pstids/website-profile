@@ -5,7 +5,7 @@ const JSON_DIR_PATH = '../app/scripts/local';
 
 const routes = {
   '/api/v1/users/plan': {
-    get(req, res, next) {
+    get(req, res) {
       const data = require(`${JSON_DIR_PATH}/users_plan.json`);
       data.training_plan = require(`${JSON_DIR_PATH}/plan.json`).plan;
       res.json(data);
@@ -32,7 +32,7 @@ const routes = {
     post: `${JSON_DIR_PATH}/activities_id_recalculate.json`,
   },
   '/activities/:id(\\d+)': {
-    get(req, res, next) {
+    get(req, res) {
       const id = req.params.id;
       const activities = require(`${JSON_DIR_PATH}/activities_calendar.json`).activities;
       const activity = activities.find(a => !Number.isNaN(a.id) && Number(a.id) === Number(id));

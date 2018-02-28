@@ -16,7 +16,7 @@ async function startServer(apiServerPort) {
     root: 'app',
   };
 
-  const server = await polyserveStartServer(serverOptions, (app, options) => {
+  const server = await polyserveStartServer(serverOptions, app => {
     setupUrlRewriter(app, serverOptions);
 
     // XXX: polyserve currently installs a wildcard route that prevents
