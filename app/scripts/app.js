@@ -319,7 +319,7 @@ app.clearChildren = function (parent) {
 
 let rootPath = Polymer.rootPath;
 if (rootPath.endsWith('/')) {
-	rootPath = rootPath.substring(0, rootPath.length - 1);
+	rootPath = rootPath.slice(0, -1);
 }
 page.base(rootPath);
 
