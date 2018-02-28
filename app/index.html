@@ -104,14 +104,18 @@
 	<script src="scripts/app.js"></script>
 
 	<link rel="stylesheet" href="styles/main.css">
-	<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 	<link rel="import" href="styles/app-theme.html">
 	<link rel="import" href="elements/stryd-app.html">
 </head>
 
-<body unresolved class="fullbleed layout vertical">
+<body unresolved>
 <custom-style>
-	<style is="custom-style" include="app-theme iron-positioning"></style>
+	<style is="custom-style" include="app-theme">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
 </custom-style>
 
 <stryd-app id="app"></stryd-app>
