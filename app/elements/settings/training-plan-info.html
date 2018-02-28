@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
 
 <dom-module id="training-plan-info">
 	<template>
@@ -27,15 +28,15 @@
 			<p><b>Ends on:</b> <span>{{plan_end}}</span></p>
 			<p>{{plan_description}}</p>
 			<div class="layout horizontal">
-				<button is="stryd-button" on-click="viewPlan">View Plan</button>
-				<button is="stryd-button" on-click="leavePlan">Leave Plan</button>
-				<button is="stryd-button" on-click="viewPlans">Change Plan</button>
+				<stryd-button on-click="viewPlan">View Plan</stryd-button>
+				<stryd-button on-click="leavePlan">Leave Plan</stryd-button>
+				<stryd-button on-click="viewPlans">Change Plan</stryd-button>
 			</div>
 		</template>
 		<template is="dom-if" if="{{!plan_available}}">
 			<h1 class="title">Get a Stryd Training Plan</h1>
 			<div class="layout horizontal">
-				<button is="stryd-button" on-click="viewPlans">View Plans</button>
+				<stryd-button on-click="viewPlans">View Plans</stryd-button>
 			</div>
 		</template>
 		<paper-dialog id="leavePlanDialog">
