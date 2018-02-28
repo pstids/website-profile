@@ -162,7 +162,7 @@
 					this.activity = activity;
 					this.date = moment(activity.timestamp * 1000).format('MMM Do, YYYY');
 					this.data = data;
-					this.startTime = this.data[0].date;
+					this.startTime = this.data.length > 0 && this.data[0] && this.data[0].date;
 					this.maxPowerValue = maxPowerValue;
 					this.maxRSSValue = maxRSSValue;
 
@@ -289,11 +289,15 @@
 
 				this.chart.addListener('init', (e) => {
 					this.removeLoading();
-					this.calcTIZ(0, this.data.length);
+					if (this.data.length > 0) {
+						this.calcTIZ(0, this.data.length);
+					}
 				});
 
 				this.chart.addListener('zoomed', (e) => {
-					this.calcTIZ(e.startIndex, e.endIndex);
+					if (e.endIndex > 0) {
+						this.calcTIZ(e.startIndex, e.endIndex);
+					}
 				});
 			}
 		}
