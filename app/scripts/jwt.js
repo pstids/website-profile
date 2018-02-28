@@ -104,7 +104,7 @@ class User {
 	}
 
 	getImage() {
-		this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+		this.defaultURL = `${Polymer.rootPath}images/favicon.png`;
 		if ('profile_medium' in this.data && this.data.profile_medium !== '') {
 			return this.data.profile_medium;
 		} else if ('email' in this.data && this.data.email !== '') {
