@@ -1,6 +1,7 @@
 {
   "basePath": "/powercenter/",
   "entrypoint": "app/index.html",
+  "shell": "app/elements/stryd-app.html",
   "sources": [
     "app/elements/**",
     "app/fonts/**",
