@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
 
 <dom-module id="user-info">
 	<template>
@@ -291,7 +292,7 @@
 			</div>
 		</section>
 		<div id="save-button">
-			<button is="stryd-button" id="save-pref" on-click="saveDetails">Save</button>
+			<stryd-button id="save-pref" on-click="saveDetails">Save</stryd-button>
 		</div>
 	</template>
 	<script>
