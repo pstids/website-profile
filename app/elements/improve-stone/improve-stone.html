@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
 
 <dom-module id="improve-stone">
 <template>
@@ -144,7 +145,7 @@
 					</paper-radio-group>
 				</div>
 			</div>
-			<button is="stryd-button" on-click="savePersonal" style="margin-bottom: 20px;">Save</button>
+			<stryd-button on-click="savePersonal" style="margin-bottom: 20px;">Save</stryd-button>
 		</div>
 	</div>
 	<div class="stone hidden" data-stone="baseline">
@@ -186,7 +187,7 @@
 					</div>
 				</iron-pages>
 			</div>
-			<button is="stryd-button" on-click="calcTraining" style="margin-bottom: 20px;">Save</button>
+			<stryd-button on-click="calcTraining" style="margin-bottom: 20px;">Save</stryd-button>
 		</div>
 	</div>
 	<paper-dialog id="invalid">
@@ -333,8 +334,8 @@ class ImproveStone extends Polymer.Element {
 				if (res.ok) {
 					text = 'Your information is updated!';
 					user.updateData(res.body);
-					heatDuration.getZones();
-					spiderChart.ready();
+					app._heatDuration.getZones();
+					app._spiderChart.ready();
 				} else {
 					text = 'Your information is not updated. Please try again.';
 				}
@@ -440,11 +441,11 @@ class ImproveStone extends Polymer.Element {
 	}
 	/* global heatDuration, spiderChart, performanceManagement */
 	addBlur() {
-		if (window.heatDuration) {
-			window.heatDuration.classList.add('blurred');
+		if (app._heatDuration) {
+			app._heatDuration.classList.add('blurred');
 		}
-		if (window.spiderChart) {
-			window.spiderChart.classList.add('blurred');
+		if (app._spiderChart) {
+			app._spiderChart.classList.add('blurred');
 		}
 		if (window.performanceManagement) {
 			window.performanceManagement.classList.add('blurred');
@@ -454,11 +455,11 @@ class ImproveStone extends Polymer.Element {
 		}
 	}
 	removeBlur() {
-		if (window.heatDuration) {
-			window.heatDuration.classList.remove('blurred');
+		if (app._heatDuration) {
+			app._heatDuration.classList.remove('blurred');
 		}
-		if (window.spiderChart) {
-			window.spiderChart.classList.remove('blurred');
+		if (app._spiderChart) {
+			app._spiderChart.classList.remove('blurred');
 		}
 		if (window.performanceManagement) {
 			window.performanceManagement.classList.remove('blurred');

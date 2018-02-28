@@ -90,6 +90,9 @@ var currentID = null;
 	spiderChart = app.root.querySelector('spider-chart');
 	powerTrend = app.root.querySelector('power-trend');
 
+	app._heatDuration = heatDuration;
+	app._spiderChart = spiderChart;
+
 	app.home = 'analysis';
 	app.route = 'profile';
 
