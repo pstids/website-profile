@@ -105,30 +105,9 @@
 
 	<link rel="stylesheet" href="styles/main.css">
 	<link rel="import" href="bower_components/polymer/polymer.html">
-	<link rel="import" href="bower_components/paper-toast/paper-toast.html">
-	<link rel="import" href="bower_components/iron-pages/iron-pages.html">
 	<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 	<link rel="import" href="styles/app-theme.html">
-	<link rel="import" href="elements/bubble-stat/bubble-stats.html">
-	<link rel="import" href="elements/home-navigation/home-navigation.html">
-	<link rel="import" href="elements/footer-elementa/footer-elementa.html">
-	<link rel="import" href="elements/heat-duration/heat-duration.html">
-	<link rel="import" href="elements/header-element/header-element.html">
-	<link rel="import" href="elements/improve-stone/improve-stone.html">
-	<link rel="import" href="elements/leaderboard/leaderboard.html">
-	<link rel="import" href="elements/log-calendar/log-calendar.html">
-	<link rel="import" href="elements/log-calendar/log-options.html">
-	<link rel="import" href="elements/log-calendar/log-overview.html">
-	<link rel="import" href="elements/map-run/map-run.html">
-	<link rel="import" href="elements/performance-management/performance-management.html">
-	<link rel="import" href="elements/plan-view/plan-view.html">
-	<link rel="import" href="elements/power-trend/power-trend.html">
-	<link rel="import" href="elements/rss-comparison/rss-comparison.html">
-	<link rel="import" href="elements/spider-chart/spider-chart.html">
-	<link rel="import" href="elements/settings/stryd-settings.html">
-	<link rel="import" href="elements/workout-element/lap-overview.html">
-	<link rel="import" href="elements/workout-element/workout-element.html">
-	<link rel="import" href="elements/workout-summary/workout-summary.html">
+	<link rel="import" href="elements/stryd-app.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">
@@ -136,79 +115,7 @@
 	<style is="custom-style" include="app-theme iron-positioning"></style>
 </custom-style>
 
-<dom-bind id="app">
-<template is="dom-bind">
-	<div class="content">
-
-		<header-element></header-element>
-
-		<iron-pages attr-for-selected="data-route" selected="{{route}}">
-			<section data-route="profile">
-				<div class="layout horizontal">
-					<workout-summary></workout-summary>
-					<log-overview></log-overview>
-				</div>
-				<div class="layout vertical max-width" id="workout-holder">
-					<home-navigation></home-navigation>
-					<iron-pages attr-for-selected="data-home" selected="{{home}}" class="flex-auto">
-						<section data-home="comparison">
-							<div class="layout vertical max-width">
-								<rss-comparison id="rss-primary" class="flex" data-property="primary"></rss-comparison>
-								<rss-comparison id="rss-secondary" class="flex" data-property="secondary"></rss-comparison>
-							</div>
-						</section>
-						<section data-home="analysis">
-							<div class="layout vertical" data-analysis>
-								<bubble-stats></bubble-stats>
-								<div class="max-width flex workout-element-holder">
-									<workout-element id="workout-element" class="flex-3"></workout-element>
-									<map-run id="map-run" class="flex"></map-run>
-								</div>
-								<lap-overview class="hidden"></lap-overview>
-							</div>
-						</section>
-						<section data-home="training">
-							<div class="layout vertical">
-								<div class="layout horizontal max-width flex">
-									<plan-view id="plan-view" class="flex"></plan-view>
-								</div>
-							</div>
-						</section>
-					</iron-pages>
-				</div>
-				<log-calendar></log-calendar>
-			</section>
-
-			<section data-route="leaderboard">
-				<social-leaderboard></social-leaderboard>
-			</section>
-
-			<section data-route="settings">
-				<stryd-settings></stryd-settings>
-			</section>
-
-			<section data-route="improve">
-				<improve-stone></improve-stone>
-				<spider-chart></spider-chart>
-				<power-trend></power-trend>
-				<heat-duration></heat-duration>
-				<performance-management></performance-management>
-			</section>
-
-			<section data-route="*"></section>
-		</iron-pages>
-
-		<footer-elementa></footer-elementa>
-
-	</div>
-	<log-options></log-options>
-	<paper-toast id="toast" duration="5000"></paper-toast>
-	<div class="tooltip hidden" data-tooltip>
-		<div class="description" id="description">Description</div>
-	</div>
-	<iframe id="dlFrame" class="hidden"></iframe>
-</template>
-</dom-bind>
+<stryd-app id="app"></stryd-app>
 
 </body>
 </html>

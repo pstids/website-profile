@@ -69,26 +69,26 @@ var currentID = null;
 // have resolved and content has been stamped to the page
 	console.log('Stryd is ready to rock!');
 
-	bubbleStats = document.querySelector('bubble-stats');
-	compareCalendar = document.querySelector('compare-calendar');
-	header = document.querySelector('header-element');
-	homeNavigation = document.querySelector('home-navigation');
-	lapOverview = document.querySelector('lap-overview');
-	logCalendar = document.querySelector('log-calendar');
-	app.logOption = document.querySelector('log-options');
-	mapRunEle = document.querySelector('#map-run');
-	performanceManagement = document.querySelector('performance-management');
-	planView = document.querySelector('plan-view');
-	rssPrimary = document.querySelector('#rss-primary');
-	rssSecondary = document.querySelector('#rss-secondary');
-	settingsElement = document.querySelector('stryd-settings');
-	toastEle = document.querySelector('#toast');
-	uploader = document.querySelector('file-upload');
-	workoutElement = document.querySelector('#workout-element');
-	workoutSummary = document.querySelector('workout-summary');
-	heatDuration = document.querySelector('heat-duration');
-	spiderChart = document.querySelector('spider-chart');
-	powerTrend = document.querySelector('power-trend');
+	bubbleStats = app.root.querySelector('bubble-stats');
+	header = app.root.querySelector('header-element');
+	homeNavigation = app.root.querySelector('home-navigation');
+	compareCalendar = homeNavigation.$.calendar;
+	lapOverview = app.root.querySelector('lap-overview');
+	logCalendar = app.root.querySelector('log-calendar');
+	app.logOption = app.root.querySelector('log-options');
+	mapRunEle = app.root.querySelector('#map-run');
+	performanceManagement = app.root.querySelector('performance-management');
+	planView = app.root.querySelector('plan-view');
+	rssPrimary = app.root.querySelector('#rss-primary');
+	rssSecondary = app.root.querySelector('#rss-secondary');
+	settingsElement = app.root.querySelector('stryd-settings');
+	toastEle = app.root.querySelector('#toast');
+	uploader = settingsElement.$.uploader;
+	workoutElement = app.root.querySelector('#workout-element');
+	workoutSummary = app.root.querySelector('workout-summary');
+	heatDuration = app.root.querySelector('heat-duration');
+	spiderChart = app.root.querySelector('spider-chart');
+	powerTrend = app.root.querySelector('power-trend');
 
 	app.home = 'analysis';
 	app.route = 'profile';
@@ -152,8 +152,8 @@ var currentID = null;
 	};
 
 	if (featureManagement.hasFeatures) {
-		// document.querySelector('[data-route="improve"]').appendChild(
-		// 	document.querySelector('performance-management')
+		// app.root.querySelector('[data-route="improve"]').appendChild(
+		// 	app.root.querySelector('performance-management')
 		// );
 		bubbleStats.giveToggle();
 	}
@@ -200,7 +200,7 @@ app.calcMetrics = function (start, end, activityID, unit) {
 };
 
 app.setDownload = function (url) {
-	document.querySelector('#dlFrame').src = url;
+	app.root.querySelector('#dlFrame').src = url;
 };
 
 app.giveActivities = function (activities) {
@@ -381,7 +381,7 @@ page('/run/:idPrimary/run/:idSecondary', (data) => {
 		urlManager.compareID = +app.params.idSecondary;
 		firstLoad = false;
 	} else {
-		window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+		window.scrollTo(0, app.root.querySelector('#workout-holder').offsetTop);
 	}
 	logCalendar.setActive(+app.params.idPrimary);
 	compareCalendar.setActive(+app.params.idPrimary);
@@ -410,7 +410,7 @@ page('/run/:id', (data) => {
 		urlManager.setNavigation(app.params.id, 0);
 		firstLoad = false;
 	} else {
-		window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+		window.scrollTo(0, app.root.querySelector('#workout-holder').offsetTop);
 	}
 
 	if (currentID !== app.params.id || forceLoad) {
@@ -432,7 +432,7 @@ page('/training/:hash', (data) => {
 		urlManager.setNavigation(0, app.params.hash);
 		firstLoad = false;
 	} else {
-		window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
+		window.scrollTo(0, app.root.querySelector('#workout-holder').offsetTop);
 	}
 
 	planView.chartToggle(true);
