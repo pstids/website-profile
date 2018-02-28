@@ -25,9 +25,34 @@
   },
   "builds": [{
     "basePath": "/powercenter/",
-    "bundle": false,
-    "js": {"minify": false},
-    "css": {"minify": false},
-    "html": {"minify": false}
+    "bundle": true,
+    "js": {
+      "compile": {
+        "exclude": [
+          "*.min.js",
+          "*/external.js",
+          "*/d3.js",
+          "*/moment.js",
+          "*/amcharts/*.js"
+        ]
+      },
+      "minify": {
+        "exclude": [
+          "*.min.js",
+          "*/external.js",
+          "*/d3.js",
+          "*/moment.js",
+          "*/amcharts/*.js"
+        ]
+      }
+    },
+    "css": {
+      "minify": {
+        "exclude": [
+          "*.min.css"
+        ]
+      }
+    },
+    "html": {"minify": true}
   }]
 }
