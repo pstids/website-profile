@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/shadycss/apply-shim.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
@@ -167,117 +168,119 @@
 			</div>
 
 			<div class="details" option="editable" id="details">
-				<form id="information" is="iron-form">
-					<h1 class="title">Details</h1>
-					<div class="information">
-						<div class="info">
-							<h1>Date of Birth</h1>
-							<div id="birthday-input" class="justified-row">
-								<paper-input
-									type="text"
-									placeholder="Month"
-									label="MM"
-									class="editable"
-									name="birth_month"
-									auto-validate pattern="^([1-9]|[0-1][0-2])$" error-message="01 - 12"
-									value="{{userLocal.birth_month::input}}">
-								</paper-input>
-								<div style="position: relative"><span class="slash">/</span></div>
-								<paper-input
-									type="text"
-									placeholder="Day"
-									label="DD"
-									class="editable"
-									name="birth_day"
-									auto-validate pattern="^([1-9]|[0-3][0-9])" error-message="01 - 31"
-									value="{{userLocal.birth_day::input}}">
-								</paper-input>
-								<div style="position: relative"><span class="slash">/</span></div>
-								<paper-input
-									type="text"
-									placeholder="Year"
-									label="YYYY"
-									class="editable"
-									name="birth_year"
-									auto-validate pattern="^(19[0-9][0-9]|20[0-9][0-9])" error-message="wrong year"
-									value="{{userLocal.birth_year::input}}">
-								</paper-input>
+				<iron-form id="information">
+					<form>
+						<h1 class="title">Details</h1>
+						<div class="information">
+							<div class="info">
+								<h1>Date of Birth</h1>
+								<div id="birthday-input" class="justified-row">
+									<paper-input
+										type="text"
+										placeholder="Month"
+										label="MM"
+										class="editable"
+										name="birth_month"
+										auto-validate pattern="^([1-9]|[0-1][0-2])$" error-message="01 - 12"
+										value="{{userLocal.birth_month::input}}">
+									</paper-input>
+									<div style="position: relative"><span class="slash">/</span></div>
+									<paper-input
+										type="text"
+										placeholder="Day"
+										label="DD"
+										class="editable"
+										name="birth_day"
+										auto-validate pattern="^([1-9]|[0-3][0-9])" error-message="01 - 31"
+										value="{{userLocal.birth_day::input}}">
+									</paper-input>
+									<div style="position: relative"><span class="slash">/</span></div>
+									<paper-input
+										type="text"
+										placeholder="Year"
+										label="YYYY"
+										class="editable"
+										name="birth_year"
+										auto-validate pattern="^(19[0-9][0-9]|20[0-9][0-9])" error-message="wrong year"
+										value="{{userLocal.birth_year::input}}">
+									</paper-input>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="information height-weight">
-						<div class="info">
-							<h1>Height (<span>{{heightUnit(userLocal.units)}}</span>)</h1>
-							<paper-input no-label-float type="text" maxlength="3"
-								placeholder="Height"
-								class="editable"
-								name="height"
-								id="height"
-								value="{{userLocal.height::input}}">
-							</paper-input>
-						</div>
-						<div class="info">
-							<h1>Weight (<span>{{weightUnit(userLocal.units)}}</span>)</h1>
-							<paper-input no-label-float type="text" maxlength="3"
-								placeholder="Weight"
-								class="editable"
-								name="weight"
-								id="weight"
-								value="{{userLocal.weight::input}}">
-							</paper-input>
-						</div>
-						<div class="info"></div>
-					</div>
-					<div class="information">
-						<div class="info">
-							<h1>Location</h1>
-							<div id="location-input" class="justified-row">
-								<paper-input
-									type="text"
-									placeholder="e.g. Boulder"
+						<div class="information height-weight">
+							<div class="info">
+								<h1>Height (<span>{{heightUnit(userLocal.units)}}</span>)</h1>
+								<paper-input no-label-float type="text" maxlength="3"
+									placeholder="Height"
 									class="editable"
-									name="city"
-									value="{{userLocal.city::input}}"
-									label="City">
-								</paper-input>
-								<paper-input
-									type="text"
-									placeholder="e.g. Colorado"
-									class="editable"
-									name="state"
-									value="{{userLocal.state::input}}"
-									label="State">
+									name="height"
+									id="height"
+									value="{{userLocal.height::input}}">
 								</paper-input>
 							</div>
+							<div class="info">
+								<h1>Weight (<span>{{weightUnit(userLocal.units)}}</span>)</h1>
+								<paper-input no-label-float type="text" maxlength="3"
+									placeholder="Weight"
+									class="editable"
+									name="weight"
+									id="weight"
+									value="{{userLocal.weight::input}}">
+								</paper-input>
+							</div>
+							<div class="info"></div>
 						</div>
-					</div>
-					<div class="information">
-						<div class="info">
-							<h1>Gender</h1>
-							<paper-radio-group
-								selected="{{userLocal.gender}}"
-								attr-for-selected="name"
-								class="editable">
-								<paper-radio-button name="male">Male</paper-radio-button>
-								<paper-radio-button name="female">Female</paper-radio-button>
-								<paper-radio-button name="other">Other</paper-radio-button>
-							</paper-radio-group>
+						<div class="information">
+							<div class="info">
+								<h1>Location</h1>
+								<div id="location-input" class="justified-row">
+									<paper-input
+										type="text"
+										placeholder="e.g. Boulder"
+										class="editable"
+										name="city"
+										value="{{userLocal.city::input}}"
+										label="City">
+									</paper-input>
+									<paper-input
+										type="text"
+										placeholder="e.g. Colorado"
+										class="editable"
+										name="state"
+										value="{{userLocal.state::input}}"
+										label="State">
+									</paper-input>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="information">
-						<div class="info">
-							<h1>Target Race Distance</h1>
-							<paper-dropdown-menu label="Target Race Distance">
-								<paper-listbox class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType" slot="dropdown-content">
-									<paper-item>5 Kilometer</paper-item>
-									<paper-item>10 Kilometer</paper-item>
-									<paper-item>Half Marathon</paper-item>
-									<paper-item>Marathon</paper-item>
-								</paper-listbox>
-							</paper-dropdown-menu>
+						<div class="information">
+							<div class="info">
+								<h1>Gender</h1>
+								<paper-radio-group
+									selected="{{userLocal.gender}}"
+									attr-for-selected="name"
+									class="editable">
+									<paper-radio-button name="male">Male</paper-radio-button>
+									<paper-radio-button name="female">Female</paper-radio-button>
+									<paper-radio-button name="other">Other</paper-radio-button>
+								</paper-radio-group>
+							</div>
 						</div>
-					</div>
-				</form>
+						<div class="information">
+							<div class="info">
+								<h1>Target Race Distance</h1>
+								<paper-dropdown-menu label="Target Race Distance">
+									<paper-listbox class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType" slot="dropdown-content">
+										<paper-item>5 Kilometer</paper-item>
+										<paper-item>10 Kilometer</paper-item>
+										<paper-item>Half Marathon</paper-item>
+										<paper-item>Marathon</paper-item>
+									</paper-listbox>
+								</paper-dropdown-menu>
+							</div>
+						</div>
+					</form>
+				</iron-form>
 			</div>
 			<div class="prefs">
 				<h1 class="title">Preferences</h1>
