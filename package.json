@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "polymer build",
-    "lint": "jshint --reporter=node_modules/jshint-stylish **/*.js",
+    "lint": "jshint --reporter=node_modules/jshint-stylish **/*.js && polymer lint --input app/elements/**/*.html",
     "serve": "node server",
     "start": "npm run serve"
   },
