@@ -98,7 +98,7 @@
             }
             data() {
                 let segments = [];
-                let segmentsContainer = Polymer.dom(this.$.segments).children;
+                let segmentsContainer = this.$.segments.children;
                 for (var i = 0; i < segmentsContainer.length; i++) {
                     segments.push(segmentsContainer[i].data());
                 }
@@ -140,13 +140,13 @@
                 this.segmentCount += 1;
                 segmentEntry.segmentNum = this.segmentCount;
                 segmentEntry.setData(segData);
-                Polymer.dom(this.$.segments).appendChild(segmentEntry);
+                this.$.segments.appendChild(segmentEntry);
             }
             _addSegmentHandler() {
                 this._addSegment({});
             }
             _removeSegmentHandler() {
-                let segments = Polymer.dom(this.$.segments);
+                let segments = this.$.segments;
                 if (segments.children.length <= 0) {
                     return;
                 }

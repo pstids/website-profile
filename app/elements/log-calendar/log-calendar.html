@@ -154,7 +154,7 @@
                     row.appendChild(node);
                     rowDom.push(node);
                 }
-                Polymer.dom(calendarContainer).appendChild(row);
+                calendarContainer.appendChild(row);
                 this.dom.push(rowDom);
             }
         }
@@ -176,9 +176,9 @@
             var lastSunday = moment(firstMonday).add((this.weekTotal-1) * this.dayTotal, 'days');
             if (parseInt(lastSunday.format('M')) === monthInt+1) {
                 lastSunday = moment(firstMonday).add(this.weekTotal * this.dayTotal, 'days');
-                Polymer.dom(this.lastRow).classList.remove('hidden');
+                this.lastRow.classList.remove('hidden');
             } else {
-                Polymer.dom(this.lastRow).classList.add('hidden');
+                this.lastRow.classList.add('hidden');
             }
             return {
                 firstMonday: firstMonday,

@@ -216,7 +216,7 @@
 					// this.tiz(lap.tiz, lap.rss);
 					// app.addGuide(lap.startTimestamp, lap.endTimestamp, lapIdx);
 
-					Polymer.dom(target.classList.add('active'));
+					target.classList.add('active');
 					return;
 				}
 				if ('parentNode' in target && target.parentNode !== null) {
@@ -247,7 +247,7 @@
 			var availables = this.createHeader(laps[0]);
 			for (var lap of laps) {
 				var row = this.createRow(lap, availables);
-				Polymer.dom(this.$.laps).appendChild(row);
+				this.$.laps.appendChild(row);
 			}
 			var success = this.$.tiz.setData(this.laps[0].tiz, this.laps[0].rss);
 			if (!success) {
@@ -264,8 +264,8 @@
 					availables.push(ele.key);
 
 					var th = document.createElement('th');
-					Polymer.dom(th).textContent = ele.header;
-					Polymer.dom(this.$.lapf).appendChild(th);
+					th.textContent = ele.header;
+					this.$.lapf.appendChild(th);
 				}
 			}
 			return availables;
@@ -282,8 +282,8 @@
 					} else if (typeof(value) === 'number') {
 						value = value.toFixed(0);
 					}
-					Polymer.dom(td).textContent = `${value} ${ele.unit}`;
-					Polymer.dom(tr).appendChild(td);
+					td.textContent = `${value} ${ele.unit}`;
+					tr.appendChild(td);
 				}
 			}
 			return tr;

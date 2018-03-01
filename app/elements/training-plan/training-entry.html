@@ -160,7 +160,7 @@
         this.planObjective = '';
         this.planDesc = '';
         this.blockCount = 0;
-        let blockNode = Polymer.dom(this.$.blocks);
+        let blockNode = this.$.blocks;
         while (blockNode.firstChild) {
           blockNode.removeChild(blockNode.firstChild);
         }
@@ -192,7 +192,7 @@
       }
       _save() {
         let blocks = [];
-        let blockContainer = Polymer.dom(this.$.blocks).children;
+        let blockContainer = this.$.blocks.children;
         for (var i = 0; i < blockContainer.length; i++) {
           blocks.push(blockContainer[i].data());
         }
@@ -213,14 +213,14 @@
         this.blockCount += 1;
         blockEntry.num = this.blockCount;
         blockEntry.setData(blockData);
-        Polymer.dom(this.$.blocks).appendChild(blockEntry);
+        this.$.blocks.appendChild(blockEntry);
         this._save();
       }
       _addBlockHandler() {
         this._addBlock({});
       }
       _removeBlockHandler() {
-        let blocks = Polymer.dom(this.$.blocks);
+        let blocks = this.$.blocks;
         if (blocks.children.length <= 0) {
           return;
         }

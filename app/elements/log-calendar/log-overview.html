@@ -172,8 +172,8 @@
 				});
 			}
 			createCalendar() {
-				while (Polymer.dom(this.$.container).firstChild) {
-					Polymer.dom(this.$.container).removeChild(Polymer.dom(this.$.container).firstChild);
+				while (this.$.container.firstChild) {
+					this.$.container.removeChild(this.$.container.firstChild);
 				}
 
 				var past = moment().subtract(3, 'weeks').day('Monday');
@@ -200,38 +200,38 @@
 						past.add(1, 'day');
 					}
 					var row = this.addRow(days);
-					Polymer.dom(this.$.container).appendChild(row);
+					this.$.container.appendChild(row);
 				}
 			}
 			addRow(days) {
 				var row = document.createElement('tr');
 				for (var day of days) {
 					var dayEle = this.addDay(day);
-					Polymer.dom(row).appendChild(dayEle);
+					row.appendChild(dayEle);
 				}
 				return row;
 			}
 			addDay(day) {
 				var td = document.createElement('td');
-				Polymer.dom(td).classList.add('day-wrapper');
+				td.classList.add('day-wrapper');
 				if ('timestamp' in day) {
-					Polymer.dom(td).classList.add('highlighted');
+					td.classList.add('highlighted');
 					td.dataset.id = day.id;
 				}
 
 				var a = document.createElement('a');
 
 				var spanDay = document.createElement('span');
-				Polymer.dom(spanDay).classList.add('day');
-				Polymer.dom(spanDay).textContent = day.day;
+				spanDay.classList.add('day');
+				spanDay.textContent = day.day;
 
 				var spanIndicator = document.createElement('span');
-				Polymer.dom(spanIndicator).classList.add('activity-indicator');
+				spanIndicator.classList.add('activity-indicator');
 
-				Polymer.dom(a).appendChild(spanDay);
-				Polymer.dom(a).appendChild(spanIndicator);
+				a.appendChild(spanDay);
+				a.appendChild(spanIndicator);
 
-				Polymer.dom(td).appendChild(a);
+				td.appendChild(a);
 				return td;
 			}
 			view(e) {

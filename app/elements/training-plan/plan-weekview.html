@@ -81,20 +81,20 @@
         };
       }
       setReadOnly() {
-        let cardDiv = Polymer.dom(this.$.content).children;
+        let cardDiv = this.$.content.children;
         for (let i = 0; i < cardDiv.length; i++) {
           cardDiv[i].readOnly = true;
         }
       }
       addCardData(day, info) {
-        let cardDiv = Polymer.dom(this.$.content).children;
+        let cardDiv = this.$.content.children;
         cardDiv[day].addTrainingInfo(info);
       }
       setSummary(summary) {
         this.weekSummary = summary;
       }
       data(planID) {
-        let cardDiv = Polymer.dom(this.$.content).children;
+        let cardDiv = this.$.content.children;
         let infos = [];
         let days = [];
         for (let i = 0; i < cardDiv.length; i++) {

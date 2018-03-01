@@ -627,23 +627,23 @@
 			}
 			var li = document.createElement('li');
 			if (active) {
-				Polymer.dom(li).classList.add('active');
+				li.classList.add('active');
 			}
 			li.dataset.user = name;
 
 			var count = document.createElement('div');
-			Polymer.dom(count).classList.add('count');
+			count.classList.add('count');
 			if (order <= 2) {
-				Polymer.dom(count).classList.add('award');
+				count.classList.add('award');
 				if (order === 0) {
-					Polymer.dom(count).classList.add('first');
+					count.classList.add('first');
 				} else if (order === 1) {
-					Polymer.dom(count).classList.add('second');
+					count.classList.add('second');
 				} else if (order === 2) {
-					Polymer.dom(count).classList.add('third');
+					count.classList.add('third');
 				}
 			} else {
-				Polymer.dom(count).textContent = ++order;
+				count.textContent = ++order;
 			}
 
 			var img = document.createElement('img');
@@ -654,21 +654,21 @@
 			}
 
 			var mark = document.createElement('mark');
-			Polymer.dom(mark).textContent = name;
+			mark.textContent = name;
 
-			Polymer.dom(li).appendChild(count);
-			Polymer.dom(li).appendChild(img);
-			Polymer.dom(li).appendChild(mark);
+			li.appendChild(count);
+			li.appendChild(img);
+			li.appendChild(mark);
 
 			var small = document.createElement('small');
 			if (highlight === 'rss') {
-				Polymer.dom(small).textContent = entry.stress.toFixed(1);
+				small.textContent = entry.stress.toFixed(1);
 			} else if (highlight === 'cp') {
-				Polymer.dom(small).textContent = entry.critical_power.toFixed(1);
+				small.textContent = entry.critical_power.toFixed(1);
 			} else if (highlight === 'eff') {
-				Polymer.dom(small).textContent = entry.stress.toFixed(1);
+				small.textContent = entry.stress.toFixed(1);
 			}
-			Polymer.dom(li).appendChild(small);
+			li.appendChild(small);
 
 			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 			rssContainer.appendChild(li);
@@ -680,27 +680,27 @@
 
 				var count = document.createElement('mark');
 				count.classList.add('rank');
-				Polymer.dom(count).textContent = 'Rank';
+				count.textContent = 'Rank';
 
 				var space = document.createElement('div');
-				Polymer.dom(space).classList.add('space');
+				space.classList.add('space');
 
 				var mark = document.createElement('mark');
-				Polymer.dom(mark).textContent = 'Username';
+				mark.textContent = 'Username';
 
-				Polymer.dom(li).appendChild(count);
-				Polymer.dom(li).appendChild(space);
-				Polymer.dom(li).appendChild(mark);
+				li.appendChild(count);
+				li.appendChild(space);
+				li.appendChild(mark);
 
 				var small = document.createElement('small');
 				if (highlight === 'rss') {
-					Polymer.dom(small).textContent = 'Weekly RSS';
+					small.textContent = 'Weekly RSS';
 				} else if (highlight === 'cp') {
-					Polymer.dom(small).textContent = 'Critical Power (w/kg)';
+					small.textContent = 'Critical Power (w/kg)';
 				} else if (highlight === 'eff') {
-					Polymer.dom(small).textContent = 'Daily RSS';
+					small.textContent = 'Daily RSS';
 				}
-				Polymer.dom(li).appendChild(small);
+				li.appendChild(small);
 
 				var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 				rssContainer.appendChild(li);
@@ -712,56 +712,50 @@
 		addBridge(highlight) {
 			var li = document.createElement('li');
 			var icon1 = document.createElement('iron-icon');
-			Polymer.dom(icon1).setAttribute('icon', 'image:brightness-1');
+			icon1.setAttribute('icon', 'image:brightness-1');
 			var icon2 = document.createElement('iron-icon');
-			Polymer.dom(icon2).setAttribute('icon', 'image:brightness-1');
+			icon2.setAttribute('icon', 'image:brightness-1');
 			var icon3 = document.createElement('iron-icon');
-			Polymer.dom(icon3).setAttribute('icon', 'image:brightness-1');
+			icon3.setAttribute('icon', 'image:brightness-1');
 
-			Polymer.dom(li).appendChild(icon1);
-			Polymer.dom(li).appendChild(icon2);
-			Polymer.dom(li).appendChild(icon3);
+			li.appendChild(icon1);
+			li.appendChild(icon2);
+			li.appendChild(icon3);
 
 			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 			rssContainer.appendChild(li);
 		}
 		createCommitChart(data) {
 			// clear old
-			while (Polymer.dom(this.$.commit).firstChild) {
-				Polymer.dom(
-					this.$.commit
-				).removeChild(
-					Polymer.dom(
-						this.$.commit
-					).firstChild
-				);
+			while (this.$.commit.firstChild) {
+				this.$.commit.removeChild(this.$.commit.firstChild);
 			}
 			// seperate out activities for simple picking
 			var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 			var daysDiv = document.createElement('div');
-			Polymer.dom(daysDiv).classList.add('layout', 'vertical');
+			daysDiv.classList.add('layout', 'vertical');
 			for (var day of days) {
 				var innerDay = document.createElement('div');
-				Polymer.dom(innerDay).classList.add('tile-day');
-				Polymer.dom(innerDay).textContent = day;
-				Polymer.dom(daysDiv).appendChild(innerDay);
+				innerDay.classList.add('tile-day');
+				innerDay.textContent = day;
+				daysDiv.appendChild(innerDay);
 			}
-			Polymer.dom(this.$.commit).appendChild(daysDiv);
+			this.$.commit.appendChild(daysDiv);
 			// create chart
 			var moving = moment().subtract(12, 'weeks');
 			for (var i = 0; i < 12; i++) {
 				var div = document.createElement('div');
-				Polymer.dom(div).classList.add('layout', 'vertical');
+				div.classList.add('layout', 'vertical');
 				for (var o = 0; o < 7; o++) {
 					var innerDiv = document.createElement('div');
-					Polymer.dom(innerDiv).classList.add('tile');
+					innerDiv.classList.add('tile');
 					if (moving.format('YYYYMMDD') in data) {
-						Polymer.dom(innerDiv).classList.add('active');
+						innerDiv.classList.add('active');
 					}
-					Polymer.dom(div).appendChild(innerDiv);
+					div.appendChild(innerDiv);
 					moving.add(1, 'days');
 				}
-				Polymer.dom(this.$.commit).appendChild(div);
+				this.$.commit.appendChild(div);
 			}
 		}
 		createRSSProgression(data, days) {

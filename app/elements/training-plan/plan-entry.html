@@ -414,7 +414,7 @@
         this.phaseCount += 1;
         phaseEntry.num = this.phaseCount;
         phaseEntry.setData(phaseData);
-        Polymer.dom(this.$.phases).appendChild(phaseEntry);
+        this.$.phases.appendChild(phaseEntry);
       }
 
       _addPhaseHandler() {
@@ -422,7 +422,7 @@
       }
 
       _removePhaseHandler() {
-        let phases = Polymer.dom(this.$.phases);
+        let phases = this.$.phases;
         if (phases.children.length <= 0) {
           return;
         }

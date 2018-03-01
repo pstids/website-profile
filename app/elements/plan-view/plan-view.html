@@ -269,8 +269,8 @@ class PlanView extends Polymer.Element {
 							if (segment.segment_desc === undefined) {
 								return '';
 							}
-							while (Polymer.dom(this.planDescription).firstChild) {
-								Polymer.dom(this.planDescription).removeChild(Polymer.dom(this.planDescription).firstChild);
+							while (this.planDescription.firstChild) {
+								this.planDescription.removeChild(this.planDescription.firstChild);
 							}
 							this.planDescription.insertAdjacentHTML('beforeend', `${title}<p style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;'>${segment.segment_desc}</p>`);
 							return `${title}`;
