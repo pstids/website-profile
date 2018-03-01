@@ -18,7 +18,7 @@
 
 ## NPM Scripts
 
-Run any of the npm scripts with `npm run <command>` or `yarn <command>`.
+Run any of the following npm scripts with `npm run <command>` or `yarn <command>`.
 
     build       Builds the project
     serve       Starts app and mock-API servers for local development
@@ -36,4 +36,4 @@ By default, the app server serves the original source files as-is. To serve the 
     npm run serve -- build/production
 
 ### `lint`
-Lints all `*.js` and `*.html` files in the project under the `app/` source directory.
+Lints all `*.js` and `*.html` files in the project under the `app/` source directory. Note that `polymer-lint` currently does not handle ES2017 syntax (including `async`/`await`), so some false-positive warnings/errors may be seen in the linter output.
