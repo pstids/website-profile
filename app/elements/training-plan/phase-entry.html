@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/shadycss/apply-shim.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
 
 <dom-module id="phase-entry">
     <template>
@@ -25,7 +26,7 @@
                     display: none;
                 };
             }
-            input[is="iron-input"] {
+            .iron-input {
                 font: inherit;
                 font-size: 14px;
                 outline: none;
@@ -47,10 +48,14 @@
             <paper-input-container always-float-label>
                 <div class="layout horizontal" slot="input">
                     <p>Week</p>
-                    <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekStart}}">
+                    <iron-input allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekStart}}">
+                        <input class="iron-input" maxlength="2" size="2">
+                    </iron-input>
                     <p class="separator"> - </p>
                     <p>Week</p>
-                    <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekEnd}}">
+                    <iron-input allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekEnd}}">
+                        <input class="iron-input" maxlength="2" size="2">
+                    </iron-input>
                 </div>
             </paper-input-container>
             <paper-input class="flex" label="Summary" placeholder="e.g. The purpose of this phase is to ..." value="{{summary}}" char-counter maxlength="200"></paper-input>
