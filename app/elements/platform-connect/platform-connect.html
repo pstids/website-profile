@@ -77,8 +77,7 @@
                         <paper-input no-label-float type="text" placeholder="Email" name="email" data-suunto="email"></paper-input>
                         <stryd-button data-suunto="auth">Connect to Movescount</stryd-button>
                     </div>
-                    <!-- TODO: How do we upgrade this link? It's not a button -->
-                    <a is="stryd-button" data-suunto="confirm" href="http://www.movescount.com/settings#connections" class="hidden" target="_blank">Visit Movescount to Confirm</a>
+                    <stryd-button data-suunto="confirm" data-href="http://www.movescount.com/settings#connections" class="hidden">Visit Movescount to Confirm</stryd-button>
                     <stryd-button data-suunto="fetch" class="hidden">Fetch New Workouts</stryd-button>
                     <stryd-button data-suunto="fetching" class="hidden" disabled>Fetching</stryd-button>
                     <stryd-button data-suunto="disconnect" class="hidden">Disconnect</stryd-button>
@@ -168,6 +167,9 @@
                     alert: this.root.querySelector('[data-suunto="alert"]'),
                     disconnect: this.root.querySelector('[data-suunto="disconnect"]')
                 };
+                this.suunto.confirm.addEventListener('click', e => {
+                    window.open(e.target.dataset.href, '_blank');
+                });
                 this.suunto.fetch.addEventListener('click', () => {
                     this.suunto.fetch.classList.add('hidden');
                     this.suunto.fetching.classList.remove('hidden');
