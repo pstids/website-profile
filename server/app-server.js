@@ -4,7 +4,7 @@ const projectConfig = require('../polymer.json');
 /**
  * Starts the front-end server in dev mode
  */
-async function startServer(apiServerPort) {
+async function startServer({appPort, apiServerPort}) {
   const serverOptions = {
     compile: projectConfig.compile,
     entryPoint: projectConfig.entryPoint,
@@ -14,6 +14,7 @@ async function startServer(apiServerPort) {
       target: `http://localhost:${apiServerPort}`
     },
     root: 'app',
+    port: appPort,
   };
 
   const server = await polyserveStartServer(serverOptions, app => {

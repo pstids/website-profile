@@ -6,6 +6,7 @@ if (rootPath) {
   process.chdir(rootPath);
 }
 
+const appPort = 8081;
 const apiServerPort = 8888;
-startAppServer(apiServerPort);
+startAppServer({appPort, apiServerPort});
 startApiServer(apiServerPort);
