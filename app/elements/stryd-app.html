@@ -104,6 +104,13 @@
   <script>
     class StrydApp extends Polymer.Element {
       static get is() { return 'stryd-app'; }
+
+      static get properties() {
+        return {
+          route: String,
+          home: String
+        }
+      }
     }
     window.customElements.define(StrydApp.is, StrydApp);
   </script>
