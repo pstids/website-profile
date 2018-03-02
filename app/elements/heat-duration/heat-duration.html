@@ -512,7 +512,7 @@ class HeatDuration extends Polymer.Element {
 			.tickPadding(10)
 			.tickSize(1);
 
-		var svg = d3.select('#heatline')
+		var svg = d3.select(this.$.heatline)
 			.attr('width', this.width + this.padding*2)
 			.attr('height', this.height + this.padding*2)
 				.append('svg:g')
@@ -542,7 +542,7 @@ class HeatDuration extends Polymer.Element {
 			.attr('transform', `translate(${this.padding}, 0)`)
 			.attr('fill', '#F5A214');
 
-		var svg2 = d3.select('#heatline2')
+		var svg2 = d3.select(this.$.heatline2)
 			.attr('width', this.width + this.padding*2)
 			.attr('height', this.height + this.padding*2)
 				.append('svg:g')
@@ -588,7 +588,7 @@ class HeatDuration extends Polymer.Element {
 				.attr('y', -10)
 				.text('Power (W)');
 
-		var focus = d3.select('#heatlay')
+		var focus = d3.select(this.$.heatlay)
 			.append('g')
 			.style('display', 'none');
 
@@ -615,7 +615,7 @@ class HeatDuration extends Polymer.Element {
 
 		var that = this;
 
-		d3.select('#heatlay')
+		d3.select(this.$.heatlay)
 			.attr('width', this.width + this.padding*2)
 			.attr('height', this.height + this.padding*2)
 			.append('g')
@@ -777,7 +777,7 @@ class HeatDuration extends Polymer.Element {
 		var yScale = d3.scale.ordinal()
 			.rangeBands([0, height]);
 
-		var svg = d3.select('#heatbars')
+		var svg = d3.select(this.$.heatbars)
 			.append('svg')
 			.attr('width', width + margin.left + margin.right)
 			.attr('height', height + margin.top + margin.bottom)
