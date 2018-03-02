@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/shadycss/apply-shim.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
@@ -158,15 +157,15 @@
 					<div class="text">Your Trend</div>
 				</div>
 				<div class="flex layout horizontal end-justified">
-					<div data-stati="mf" data-toggle="on">
+					<div data-stati="mf" on-click="eleTap" data-toggle="on">
 						<div class="circle"></div>
 						<div class="type">Metabolic Fitness</div>
 					</div>
-					<div data-stati="me" data-toggle="off">
+					<div data-stati="me" on-click="eleTap" data-toggle="off">
 						<div class="circle"></div>
 						<div class="type">Muscle Endurance</div>
 					</div>
-					<div data-stati="mp" data-toggle="off">
+					<div data-stati="mp" on-click="eleTap" data-toggle="off">
 						<div class="circle"></div>
 						<div class="type">Muscle Power</div>
 					</div>
@@ -221,7 +220,7 @@
 	</paper-dialog>
 </template>
 <script>
-class PowerTrend extends Polymer.GestureEventListeners(Polymer.Element) {
+class PowerTrend extends Polymer.Element {
 	static get is() { return 'power-trend'; }
 
 	static get properties() {
@@ -230,45 +229,24 @@ class PowerTrend extends Polymer.GestureEventListeners(Polymer.Element) {
 		};
 	}
 
-	constructor() {
-		super();
-		this._eleTap = this.eleTap.bind(this);
-	}
-	disconnectedCallback() {
-		super.disconnectedCallback();
-		Polymer.Gestures.removeListener(this, 'tap', this._eleTap);
-	}
 	eleTap(e) {
-		var target = e.target;
-		while (true) {
-			if ('stati' in target.dataset) {
-				var select = target.dataset.stati;
-				if (this.chart) {
-					this.root.querySelector(`[data-stati="${this.active}"]`).dataset.toggle = 'off';
-					this.chart.hideGraph(this.chart.getGraphById(`${this.active}v`));
-					this.chart.hideGraph(this.chart.getGraphById(`${this.active}t`));
-					this.chart.showGraph(this.chart.getGraphById(`${select}t`));
-					this.chart.showGraph(this.chart.getGraphById(`${select}v`));
-					this.root.querySelector(`[data-stati="${select}"]`).dataset.toggle = 'on';
-					this.active = select;
-					this.fitness = this.fitnessers[this.active];
-					this.fitness_type = this.types[this.active];
-				}
-				return;
-			} else if (target === this) {
-				return;
-			}
-			if ('parentNode' in target && target.parentNode !== null) {
-				target = target.parentNode;
-			} else {
-				return;
-			}
+		if (this.chart) {
+			var target = e.currentTarget;
+			var select = target.dataset.stati;
+			this.root.querySelector(`[data-stati="${this.active}"]`).dataset.toggle = 'off';
+			this.chart.hideGraph(this.chart.getGraphById(`${this.active}v`));
+			this.chart.hideGraph(this.chart.getGraphById(`${this.active}t`));
+			this.chart.showGraph(this.chart.getGraphById(`${select}t`));
+			this.chart.showGraph(this.chart.getGraphById(`${select}v`));
+			target.dataset.toggle = 'on';
+			this.active = select;
+			this.fitness = this.fitnessers[this.active];
+			this.fitness_type = this.types[this.active];
 		}
 	}
 
 	connectedCallback() {
 		super.connectedCallback();
-		Polymer.Gestures.addListener(this, 'tap', this._eleTap);
 		var path = `/b/api/v1/users/runnertrend`;
 		superagent
 			.get(path)
