@@ -249,8 +249,8 @@
 				.innerTickSize(-this.width)
 				.outerTickSize(0);
 
-			d3.selectAll('.d3-tip')
-				.remove();
+			this.root.querySelectorAll('.d3-tip')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var tip = d3.tip()
 				.attr('class', 'd3-tip')
@@ -277,7 +277,8 @@
 			var vis = d3.select(this.$.barchart);
 			vis.call(tip);
 
-			d3.selectAll('.axis').remove();
+			this.root.querySelectorAll('.axis')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var xAxisText = vis.insert('g', ':first-child')
 				.attr('class', 'x axis')
@@ -437,8 +438,8 @@
 				.innerTickSize(-this.width)
 				.outerTickSize(0);
 
-			d3.selectAll('.d3-tip')
-				.remove();
+			this.root.querySelectorAll('.d3-tip')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var tip = d3.tip()
 				.attr('class', 'd3-tip')
@@ -463,7 +464,8 @@
 
 			var vis = d3.select(this.$.barchart);
 			vis.call(tip);
-			d3.selectAll('.axis').remove();
+			this.root.querySelectorAll('.axis')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var xAxisText = vis.insert('g', ':first-child')
 				.attr('class', 'x axis')
