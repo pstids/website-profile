@@ -106,15 +106,15 @@
 					<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
 				</div>
 				<div class="flex layout horizontal end-justified">
-					<div data-stat="stress" data-toggle="on">
+					<div data-stat="stress" on-click="callFun" data-toggle="on">
 						<div class="circle"></div>
 						<div class="type">Stress</div>
 					</div>
-					<div data-stat="distance" data-toggle="off" >
+					<div data-stat="distance" on-click="callFun" data-toggle="off" >
 						<div class="circle"></div>
 						<div class="type">Distance</div>
 					</div>
-					<div data-stat="zones" data-toggle="off">
+					<div data-stat="zones" on-click="callFun" data-toggle="off">
 						<div class="circle"></div>
 						<div class="type">Time in Zones</div>
 					</div>
@@ -193,9 +193,6 @@
 			this.graph = d3.select(this.$.stress)
 				.attr('width', this.width + 100)
 				.attr('height', this.height + 100);
-
-			d3.selectAll('[data-stat]')
-				.on('click', this.callFun.bind(this));
 
 			// d3.select(window).on('resize', this.resize.bind(this));
 			this.fillBars('weeks');
@@ -567,8 +564,7 @@
 				.duration(300)
 				.attr('transform', 'translate(0, 0)');
 		}
-		/* unused: a */
-		callFun(a, e) {
+		callFun(e) {
 			var vis = d3.select(this.$.barchart);
 			vis.selectAll('.stack').remove();
 			var on = this.root.querySelector('[data-toggle="on"]');
@@ -576,18 +572,20 @@
 				on.dataset.toggle = 'off';
 			}
 
-			if (e === 3) {
+			const target = e.currentTarget;
+			const statType = target.dataset.stat;
+			if (statType === 'distance') {
 				this.state = 'distance';
 				this.fillBars('weeks');
-				this.root.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
-			} else if (e === 2) {
+				target.dataset.toggle = 'on';
+			} else if (statType === 'stress') {
 				this.state = 'stress';
 				this.fillBars('weeks');
-				this.root.querySelector('[data-stat="stress"]').dataset.toggle = 'on';
-			} else if (e === 4) {
+				target.dataset.toggle = 'on';
+			} else if (statType === 'zones') {
 				this.state = 'tiz';
 				this.zillBars('weeks');
-				this.root.querySelector('[data-stat="zones"]').dataset.toggle = 'on';
+				target.dataset.toggle = 'on';
 			}
 		}
 		getTimeType(dataType, timeType, idx) {
