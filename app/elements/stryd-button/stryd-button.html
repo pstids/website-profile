@@ -37,7 +37,7 @@
 
             onClick(e) {
                 e.preventDefault();
-                this.dispatchEvent(new Event(e));
+                this.dispatchEvent(new Event(e), {bubbles: true, composed: true});
             }
         }
         window.customElements.define(StrydButton.is, StrydButton);

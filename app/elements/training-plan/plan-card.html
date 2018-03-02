@@ -163,21 +163,21 @@
         let arg = parseInt(e.target.getAttribute('data-index'));
         console.log('args are ' + arg);
         if (isNaN(arg)) {
-          this.fire('card-tap', {'info': {}, 'week': this.week, 'day': this.day, 'seq': this.trainingInfos.length});
+          this.dispatchEvent(new CustomEvent('card-tap', {detail: {'info': {}, 'week': this.week, 'day': this.day, 'seq': this.trainingInfos.length}, bubbles: true, composed: true}));
           return;
         }
         let info = this.get(['trainingInfos', arg]);
         // Used to fill current information on to training-entry dialog
-        this.fire('card-tap', {'info': info, 'week': this.week, 'day': this.day, 'seq': arg});
+        this.dispatchEvent(new CustomEvent('card-tap', {detail: {'info': info, 'week': this.week, 'day': this.day, 'seq': arg}, bubbles: true, composed: true}));
       }
       _copy(e) {
         let arg = parseInt(e.target.getAttribute('data-index'));
         if (!isNaN(arg)) {
-          this.fire('card-copy', {'info': this.get(['trainingInfos', arg])});
+          this.dispatchEvent(new CustomEvent('card-copy', {detail: {'info': this.get(['trainingInfos', arg])}, bubbles: true, composed: true}));
         }
       }
       _paste() {
-        this.fire('card-paste', {'week': this.week, 'day': this.day, 'seq': this.trainingInfos.length});
+        this.dispatchEvent(new CustomEvent('card-paste', {detail: {'week': this.week, 'day': this.day, 'seq': this.trainingInfos.length}, bubbles: true, composed: true}));
       }
       _delete(e) {
         let arg = parseInt(e.target.getAttribute('data-index'));
@@ -205,14 +205,14 @@
           // Relative to the right side of the screen, considering the zoom level
           x = document.body.clientWidth - rect.left;
         }
-        this.fire('card-show-summary',
-          {'info': this.trainingInfos, 'week': this.week, 'day': this.day, 'x': x, 'y': y, 'pos': pos});
+        this.dispatchEvent(new CustomEvent('card-show-summary',
+          {detail: {'info': this.trainingInfos, 'week': this.week, 'day': this.day, 'x': x, 'y': y, 'pos': pos}, bubbles: true, composed: true}));
       }
       _hideSummary() {
         if (!this.readOnly) {
           return;
         }
-        this.fire('card-hide-summary');
+        this.dispatchEvent(new CustomEvent('card-hide-summary', {bubbles: true, composed: true}));
       }
     }
     window.customElements.define(PlanCard.is, PlanCard);

@@ -196,7 +196,7 @@
         for (var i = 0; i < blockContainer.length; i++) {
           blocks.push(blockContainer[i].data());
         }
-        this.fire('training-input', {
+        this.dispatchEvent(new CustomEvent('training-input', {detail: {
           workout_title: this.planTitle,
           workout_day: (this.week - 1) * 7 + this.day,
           workout_seq: this.seq,
@@ -206,7 +206,7 @@
           workout_duration: 100,  // TODO
           workout_surface: this.surfaceSelected,
           blocks: blocks
-        });
+        }, bubbles: true, composed: true}));
       }
       _addBlock(blockData) {
         var blockEntry = document.createElement('block-entry');
