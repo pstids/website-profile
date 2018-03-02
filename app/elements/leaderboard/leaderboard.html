@@ -4,7 +4,6 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/image-icons.html">
-<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../workout-element/time-in-zone.html">
@@ -376,7 +375,7 @@
 		</paper-dialog>
 	</template>
 	<script>
-	class SocialLeaderBoard extends Polymer.GestureEventListeners(Polymer.Element) {
+	class SocialLeaderBoard extends Polymer.Element {
 		static get is() { return 'social-leaderboard'; }
 
 		static get properties() {
@@ -395,11 +394,17 @@
 		}
 		connectedCallback() {
 			super.connectedCallback();
-			Polymer.Gestures.addListener(this, 'tap', this._eleTap);
+			Polymer.RenderStatus.afterNextRender(this, board => {
+				[this.$.boardCp, this.$.boardEff, this.$.boardRss].forEach(board => {
+					board.addEventListener('click', this._eleTap);
+				});
+			});
 		}
 		disconnectedCallback() {
 			super.disconnectedCallback();
-			Polymer.Gestures.removeListener(this, 'tap', this._eleTap);
+			[this.$.boardCp, this.$.boardEff, this.$.boardRss].forEach(board => {
+				board.removeEventListener('click', this._eleTap);
+			});
 		}
 		eleTap(e) {
 			var target = e.target;
