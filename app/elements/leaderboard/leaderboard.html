@@ -671,6 +671,7 @@
 				small.textContent = entry.stress.toFixed(1);
 			}
 			li.appendChild(small);
+			this._patchClasses(li);
 
 			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 			rssContainer.appendChild(li);
@@ -703,6 +704,7 @@
 					small.textContent = 'Daily RSS';
 				}
 				li.appendChild(small);
+				this._patchClasses(li);
 
 				var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 				rssContainer.appendChild(li);
@@ -723,9 +725,19 @@
 			li.appendChild(icon1);
 			li.appendChild(icon2);
 			li.appendChild(icon3);
+			this._patchClasses(li);
 
 			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
 			rssContainer.appendChild(li);
+		}
+		/**
+		 * Adds this element's name to the classes of an element's node tree.
+		 * This is needed to workaround a bug in ShadyDOM that does not detect
+		 * dynamically added children.
+		 */
+		_patchClasses(el) {
+			el.classList.add(this.constructor.is);
+			Array.from(el.childNodes).forEach(node => node.classList.add(this.constructor.is));
 		}
 		createCommitChart(data) {
 			// clear old
