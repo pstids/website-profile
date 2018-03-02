@@ -786,7 +786,7 @@
 				.attr('width', width + 100)
 				.attr('height', height + 100);
 
-			graph.append('svg:g')
+			var barChart = graph.append('svg:g')
 				.attr('id', 'barchart2')
 				.attr('transform', 'translate(50, 50)');
 
@@ -832,7 +832,7 @@
 					return `<div class="float-tag">Stress</div><div class="float-value">${+d} RSS</div>`;
 				});
 
-			var vis = d3.select(this.$.barchart2);
+			var vis = barChart;
 			vis.call(tip);
 
 			this.root.querySelectorAll('.axis')
