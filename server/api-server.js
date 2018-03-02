@@ -25,6 +25,7 @@ const routes = {
   '/api/v1/activities/:id(\\d+)': {
     delete: `${JSON_DIR_PATH}/ok.json`,
   },
+  '/api/v1/activities/:id/calendar': `${JSON_DIR_PATH}/activities_calendar.json`,
   '/api/v1/activities/:id/fit': {
     post: `${JSON_DIR_PATH}/activities_id_fit.json`,
   },
