@@ -1,6 +1,5 @@
 const {setupRoutes} = require('route-map');
 const chalk = require('chalk');
-const fs = require('fs');
 const path = require('path');
 
 const JSON_DIR_PATH = path.join(__dirname, '../app/scripts/local');
@@ -22,29 +21,11 @@ const routes = {
   '/api/v1/activities/weekly-stat': `${JSON_DIR_PATH_2}/api/v1/activities/weekly-stat.json`,
   '/api/v1/activities/calendar': `${JSON_DIR_PATH_2}/api/v1/activities/calendar.json`,
   '/api/v1/activities/:id(\\d+)': {
-    get(req, res) {
-      const filename = `${JSON_DIR_PATH_2}/api/v1/activities/${req.params.id}.json`;
-      if (fs.existsSync(filename)) {
-        res.json(require(filename));
-      } else {
-        console.error(chalk.red(`not found: ${filename}`));
-        res.sendStatus(404);
-      }
-    },
+    get: `${JSON_DIR_PATH_2}/api/v1/activities/:id.json`,
     put: `${JSON_DIR_PATH}/ok.json`,
     delete: `${JSON_DIR_PATH}/ok.json`,
   },
-  '/api/v1/activities/:id/calendar': {
-    get(req, res) {
-      const filename = `${JSON_DIR_PATH_2}/api/v1/activities/${req.params.id}/calendar.json`;
-      if (fs.existsSync(filename)) {
-        res.json(require(filename));
-      } else {
-        console.error(chalk.red(`not found: ${filename}`));
-        res.sendStatus(404);
-      }
-    }
-  },
+  '/api/v1/activities/:id/calendar': `${JSON_DIR_PATH_2}/api/v1/activities/:id/calendar.json`,
   '/api/v1/activities/:id/fit': {
     post: `${JSON_DIR_PATH}/activities_id_fit.json`,
   },
@@ -55,7 +36,7 @@ const routes = {
     get(req, res) {
       const id = req.params.id;
       if (id === '5727582954717184') {
-        res.json(require(`${JSON_DIR_PATH_2}/api/v1/activities/5727582954717184.json`));
+        res.json(require(`${JSON_DIR_PATH_2}/api/v1/activities/${id}.json`));
         return;
       }
       const activities = require(`${JSON_DIR_PATH}/activities_calendar.json`).activities;
