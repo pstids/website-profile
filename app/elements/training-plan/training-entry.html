@@ -214,6 +214,7 @@
         this.blockCount += 1;
         blockEntry.num = this.blockCount;
         blockEntry.setData(blockData);
+        this._patchClasses(blockEntry);
         this.$.blocks.appendChild(blockEntry);
         this._save();
       }
@@ -227,6 +228,15 @@
         }
         blocks.removeChild(blocks.lastChild);
         this.blockCount -= 1;
+      }
+      /**
+       * Adds this element's name to the classes of an element's node tree.
+       * This is needed to workaround a bug in ShadyDOM that does not detect
+       * dynamically added children.
+       */
+      _patchClasses(el) {
+        el.classList.add(this.constructor.is);
+        Array.from(el.childNodes).forEach(node => node.classList.add(this.constructor.is));
       }
     }
     window.customElements.define(TrainingEntry.is, TrainingEntry);

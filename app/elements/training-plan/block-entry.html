@@ -140,6 +140,7 @@
                 this.segmentCount += 1;
                 segmentEntry.segmentNum = this.segmentCount;
                 segmentEntry.setData(segData);
+                this._patchClasses(segmentEntry);
                 this.$.segments.appendChild(segmentEntry);
             }
             _addSegmentHandler() {
@@ -164,6 +165,15 @@
                         this.contentSelected = 'unfold';
                         break;
                 }
+            }
+            /**
+             * Adds this element's name to the classes of an element's node tree.
+             * This is needed to workaround a bug in ShadyDOM that does not detect
+             * dynamically added children.
+             */
+            _patchClasses(el) {
+                el.classList.add(this.constructor.is);
+                Array.from(el.childNodes).forEach(node => node.classList.add(this.constructor.is));
             }
         }
         window.customElements.define(BlockEntry.is, BlockEntry);
