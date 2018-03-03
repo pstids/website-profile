@@ -9,8 +9,9 @@ const routes = {
     get: `${JSON_DIR_PATH_2}/api/v1/users/plan.json`,
     delete: `${JSON_DIR_PATH}/ok.json`,
   },
-  '/api/v1/users/:id(\\d+)': {
-    put: `${JSON_DIR_PATH}/users_id.json`
+  '/api/v1/users/:id': {
+    get: `${JSON_DIR_PATH_2}/api/v1/users/:id.json`,
+    put: `${JSON_DIR_PATH}/ok.json`,
   },
   '/api/v1/training': `${JSON_DIR_PATH_2}/api/v1/training.json`,
   '/api/v1/training/plan/:id': `${JSON_DIR_PATH}/training_plan_id.json`,
