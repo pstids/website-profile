@@ -5,6 +5,7 @@
   "devDependencies": {
     "jshint": "^2.9.5",
     "jshint-stylish": "^2.2.1",
+    "morgan": "^1.9.0",
     "polyserve": "^0.23.0",
     "route-map": "github:tony19/route-map#0.0.1"
   },

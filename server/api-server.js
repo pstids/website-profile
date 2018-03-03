@@ -1,6 +1,7 @@
 const {setupRoutes} = require('route-map');
 const {routes} = require('./routes');
 const chalk = require('chalk');
+const morgan = require('morgan');
 
 /**
  * Starts a mock API server for dev
@@ -9,12 +10,7 @@ function startServer(port) {
   const express = require('express');
   const app = express();
 
-  // logger middleware
-  app.use((req, res, next) => {
-    console.debug(chalk.gray(`API ${req.method} ${req.url}`));
-    next();
-  });
-
+  app.use(morgan('dev'));
   setupRoutes(app, routes);
 
   // detect unhandled routes (missing a route in our config?)
