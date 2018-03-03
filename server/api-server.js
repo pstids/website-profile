@@ -1,31 +1,50 @@
 const {setupRoutes} = require('route-map');
 const chalk = require('chalk');
+const fs = require('fs');
+const path = require('path');
 
-const JSON_DIR_PATH = '../app/scripts/local';
+const JSON_DIR_PATH = path.join(__dirname, '../app/scripts/local');
+const JSON_DIR_PATH_2 = path.join(__dirname, './data');
 
 const routes = {
   '/api/v1/users/plan': {
-    get(req, res) {
-      const data = require(`${JSON_DIR_PATH}/users_plan.json`);
-      data.training_plan = require(`${JSON_DIR_PATH}/plan.json`).plan;
-      res.json(data);
-    },
+    get: `${JSON_DIR_PATH_2}/api/v1/users/plan.json`,
     delete: `${JSON_DIR_PATH}/ok.json`,
   },
   '/api/v1/users/:id(\\d+)': {
     put: `${JSON_DIR_PATH}/users_id.json`
   },
-  '/api/v1/training': `${JSON_DIR_PATH}/training.json`,
+  '/api/v1/training': `${JSON_DIR_PATH_2}/api/v1/training.json`,
   '/api/v1/training/plan/:id': `${JSON_DIR_PATH}/training_plan_id.json`,
   '/api/v1/training/zone': {
     put: `${JSON_DIR_PATH}/training.json`,
   },
-  '/api/v1/activities/weekly-stat': `${JSON_DIR_PATH}/activities_weekly-stat.json`,
-  '/api/v1/activities/calendar': `${JSON_DIR_PATH}/activities_calendar.json`,
+  '/api/v1/activities/weekly-stat': `${JSON_DIR_PATH_2}/api/v1/activities/weekly-stat.json`,
+  '/api/v1/activities/calendar': `${JSON_DIR_PATH_2}/api/v1/activities/calendar.json`,
   '/api/v1/activities/:id(\\d+)': {
+    get(req, res) {
+      const filename = `${JSON_DIR_PATH_2}/api/v1/activities/${req.params.id}.json`;
+      if (fs.existsSync(filename)) {
+        res.json(require(filename));
+      } else {
+        console.error(chalk.red(`not found: ${filename}`));
+        res.sendStatus(404);
+      }
+    },
+    put: `${JSON_DIR_PATH}/ok.json`,
     delete: `${JSON_DIR_PATH}/ok.json`,
   },
-  '/api/v1/activities/:id/calendar': `${JSON_DIR_PATH}/activities_calendar.json`,
+  '/api/v1/activities/:id/calendar': {
+    get(req, res) {
+      const filename = `${JSON_DIR_PATH_2}/api/v1/activities/${req.params.id}/calendar.json`;
+      if (fs.existsSync(filename)) {
+        res.json(require(filename));
+      } else {
+        console.error(chalk.red(`not found: ${filename}`));
+        res.sendStatus(404);
+      }
+    }
+  },
   '/api/v1/activities/:id/fit': {
     post: `${JSON_DIR_PATH}/activities_id_fit.json`,
   },
@@ -35,17 +54,21 @@ const routes = {
   '/activities/:id(\\d+)': {
     get(req, res) {
       const id = req.params.id;
+      if (id === '5727582954717184') {
+        res.json(require(`${JSON_DIR_PATH_2}/api/v1/activities/5727582954717184.json`));
+        return;
+      }
       const activities = require(`${JSON_DIR_PATH}/activities_calendar.json`).activities;
       const activity = activities.find(a => !Number.isNaN(a.id) && Number(a.id) === Number(id));
       if (!activity) {
-        console.log('activity not found by id:', id);
+        console.error(chalk.red('activity not found by id:', id));
       }
       res.json(activity || {});
     }
   },
-  '/api/v1/users/powerduration': `${JSON_DIR_PATH}/powerduration.json`,
-  '/api/v1/users/runnertrend': `${JSON_DIR_PATH}/runnertrend.json`,
-  '/api/v1/users/runnerprofile': `${JSON_DIR_PATH}/runnerprofile.json`,
+  '/api/v1/users/powerduration': `${JSON_DIR_PATH_2}/api/v1/users/powerduration.json`,
+  '/api/v1/users/runnertrend': `${JSON_DIR_PATH_2}/api/v1/users/runnertrend.json`,
+  '/api/v1/users/runnerprofile': `${JSON_DIR_PATH_2}/api/v1/users/runnerprofile.json`,
   '/platform/auth/suunto/check': {
     post: `${JSON_DIR_PATH}/ok.json`,
   },
@@ -54,12 +77,13 @@ const routes = {
     delete: `${JSON_DIR_PATH}/ok.json`,
   },
   '/internal/fetch/suunto': {
-    post: `${JSON_DIR_PATH}/ok.json`,
+    post: `${JSON_DIR_PATH_2}/internal/fetch/suunto.json`,
   },
-  '/internal/platforms': `${JSON_DIR_PATH}/platforms.json`,
-  '/internal/leaderboard/:id(\\d+)': `${JSON_DIR_PATH}/leaderboard-rss.json`,
+  '/internal/platforms': `${JSON_DIR_PATH_2}/internal/platforms.json`,
+  '/internal/leaderboard/1': `${JSON_DIR_PATH_2}/internal/leaderboard/1.json`,
+  '/internal/leaderboard/7': `${JSON_DIR_PATH_2}/internal/leaderboard/7.json`,
   '/internal/leaderboard/cp': `${JSON_DIR_PATH}/leaderboard-cp.json`,
-  '/internal/plan/zoneproportion': `${JSON_DIR_PATH}/zoneproportion.json`,
+  '/internal/plan/zoneproportion': `${JSON_DIR_PATH_2}/internal/plan/zoneproportion`,
 };
 
 /**
