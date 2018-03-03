@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/shadycss/apply-shim.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
@@ -42,14 +41,28 @@
 			.workout-display {
 				display: none;
 			}
+			.workout-display .other {
+				@apply --layout;
+				@apply --layout-horizontal;
+				@apply --layout-around-justified;
+			}
 			.has-workout .workout-display {
 				@apply --layout;
+				@apply --layout-vertical;
+				@apply --layout-around-justified;
 			}
 			.plan-display, .plan-type {
 				display: none;
 			}
 			.has-planned .plan-display, .has-planned .plan-type {
 				@apply --layout;
+				@apply --layout-vertical;
+				@apply --layout-center-justified;
+			}
+			.plan-type .data {
+				@apply --layout;
+				@apply --layout-vertical;
+				@apply --layout-around-justified;
 			}
 			.has-workout.has-planned .plan-type {
 				display: none;
@@ -193,13 +206,13 @@
 				</div>
 				<div class="numday">{{day}}</div>
 			</div>
-			<div class="layout vertical around-justified data workout-display">
+			<div class="data workout-display">
 				<div class="wattage">
 					<iron-icon icon="{{power_icon}}"></iron-icon>
 					<div class="value">{{power}}</div>
 					<div class="rss" id="rss">RSS</div>
 				</div>
-				<div class="layout horizontal around-justified other">
+				<div class="other">
 					<div class="stat">
 						<iron-icon icon="image:timer"></iron-icon>
 						<div class="value">{{time}}</div>
@@ -210,8 +223,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="layout vertical center-justified plan-type">
-				<div class="layout vertical around-justified data">
+			<div class="plan-type">
+				<div class="data">
 					<div class="wattage">
 						<iron-icon icon="social:whatshot"></iron-icon>
 						<div class="value">{{plan_rss}}</div>
