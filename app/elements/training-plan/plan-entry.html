@@ -416,7 +416,7 @@
         this.phaseCount += 1;
         phaseEntry.num = this.phaseCount;
         phaseEntry.setData(phaseData);
-        this._patchClasses(phaseEntry);
+        util.patchClasses(phaseEntry, this);
         this.$.phases.appendChild(phaseEntry);
       }
 
@@ -461,10 +461,10 @@
           }
           let docFrag = document.createDocumentFragment();
           for(i = 0; i < views.length; i++) {
-            this._patchClasses(views[i]);
+            util.patchClasses(views[i], this);
             docFrag.appendChild(views[i]);
           }
-          this._patchClasses(docFrag);
+          util.patchClasses(docFrag, this);
           weekViewContainer.appendChild(docFrag);
         } else {
           let gap = cnt - num;
@@ -530,16 +530,6 @@
             }
             this.$.toast.show();
           }.bind(this));
-      }
-
-      /**
-       * Adds this element's name to the classes of an element's node tree.
-       * This is needed to workaround a bug in ShadyDOM that does not detect
-       * dynamically added children.
-       */
-      _patchClasses(el) {
-        el.classList.add(this.constructor.is);
-        Array.from(el.childNodes).forEach(node => node.classList.add(this.constructor.is));
       }
     }
     window.customElements.define(PlanEntry.is, PlanEntry);

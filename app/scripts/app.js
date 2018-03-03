@@ -38,6 +38,16 @@ var toastEle = null, toast = function (message) {
 	}
 };
 
+/**
+ * Patches an element's classes to workaround a styling bug in ShadyDOM,
+ * where dynamically added children (via document.create) are not shimmed.
+ */
+window.util = window.util || {};
+window.util.patchClasses = function(el, customElem) {
+	el.classList.add(customElem.constructor.is);
+	Array.from(el.childNodes).forEach(node => node.classList.add(customElem.constructor.is));
+};
+
 window.addEventListener('WebComponentsReady', function() {
 
 var app = document.querySelector('#app');

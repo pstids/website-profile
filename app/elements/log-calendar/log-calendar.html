@@ -156,19 +156,10 @@
                     row.appendChild(node);
                     rowDom.push(node);
                 }
-                this._patchClasses(row);
+                util.patchClasses(row, this);
                 calendarContainer.appendChild(row);
                 this.dom.push(rowDom);
             }
-        }
-        /**
-         * Adds this element's name to the classes of an element's node tree.
-         * This is needed to workaround a bug in ShadyDOM that does not detect
-         * dynamically added children.
-         */
-        _patchClasses(el) {
-            el.classList.add(this.constructor.is);
-            Array.from(el.childNodes).forEach(node => node.classList.add(this.constructor.is));
         }
         // // Grabs array of activity data to populate calendar for month (int) and year (int)
         fetchMonth(month, year) {
@@ -225,7 +216,7 @@
                     var day = document.createElement('log-day');
                     // Add day data
                     day.setData(dayObj);
-                    this._patchClasses(day);
+                    util.patchClasses(day, this);
                     // Append to container
                     container.addChild(day);
                     // Append to day array
