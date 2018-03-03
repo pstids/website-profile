@@ -218,7 +218,7 @@
             return false;
         }
         getID() {
-            if ('id' in this.data) {
+            if (this.data && 'id' in this.data) {
                 return this.data.id;
             }
             return 0;
