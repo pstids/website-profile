@@ -294,13 +294,6 @@
 				}
 			}
 		}
-		ready() {
-			super.ready();
-			this.data = {
-				day: 0
-			};
-			this.setData(this.data);
-		}
 		clearWorkout() {
 			this.data = {};
 			this.classList.remove('active');
@@ -411,7 +404,7 @@
 			return false;
 		}
 		getID() {
-			if ('id' in this.data) {
+			if (this.data && 'id' in this.data) {
 				return this.data.id;
 			}
 			return 0;
