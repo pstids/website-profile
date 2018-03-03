@@ -83,7 +83,7 @@ const routes = {
   '/internal/leaderboard/1': `${JSON_DIR_PATH_2}/internal/leaderboard/1.json`,
   '/internal/leaderboard/7': `${JSON_DIR_PATH_2}/internal/leaderboard/7.json`,
   '/internal/leaderboard/cp': `${JSON_DIR_PATH}/leaderboard-cp.json`,
-  '/internal/plan/zoneproportion': `${JSON_DIR_PATH_2}/internal/plan/zoneproportion`,
+  '/internal/plan/zoneproportion': `${JSON_DIR_PATH_2}/internal/plan/zoneproportion.json`,
 };
 
 /**
