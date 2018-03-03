@@ -347,3 +347,8 @@ heat-duration .axis2 text {
 ul, li {
 	list-style: none;
 }
+
+/* SVG text color */
+text {
+	fill: #e7e7e7;
+}
