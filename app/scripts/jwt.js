@@ -15,8 +15,14 @@ class JWT {
 		this.data = {
 			id: 0
 		};
-		this.hasToken = isLocal;
+		if (isLocal) {
+			this._setupTestUser();
+		}
 		this.checkToken();
+	}
+
+	_setupTestUser() {
+		this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3RAc3RyeWQuY29tIiwiVXNlck5hbWUiOiJ0ZXN0IiwiRmlyc3ROYW1lIjoiIiwiTGFzdE5hbWUiOiIiLCJJRCI6ImM1OWM2ZTkxLTgzMTQtNWUwZi00NzBkLTRmODAzYmFmOGU2NCIsIkltYWdlIjoiaHR0cHMlM0ElMkYlMkZzdG9yYWdlLmdvb2dsZWFwaXMuY29tJTJGc3RyeWRfc3RhdGljX2Fzc2V0cyUyRnByb2ZpbGVfaW1hZ2UlMkZwcm9maWxlX3Rlc3QucG5nJTNGRXhwaXJlcyUzRDQxODkyNDQ0MDAlMjZHb29nbGVBY2Nlc3NJZCUzRDk1NDk2OTEyNTI1MC1qdGU1Y2xuYXE5aHZ2NDIxNnRiZzQ1NzcxNWFydDJsciUyNTQwZGV2ZWxvcGVyLmdzZXJ2aWNlYWNjb3VudC5jb20lMjZTaWduYXR1cmUlM0R2QWI1SVFIbWZreGJBN2VMTWNYMFNRaGZJNmtqUHdPeWxSN1E0a3RHUGdmMGJHJTI1MkJvTng4ZGNiMzZCUDQxZWJZSG1pUVZsdUZad1RQRHdVSzVRY29vY0RtdGloYm5iMUxWcGxacXJva0klMjUyRlZpemx6OUlQRiUyNTJCSEk0SkglMjUyRlF1UEpDWktJZmhuUlFvN2RXUSUyNTJCaGpzUU9HaTM5Wm1sOEs4Zkxic0o5OUlQZDYyekxmcyUyNTNEIiwiZXhwIjoxNTIxMjQyODgzMTQwLCJpc3MiOiJzdHJ5ZCJ9.nf6eqn2v6mhd5H8sLVdqiojwJGvkrujfM3VfldnqO3Q';
 	}
 
 	checkToken() {
