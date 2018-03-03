@@ -135,6 +135,7 @@
                     row.appendChild(node);
                     rowDom.push(node);
                 }
+                this._patchClasses(row);
                 calendarContainer.appendChild(row);
                 this.dom.push(rowDom);
             }
@@ -190,6 +191,7 @@
                     var day = document.createElement('compare-day');
                     // Add day data
                     day.setData(dayObj);
+                    this._patchClasses(day);
                     // Append to container
                     container.addChild(day);
                     // Append to day array
@@ -287,6 +289,15 @@
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
+        }
+        /**
+         * Adds this element's name to the classes of an element's node tree.
+         * This is needed to workaround a bug in ShadyDOM that does not detect
+         * dynamically added children.
+         */
+         _patchClasses(el) {
+            el.classList.add(this.constructor.is);
+            Array.from(el.childNodes).forEach(node => node.classList.add(this.constructor.is));
         }
     }
     window.customElements.define(CompareCalendar.is, CompareCalendar);
