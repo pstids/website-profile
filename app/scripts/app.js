@@ -321,12 +321,6 @@ app.addGuide = function (from, to, zone) {
 	workoutElement.addGuide(from, to, zone);
 };
 
-app.clearChildren = function (parent) {
-	while (Polymer.dom(parent).firstChild) {
-		Polymer.dom(parent).removeChild(Polymer.dom(parent).firstChild);
-	}
-};
-
 let rootPath = Polymer.rootPath;
 if (rootPath.endsWith('/')) {
 	rootPath = rootPath.slice(0, -1);
