@@ -26,6 +26,7 @@
   "builds": [
     {
       "name": "debug",
+      "basePath": "/powercenter/",
       "bundle": false,
       "js": {"minify": false},
       "css": {"minify": false},
