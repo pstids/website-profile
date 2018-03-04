@@ -187,65 +187,21 @@ class TrainingPlan {
 
 		this.targetDate = moment();
 
-		/* Check for local plan and store in user account */
-		var trainingSelected;
-		if (isLocal) {
-			trainingSelected = localStorage.getItem('training-selected');
-			var trainingStarted = localStorage.getItem('training-started');
-			var trainingParsed = moment(trainingStarted, 'YYYYMMDD').format('X');
-			if (trainingSelected !== null && trainingStarted !== null) {
-				superagent
-					.post(`/b/api/v1/users/plan?id=${trainingSelected}&start_date=${trainingParsed}`)
-					.set('Accept', 'application/json')
-					.set('Authorization', `Bearer: ${jwt.token}`)
-					.end((err, res) => {
-						if (res !== undefined && res.ok && res.body !== null) {
-							localStorage.removeItem('training-selected');
-							localStorage.removeItem('training-started');
-							window.location.reload();
-						} else {
-							localStorage.removeItem('training-selected');
-							localStorage.removeItem('training-started');
-							console.log('Error: failure to set training plan1', err);
-						}
-					});
-			}
-		}
-
-		if (isLocal) {
-			trainingSelected = localStorage.getItem('training-selected');
-			if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
-				this.targetDateHash = localStorage.getItem('training-started');
-				superagent
-					.get('/powercenter/scripts/local/plan.json')
-					.set('Accept', 'application/json')
-					.end((err, res) => {
-						if (res !== undefined && res.ok && res.body !== null) {
-							this.plan = res.body.plan;
-							this.hasPlan = true;
-							this.processPlan();
-						} else {
-							console.log('Error: failure to get training plan2', err);
-						}
-					});
-			}
-		} else {
-			superagent
-				.get('/b/api/v1/users/plan')
-				.set('Accept', 'application/json')
-				.set('Authorization', `Bearer: ${jwt.token}`)
-				.end((err, res) => {
-					if (res !== undefined && res.ok && res.body !== null) {
-						this.plan = res.body.training_plan;
-						this.hasPlan = true;
-						this.targetDate = moment(res.body.training_plan_start_date);
-						this.targetDateHash = this.targetDate.format('YYYYMMDD');
-						this.processPlan();
-					} else {
-						console.log('Error: failure to get training plan', err);
-					}
-				});
-		}
+		superagent
+			.get('/b/api/v1/users/plan')
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res !== undefined && res.ok && res.body !== null) {
+					this.plan = res.body.training_plan;
+					this.hasPlan = true;
+					this.targetDate = moment(res.body.training_plan_start_date);
+					this.targetDateHash = this.targetDate.format('YYYYMMDD');
+					this.processPlan();
+				} else {
+					console.log('Error: failure to get training plan', err);
+				}
+			});
 	}
 
 	clearTrainingStorage() {
