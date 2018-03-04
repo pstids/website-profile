@@ -1,6 +1,7 @@
 const {startServer: polyserveStartServer} = require('polyserve');
 const projectConfig = require('../polymer.json');
 const chalk = require('chalk');
+const cors = require('cors');
 const path = require('path');
 
 /**
@@ -21,15 +22,10 @@ async function startServer({appPort, root, apiServerPort}) {
 
   const server = await polyserveStartServer(serverOptions, app => {
     setupUrlRewriter(app, serverOptions);
+    insertLastRouteAsMiddleware(app);
 
-    // XXX: polyserve currently installs a wildcard route that prevents
-    // insertion of middleware, so move our newly created route to the
-    // stack index right before the wildcard route.
-    const indexOfWildcardRoute = app._router.stack.findIndex(r => r.route && r.route.path.match(/^\/?\*/g));
-    if (indexOfWildcardRoute > -1) {
-      const newRoute = app._router.stack.pop();
-      app._router.stack.splice(indexOfWildcardRoute, 0, newRoute);
-    }
+    app.use(cors());
+    insertLastRouteAsMiddleware(app);
 
     return app;
   });
@@ -37,6 +33,17 @@ async function startServer({appPort, root, apiServerPort}) {
   const serverAddress = server._connectionKey.replace(/^\d+:/, 'http://');
   console.log(chalk.gray(`app server root directory: ${path.join(process.cwd(), serverOptions.root)}`));
   console.log(`app listening on ${serverAddress}`)
+}
+
+function insertLastRouteAsMiddleware(app) {
+  // XXX: polyserve currently installs a wildcard route that prevents
+  // insertion of middleware, so move our newly created route to the
+  // stack index right before the wildcard route.
+  const indexOfWildcardRoute = app._router.stack.findIndex(r => r.route && r.route.path.match(/^\/?\*/g));
+  if (indexOfWildcardRoute > -1) {
+    const newRoute = app._router.stack.pop();
+    app._router.stack.splice(indexOfWildcardRoute, 0, newRoute);
+  }
 }
 
 function setupUrlRewriter(app, {basePath, root}) {
