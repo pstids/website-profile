@@ -262,11 +262,11 @@
 		}
 		connectedCallback() {
 			super.connectedCallback();
-			Polymer.Gestures.addListener(this, 'tap', this._eleTap);
+			Polymer.Gestures.addListener(this.$.container, 'tap', this._eleTap);
 		}
 		disconnectedCallback() {
 			super.disconnectedCallback();
-			Polymer.Gestures.removeListener(this, 'tap', this._eleTap);
+			Polymer.Gestures.removeListener(this.$.container, 'tap', this._eleTap);
 		}
 		eleTap(e) {
 			var target = e.target;
