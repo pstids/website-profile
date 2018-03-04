@@ -1,24 +1,25 @@
 {
+  "root": "app",
   "basePath": "/powercenter/",
-  "entrypoint": "app/index.html",
-  "shell": "app/elements/stryd-app.html",
+  "entrypoint": "index.html",
+  "shell": "elements/stryd-app.html",
   "sources": [
-    "app/elements/**",
-    "app/fonts/**",
-    "app/images/**",
-    "app/scripts/**",
-    "app/styles/**"
+    "elements/**",
+    "fonts/**",
+    "images/**",
+    "scripts/**",
+    "styles/**"
   ],
   "extraDependencies": [
-    "app/manifest.json",
-    "app/bower_components/webcomponentsjs/custom-elements-es5-adapter.js",
-    "app/bower_components/webcomponentsjs/webcomponents-hi-ce.js",
-    "app/bower_components/webcomponentsjs/webcomponents-hi-sd-ce.js",
-    "app/bower_components/webcomponentsjs/webcomponents-hi-sd.js",
-    "app/bower_components/webcomponentsjs/webcomponents-hi.js",
-    "app/bower_components/webcomponentsjs/webcomponents-lite.js",
-    "app/bower_components/webcomponentsjs/webcomponents-loader.js",
-    "app/bower_components/webcomponentsjs/webcomponents-sd-ce.js"
+    "manifest.json",
+    "bower_components/webcomponentsjs/custom-elements-es5-adapter.js",
+    "bower_components/webcomponentsjs/webcomponents-hi-ce.js",
+    "bower_components/webcomponentsjs/webcomponents-hi-sd-ce.js",
+    "bower_components/webcomponentsjs/webcomponents-hi-sd.js",
+    "bower_components/webcomponentsjs/webcomponents-hi.js",
+    "bower_components/webcomponentsjs/webcomponents-lite.js",
+    "bower_components/webcomponentsjs/webcomponents-loader.js",
+    "bower_components/webcomponentsjs/webcomponents-sd-ce.js"
   ],
   "lint": {
     "rules": ["polymer-2"]
