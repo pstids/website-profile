@@ -37,3 +37,33 @@ By default, the app server serves the original source files as-is. To serve the 
 
 ### `lint`
 Lints all `*.js` and `*.html` files in the project under the `app/` source directory. Note that `polymer-lint` currently does not handle ES2017 syntax (including `async`/`await`), so some false-positive warnings/errors may be seen in the linter output.
+
+### `polymer-cli`
+The NPM scripts above are preferred, but it's possible to run the equivalent commands with `polymer-cli`.
+
+#### `build`
+Equivalent commands:
+
+    polymer build
+    mv build/debug/app build/debug/powercenter
+    mv build/production/app build/production/powercenter
+
+#### `lint`
+Equivalent commands:
+
+    jshint --reporter=node_modules/jshint-stylish **/*.js
+    polymer lint --input app/elements/**/*.html
+
+#### `serve`
+Equivalent commands (excluding the API server startup):
+
+    polymer serve --proxy-path b --proxy-target <API_SERVER_URL> /path/to/build/output
+
+Example: *proxy API requests to `http://localhost:8888`, and serve the production build output*
+
+    # 1. Start API server ...
+
+    # 2. Start app server
+    polymer serve --proxy-path b --proxy-target http://localhost:8888 build/production
+
+    # 3. Open browser to http://localhost:8081/powercenter
