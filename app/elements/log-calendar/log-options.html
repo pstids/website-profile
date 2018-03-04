@@ -64,7 +64,7 @@
             }
             callShare(id) {
                 this.shareID = id;
-                this.shareBox.value = `${this.rootPath}run/${this.shareID}`;
+                this.shareBox.value = `${window.location.origin}${this.rootPath || '/'}run/${this.shareID}`;
                 this.$.dialogShare.open();
                 this.shareID = null;
             }
