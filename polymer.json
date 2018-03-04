@@ -20,7 +20,8 @@
     "bower_components/webcomponentsjs/webcomponents-hi.js",
     "bower_components/webcomponentsjs/webcomponents-lite.js",
     "bower_components/webcomponentsjs/webcomponents-loader.js",
-    "bower_components/webcomponentsjs/webcomponents-sd-ce.js"
+    "bower_components/webcomponentsjs/webcomponents-sd-ce.js",
+    "!bower_components/**/gulpfile.js"
   ],
   "lint": {
     "rules": ["polymer-2"]
