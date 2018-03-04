@@ -2,6 +2,7 @@ const {setupRoutes} = require('route-map');
 const {routes} = require('./routes');
 const chalk = require('chalk');
 const morgan = require('morgan');
+const cors = require('cors')
 
 /**
  * Starts a mock API server for dev
@@ -10,6 +11,7 @@ function startServer(port) {
   const express = require('express');
   const app = express();
 
+  app.use(cors());
   app.use(morgan('dev'));
   setupRoutes(app, routes);
 
