@@ -4,7 +4,7 @@ const projectConfig = require('../polymer.json');
 /**
  * Starts the front-end server in dev mode
  */
-async function startServer({appPort, apiServerPort}) {
+async function startServer({appPort, root, apiServerPort}) {
   const serverOptions = {
     compile: projectConfig.compile,
     entryPoint: projectConfig.entryPoint,
@@ -13,6 +13,7 @@ async function startServer({appPort, apiServerPort}) {
       path: 'b',
       target: `http://localhost:${apiServerPort}`
     },
+    root: root || projectConfig.root,
     port: appPort,
   };
 
