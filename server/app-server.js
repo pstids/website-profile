@@ -13,7 +13,6 @@ async function startServer({appPort, apiServerPort}) {
       path: 'b',
       target: `http://localhost:${apiServerPort}`
     },
-    root: 'app',
     port: appPort,
   };
 
