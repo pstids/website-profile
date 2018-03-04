@@ -11,7 +11,7 @@
     "route-map": "github:tony19/route-map#0.0.1"
   },
   "scripts": {
-    "build": "polymer build",
+    "build": "polymer build && cd build && mv debug/app debug/powercenter && mv production/app production/powercenter",
     "lint": "jshint --reporter=node_modules/jshint-stylish **/*.js && polymer lint --input app/elements/**/*.html",
     "serve": "node server",
     "start": "npm run serve"
