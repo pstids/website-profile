@@ -1,5 +1,7 @@
 const {startServer: polyserveStartServer} = require('polyserve');
 const projectConfig = require('../polymer.json');
+const chalk = require('chalk');
+const path = require('path');
 
 /**
  * Starts the front-end server in dev mode
@@ -33,6 +35,7 @@ async function startServer({appPort, root, apiServerPort}) {
   });
 
   const serverAddress = server._connectionKey.replace(/^\d+:/, 'http://');
+  console.log(chalk.gray(`app server root directory: ${path.join(process.cwd(), serverOptions.root)}`));
   console.log(`app listening on ${serverAddress}`)
 }
 
