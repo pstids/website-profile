@@ -12,6 +12,7 @@
   ],
   "extraDependencies": [
     "manifest.json",
+    "bower_components/shadycss/*.{js,html}",
     "bower_components/webcomponentsjs/custom-elements-es5-adapter.js",
     "bower_components/webcomponentsjs/webcomponents-hi-ce.js",
     "bower_components/webcomponentsjs/webcomponents-hi-sd-ce.js",
