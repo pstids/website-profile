@@ -38,8 +38,8 @@ By default, the app server serves the original source files as-is. To serve the 
 ### `lint`
 Lints all `*.js` and `*.html` files in the project under the `app/` source directory. Note that `polymer-lint` currently does not handle ES2017 syntax (including `async`/`await`), so some false-positive warnings/errors may be seen in the linter output.
 
-### `polymer-cli`
-The NPM scripts above are preferred, but it's possible to run the equivalent commands with `polymer-cli`.
+## Using `polymer-cli` (only if needed)
+**The NPM scripts above are recommended**, but it's possible to run the equivalent commands with `polymer-cli`.
 
 #### `build`
 Equivalent commands:
@@ -59,7 +59,7 @@ Equivalent commands (excluding the API server startup):
 
     polymer serve --proxy-path b --proxy-target <API_SERVER_URL> /path/to/build/output
 
-Example: *proxy API requests to `http://localhost:8888`, and serve the production build output*
+**Example:** *redirect API requests from `http://localhost/b` to `http://localhost:8888`, and serve the production build output*
 
     # 1. Start API server ...
 
