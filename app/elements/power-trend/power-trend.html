@@ -1,129 +1,141 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
 <dom-module id="power-trend">
-<style>
-	:host {
-		@apply(--layout-vertical);
-		@apply(--layout-center);
-		font-family: "Stryd", sans-serif;
-		background-color: var(--dark-background-color);
-		padding: 20px;
-		--paper-slider-knob-color: #F5A214;
-		min-width: 860px;
-		overflow-x: auto;
-	}
-	:host.blurred {
-		-webkit-filter: blur(2px);
-		-moz-filter: blur(2px);
-		-ms-filter: blur(2px);
-		-o-filter: blur(2px);
-		filter: blur(2px);
-	}
-
-	h1.header {
-		@apply(--header);
-		text-align: center;
-		padding: 15px 0;
-	}
-	.title {
-		padding: 20px;
-		@apply(--layout-end);
-	}
-	#trend {
-		width: 1100px;
-		height: 450px;
-		align-self: center;
-	}
-	#fitness {
-		text-align: right;
-		cursor: pointer;
-	}
-	.holder {
-		border: 1px solid #4D4D4D;
-		@apply(--layout-vertical);
-		margin: 10px;
-	}
-
-	[data-stati] {
-		@apply(--layout-center);
-		@apply(--layout-justified);
-		@apply(--layout-horizontal);
-		background-color: var(--primary-background-color);
-		border: 2px solid #FFFFFF;
-		border-radius: 6px;
-		color: #FFFFFF;
-		cursor: pointer;
-		font-size: 1vw;
-		font-weight: 500;
-		margin: 0.5vw 1vw 0 1vw;
-		padding: 0.8vw 1.1vw;
-		position: relative;
-		text-transform: uppercase;
-		z-index: 5;
-	}
-	[data-stati] .circle {
-		width: 1.3vw;
-		height: 1.3vw;
-		border-radius: 50%;
-		border: 3px #FFFFFF solid;
-		z-index: 2;
-	}
-	[data-stati] .type {
-		padding-left: 10px;
-	}
-	[data-stati] iron-icon {
-		width: 1.3vw;
-		height: 1.3vw;
-	}
-	[data-toggle="on"] .circle {
-		background-color: #F5A214;
-		border-color: #F5A214;
-		box-shadow: 0 0 20px 0 #F7A017;
-	}
-
-	.block {
-		width: 20px;
-		height: 20px;
-		padding: 3px;
-	}
-	[data-block="plan"] {
-		background: #F5A214;
-
-	}
-	[data-block="personal"] {
-		background: #c55300;
-	}
-	.text {
-		font-size: 20px;
-		line-height: 20px;
-		padding: 3px 15px 3px 10px;
-		color: white;
-	}
-
-	.clickable {
-		border: 2px solid #FFFFFF;
-		border-radius: 6px;
-		margin: 0.5vw 1vw 0 0;
-		padding: 0.8vw 1.1vw;
-		text-transform: uppercase;
-		cursor: pointer;
-		font-weight: 500;
-		font-size: 1vw;
-		color: white;
-		position: relative;
-	}
-	.clickable .content {
-		position: relative;
-		z-index: 3;
-	}
-	.clickable .background {
-		position: absolute;
-		z-index: 2;
-	}
-	p, ul, li {
-		font-size: 18px;
-		line-height: 1.45;
-	}
-</style>
 <template>
+	<style include="iron-flex iron-flex-alignment">
+		:host {
+			@apply --layout-vertical;
+			@apply --layout-center;
+			font-family: "Stryd", sans-serif;
+			background-color: var(--dark-background-color);
+			padding: 20px;
+			--paper-slider-knob-color: #F5A214;
+			min-width: 860px;
+			overflow-x: auto;
+		}
+		:host.blurred {
+			-webkit-filter: blur(2px);
+			-moz-filter: blur(2px);
+			-ms-filter: blur(2px);
+			-o-filter: blur(2px);
+			filter: blur(2px);
+		}
+
+		h1.header {
+			@apply --header;
+			text-align: center;
+			padding: 15px 0;
+		}
+		.title {
+			padding: 20px;
+			@apply --layout-end;
+		}
+		#trend {
+			width: 1100px;
+			height: 450px;
+			align-self: center;
+		}
+		#fitness {
+			text-align: right;
+			cursor: pointer;
+		}
+		.holder {
+			border: 1px solid #4D4D4D;
+			@apply --layout-vertical;
+			margin: 10px;
+		}
+
+		[data-stati] {
+			@apply --layout-center;
+			@apply --layout-justified;
+			@apply --layout-horizontal;
+			background-color: var(--primary-background-color);
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			color: #FFFFFF;
+			cursor: pointer;
+			font-size: 1vw;
+			font-weight: 500;
+			margin: 0.5vw 1vw 0 1vw;
+			padding: 0.8vw 1.1vw;
+			position: relative;
+			text-transform: uppercase;
+			z-index: 5;
+		}
+		[data-stati] .circle {
+			width: 1.3vw;
+			height: 1.3vw;
+			border-radius: 50%;
+			border: 3px #FFFFFF solid;
+			z-index: 2;
+		}
+		[data-stati] .type {
+			padding-left: 10px;
+		}
+		[data-stati] iron-icon {
+			width: 1.3vw;
+			height: 1.3vw;
+		}
+		[data-toggle="on"] .circle {
+			background-color: #F5A214;
+			border-color: #F5A214;
+			box-shadow: 0 0 20px 0 #F7A017;
+		}
+
+		.block {
+			width: 20px;
+			height: 20px;
+			padding: 3px;
+		}
+		[data-block="plan"] {
+			background: #F5A214;
+
+		}
+		[data-block="personal"] {
+			background: #c55300;
+		}
+		.text {
+			font-size: 20px;
+			line-height: 20px;
+			padding: 3px 15px 3px 10px;
+			color: white;
+		}
+
+		.clickable {
+			border: 2px solid #FFFFFF;
+			border-radius: 6px;
+			margin: 0.5vw 1vw 0 0;
+			padding: 0.8vw 1.1vw;
+			text-transform: uppercase;
+			cursor: pointer;
+			font-weight: 500;
+			font-size: 1vw;
+			color: white;
+			position: relative;
+		}
+		.clickable .content {
+			position: relative;
+			z-index: 3;
+		}
+		.clickable .background {
+			position: absolute;
+			z-index: 2;
+		}
+		p, ul, li {
+			font-size: 18px;
+			line-height: 1.45;
+		}
+		path.amcharts-axis-grid {
+			stroke: #e7e7e7;
+		}
+	</style>
 	<h1 class="header">Identify Your Trends</h1>
 	<div class="holder">
 		<div class="top" style="justify-content: space-between;">
@@ -148,15 +160,15 @@
 					<div class="text">Your Trend</div>
 				</div>
 				<div class="flex layout horizontal end-justified">
-					<div data-stati="mf" data-toggle="on">
+					<div data-stati="mf" on-click="eleTap" data-toggle="on">
 						<div class="circle"></div>
 						<div class="type">Metabolic Fitness</div>
 					</div>
-					<div data-stati="me" data-toggle="off">
+					<div data-stati="me" on-click="eleTap" data-toggle="off">
 						<div class="circle"></div>
 						<div class="type">Muscle Endurance</div>
 					</div>
-					<div data-stati="mp" data-toggle="off">
+					<div data-stati="mp" on-click="eleTap" data-toggle="off">
 						<div class="circle"></div>
 						<div class="type">Muscle Power</div>
 					</div>
@@ -168,7 +180,7 @@
 		<h1>Your Trends</h1>
 		<p>Blood, sweat and tears -- that’s what it’s all about.  That’s why you put in the work every day.  The prizes and accolades are nice, but it's also about the process.  That daily grind.  Everyday you sweat.  Sometimes you bleed.  Occasionally, you even cry (just a little).  There’s that internal satisfaction at the end of the knowing that you are getting closer and closer to your goal.
 
-		But... wouldn’t it be nice if you could see that progress?  
+		But... wouldn’t it be nice if you could see that progress?
 		<ul>
 			<li><b>Metabolic Fitness</b> is useful in preparing for a race.</li>
 			<li><b>Muscle Power</b> is useful for telling you how much your running economy is improving.</li>
@@ -211,43 +223,34 @@
 	</paper-dialog>
 </template>
 <script>
-Polymer({
-	is: 'power-trend',
-	listeners: {
-		tap: 'eleTap'
-	},
-	eleTap: function (e) {
-		var target = e.target;
-		while (true) {
-			if ('stati' in target.dataset) {
-				var select = target.dataset.stati;
-				if (this.chart) {
-					this.querySelector(`[data-stati="${this.active}"]`).dataset.toggle = 'off';
-					this.chart.hideGraph(this.chart.getGraphById(`${this.active}v`));
-					this.chart.hideGraph(this.chart.getGraphById(`${this.active}t`));
-					this.chart.showGraph(this.chart.getGraphById(`${select}t`));
-					this.chart.showGraph(this.chart.getGraphById(`${select}v`));
-					this.querySelector(`[data-stati="${select}"]`).dataset.toggle = 'on';
-					this.active = select;
-					this.fitness = this.fitnessers[this.active];
-					this.fitness_type = this.types[this.active];
-				}
-				return;
-			} else if (target === this) {
-				return;
-			}
-			if ('parentNode' in target && target.parentNode !== null) {
-				target = target.parentNode;
-			} else {
-				return;
-			}
+class PowerTrend extends Polymer.Element {
+	static get is() { return 'power-trend'; }
+
+	static get properties() {
+		return {
+			fitness_type: String,
+		};
+	}
+
+	eleTap(e) {
+		if (this.chart) {
+			var target = e.currentTarget;
+			var select = target.dataset.stati;
+			this.root.querySelector(`[data-stati="${this.active}"]`).dataset.toggle = 'off';
+			this.chart.hideGraph(this.chart.getGraphById(`${this.active}v`));
+			this.chart.hideGraph(this.chart.getGraphById(`${this.active}t`));
+			this.chart.showGraph(this.chart.getGraphById(`${select}t`));
+			this.chart.showGraph(this.chart.getGraphById(`${select}v`));
+			target.dataset.toggle = 'on';
+			this.active = select;
+			this.fitness = this.fitnessers[this.active];
+			this.fitness_type = this.types[this.active];
 		}
-	},
-	attached: function () {
+	}
+
+	connectedCallback() {
+		super.connectedCallback();
 		var path = `/b/api/v1/users/runnertrend`;
-		if (isLocal) {
-			path = '/powercenter/scripts/local/runnertrend.json';
-		}
 		superagent
 			.get(path)
 			.send()
@@ -256,14 +259,17 @@ Polymer({
 			.end((err, res) => {
 				if (res.ok) {
 					this.data = res.body;
-					this.createData(res.body);
-					this.createChart();
+					if (res.body) {
+						this.createData(res.body);
+						this.createChart();
+					}
 				} else {
 					console.log('Error: cannot fetch data');
 				}
 			});
-	},
-	ready: function () {
+	}
+	ready() {
+		super.ready();
 		this.chart = null;
 		this.data = null;
 		this.active = 'mf';
@@ -284,14 +290,14 @@ Polymer({
 		};
 		this.fitness = '';
 		this.fitness_type = this.types[this.active];
-	},
-	powerQuestion: function () {
+	}
+	powerQuestion() {
 		this.$.powerDialog.open();
-	},
-	howToUse: function () {
+	}
+	howToUse() {
 		this.$[`${this.active}Dialog`].open();
-	},
-	createData: function (data) {
+	}
+	createData(data) {
 		var length = data.metobolic_fitness_value.length;
 		var today = moment().subtract(length, 'days');
 		var hasNonZero = false;
@@ -331,8 +337,8 @@ Polymer({
 		}
 
 		this.fitness = this.fitnessers[this.active];
-	},
-	createChart: function () {
+	}
+	createChart() {
 		var lightOrange = '#F5A214';
 		var darkOrange = '#CD720D';
 		var lineAccent = '#2D2D2D';
@@ -528,5 +534,6 @@ Polymer({
 			dataProvider: this.data
 		});
 	}
-});
+}
+window.customElements.define(PowerTrend.is, PowerTrend);
 </script>

@@ -1,28 +1,34 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
 <dom-module id="zone-entry">
-    <style>
-        .entry {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-justified);
-            margin: 5px 20px;
-        }
-        .entry paper-input {
-            @apply(--layout-flex-2);
-            font-size: 20px;
-            font-weight: 700;
-            text-align: center;
-        }
-        .entry .to {
-            @apply(--layout-flex);
-            color: var(--accent-background-color);
-            text-transform: uppercase;
-            text-align: center;
-        }
-        :host[keep] iron-icon {
-            display: none;
-        }
-    </style>
     <template>
+        <style include="iron-flex">
+            .entry {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-justified;
+                margin: 5px 20px;
+            }
+            .entry paper-input {
+                @apply --layout-flex-2;
+                font-size: 20px;
+                font-weight: 700;
+                text-align: center;
+            }
+            .entry .to {
+                @apply --layout-flex;
+                color: var(--accent-background-color);
+                text-transform: uppercase;
+                text-align: center;
+            }
+            :host[keep] iron-icon {
+                display: none;
+            }
+        </style>
         <div class="layout horizontal">
             <div class="flex-1 entry">
                 <paper-input
@@ -73,26 +79,26 @@
     </template>
     <script>
         /*jshint camelcase: false*/
-        Polymer({
-            is: 'zone-entry',
-            properties: {
-                name: String,
-                power_low: String,
-                power_high: String,
-                pace_low: String,
-                pace_high: String
-            },
-            ready: function () {
+        class ZoneEntry extends Polymer.Element {
+            static get is() { return 'zone-entry'; }
 
-            },
-            import: function (data) {
+            static get properties() {
+                return {
+                    name: String,
+                    power_low: String,
+                    power_high: String,
+                    pace_low: String,
+                    pace_high: String
+                };
+            }
+            import(data) {
                 this.name = data.name;
                 this.power_low = data.power_low;
                 this.power_high = data.power_high;
                 this.pace_low = data.pace_low;
                 this.pace_high = data.pace_high;
-            },
-            export: function (unit) {
+            }
+            export(unit) {
                 // km by default
                 let coeff = 1;
                 if (unit === 'feet') {
@@ -107,10 +113,11 @@
                     speed_low: speedLow,
                     speed_high: speedHigh
                 };
-            },
-            delete: function () {
+            }
+            delete() {
                 this.parentNode.removeChild(this);
             }
-        });
+        }
+        window.customElements.define(ZoneEntry.is, ZoneEntry);
     </script>
 </dom-module>

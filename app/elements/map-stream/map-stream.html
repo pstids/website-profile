@@ -1,97 +1,104 @@
-<dom-module id='map-stream'>
-    <style>
-        :host {
-            position: relative;
-        }
-        #map {
-            width: 100%;
-            height: 100vh;
-            min-height: 350px;
-        }
-        .anchor {
-            position: absolute;
-            top: 10%;
-            bottom: 10%;
-            left: 0;
-        }
-        .switch {
-            position: absolute;
-            top: 0;
-            right: 0;
-            @apply(--layout-horizontal);
-        }
-        .view-more {
-            position: absolute;
-            bottom: 0;
-            left: 30%;
-            @apply(--layout-horizontal);
-        }
-        .view-more .block {
-            border-top: 3px solid #F5A214;
-            background-color: rgba(41, 41, 39, 0.9);
-            margin-right: 15px;
-            color: white;
-            padding: 15px;
-            font-size: 18px;
-            text-align: center;
-            line-height: 26px;
-        }
-        .view-more a {
-            color: white;
-            text-decoration: none;
-        }
-        .profile {
-            @apply(--layout-vertical);
-            @apply(--layout-center-justified);
-            @apply(--layout-self-center);
-            margin: 20px;
-            cursor: pointer;
-        }
-        .profile h1 {
-            padding: 0;
-            margin: 10px 0 0 0;
-            font-weight: 300;
-            font-size: 20px;
-            color: white;
-            text-align: center;
-        }
-        .profile img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50px;
-            border: 3px solid var(--primary-background-color);
-        }
-        .profile.active img {
-            border: 3px solid var(--primary-header-color);
-        }
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../map-summary/map-average.html">
+<link rel="import" href="../map-summary/map-small.html">
 
-        @media (max-width: 600px) {
+<dom-module id='map-stream'>
+    <template>
+        <style>
             :host {
-                @apply(--layout-vertical);
+                position: relative;
+            }
+            #map {
+                width: 100%;
+                height: 100vh;
+                min-height: 350px;
             }
             .anchor {
-                position: static;
-                width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center-justified);
-                @apply(--layout-self-center);
+                position: absolute;
+                top: 10%;
+                bottom: 10%;
+                left: 0;
             }
-            .anchor map-small {
-                border: none;
+            .switch {
+                position: absolute;
+                top: 0;
+                right: 0;
+                @apply --layout-horizontal;
             }
             .view-more {
-                position: static;
-                width: 100%;
-                @apply(--layout-horizontal);
-                @apply(--layout-center-justified);
-                @apply(--layout-self-center);
+                position: absolute;
+                bottom: 0;
+                left: 30%;
+                @apply --layout-horizontal;
             }
             .view-more .block {
-                border: 3px solid #F5A214;
+                border-top: 3px solid #F5A214;
+                background-color: rgba(41, 41, 39, 0.9);
+                margin-right: 15px;
+                color: white;
+                padding: 15px;
+                font-size: 18px;
+                text-align: center;
+                line-height: 26px;
             }
-        }
-    </style>
-    <template>
+            .view-more a {
+                color: white;
+                text-decoration: none;
+            }
+            .profile {
+                @apply --layout-vertical;
+                @apply --layout-center-justified;
+                @apply --layout-self-center;
+                margin: 20px;
+                cursor: pointer;
+            }
+            .profile h1 {
+                padding: 0;
+                margin: 10px 0 0 0;
+                font-weight: 300;
+                font-size: 20px;
+                color: white;
+                text-align: center;
+            }
+            .profile img {
+                width: 50px;
+                height: 50px;
+                border-radius: 50px;
+                border: 3px solid var(--primary-background-color);
+            }
+            .profile.active img {
+                border: 3px solid var(--primary-header-color);
+            }
+
+            @media (max-width: 600px) {
+                :host {
+                    @apply --layout-vertical;
+                }
+                .anchor {
+                    position: static;
+                    width: 100%;
+                    @apply --layout-horizontal;
+                    @apply --layout-center-justified;
+                    @apply --layout-self-center;
+                }
+                .anchor map-small {
+                    border: none;
+                }
+                .view-more {
+                    position: static;
+                    width: 100%;
+                    @apply --layout-horizontal;
+                    @apply --layout-center-justified;
+                    @apply --layout-self-center;
+                }
+                .view-more .block {
+                    border: 3px solid #F5A214;
+                }
+            }
+        </style>
         <div id="map"
             data-step="5"
             data-intro="Retrace your steps and find where you hit your stride. Red areas indicate high power output. Green areas indicate lower power output."></div>
@@ -140,12 +147,6 @@
     <script>
         /* globals users */
         console.log('loaded');
-        var mapReadyTrigger = false;
-        var mapReadyEvent = new CustomEvent('MapReady');
-        window.mapReady = function () {
-            mapReadyTrigger = true;
-            window.dispatchEvent(mapReadyEvent);
-        };
 
         if (typeof(Number.prototype.toRadians) === 'undefined') {
           Number.prototype.toRadians = function() {
@@ -153,30 +154,42 @@
           };
         }
 
-        Polymer({
-            is: 'map-stream',
-            ready: function () {
+        class MapStream extends Polymer.Element {
+            static get is() { return 'map-stream'; }
+
+            static get properties() {
+                return {
+                    route: String,
+                };
+            }
+
+            ready() {
+                super.ready();
                 this.route = 'summary';
                 console.log('ready');
-                this.mapAverage = this.querySelector('map-average');
+                this.mapAverage = this.root.querySelector('map-average');
                 this.center = {
                     lat: 0,
                     lng: 0
                 };
 
                 this.mapObjs = [];
-                if (mapReadyTrigger) {
-                    this.setMap();
-                } else {
-                    window.addEventListener('MapReady', function() {
-                        this.setMap();
-                    }.bind(this));
-                }
-
                 this.users = users;
 
-            },
-            exportTimingData: function (userID) {
+                this.fetchGoogleMaps();
+            }
+
+            fetchGoogleMaps() {
+                const script = document.createElement('script');
+                script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg';
+                script.async = true;
+                script.defer = true;
+                script.onload = () => this.setMap();
+                script.onerror = err => console.error('cannot load Google Maps API', err);
+                document.body.appendChild(script);
+            }
+
+            exportTimingData(userID) {
                 var user = this.users[userID];
                 var receivedTimes = '', loggedTimes = '';
                 for (var i = 0; i < user.data.length; i++) {
@@ -186,8 +199,8 @@
                 var csvStr = receivedTimes + '\r\n' + loggedTimes;
                 var blob = new Blob([csvStr], {type: 'text/csv'});
                 console.log(window.URL.createObjectURL(blob));
-            },
-            switchUser: function (e) {
+            }
+            switchUser(e) {
                 // Find targeted element
                 var target = e.target;
                 while (!target.dataset.user) {
@@ -202,7 +215,7 @@
                 // }
                 // console.log('activeUser', activeUser);
                 // if (activeUser) {
-                //     activeUserEle 
+                //     activeUserEle
                 //     activeUser.classList.remove('active');
                 //     if ('marker' in activeUser) {
                 //         activeUser.path.setMap(null);
@@ -212,7 +225,7 @@
                 // }
                 // Toggle on selected user
                 var user = this.users[target.dataset.user];
-                
+
                 target.classList.toggle('active');
                 user.active = !user.active;
                 if ('marker' in user) {
@@ -226,12 +239,12 @@
                         this.calcAvg();
                         var lastPoint = user.data[user.data.length-1];
                         lastPoint.distance = user.distance;
-                        var mapSummary = this.querySelector('[user=\'' + user.name + '\']');
+                        var mapSummary = this.root.querySelector('[user=\'' + user.name + '\']');
                         mapSummary.addPoint(lastPoint);
                     }
                 }
-            },
-            calcAvg: function () {
+            }
+            calcAvg() {
                 var user;
                 for (var key in this.users) {
                     if (this.users[key].active) {
@@ -261,24 +274,24 @@
                 user.avgs.cadence = user.avgs.cadence * oldWeight + tmp.cadence * newWeight;
                 user.avgs.pts = user.data.length;
                 this.mapAverage.addPoint(user.avgs);
-            },
-            router: function (e) {
+            }
+            router(e) {
                 var target = e.target;
                 while (!target.dataset.view) {
                     target = target.parentElement;
                 }
                 this.routerToggle(target.dataset.view);
                 this.route = target.dataset.view;
-            },
-            routerToggle: function (active) {
-                var anchor = this.querySelector('[data-view=\'' + active + '\']');
-                var current = this.querySelector('[data-view].active');
+            }
+            routerToggle(active) {
+                var anchor = this.root.querySelector('[data-view=\'' + active + '\']');
+                var current = this.root.querySelector('[data-view].active');
                 if (current) {
                     current.classList.remove('active');
                 }
                 anchor.classList.add('active');
-            },
-            getCoor: function (data) {
+            }
+            getCoor(data) {
                 if (typeof data ==='object' && 'lat' in data && 'lng' in data) {
                     return {
                         lat: data.lat,
@@ -287,8 +300,8 @@
                 } else {
                     return {};
                 }
-            },
-            calcHaversine: function (start, now) {
+            }
+            calcHaversine(start, now) {
                 if (('lat' in start) && start.lat !== undefined) {
                     var r = 6371;
                     var lat1 = start.lat.toRadians();
@@ -297,15 +310,15 @@
                     var deltaLng = (now.lng - start.lng).toRadians();
 
                     var a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
-                            Math.cos(lat1) * Math.cos(lat2) * 
+                            Math.cos(lat1) * Math.cos(lat2) *
                             Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
                     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                     return r * c;
                 } else {
                     return 0;
                 }
-            },
-            setOld: function (id) {
+            }
+            setOld(id) {
                 var user = this.users.sarah;
                 for (var key in this.users) {
                     if (this.users[key].id === id) {
@@ -313,8 +326,8 @@
                     }
                 }
                 this.addPoint(user.data[user.data.length-1]);
-            },
-            addPoint: function (data) {
+            }
+            addPoint(data) {
                 console.log('data LOG', data);
                 if (!('lat' in data)) {
                     return false;
@@ -344,7 +357,7 @@
                     data.distance = user.distance;
                     // data.speed = data.speed.toFixed(2);
                 }
-                var mapSummary = this.querySelector('[user=\'' + user.name + '\']');
+                var mapSummary = this.root.querySelector('[user=\'' + user.name + '\']');
                 mapSummary.addPoint(data);
 
                 if ('marker' in user) {
@@ -376,7 +389,7 @@
                         zIndex: 1
                     };
                     user.marker = new google.maps.Marker(marker);
-                    
+
                     user.path = new google.maps.Polyline({
                         path: user.pts,
                         geodesic: false,
@@ -391,8 +404,8 @@
                         this.map.panTo(user.marker.getPosition());
                     }
                 }
-            },
-            setMap: function () {
+            }
+            setMap() {
                 console.log('setMap');
 
                 this.strydDarkId = 'strydDarkStyle';
@@ -440,8 +453,8 @@
                 );
                 this.map.mapTypes.set(this.strydDarkId, this.strydDarkStyle);
                 this.map.setMapTypeId(this.strydDarkId);
-            },
-            setDataReady: function (graphSegments) {
+            }
+            setDataReady(graphSegments) {
                 var i, path, step, graphSegment;
                 for (i = 0; i < this.mapObjs.length; i++) {
                     this.mapObjs[i].setMap(null);
@@ -479,7 +492,7 @@
                     },
                     map: this.map,
                     icon: {
-                        url: '/powercenter/images/green_circle.png',
+                        url: `${this.rootPath}images/green_circle.png`,
                         size: new google.maps.Size(25, 25),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(12, 12),
@@ -495,7 +508,7 @@
                     },
                     map: this.map,
                     icon: {
-                        url: '/powercenter/images/red_circle.png',
+                        url: `${this.rootPath}images/red_circle.png`,
                         size: new google.maps.Size(25, 25),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(12, 12),
@@ -504,7 +517,7 @@
                 });
                 this.mapObjs.push(stop);
             }
-        });
+        }
+        window.customElements.define(MapStream.is, MapStream);
     </script>
-    <script async defer src='https://maps.googleapis.com/maps/api/js?key=AIzaSyC-D84ZWKQT9kbZ8meKUu1yvklQUtWRiOg&callback=mapReady'></script>
 </dom-module>

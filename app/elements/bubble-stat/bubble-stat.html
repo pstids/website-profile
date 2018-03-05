@@ -1,85 +1,90 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+
 <dom-module id="bubble-stat">
-	<style>
-		:host {
-			box-shadow: 0px 100px 100px -95px #000000;
-			border-radius: 50%;
-			cursor: pointer;
-			z-index: 2;
-			width: 12vw;
-			height: 12vw;
-			@apply(--bubble-stat-wrap);
-		}
-		.bubble-border {
-			width: 90%;
-			height: 90%;
-			border-radius: 50%;
-			background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
-			position: absolute;
-			z-index: 1;
-			transition: transform 0.3s;
-			@apply(--layout-horizontal);
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-			@apply(--bubble-stat-border);
-		}
-		.bubble {
-			width: 95%;
-			height: 95%;
-			border-radius: 50%;
-			background-color: var(--secondary-background-color);
-			position: relative;
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-			box-shadow: inset 0px 0px 6vw -3.33vw #000000;
-		}
-		.icon {
-			color: var(--primary-icon-color);
-			fill: var(--primary-icon-color);
-			width: 2.5vw;
-			height: 2.5vw;
-			margin-bottom: 1vw;
-			@apply(--bubble-stat-icon);
-		}
-		.title {
-			color: white;
-			line-height: 1vw;
-			text-transform: uppercase;
-			font-weight: 500;
-			font-size: 0.68vw;
-			text-align: center;
-		}
-		.value {
-			color: white;
-			font-size: 2.5vw;
-			line-height: 3.3vw;
-			text-transform: uppercase;
-			font-weight: 800;
-		}
-		.unit {
-			color: white;
-			line-height: 1vw;
-			text-transform: uppercase;
-			font-weight: 500;
-			font-size: 0.68vw;
-		}
-		:host.popped {
-			z-index: 4;
-		}
-		:host.popped .bubble-border:nth-child(1) {
-			transform: translate(0, 0px);
-		}
-		:host.popped .bubble-border:nth-child(2) {
-			transform: translate(0, -12vw);
-		}
-		:host.popped .bubble-border:nth-child(3) {
-			transform: translate(0, 12vw);
-		}
-		.active {
-			z-index: 3;
-		}
-	</style>
 	<template>
+		<style>
+			:host {
+				box-shadow: 0px 100px 100px -95px #000000;
+				border-radius: 50%;
+				cursor: pointer;
+				z-index: 2;
+				width: 12vw;
+				height: 12vw;
+				@apply --bubble-stat-wrap;
+			}
+			.bubble-border {
+				width: 90%;
+				height: 90%;
+				border-radius: 50%;
+				background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
+				position: absolute;
+				z-index: 1;
+				transition: transform 0.3s;
+				@apply --layout-horizontal;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+				@apply --bubble-stat-border;
+			}
+			.bubble {
+				width: 95%;
+				height: 95%;
+				border-radius: 50%;
+				background-color: var(--secondary-background-color);
+				position: relative;
+				@apply --layout-vertical;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+				box-shadow: inset 0px 0px 6vw -3.33vw #000000;
+			}
+			.icon {
+				color: var(--primary-icon-color);
+				fill: var(--primary-icon-color);
+				width: 2.5vw;
+				height: 2.5vw;
+				margin-bottom: 1vw;
+				@apply --bubble-stat-icon;
+			}
+			.title {
+				color: white;
+				line-height: 1vw;
+				text-transform: uppercase;
+				font-weight: 500;
+				font-size: 0.68vw;
+				text-align: center;
+			}
+			.value {
+				color: white;
+				font-size: 2.5vw;
+				line-height: 3.3vw;
+				text-transform: uppercase;
+				font-weight: 800;
+			}
+			.unit {
+				color: white;
+				line-height: 1vw;
+				text-transform: uppercase;
+				font-weight: 500;
+				font-size: 0.68vw;
+			}
+			:host.popped {
+				z-index: 4;
+			}
+			:host.popped .bubble-border:nth-child(1) {
+				transform: translate(0, 0px);
+			}
+			:host.popped .bubble-border:nth-child(2) {
+				transform: translate(0, -12vw);
+			}
+			:host.popped .bubble-border:nth-child(3) {
+				transform: translate(0, 12vw);
+			}
+			.active {
+				z-index: 3;
+			}
+		</style>
 		<div class="bubble-border active" data-bubble="1">
 			<div class="bubble">
 				<iron-icon icon="{{obja.icon}}" class="icon"></iron-icon>
@@ -106,18 +111,34 @@
 		</div>
 	</template>
 	<script>
-		Polymer({
-			is: 'bubble-stat',
-			properties: {
-				obja: Object,
-				objb: Object,
-				objc: Object
-			},
-			listeners: {
-				'tap': 'bubblePop'
-			},
-			setMode: function () {
+		class BubbleStat extends Polymer.GestureEventListeners(Polymer.Element) {
+			static get is() { return 'bubble-stat'; }
+
+			static get properties() {
+				return {
+					obja: Object,
+					objb: Object,
+					objc: Object
+				};
+			}
+
+			constructor() {
+				super();
+				this._bubblePop = this.bubblePop.bind(this);
+			}
+			connectedCallback() {
+				super.connectedCallback();
+				Polymer.Gestures.addListener(this, 'tap', this._bubblePop);
+			}
+			disconnectedCallback() {
+				super.disconnectedCallback();
+				Polymer.Gestures.removeListener(this, 'tap', this._bubblePop);
+			}
+			setMode() {
 				var activeKeys = this.objects.active;
+				if (!activeKeys) {
+					return;
+				}
 				for (var i = 0; i < activeKeys.length; i++) {
 					var activeKey = activeKeys[i];
 					if (Object.keys(this.objects).indexOf(activeKey) < 0) {
@@ -143,10 +164,10 @@
 						this.set(`obj${active.prop}.value`, active.elapsed);
 					}
 				}
-			},
-			setData: function (objs) {
+			}
+			setData(objs) {
 				for (var x = 1; x <= 3; x++) {
-					Polymer.dom(this.querySelector(`[data-bubble="${x}"]`)).classList.remove('hidden');
+					this.root.querySelector(`[data-bubble="${x}"]`).classList.remove('hidden');
 				}
 				this.objects = objs;
 				var props = ['a', 'b', 'c'];
@@ -178,35 +199,39 @@
 					this.classList.remove('hidden');
 				}
 				for (; i < 3; i++) {
-					Polymer.dom(this.querySelector(`[data-bubble="${i+1}"]`)).classList.add('hidden');
+					this.root.querySelector(`[data-bubble="${i+1}"]`).classList.add('hidden');
 				}
 				this.setMode();
-			},
-			ready: function () {
+			}
+			ready() {
+				super.ready();
 				this.obja = {};
 				this.objb = {};
 				this.objc = {};
 				this.objects = {};
 				this.opt = 'elapsed';
-			},
-			bubblePop: function (e) {
+			}
+			bubblePop(e) {
 				var target = e.target;
 				if (target.dataset === undefined) {
 					return;
 				}
-				while (!('bubble' in target.dataset)) {
+				while (target.dataset && !('bubble' in target.dataset)) {
 					target = target.parentNode;
 					if (this === target) {
 						break;
 					}
 				}
-				var activeBubble = this.querySelector('[data-bubble].active');
+				var activeBubble = this.root.querySelector('[data-bubble].active');
 				if (activeBubble) {
 					activeBubble.classList.remove('active');
 				}
-				target.classList.add('active');
+				if (target.classList) {
+					target.classList.add('active');
+				}
 				this.classList.toggle('popped');
 			}
-		});
+		}
+		window.customElements.define(BubbleStat.is, BubbleStat);
 	</script>
 </dom-module>

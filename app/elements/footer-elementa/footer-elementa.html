@@ -1,33 +1,37 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
 <dom-module id="footer-elementa">
-  <style>
-    :host {
-        background-color: #1C1C1C;
-    }
-    footer {
-        @apply(--layout);
-        @apply(--layout-horizontal);
-        padding: 0 47px;
-    }
-    h1 {
-        font-size: 2vw;
-        text-transform: uppercase;
-        color: #FFFFFF;
-        padding: 0 0.7vw 0 0;
-        margin: 0;
-    }
-    .gc {
-        @apply(--layout);
-        @apply(--layout-flex);
-        @apply(--layout-center-justified);
-        padding: 1vw;
-    }
-    .seperator {
-        background-image: url('/powercenter/images/bottom-seperator-transparent.png');
-        background-size: cover;
-        height: 10vw;
-    }
-  </style>
   <template>
+  <style>
+      :host {
+          background-color: #1C1C1C;
+      }
+      footer {
+          @apply --layout;
+          @apply --layout-horizontal;
+          padding: 0 47px;
+      }
+      h1 {
+          font-size: 2vw;
+          text-transform: uppercase;
+          color: #FFFFFF;
+          padding: 0 0.7vw 0 0;
+          margin: 0;
+      }
+      .gc {
+          @apply --layout;
+          @apply --layout-flex;
+          @apply --layout-center-justified;
+          padding: 1vw;
+      }
+      .seperator {
+          background-image: url('../../images/bottom-seperator-transparent.png');
+          background-size: cover;
+          height: 10vw;
+      }
+    </style>
     <div class="seperator"></div>
     <footer>
         <div class="gc">
@@ -36,8 +40,9 @@
     </footer>
   </template>
   <script>
-    Polymer({
-        is: 'footer-elementa'
-    });
+    class FooterElementA extends Polymer.Element {
+        static get is() { return 'footer-elementa'; }
+    }
+    window.customElements.define(FooterElementA.is, FooterElementA);
   </script>
 </dom-module>

@@ -1,156 +1,182 @@
-<dom-module id="log-day">
-	<style>
-		:host {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			position: relative;
-			height: 100%;
-		}
-		:host:hover .header, :host:hover .header .options {
-			opacity: 1;
-		}
-		.container {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			overflow: hidden;
-			background-size: cover;
-			height: 100%;
-			cursor: auto;
-			background-image: 'none';
-		}
-		.container.has-workout {
-			background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
-			cursor: pointer;
-		}
-		.container.has-planned {
-			cursor: pointer;
-		}
-		.workout-display {
-			display: none;
-		}
-		.has-workout .workout-display {
-			@apply(--layout);
-		}
-		.plan-display, .plan-type {
-			display: none;
-		}
-		.has-planned .plan-display, .has-planned .plan-type {
-			@apply(--layout);
-		}
-		.has-workout.has-planned .plan-type {
-			display: none;
-		}
-		.header {
-			@apply(--layout-horizontal);
-			@apply(--layout-end-justified);
-			height: 24px;
-			padding: 0 3px;
-			opacity: 0.6;
-			transition: 0.5s opacity;
-			flex: 0 1 24px;
-		}
-		.has-workout .options {
-			@apply(--layout-flex-3);
-			@apply(--layout-horizontal);
-			opacity: 0;
-			transition: 0.5s opacity;
-		}
-		.header .tp, .header .numday {
-			text-align: right;
-			color: white;
-			line-height: 24px;
-			font-size: 14px;
-		}
-		.wattage {
-			margin-top: 20px;
-			@apply(--layout-center-justified);
-			@apply(--layout-center);
-			@apply(--layout-horizontal);
-		}
-		.wattage .value {
-			color: white;
-			text-align: center;
-			font-size: 30px;
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/notification-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 
-			margin-right: 10px;
-		}
-		.wattage .unit {
-			color: white;
-			text-align: center;
-			font-size: 20px;
-		}
-		.plan-type {
-			height: 100%;
-		}
-		.workout {
-			@apply(--layout);
-			@apply(--layout-horizontal);
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-			margin-bottom: 20px;
-		}
-		.workout .workout-type {
-			color: white;
-			text-align: center;
-			font-size: 17px;
-			text-transform: capitalize;
-		}
-		.workout .workout-on {
-			color: var(--accent-background-color);
-			text-align: center;
-			font-size: 17px;
-			text-transform: capitalize;
-			padding-left: 5px;
-		}
-		.workout .workout-surface {
-			color: white;
-			text-align: center;
-			font-size: 17px;
-			text-transform: capitalize;
-			padding-left: 5px;
-		}
-		.other {
-			height: 28px;
-			margin-bottom: 5px;
-		}
-		.stat {
-			height: 28px;
-			@apply(--layout-center-justified);
-			@apply(--layout-center);
-			@apply(--layout-horizontal);
-		}
-		.stat .value {
-			color: white;
-			text-align: center;
-			font-size: 14px;
-			font-weight: 300;
-		}
-		.stat iron-icon {
-			margin-right: 5px;
-			color: var(--primary-icon-color);
-			fill: var(--primary-icon-color);
-			height: 14px;
-			width: 14px;
-		}
-		.wattage iron-icon {
-			margin-right: 5px;
-			color: var(--primary-icon-color);
-			fill: var(--primary-icon-color);
-		}
-		.header iron-icon {
-			color: white;
-			fill: white;
-			margin: 5px 3px;
-			width: 14px;
-			height: 14px;
-			cursor: pointer;
-		}
-		.rss {
-			color: white;
-			font-size: 12px;
-		}
-	</style>
+<dom-module id="log-day">
 	<template>
+		<style include="iron-flex iron-flex-alignment">
+			:host {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				position: relative;
+				height: 100%;
+			}
+			:host:hover .header, :host:hover .header .options {
+				opacity: 1;
+			}
+			.container {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				overflow: hidden;
+				background-size: cover;
+				height: 100%;
+				cursor: auto;
+				background-image: 'none';
+			}
+			.container.has-workout {
+				background-image: url(https://storage.googleapis.com/stryd_static_assets/calendar-entry.png);
+				cursor: pointer;
+			}
+			.container.has-planned {
+				cursor: pointer;
+			}
+			.workout-display {
+				display: none;
+			}
+			.workout-display .other {
+				@apply --layout;
+				@apply --layout-horizontal;
+				@apply --layout-around-justified;
+			}
+			.has-workout .workout-display {
+				@apply --layout;
+				@apply --layout-vertical;
+				@apply --layout-around-justified;
+			}
+			.plan-display, .plan-type {
+				display: none;
+			}
+			.has-planned .plan-display, .has-planned .plan-type {
+				@apply --layout;
+				@apply --layout-vertical;
+				@apply --layout-center-justified;
+			}
+			.plan-type .data {
+				@apply --layout;
+				@apply --layout-vertical;
+				@apply --layout-around-justified;
+			}
+			.has-workout.has-planned .plan-type {
+				display: none;
+			}
+			.header {
+				@apply --layout-horizontal;
+				@apply --layout-end-justified;
+				height: 24px;
+				padding: 0 3px;
+				opacity: 0.6;
+				transition: 0.5s opacity;
+				flex: 0 1 24px;
+			}
+			.has-workout .options {
+				@apply --layout-flex-3;
+				@apply --layout-horizontal;
+				opacity: 0;
+				transition: 0.5s opacity;
+			}
+			.header .tp, .header .numday {
+				text-align: right;
+				color: white;
+				line-height: 24px;
+				font-size: 14px;
+			}
+			.wattage {
+				margin-top: 20px;
+				@apply --layout-center-justified;
+				@apply --layout-center;
+				@apply --layout-horizontal;
+			}
+			.wattage .value {
+				color: white;
+				text-align: center;
+				font-size: 30px;
+
+				margin-right: 10px;
+			}
+			.wattage .unit {
+				color: white;
+				text-align: center;
+				font-size: 20px;
+			}
+			.plan-type {
+				height: 100%;
+			}
+			.workout {
+				@apply --layout;
+				@apply --layout-horizontal;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+				margin-bottom: 20px;
+			}
+			.workout .workout-type {
+				color: white;
+				text-align: center;
+				font-size: 17px;
+				text-transform: capitalize;
+			}
+			.workout .workout-on {
+				color: var(--accent-background-color);
+				text-align: center;
+				font-size: 17px;
+				text-transform: capitalize;
+				padding-left: 5px;
+			}
+			.workout .workout-surface {
+				color: white;
+				text-align: center;
+				font-size: 17px;
+				text-transform: capitalize;
+				padding-left: 5px;
+			}
+			.other {
+				height: 28px;
+				margin-bottom: 5px;
+			}
+			.stat {
+				height: 28px;
+				@apply --layout-center-justified;
+				@apply --layout-center;
+				@apply --layout-horizontal;
+			}
+			.stat .value {
+				color: white;
+				text-align: center;
+				font-size: 14px;
+				font-weight: 300;
+			}
+			.stat iron-icon {
+				margin-right: 5px;
+				color: var(--primary-icon-color);
+				fill: var(--primary-icon-color);
+				height: 14px;
+				width: 14px;
+			}
+			.wattage iron-icon {
+				margin-right: 5px;
+				color: var(--primary-icon-color);
+				fill: var(--primary-icon-color);
+			}
+			.header iron-icon {
+				color: white;
+				fill: white;
+				margin: 5px 3px;
+				width: 14px;
+				height: 14px;
+				cursor: pointer;
+			}
+			.rss {
+				color: white;
+				font-size: 12px;
+			}
+		</style>
 		<div class="container" id="container">
 			<div class="header" id="header">
 				<div class="options workout-display">
@@ -180,13 +206,13 @@
 				</div>
 				<div class="numday">{{day}}</div>
 			</div>
-			<div class="layout vertical around-justified data workout-display">
+			<div class="data workout-display">
 				<div class="wattage">
 					<iron-icon icon="{{power_icon}}"></iron-icon>
 					<div class="value">{{power}}</div>
 					<div class="rss" id="rss">RSS</div>
 				</div>
-				<div class="layout horizontal around-justified other">
+				<div class="other">
 					<div class="stat">
 						<iron-icon icon="image:timer"></iron-icon>
 						<div class="value">{{time}}</div>
@@ -197,8 +223,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="layout vertical center-justified plan-type">
-				<div class="layout vertical around-justified data">
+			<div class="plan-type">
+				<div class="data">
 					<div class="wattage">
 						<iron-icon icon="social:whatshot"></iron-icon>
 						<div class="value">{{plan_rss}}</div>
@@ -214,12 +240,35 @@
 	</template>
 	<script>
 	/*global updatedTime:true*/
-	Polymer({
-		is: 'log-day',
-		listeners: {
-			'tap': 'eleTap'
-		},
-		eleTap: function (e) {
+	class LogDay extends Polymer.GestureEventListeners(Polymer.Element) {
+		static get is() { return 'log-day'; }
+
+		static get properties() {
+				return {
+						day: String,
+						distance: String,
+						plan_rss: String,
+						power: String,
+						power_icon: String,
+						time: String,
+						workout_type: String,
+						workout_surface: String,
+				};
+		}
+
+		constructor() {
+			super();
+			this._eleTap = this.eleTap.bind(this);
+		}
+		connectedCallback() {
+			super.connectedCallback();
+			Polymer.Gestures.addListener(this.$.container, 'tap', this._eleTap);
+		}
+		disconnectedCallback() {
+			super.disconnectedCallback();
+			Polymer.Gestures.removeListener(this.$.container, 'tap', this._eleTap);
+		}
+		eleTap(e) {
 			var target = e.target;
 			while (true) {
 				if (target === this.$.container) {
@@ -257,18 +306,17 @@
 					return;
 				}
 			}
-		},
-		ready: function () {
-			this.data = {
-				day: 0
-			};
-			this.setData(this.data);
-		},
-		clearWorkout: function () {
+		}
+		clearWorkout() {
 			this.data = {};
 			this.classList.remove('active');
-		},
-		setData: function (data) {
+		}
+		setData(data) {
+			Polymer.RenderStatus.afterNextRender(this, () => {
+				this._setData(data);
+			});
+		}
+		_setData(data) {
 			this.data = data;
 			this.day = data.day;
 			this.rgb = 'rgb(0, 0, 0)';
@@ -340,8 +388,8 @@
 				this.power = '';
 				this.$.header.style.backgroundColor = this.rgb;
 			}
-		},
-		viewWorkout: function () {
+		}
+		viewWorkout() {
 			if (
 				('id' in this.data) ||
 				(
@@ -360,26 +408,27 @@
 				}
 				urlManager.setURL(id, hash);
 			}
-		},
+		}
 		// returns bool based on if workout has been inserted
-		hasWorkout: function () {
+		hasWorkout() {
 			if ('power' in this.data) {
 				return true;
 			}
 			return false;
-		},
-		getID: function () {
-			if ('id' in this.data) {
+		}
+		getID() {
+			if (this.data && 'id' in this.data) {
 				return this.data.id;
 			}
 			return 0;
-		},
-		getDay: function () {
+		}
+		getDay() {
 			if ('day' in this.data) {
 				return this.data.day;
 			}
 			return 0;
 		}
-	});
+	}
+	window.customElements.define(LogDay.is, LogDay);
 	</script>
 </dom-module>

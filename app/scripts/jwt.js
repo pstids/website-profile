@@ -4,9 +4,9 @@
 /*global processor*/
 /*global fbq*/
 
-var isLocal = false;
-if (window.location.hostname === 'stryd.dev') {
-	isLocal = true;
+window.isLocal = false;
+if (['sryd.dev', 'localhost', '127.0.0.1'].indexOf(window.location.hostname)) {
+	window.isLocal = true;
 }
 
 class JWT {
@@ -15,8 +15,14 @@ class JWT {
 		this.data = {
 			id: 0
 		};
-		this.hasToken = false;
+		if (isLocal) {
+			this._setupTestUser();
+		}
 		this.checkToken();
+	}
+
+	_setupTestUser() {
+		this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3RAc3RyeWQuY29tIiwiVXNlck5hbWUiOiJ0ZXN0IiwiRmlyc3ROYW1lIjoiIiwiTGFzdE5hbWUiOiIiLCJJRCI6ImM1OWM2ZTkxLTgzMTQtNWUwZi00NzBkLTRmODAzYmFmOGU2NCIsIkltYWdlIjoiaHR0cHMlM0ElMkYlMkZzdG9yYWdlLmdvb2dsZWFwaXMuY29tJTJGc3RyeWRfc3RhdGljX2Fzc2V0cyUyRnByb2ZpbGVfaW1hZ2UlMkZwcm9maWxlX3Rlc3QucG5nJTNGRXhwaXJlcyUzRDQxODkyNDQ0MDAlMjZHb29nbGVBY2Nlc3NJZCUzRDk1NDk2OTEyNTI1MC1qdGU1Y2xuYXE5aHZ2NDIxNnRiZzQ1NzcxNWFydDJsciUyNTQwZGV2ZWxvcGVyLmdzZXJ2aWNlYWNjb3VudC5jb20lMjZTaWduYXR1cmUlM0R2QWI1SVFIbWZreGJBN2VMTWNYMFNRaGZJNmtqUHdPeWxSN1E0a3RHUGdmMGJHJTI1MkJvTng4ZGNiMzZCUDQxZWJZSG1pUVZsdUZad1RQRHdVSzVRY29vY0RtdGloYm5iMUxWcGxacXJva0klMjUyRlZpemx6OUlQRiUyNTJCSEk0SkglMjUyRlF1UEpDWktJZmhuUlFvN2RXUSUyNTJCaGpzUU9HaTM5Wm1sOEs4Zkxic0o5OUlQZDYyekxmcyUyNTNEIiwiZXhwIjoxNTIxMjQyODgzMTQwLCJpc3MiOiJzdHJ5ZCJ9.nf6eqn2v6mhd5H8sLVdqiojwJGvkrujfM3VfldnqO3Q';
 	}
 
 	checkToken() {
@@ -85,7 +91,7 @@ class JWT {
 	}
 }
 
-var jwt = new JWT();
+window.jwt = new JWT();
 
 class User {
 	constructor() {
@@ -104,7 +110,7 @@ class User {
 	}
 
 	getImage() {
-		this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+		this.defaultURL = `${Polymer.rootPath}images/favicon.png`;
 		if ('profile_medium' in this.data && this.data.profile_medium !== '') {
 			return this.data.profile_medium;
 		} else if ('email' in this.data && this.data.email !== '') {
@@ -171,7 +177,7 @@ class User {
 	}
 }
 
-var user = new User();
+window.user = new User();
 
 class TrainingPlan {
 	constructor() {
@@ -181,65 +187,21 @@ class TrainingPlan {
 
 		this.targetDate = moment();
 
-		/* Check for local plan and store in user account */
-		var trainingSelected;
-		if (isLocal) {
-			trainingSelected = localStorage.getItem('training-selected');
-			var trainingStarted = localStorage.getItem('training-started');
-			var trainingParsed = moment(trainingStarted, 'YYYYMMDD').format('X');
-			if (trainingSelected !== null && trainingStarted !== null) {
-				superagent
-					.post(`/b/api/v1/users/plan?id=${trainingSelected}&start_date=${trainingParsed}`)
-					.set('Accept', 'application/json')
-					.set('Authorization', `Bearer: ${jwt.token}`)
-					.end((err, res) => {
-						if (res !== undefined && res.ok && res.body !== null) {
-							localStorage.removeItem('training-selected');
-							localStorage.removeItem('training-started');
-							window.location.reload();
-						} else {
-							localStorage.removeItem('training-selected');
-							localStorage.removeItem('training-started');
-							console.log('Error: failure to set training plan1', err);
-						}
-					});
-			}
-		}
-
-		if (isLocal) {
-			trainingSelected = localStorage.getItem('training-selected');
-			if (trainingSelected !== null && localStorage.getItem('training-started') !== null) {
-				this.targetDateHash = localStorage.getItem('training-started');
-				superagent
-					.get('/powercenter/scripts/local/plan.json')
-					.set('Accept', 'application/json')
-					.end((err, res) => {
-						if (res !== undefined && res.ok && res.body !== null) {
-							this.plan = res.body.plan;
-							this.hasPlan = true;
-							this.processPlan();
-						} else {
-							console.log('Error: failure to get training plan2', err);
-						}
-					});
-			}
-		} else {
-			superagent
-				.get('/b/api/v1/users/plan')
-				.set('Accept', 'application/json')
-				.set('Authorization', `Bearer: ${jwt.token}`)
-				.end((err, res) => {
-					if (res !== undefined && res.ok && res.body !== null) {
-						this.plan = res.body.training_plan;
-						this.hasPlan = true;
-						this.targetDate = moment(res.body.training_plan_start_date);
-						this.targetDateHash = this.targetDate.format('YYYYMMDD');
-						this.processPlan();
-					} else {
-						console.log('Error: failure to get training plan', err);
-					}
-				});
-		}
+		superagent
+			.get('/b/api/v1/users/plan')
+			.set('Accept', 'application/json')
+			.set('Authorization', `Bearer: ${jwt.token}`)
+			.end((err, res) => {
+				if (res !== undefined && res.ok && res.body !== null) {
+					this.plan = res.body.training_plan;
+					this.hasPlan = true;
+					this.targetDate = moment(res.body.training_plan_start_date);
+					this.targetDateHash = this.targetDate.format('YYYYMMDD');
+					this.processPlan();
+				} else {
+					console.log('Error: failure to get training plan', err);
+				}
+			});
 	}
 
 	clearTrainingStorage() {
@@ -334,7 +296,7 @@ class TrainingPlan {
 	}
 }
 
-var trainingPlan = new TrainingPlan();
+window.trainingPlan = new TrainingPlan();
 
 class ColorInterpolate {
 	constructor() {
@@ -381,7 +343,7 @@ class ColorInterpolate {
 	}
 }
 
-var colorInterpolate = new ColorInterpolate();
+window.colorInterpolate = new ColorInterpolate();
 
 class URLManager {
 	constructor() {
@@ -444,7 +406,7 @@ class URLManager {
 	}
 }
 
-var urlManager = new URLManager();
+window.urlManager = new URLManager();
 
 class CalendarManager {
 	constructor() {
@@ -473,8 +435,8 @@ class CalendarManager {
 				if (this.mode === 'admin') {
 					return;
 				}
-				if (res.ok) {
-					if (res.body !== null && res.body.activities !== null) {
+				if (res.ok && res.body !== null) {
+					if (res.body.activities !== null) {
 						this.saveActivities(res.body.activities);
 						this.lastActivity = res.body.last_activity;
 						window.dispatchEvent(this.gotActivityEvent);
@@ -511,8 +473,8 @@ class CalendarManager {
 				if (this.mode === 'user') {
 					return;
 				}
-				if (res.ok) {
-					if (res.body !== null && res.body.activities !== null) {
+				if (res.ok && res.body !== null) {
+					if (res.body.activities !== null) {
 						this.activities = {};
 						this.saveActivities(res.body.activities);
 						this.lastActivity = res.body.last_activity;
@@ -626,10 +588,18 @@ class CalendarManager {
 		return results;
 	}
 	giveActivities(results) {
-		app.giveActivities(results);
+		if (app.giveActivities) {
+			app.giveActivities(results);
+		} else {
+			console.warn('no app for jwt.giveActivities()');
+		}
 	}
 	giveActivities2(results) {
-		app.giveActivities2(results);
+		if (app.giveActivities2) {
+			app.giveActivities2(results);
+		} else {
+			console.warn('no app for jwt.giveActivities2()');
+		}
 	}
 	loadLast() {
 		page(`/powercenter/run/${this.lastActivity}`);
@@ -655,7 +625,7 @@ class CalendarManager {
 	}
 }
 
-var calendarManager = new CalendarManager();
+window.calendarManager = new CalendarManager();
 
 class FeatureManagement {
 	constructor() {
@@ -691,4 +661,4 @@ class FeatureManagement {
 	}
 }
 
-var featureManagement = new FeatureManagement();
+window.featureManagement = new FeatureManagement();

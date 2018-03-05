@@ -1,88 +1,94 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../workout-element/time-in-zone.html">
+
 <dom-module id="rss-comparison">
-	<style>
-		:host {
-			min-height: 30vh;
-			@apply(--layout-vertical);
-			background-color: var(--primary-background-color);
-			position: relative;
-		}
-
-		h1 {
-			font-size: 24px;
-		}
-
-		.outer-spinner {
-			margin: 0;
-			padding: 0;
-			position: absolute;
-			background-color: var(--primary-background-color);
-			@apply(--layout-horizontal);
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-			transition: opacity 2s;
-			opacity: 1;
-			top: 0;
-			right: 0;
-			left: 0;
-			bottom: 0;
-			z-index: 12;
-		}
-		.outer-spinner.fade {
-			opacity: 0;
-			z-index: 0;
-		}
-
-		.spinner {
-			margin: 100px auto;
-			width: 40px;
-			height: 40px;
-			animation: sk-rotate 2.0s infinite linear;
-		}
-		.spinner .dot1, .spinner .dot2 {
-			width: 60%;
-			height: 60%;
-			display: inline-block;
-			position: absolute;
-			top: 0;
-			background-color: var(--primary-icon-color);
-			border-radius: 100%;
-			animation: sk-bounce 2.0s infinite ease-in-out;
-		}
-		.spinner .dot2 {
-			top: auto;
-			bottom: 0;
-			-webkit-animation-delay: -1.0s;
-			animation-delay: -1.0s;
-		}
-		@keyframes sk-rotate {
-			100% {
-				transform: rotate(360deg);
-			}
-		}
-		@keyframes sk-bounce {
-			0%, 100% { 
-				transform: scale(0.0);
-			} 50% { 
-				transform: scale(1.0);
-			}
-		}
-
-		.chart-holder {
-			position: relative;
-			width: 100%;
-		}
-		#chart {
-			color: #ffffff;
-			height: 30vh;
-			width: 100%;
-			flex: 1;
-		}
-		.tizContainer {
-			width: 350px;
-			height: 240px;
-		}
-	</style>
 	<template>
+		<style include="iron-flex">
+			:host {
+				min-height: 30vh;
+				@apply --layout-vertical;
+				background-color: var(--primary-background-color);
+				position: relative;
+			}
+
+			h1 {
+				font-size: 24px;
+			}
+
+			.outer-spinner {
+				margin: 0;
+				padding: 0;
+				position: absolute;
+				background-color: var(--primary-background-color);
+				@apply --layout-horizontal;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+				transition: opacity 2s;
+				opacity: 1;
+				top: 0;
+				right: 0;
+				left: 0;
+				bottom: 0;
+				z-index: 12;
+			}
+			.outer-spinner.fade {
+				opacity: 0;
+				z-index: 0;
+			}
+
+			.spinner {
+				margin: 100px auto;
+				width: 40px;
+				height: 40px;
+				animation: sk-rotate 2.0s infinite linear;
+			}
+			.spinner .dot1, .spinner .dot2 {
+				width: 60%;
+				height: 60%;
+				display: inline-block;
+				position: absolute;
+				top: 0;
+				background-color: var(--primary-icon-color);
+				border-radius: 100%;
+				animation: sk-bounce 2.0s infinite ease-in-out;
+			}
+			.spinner .dot2 {
+				top: auto;
+				bottom: 0;
+				-webkit-animation-delay: -1.0s;
+				animation-delay: -1.0s;
+			}
+			@keyframes sk-rotate {
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			@keyframes sk-bounce {
+				0%, 100% {
+					transform: scale(0.0);
+				} 50% {
+					transform: scale(1.0);
+				}
+			}
+
+			.chart-holder {
+				position: relative;
+				width: 100%;
+			}
+			#chart {
+				color: #ffffff;
+				height: 30vh;
+				width: 100%;
+				flex: 1;
+			}
+			.tizContainer {
+				width: 350px;
+				height: 240px;
+			}
+		</style>
 		<div class="outer-spinner" id="spinner">
 			<div class="spinner">
 				<div class="dot1"></div>
@@ -99,13 +105,21 @@
 	</template>
 	<script>
 		/*jshint camelcase: false */
-		Polymer({
-			is: 'rss-comparison',
-			ready: function () {
+		class RssComparison extends Polymer.Element {
+			static get is() { return 'rss-comparison'; }
+
+			static get properties() {
+				return {
+					date: String,
+				};
+			}
+
+			ready() {
+				super.ready();
 				AmCharts.handleLoad();
 				this.date = 'Jan 1st, 2016';
-			},
-			calcTIZ: function (start, end) {
+			}
+			calcTIZ(start, end) {
 				var tz = user.data.training_info.training_zones;
 				var tiz = null;
 				if (tz !== null) {
@@ -121,27 +135,27 @@
 				}
 
 				this.$.tiz.setData(tiz, this.activity.stress);
-			},
-			removeLoading: function () {
+			}
+			removeLoading() {
 				this.$.spinner.classList.remove('show');
 				this.$.spinner.classList.add('hide');
 				this.$.spinner.classList.add('fade');
 				this.$.spinner.style.zIndex = -1;
-			},
-			setLoading: function () {
+			}
+			setLoading() {
 				this.$.spinner.classList.add('show');
 				this.$.spinner.classList.remove('hide');
 				this.$.spinner.classList.remove('fade');
 				this.$.spinner.style.zIndex = 12;
-			},
-			notSelected: function (status) {
+			}
+			notSelected(status) {
 				if (status) {
 					this.$.chartHolder.classList.add('hidden');
 				} else {
 					this.$.chartHolder.classList.remove('hidden');
 				}
-			},
-			setChartData: function (activity, data, maxPowerValue, maxRSSValue) {
+			}
+			setChartData(activity, data, maxPowerValue, maxRSSValue) {
 				if (activity === 0) {
 					this.notSelected(true);
 					this.removeLoading();
@@ -151,14 +165,14 @@
 					this.activity = activity;
 					this.date = moment(activity.timestamp * 1000).format('MMM Do, YYYY');
 					this.data = data;
-					this.startTime = this.data[0].date;
+					this.startTime = this.data.length > 0 && this.data[0] && this.data[0].date;
 					this.maxPowerValue = maxPowerValue;
 					this.maxRSSValue = maxRSSValue;
 
 					this.fillChart();
 				}
-			},
-			fillChart: function () {
+			}
+			fillChart() {
 				this.chart = AmCharts.makeChart(
 					this.$.chart,
 					{
@@ -270,7 +284,7 @@
 							verticalPadding: 4,
 							horizontalPadding: 8
 						},
-						pathToImages: 'https://www.stryd.com/powercenter/scripts/amcharts/images/',
+						pathToImages: `${this.rootPath}scripts/amcharts/images/`,
 						dataProvider: this.data
 					},
 					0
@@ -278,13 +292,18 @@
 
 				this.chart.addListener('init', (e) => {
 					this.removeLoading();
-					this.calcTIZ(0, this.data.length);
+					if (this.data.length > 0) {
+						this.calcTIZ(0, this.data.length);
+					}
 				});
 
 				this.chart.addListener('zoomed', (e) => {
-					this.calcTIZ(e.startIndex, e.endIndex);
+					if (e.endIndex > 0) {
+						this.calcTIZ(e.startIndex, e.endIndex);
+					}
 				});
 			}
-		});
+		}
+		window.customElements.define(RssComparison.is, RssComparison);
 	</script>
 </dom-module>

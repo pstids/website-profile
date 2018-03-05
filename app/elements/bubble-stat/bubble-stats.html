@@ -1,72 +1,77 @@
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="./bubble-stat.html">
+
 <dom-module id="bubble-stats">
-	<style>
-		:host {
-			position: relative;
-		}
-		.bubbles {
-			@apply(--layout-horizontal);
-			@apply(--layout-around-justified);
-			padding: 2vw 1vw 1vw;
-		}
-		bubble-stat {
-			@apply(--layout-flex);
-			margin: 1vw;
-			--bubble-stat-wrap: {
-				width: 10vw;
-				height: 10vw;
-			};
-			--bubble-stat-border: {
-				width: 10vw;
-				height: 10vw;
-			};
-		}
-
-		.toggles {
-			position: absolute;
-			top: 0;
-			left: 0;
-			opacity: 0;
-			transition: opacity 0.5s;
-			z-index: 4;
-			display: flex;
-			flex-direction: row;
-			left: 20px;
-		}
-		:host:hover .toggles {
-			opacity: 1;
-		}
-
-		[data-stat] {
-			@apply(--layout-center);
-			@apply(--layout-justified);
-			@apply(--layout-horizontal);
-			background-color: var(--primary-background-color);
-			border: 2px solid #FFFFFF;
-			border-radius: 6px;
-			color: #FFFFFF;
-			cursor: pointer;
-			font-size: 0.7vw;
-			font-weight: 500;
-			margin: 0.5vw 1vw 0 0;
-			padding: 0.4vw 0.5vw;
-			text-transform: uppercase;
-		}
-		[data-stat] .circle {
-			width: 0.5vw;
-			height: 0.5vw;
-			border-radius: 50%;
-			border: 3px #FFFFFF solid;
-		}
-		[data-stat] .type {
-			padding-left: 10px;
-		}
-		[data-toggle="on"] .circle {
-			background-color: #F7A017;
-			border-color: #F7A017;
-			box-shadow: 0px 0px 20px 0px #F7A017;
-		}
-	</style>
 	<template>
+		<style include="iron-flex">
+		  :host {
+				position: relative;
+		  }
+		  .bubbles {
+				@apply --layout-horizontal;
+				@apply --layout-around-justified;
+				padding: 2vw 1vw 1vw;
+		  }
+		  bubble-stat {
+				@apply --layout-flex;
+				margin: 1vw;
+				--bubble-stat-wrap: {
+					width: 10vw;
+					height: 10vw;
+				};
+				--bubble-stat-border: {
+					width: 10vw;
+					height: 10vw;
+				};
+		  }
+
+		  .toggles {
+				position: absolute;
+				top: 0;
+				left: 0;
+				opacity: 0;
+				transition: opacity 0.5s;
+				z-index: 4;
+				display: flex;
+				flex-direction: row;
+				left: 20px;
+		  }
+		  :host:hover .toggles {
+				opacity: 1;
+		  }
+
+		  [data-stat] {
+				@apply --layout-center;
+				@apply --layout-justified;
+				@apply --layout-horizontal;
+				background-color: var(--primary-background-color);
+				border: 2px solid #FFFFFF;
+				border-radius: 6px;
+				color: #FFFFFF;
+				cursor: pointer;
+				font-size: 0.7vw;
+				font-weight: 500;
+				margin: 0.5vw 1vw 0 0;
+				padding: 0.4vw 0.5vw;
+				text-transform: uppercase;
+		  }
+		  [data-stat] .circle {
+				width: 0.5vw;
+				height: 0.5vw;
+				border-radius: 50%;
+				border: 3px #FFFFFF solid;
+		  }
+		  [data-stat] .type {
+				padding-left: 10px;
+		  }
+		  [data-toggle="on"] .circle {
+				background-color: #F7A017;
+				border-color: #F7A017;
+				box-shadow: 0px 0px 20px 0px #F7A017;
+		  }
+		</style>
 		<div class="toggles" id="toggles">
 			<div class="stat-toggle"
 			data-toggle="on"
@@ -93,17 +98,18 @@
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'bubble-stats',
-		setData: function (metrics) {
+	class BubbleStats extends Polymer.Element {
+		static get is() { return 'bubble-stats'; }
+
+		setData(metrics) {
 			this.$.bubble1.setData(metrics.pace);
 			this.$.bubble2.setData(metrics.time);
 			this.$.bubble3.setData(metrics.power);
 			this.$.bubble4.setData(metrics.heartRate);
 			this.$.bubble5.setData(metrics.dynamics);
 			this.$.bubble6.setData(metrics.misc);
-		},
-		toggleMetrics: function (e) {
+		}
+		toggleMetrics(e) {
 			var target = e.target;
 			while (!('stat' in target.dataset)) {
 				target = target.parentElement;
@@ -111,19 +117,20 @@
 			var opt = target.dataset.stat;
 
 			/* Change visual state */
-			var active = this.querySelector('[data-toggle="on"]');
+			var active = this.root.querySelector('[data-toggle="on"]');
 			active.dataset.toggle = 'off';
 			target.dataset.toggle = 'on';
-			
-			var bubbles = this.querySelectorAll('bubble-stat');
+
+			var bubbles = this.root.querySelectorAll('bubble-stat');
 			for (var bubble of bubbles) {
 				bubble.opt = opt;
 				bubble.setMode();
 			}
-		},
-		giveToggle: function () {
+		}
+		giveToggle() {
 			//this.$.toggles.classList.remove('hidden');
 		}
-	});
+	}
+	window.customElements.define(BubbleStats.is, BubbleStats);
 	</script>
 </dom-module>

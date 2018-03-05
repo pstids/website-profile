@@ -1,18 +1,21 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <dom-module id='map-run'>
-    <style>
-        #map {
-            width: 100%;
-            height: calc(50vh - 30px);
-            margin-top: 15px;
-        }
-    </style>
     <template>
+        <style>
+            #map {
+                width: 100%;
+                height: calc(50vh - 30px);
+                margin-top: 15px;
+            }
+        </style>
         <div id="map"></div>
     </template>
     <script>
-        Polymer({
-            is: 'map-run',
-            ready: function () {
+        class MapRun extends Polymer.Element {
+            static get is() { return 'map-run'; }
+
+            ready() {
+                super.ready();
                 this.center = {
                     lat: 0,
                     lng: 0
@@ -21,14 +24,14 @@
                 this.data = null;
                 this.hasMap = false;
                 this.ready = false;
-            },
-            setReady: function () {
+            }
+            setReady() {
                 this.ready = true;
                 if (this.data !== null) {
                     this.setMap();
-                } 
-            },
-            setData: function (data) {
+                }
+            }
+            setData(data) {
                 if (data.length === 0) {
                     this.classList.add('hidden');
                     return;
@@ -39,13 +42,13 @@
                 if (this.ready) {
                     this.setMap();
                 }
-            },
-            resizeMap: function () {
+            }
+            resizeMap() {
                 if ('map' in this) {
                     google.maps.event.trigger(this.map, 'resize');
                 }
-            },
-            setMap: function () {
+            }
+            setMap() {
                 if (!this.hasMap) {
                     this.hasMap = true;
                     this.strydDarkId = 'strydDarkStyle';
@@ -95,8 +98,8 @@
                     this.map.setMapTypeId(this.strydDarkId);
                 }
                 this.setDataReady();
-            },
-            setDataReady: function () {
+            }
+            setDataReady() {
                 if (this.data === null || this.data === undefined) {
                     return;
                 }
@@ -136,7 +139,7 @@
                     },
                     map: this.map,
                     icon: {
-                        url: '/powercenter/images/green_circle.png',
+                        url: `${this.rootPath}images/green_circle.png`,
                         size: new google.maps.Size(25, 25),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(12, 12),
@@ -152,7 +155,7 @@
                     },
                     map: this.map,
                     icon: {
-                        url: '/powercenter/images/red_circle.png',
+                        url: `${this.rootPath}images/red_circle.png`,
                         size: new google.maps.Size(25, 25),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(12, 12),
@@ -161,6 +164,7 @@
                 });
                 this.mapObjs.push(stop);
             }
-        });
+        }
+        window.customElements.define(MapRun.is, MapRun);
     </script>
 </dom-module>

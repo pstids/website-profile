@@ -1,125 +1,129 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="./compare-day.html">
+
 <dom-module id="compare-container">
-	<style>
-		:host {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			position: relative;
-			border-right: 1px solid #4d4d4d;
-			transition: 0.5s border;
-			height: 80px;
-		}
-		:host:last-child {
-			border-right: 0;
-		}
-		:host:hover #container {
-			position: absolute;
-			min-width: 100%;
-			z-index: 150;
-		}
-
-		#container {
-			@apply(--layout-flex);
-			@apply(--layout-vertical);
-			display: block;
-			height: 80px;
-		}
-
-		:host:hover compare-day {
-			display: block;
-			border-left: 1px solid #FFFFFF;
-			border-right: 1px solid #FFFFFF;
-		}
-		:host:hover compare-day:first-child {
-			border-top: 1px solid #FFFFFF;
-		}
-		:host:hover compare-day:last-child {
-			border-bottom: 1px solid #FFFFFF;
-		}
-
-		compare-day {
-			display: none;
-		}
-		compare-day:first-child {
-			display: block;
-		}
-
-		#more {
-			font-size: 10px;
-			text-align: center;
-			background-color: #000000;
-			opacity: 0.6;
-			color: #FFFFFF;
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-		}
-	</style>
 	<template>
+		<style>
+			:host {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				position: relative;
+				border-right: 1px solid #4d4d4d;
+				transition: 0.5s border;
+				height: 80px;
+			}
+			:host:last-child {
+				border-right: 0;
+			}
+			:host:hover #container {
+				position: absolute;
+				min-width: 100%;
+				z-index: 150;
+			}
+			#container {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				display: block;
+				height: 80px;
+			}
+			:host:hover compare-day {
+				display: block;
+				border-left: 1px solid #FFFFFF;
+				border-right: 1px solid #FFFFFF;
+			}
+			:host:hover compare-day:first-child {
+				border-top: 1px solid #FFFFFF;
+			}
+			:host:hover compare-day:last-child {
+				border-bottom: 1px solid #FFFFFF;
+			}
+			compare-day {
+				display: none;
+			}
+			compare-day:first-child {
+				display: block;
+			}
+			#more {
+				font-size: 10px;
+				text-align: center;
+				background-color: #000000;
+				opacity: 0.6;
+				color: #FFFFFF;
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+			}
+		</style>
 		<div id="container"></div>
 		<div class="hidden" id="more">hover</div>
 	</template>
 	<script>
-		Polymer({
-			is: 'compare-container',
-			ready: function () {
+		class CompareContainer extends Polymer.Element {
+			static get is() { return 'compare-container'; }
+
+			ready() {
+				super.ready();
 				this.childCount = 0;
-			},
-			clear: function () {
-				if (Polymer.dom(this.$.container).children.length === 0) {
+			}
+			clear() {
+				if (this.$.container.children.length === 0) {
 					return true;
 				}
-				for (var node of Polymer.dom(this.$.container).children) {
-					Polymer.dom(this.$.container).removeChild(node);
+				for (var node of this.$.container.children) {
+					this.$.container.removeChild(node);
 				}
 				this.classList.remove('active');
 				this.$.more.classList.add('hidden');
 				this.childCount = 0;
 				return true;
-			},
-			addChild: function (child) {
-				Polymer.dom(this.$.container).appendChild(child);
+			}
+			addChild(child) {
+				util.patchClasses(child, this);
+				this.$.container.appendChild(child);
 				return true;
-			},
-			addDay: function (dayObj) {
+			}
+			addDay(dayObj) {
 				this.childCount++;
 				if ('power' in dayObj) {
 					this.classList.add('active');
 				}
 				if (this.childCount === 1) {
-					Polymer.dom(this.$.container).children[0].setData(dayObj);
+					this.$.container.children[0].setData(dayObj);
 				} else {
 					var child = document.createElement('compare-day');
 					child.setData(dayObj);
 					this.addChild(child);
 					this.$.more.classList.remove('hidden');
 				}
-			},
-			hasID: function (id) {
-				for (var node of Polymer.dom(this.$.container).children) {
+			}
+			hasID(id) {
+				for (var node of this.$.container.children) {
 					if (node.getID() === id) {
 						return true;
 					}
 				}
 				return false;
-			},
-			setActive: function (id) {
-				for (var node of Polymer.dom(this.$.container).children) {
+			}
+			setActive(id) {
+				for (var node of this.$.container.children) {
 					if (node.getID() === id) {
 						node.classList.add('active');
 						return true;
 					}
 				}
 				return false;
-			},
-			removeID: function (id) {
+			}
+			removeID(id) {
 				var slide = false;
-				if (Polymer.dom(this.$.container).children.length > 1) {
+				if (this.$.container.children.length > 1) {
 					slide = true;
 				}
-				for (var node of Polymer.dom(this.$.container).children) {
+				for (var node of this.$.container.children) {
 					if (node.getID() === id) {
 						if (slide) {
-							Polymer.dom(this.$.container).removeChild(node);
+							this.$.container.removeChild(node);
 							return true;
 						} else {
 							var day = node.getDay();
@@ -129,11 +133,12 @@
 						}
 					}
 				}
-				if (Polymer.dom(this.$.container).children.length <= 1) {
+				if (this.$.container.children.length <= 1) {
 					this.$.more.classList.add('hidden');
 				}
 				return false;
 			}
-		});
+		}
+		window.customElements.define(CompareContainer.is, CompareContainer);
 	</script>
 </dom-module>

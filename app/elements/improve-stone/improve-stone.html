@@ -1,86 +1,100 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
+
 <dom-module id="improve-stone">
-<style>
-	:host {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 10;
-	}
-	h1.header {
-		@apply(--header);
-		text-align: center;
-		padding: 15px 0;
-	}
-	.stone {
-		position: fixed;
-		width: 50%;
-		margin: 5% 25%;
-		background: #262626;
-		-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
-		z-index: 11;
-	}
-	.holder {
-		margin: 20px 10%;
-	}
-	paper-input {
-		display: inline-block;
-	}
-	.justified-row {
-		@apply(--layout-horizontal);
-		@apply(--layout-justified);
-	}
-	.information {
-		@apply(--layout-horizontal);
-		@apply(--layout-justified);
-		padding: 0.6vw 0;
-	}
-	.information .info {
-		text-transform: uppercase;
-	}
-	.information .info h1 {
-		font-size: 0.67vw;
-		color: var(--primary-header-color);
-		margin: 0;
-		padding: 0;
-	}
-	.information.height-weight .info {
-		width: 25%;
-	}
-	.information #birthday-input {
-		width: 80%;
-	}
-	.information #birthday-input paper-input {
-		width: 20%;
-	}
-	.information #location-input {
-		width: 100%;
-	}
-	.information #location-input paper-input {
-		width: 40%;
-	}
-	.information #birthday-input .slash {
-		/*@apply(--layout-self-end);*/
-		font-size: 1.67vw;
-		color: var(--primary-header-color);
-		position: absolute;
-		bottom: 30%;
-	}
-</style>
 <template>
+	<style include="iron-flex">
+		:host {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 10;
+		}
+		h1.header {
+			@apply --header;
+			text-align: center;
+			padding: 15px 0;
+		}
+		.stone {
+			position: fixed;
+			width: 50%;
+			margin: 5% 25%;
+			background: #262626;
+			-webkit-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			-moz-box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			box-shadow: 10px 10px 50px 0px rgba(0, 0, 0, 0.75);
+			z-index: 11;
+		}
+		.holder {
+			margin: 20px 10%;
+		}
+		paper-input {
+			display: inline-block;
+		}
+		.justified-row {
+			@apply --layout-horizontal;
+			@apply --layout-justified;
+		}
+		.information {
+			@apply --layout-horizontal;
+			@apply --layout-justified;
+			padding: 0.6vw 0;
+		}
+		.information .info {
+			text-transform: uppercase;
+		}
+		.information .info h1 {
+			font-size: 0.67vw;
+			color: var(--primary-header-color);
+			margin: 0;
+			padding: 0;
+		}
+		.information.height-weight .info {
+			width: 25%;
+		}
+		.information #birthday-input {
+			width: 80%;
+		}
+		.information #birthday-input paper-input {
+			width: 20%;
+		}
+		.information #location-input {
+			width: 100%;
+		}
+		.information #location-input paper-input {
+			width: 40%;
+		}
+		.information #birthday-input .slash {
+			/*@apply --layout-self-end;*/
+			font-size: 1.67vw;
+			color: var(--primary-header-color);
+			position: absolute;
+			bottom: 30%;
+		}
+	</style>
 	<div class="stone hidden" data-stone="personal">
 		<h1 class="header">Get Personalized Insight</h1>
 		<div class="layout vertical holder">
 			<paper-dropdown-menu label="Target Race Distance">
-				<paper-menu class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType">
+				<paper-listbox class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType" slot="dropdown-content">
 					<paper-item>5 Kilometer</paper-item>
 					<paper-item>10 Kilometer</paper-item>
 					<paper-item>Half Marathon</paper-item>
 					<paper-item>Marathon</paper-item>
-				</paper-menu>
+				</paper-listbox>
 			</paper-dropdown-menu>
 			<div class="information">
 				<div class="info">
@@ -93,7 +107,7 @@
 							class="editable"
 							name="birth_month"
 							auto-validate
-							pattern="^([1-9]|[0-1][0-9])$" 
+							pattern="^([1-9]|[0-1][0-9])$"
 							error-message="01 - 12"
 							value="{{userLocal.birth_month::input}}">
 						</paper-input>
@@ -117,7 +131,7 @@
 							class="editable"
 							name="birth_year"
 							auto-validate
-							pattern="^(19[0-9][0-9]|20[0-9][0-9])" 
+							pattern="^(19[0-9][0-9]|20[0-9][0-9])"
 							error-message="wrong year"
 							value="{{userLocal.birth_year::input}}">
 						</paper-input>
@@ -134,7 +148,7 @@
 					</paper-radio-group>
 				</div>
 			</div>
-			<button is="stryd-button" on-click="savePersonal" style="margin-bottom: 20px;">Save</button>
+			<stryd-button on-click="savePersonal" style="margin-bottom: 20px;">Save</stryd-button>
 		</div>
 	</div>
 	<div class="stone hidden" data-stone="baseline">
@@ -142,10 +156,10 @@
 		<div class="layout vertical holder">
 			<div class="layout horizontal">
 				<paper-dropdown-menu label="Critical Power Test Method" no-animations style="padding: 2vw">
-					<paper-menu class="dropdown-content" selected="{{selected}}">
+					<paper-listbox class="dropdown-content" selected="{{selected}}" slot="dropdown-content">
 						<paper-item>5k estimation</paper-item>
 						<paper-item>10k estimation</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 				<iron-pages selected="{{selected}}">
 					<div class="test-input" style="padding: 2vw">
@@ -176,7 +190,7 @@
 					</div>
 				</iron-pages>
 			</div>
-			<button is="stryd-button" on-click="calcTraining" style="margin-bottom: 20px;">Save</button>
+			<stryd-button on-click="calcTraining" style="margin-bottom: 20px;">Save</stryd-button>
 		</div>
 	</div>
 	<paper-dialog id="invalid">
@@ -187,41 +201,45 @@
 	</paper-dialog>
 </template>
 <script>
-Polymer({
-	is: 'improve-stone',
-	properties: {
-		selected: {
-			type: Number,
-			notify: true
-		},
-		errMsgPace: {
-			type: String,
-			readOnly: true,
-			value: 'Invalid pace input!'
-		},
-		labelDuration5K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 23:00)'
-		},
-		labelDuration10K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 50:40)'
-		},
-		distanceTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
+class ImproveStone extends Polymer.Element {
+	static get is() { return 'improve-stone'; }
+
+	static get properties() {
+		return {
+			selected: {
+				type: Number,
+				notify: true
+			},
+			errMsgPace: {
+				type: String,
+				readOnly: true,
+				value: 'Invalid pace input!'
+			},
+			labelDuration5K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 23:00)'
+			},
+			labelDuration10K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 50:40)'
+			},
+			distanceTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			userLocal: {
+				type: Object,
+				notify: true
 			}
-		},
-		userLocal: {
-			type: Object,
-			notify: true
-		}
-	},
-	ready: function () {
+		};
+	}
+	ready() {
+		super.ready();
 		// if (!featureManagement.hasFeatures) {
 		// 	return;
 		// }
@@ -229,8 +247,9 @@ Polymer({
 		this.currentStep = 0;
 		this.availables = [];
 		this.targetRaces = ['5k', '10k', 'half marathon', 'marathon'];
-	},
-	attached: function () {
+	}
+	connectedCallback() {
+		super.connectedCallback();
 		// if (!featureManagement.hasFeatures) {
 		// 	return;
 		// }
@@ -241,11 +260,11 @@ Polymer({
 				});
 				return;
 			}
-			this.setUserLocal();
 		}
+		this.setUserLocal();
 		this.checkAvailables();
-	},
-	setUserLocal: function () {
+	}
+	setUserLocal() {
 		var aboutStr = user.data.about_me;
 		if (!aboutStr) {
 			aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
@@ -261,10 +280,11 @@ Polymer({
 				hasTargetRaceIdx = true;
 			}
 		}
+
 		this.userLocal = {
-			birth_day: user.data.birth.day,
-			birth_month: user.data.birth.month,
-			birth_year: user.data.birth.year,
+			birth_day: user.data.birth && user.data.birth.day || 0,
+			birth_month: user.data.birth && user.data.birth.month || 0,
+			birth_year: user.data.birth && user.data.birth.year || 0,
 			gender: user.data.gender,
 			height: user.data.height,
 			city: user.data.city,
@@ -274,16 +294,16 @@ Polymer({
 			profileImg: user.getImage(),
 			about_me: aboutStr,
 			units: user.data.units,
-			age: this.getAge(
+			age: user.data.birth && this.getAge(
 				user.data.birth.year,
 				user.data.birth.month,
 				user.data.birth.day
-			),
+			) || 0,
 			targetRaceIdx: targetRaceIdx,
 			hasTargetRaceIdx: hasTargetRaceIdx
 		};
-	},
-	getAge: function (year, month, day) {
+	}
+	getAge(year, month, day) {
 		if (year === 0 && month === 0 && day === 0) {
 			return 0;
 		}
@@ -294,8 +314,8 @@ Polymer({
 				parseInt(day)
 		);
 		return today.getFullYear() - birth.getFullYear();
-	},
-	savePersonal: function () {
+	}
+	savePersonal() {
 		var updateParams = '?fields=gender,birth,race';
 
 		var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
@@ -317,16 +337,16 @@ Polymer({
 				if (res.ok) {
 					text = 'Your information is updated!';
 					user.updateData(res.body);
-					heatDuration.getZones();
-					spiderChart.ready();
+					app._heatDuration.getZones();
+					app._spiderChart.ready();
 				} else {
 					text = 'Your information is not updated. Please try again.';
 				}
 				toast(text);
 				this.nextAvailable();
 			});
-	},
-	calcTraining: function () {
+	}
+	calcTraining() {
 		let results = [];
 		switch (this.selected) {
 			case 0:
@@ -372,8 +392,8 @@ Polymer({
 				toast(text);
 				this.nextAvailable();
 			});
-	},
-	checkAvailables: function () {
+	}
+	checkAvailables() {
 		if (
 			this.userLocal.birth_year === 0 ||
 			this.userLocal.gender === '' ||
@@ -381,73 +401,77 @@ Polymer({
 		) {
 			this.availables.push('personal');
 		}
-		if (user.data.training_info.critical_power === 0) {
+		if (user.data.training_info && user.data.training_info.critical_power === 0) {
 			this.availables.push('baseline');
 		}
 		this.activateAvailables();
-	},
-	changeRace: function () {
+	}
+	changeRace() {
 		this.currentStep = 0;
 		this.availables = ['personal'];
 		this.show();
 		this.activateAvailables();
-	},
-	activateAvailables: function () {
+	}
+	activateAvailables() {
 		if (this.availables.length > 0) {
 			this.addBlur();
-			this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.remove('hidden');
+			const el = this.root.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`);
+			if (el) {
+				el.classList.remove('hidden');
+			}
 		} else {
 			this.removeBlur();
 			this.hide();
 			this.availables = [];
 			this.currentStep = 0;
 		}
-	},
-	nextAvailable: function () {
-		this.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.add('hidden');
+	}
+	nextAvailable() {
+		this.root.querySelector(`[data-stone="${this.availables[this.currentStep]}"]`).classList.add('hidden');
 		this.currentStep++;
 		if (this.currentStep === this.availables.length) {
 			this.removeBlur();
 			this.hide();
 		} else {
-			this.querySelector(`[data-stone=${this.availables[this.currentStep]}]`).classList.remove('hidden');
-		}
-	},
-	show: function () {
-		this.classList.remove('hidden');
-	},
-	hide: function () {
-		this.classList.add('hidden');
-	},
-	/* global heatDuration, spiderChart, performanceManagement */
-	addBlur: function () {
-		if (heatDuration) {
-			heatDuration.classList.add('blurred');
-		}
-		if (spiderChart) {
-			spiderChart.classList.add('blurred');
-		}
-		if (performanceManagement) {
-			performanceManagement.classList.add('blurred');
-		}
-		if (powerTrend) {
-			powerTrend.classList.add('blurred');
-		}
-	},
-	removeBlur: function () {
-		if (heatDuration) {
-			heatDuration.classList.remove('blurred');
-		}
-		if (spiderChart) {
-			spiderChart.classList.remove('blurred');
-		}
-		if (performanceManagement) {
-			performanceManagement.classList.remove('blurred');
-		}
-		if (powerTrend) {
-			powerTrend.classList.remove('blurred');
+			this.root.querySelector(`[data-stone=${this.availables[this.currentStep]}]`).classList.remove('hidden');
 		}
 	}
-});
+	show() {
+		this.classList.remove('hidden');
+	}
+	hide() {
+		this.classList.add('hidden');
+	}
+	/* global heatDuration, spiderChart, performanceManagement */
+	addBlur() {
+		if (app._heatDuration) {
+			app._heatDuration.classList.add('blurred');
+		}
+		if (app._spiderChart) {
+			app._spiderChart.classList.add('blurred');
+		}
+		if (window.performanceManagement) {
+			window.performanceManagement.classList.add('blurred');
+		}
+		if (window.powerTrend) {
+			window.powerTrend.classList.add('blurred');
+		}
+	}
+	removeBlur() {
+		if (app._heatDuration) {
+			app._heatDuration.classList.remove('blurred');
+		}
+		if (app._spiderChart) {
+			app._spiderChart.classList.remove('blurred');
+		}
+		if (window.performanceManagement) {
+			window.performanceManagement.classList.remove('blurred');
+		}
+		if (window.powerTrend) {
+			window.powerTrend.classList.remove('blurred');
+		}
+	}
+}
+window.customElements.define(ImproveStone.is, ImproveStone);
 </script>
 </dom-module>

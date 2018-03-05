@@ -1,112 +1,120 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+
 <dom-module id="performance-management">
-	<style>
-		:host {
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			font-family: "Stryd", sans-serif;
-			background-color: var(--dark-background-color);
-			padding: 20px;
-			--paper-slider-knob-color: #F5A214;
-			min-width: 860px;
-			overflow-x: auto;
-		}
-		:host.blurred {
-			-webkit-filter: blur(2px);
-			-moz-filter: blur(2px);
-			-ms-filter: blur(2px);
-			-o-filter: blur(2px);
-			filter: blur(2px);
-		}
-
-		h1.header {
-			@apply(--header);
-			text-align: center;
-			padding: 15px 0;
-		}
-		.title {
-			padding: 20px;
-			@apply(--layout-end);
-		}
-
-		#stress {
-			width: 960px;
-			margin: 0 auto;
-			padding: 20px;
-		}
-		#management {
-			position: relative;
-		}
-		.holder {
-			border: 1px solid #4D4D4D;
-			@apply(--layout-vertical);
-			margin: 10px;
-		}
-
-		[data-stat] {
-			@apply(--layout-center);
-			@apply(--layout-justified);
-			@apply(--layout-horizontal);
-			background-color: var(--primary-background-color);
-			border: 2px solid #FFFFFF;
-			border-radius: 6px;
-			color: #FFFFFF;
-			cursor: pointer;
-			font-size: 1vw;
-			font-weight: 500;
-			margin: 0.5vw 1vw 0 0;
-			padding: 0.8vw 1.1vw;
-			position: relative;
-			text-transform: uppercase;
-			z-index: 5;
-		}
-		[data-stat] .circle {
-			width: 1.3vw;
-			height: 1.3vw;
-			border-radius: 50%;
-			border: 3px #FFFFFF solid;
-			z-index: 2;
-		}
-		[data-stat] .type {
-			padding-left: 10px;
-		}
-		[data-toggle="on"][data-stat="stress"] .circle {
-			background-color: #F5A214;
-			border-color: #F5A214;
-			box-shadow: 0px 0px 20px 0px #F7A017;
-		}
-		[data-toggle="on"][data-stat="distance"] .circle {
-			background-color: #FFFFFF;
-			border-color: #FFFFFF;
-			box-shadow: 0px 0px 20px 0px #FFFFFF;
-		}
-		[data-toggle="on"][data-stat="zones"] .circle {
-			background-color: #fce9d2;
-			border-color: #fce9d2;
-			box-shadow: 0px 0px 20px 0px #5ea7a1;
-		}
-	</style>
 	<template>
+		<style include="iron-flex iron-flex-alignment">
+			:host {
+				@apply --layout-vertical;
+				@apply --layout-center;
+				font-family: "Stryd", sans-serif;
+				background-color: var(--dark-background-color);
+				padding: 20px;
+				--paper-slider-knob-color: #F5A214;
+				min-width: 860px;
+				overflow-x: auto;
+			}
+			:host.blurred {
+				-webkit-filter: blur(2px);
+				-moz-filter: blur(2px);
+				-ms-filter: blur(2px);
+				-o-filter: blur(2px);
+				filter: blur(2px);
+			}
+
+			h1.header {
+				@apply --header;
+				text-align: center;
+				padding: 15px 0;
+			}
+			.title {
+				padding: 20px;
+				@apply --layout-end;
+			}
+
+			#stress {
+				width: 960px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+			#management {
+				position: relative;
+			}
+			.holder {
+				border: 1px solid #4D4D4D;
+				@apply --layout-vertical;
+				margin: 10px;
+			}
+
+			[data-stat] {
+				@apply --layout-center;
+				@apply --layout-justified;
+				@apply --layout-horizontal;
+				background-color: var(--primary-background-color);
+				border: 2px solid #FFFFFF;
+				border-radius: 6px;
+				color: #FFFFFF;
+				cursor: pointer;
+				font-size: 1vw;
+				font-weight: 500;
+				margin: 0.5vw 1vw 0 0;
+				padding: 0.8vw 1.1vw;
+				position: relative;
+				text-transform: uppercase;
+				z-index: 5;
+			}
+			[data-stat] .circle {
+				width: 1.3vw;
+				height: 1.3vw;
+				border-radius: 50%;
+				border: 3px #FFFFFF solid;
+				z-index: 2;
+			}
+			[data-stat] .type {
+				padding-left: 10px;
+			}
+			[data-toggle="on"][data-stat="stress"] .circle {
+				background-color: #F5A214;
+				border-color: #F5A214;
+				box-shadow: 0px 0px 20px 0px #F7A017;
+			}
+			[data-toggle="on"][data-stat="distance"] .circle {
+				background-color: #FFFFFF;
+				border-color: #FFFFFF;
+				box-shadow: 0px 0px 20px 0px #FFFFFF;
+			}
+			[data-toggle="on"][data-stat="zones"] .circle {
+				background-color: #fce9d2;
+				border-color: #fce9d2;
+				box-shadow: 0px 0px 20px 0px #5ea7a1;
+			}
+		</style>
 		<h1 class="header">Manage Training Load</h1>
 		<div class="layout vertical holder active" data-holder="stress">
 			<div class="top">
 				<h1>Training Load Bar Chart</h1>
 			</div>
-			<svg id="stress"></svg>
+			<svg id="stress">
+				<g id="barchart" transform="translate(50, 50)"></g>
+			</svg>
 			<div class="layout horizontal title">
 				<div class="layout horizontal flex">
 					<h1>Last <span>{{timeRange}}</span> weeks</h1>
 					<paper-slider id="dateSelection" pin="" max="24" step="1" value="10"></paper-slider>
 				</div>
 				<div class="flex layout horizontal end-justified">
-					<div data-stat="stress" data-toggle="on">
+					<div data-stat="stress" on-click="callFun" data-toggle="on">
 						<div class="circle"></div>
 						<div class="type">Stress</div>
 					</div>
-					<div data-stat="distance" data-toggle="off" >
+					<div data-stat="distance" on-click="callFun" data-toggle="off" >
 						<div class="circle"></div>
 						<div class="type">Distance</div>
 					</div>
-					<div data-stat="zones" data-toggle="off">
+					<div data-stat="zones" on-click="callFun" data-toggle="off">
 						<div class="circle"></div>
 						<div class="type">Time in Zones</div>
 					</div>
@@ -115,9 +123,17 @@
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'performance-management',
-		ready: function () {
+	class PerformanceManagement extends Polymer.Element {
+		static get is() { return 'performance-management'; }
+
+		static get properties() {
+			return {
+				timeRange: String,
+			};
+		}
+
+		ready() {
+			super.ready();
 			this.width = 860;
 			this.height = 400;
 
@@ -138,26 +154,27 @@
 					this.fillBars('weeks');
 				}
 			});
-		},
-		attached: function () {
+		}
+		connectedCallback() {
+			super.connectedCallback();
 			this.grabData();
-		},
-		getDayName: function (idx) {
+		}
+		getDayName(idx) {
 			return this.weekDays[idx % 7];
-		},
-		getWeekName: function (idx) {
+		}
+		getWeekName(idx) {
 			return this.weekNames[idx];
-		},
-		getID: function (idx) {
+		}
+		getID(idx) {
 			return this.weekIDS[idx];
-		},
-		grabData: function () {
+		}
+		grabData() {
 			this.processData(calendarManager.getPMActivities());
 			window.addEventListener('gotActivities', () => {
 				this.processData(calendarManager.getPMActivities());
 			});
-		},
-		processData: function (activities) {
+		}
+		processData(activities) {
 			if (activities === []) {
 				return;
 			}
@@ -171,24 +188,17 @@
 				}
 			}
 			this.fillInit();
-		},
-		fillInit: function () {
-			this.graph = d3.select('#stress')
+		}
+		fillInit() {
+			this.graph = d3.select(this.$.stress)
 				.attr('width', this.width + 100)
 				.attr('height', this.height + 100);
 
-			this.graph.append('svg:g')
-				.attr('id', 'barchart')
-				.attr('transform', 'translate(50, 50)');
-
-			d3.selectAll('[data-stat]')
-				.on('click', this.callFun.bind(this));
-
 			// d3.select(window).on('resize', this.resize.bind(this));
 			this.fillBars('weeks');
-		},
-		fillBars: function (time, idx) {
-			d3.select('#barchart')
+		}
+		fillBars(time, idx) {
+			d3.select(this.$.barchart)
 				.selectAll('*')
 				.remove();
 
@@ -239,8 +249,8 @@
 				.innerTickSize(-this.width)
 				.outerTickSize(0);
 
-			d3.selectAll('.d3-tip')
-				.remove();
+			this.root.querySelectorAll('.d3-tip')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var tip = d3.tip()
 				.attr('class', 'd3-tip')
@@ -264,10 +274,11 @@
 					}
 				});
 
-			var vis = d3.select('#barchart');
+			var vis = d3.select(this.$.barchart);
 			vis.call(tip);
 
-			d3.selectAll('.axis').remove();
+			this.root.querySelectorAll('.axis')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var xAxisText = vis.insert('g', ':first-child')
 				.attr('class', 'x axis')
@@ -354,20 +365,20 @@
 			if (time === 'weeks') {
 				/* unused: d */
 				bars.on('click', (d, i) => {
-					this.fillBars('days', i);
+					this.fillBars(barchart, 'days', i);
 				});
 			} else {
 				bars.on('click', (d, i) => {
 					if (this.ids[i].length > 1) {
-						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+						page.redirect(`${Polymer.rootPath}run/${this.ids[i][0]}`);
 					} else {
-						page.redirect(`/powercenter/run/${this.ids[i][0]}`);
+						page.redirect(`${Polymer.rootPath}run/${this.ids[i][0]}`);
 					}
 				});
 			}
-		},
-		zillBars: function (time, idx) {
-			d3.select('#barchart')
+		}
+		zillBars(time, idx) {
+			d3.select(this.$.barchart)
 				.selectAll('*')
 				.remove();
 
@@ -392,7 +403,7 @@
 			}
 
 			var xData = [0, 1, 2, 3, 4];
-			
+
 			this.x = d3.scale.ordinal()
 				.domain(d3.range(this.data.length))
 				.range([0, this.width])
@@ -427,8 +438,8 @@
 				.innerTickSize(-this.width)
 				.outerTickSize(0);
 
-			d3.selectAll('.d3-tip')
-				.remove();
+			this.root.querySelectorAll('.d3-tip')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var tip = d3.tip()
 				.attr('class', 'd3-tip')
@@ -445,15 +456,16 @@
 					var msg = `<div class="float-tag">Zone ${zone} </div><div class="float-value">for ${time}</div>`;
 					if (time === 'days') {
 						var id = this.getID(d.x);
-						return `${msg}<br><a href="/powercenter/run/${id}"><span style="color:rgb(236,176,31)">TAP FOR RUN</span>`;
+						return `${msg}<br><a href="${Polymer.rootPath}run/${id}"><span style="color:rgb(236,176,31)">TAP FOR RUN</span>`;
 					} else {
 						return msg;
 					}
 				});
 
-			var vis = d3.select('#barchart');
+			var vis = d3.select(this.$.barchart);
 			vis.call(tip);
-			d3.selectAll('.axis').remove();
+			this.root.querySelectorAll('.axis')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var xAxisText = vis.insert('g', ':first-child')
 				.attr('class', 'x axis')
@@ -546,55 +558,56 @@
 			} else {
 				/* unused: d */
 				bars.on('click', (d, i) => {
-					page.redirect(`/powercenter/run/${this.ids[i]}`);
+					page.redirect(`${Polymer.rootPath}run/${this.ids[i]}`);
 				});
 			}
 
 			bars.transition()
 				.duration(300)
 				.attr('transform', 'translate(0, 0)');
-		},
-		/* unused: a */
-		callFun: function (a, e) {
-			var vis = d3.select('#barchart');
+		}
+		callFun(e) {
+			var vis = d3.select(this.$.barchart);
 			vis.selectAll('.stack').remove();
-			var on = this.querySelector('[data-toggle="on"]');
+			var on = this.root.querySelector('[data-toggle="on"]');
 			if (on) {
 				on.dataset.toggle = 'off';
 			}
 
-			if (e === 3) {
+			const target = e.currentTarget;
+			const statType = target.dataset.stat;
+			if (statType === 'distance') {
 				this.state = 'distance';
 				this.fillBars('weeks');
-				this.querySelector('[data-stat="distance"]').dataset.toggle = 'on';
-			} else if (e === 2) {
+				target.dataset.toggle = 'on';
+			} else if (statType === 'stress') {
 				this.state = 'stress';
 				this.fillBars('weeks');
-				this.querySelector('[data-stat="stress"]').dataset.toggle = 'on';
-			} else if (e === 4) {
+				target.dataset.toggle = 'on';
+			} else if (statType === 'zones') {
 				this.state = 'tiz';
 				this.zillBars('weeks');
-				this.querySelector('[data-stat="zones"]').dataset.toggle = 'on';
+				target.dataset.toggle = 'on';
 			}
-		},
-		getTimeType: function (dataType, timeType, idx) {
+		}
+		getTimeType(dataType, timeType, idx) {
 			if (timeType === 'days') {
 				return this.getDayType(dataType, idx);
 			} else if (timeType === 'weeks') {
 				return this.getWeekType(dataType);
 			}
-		},
-		wayBack: function (weeks) {
+		}
+		wayBack(weeks) {
 			var wayBack = moment().subtract(weeks, 'weeks');
 			return wayBack.subtract(
 				parseInt(wayBack.format('d'))-1,
 				'days'
 			);
-		},
-		sumFunction: function (a, b) {
+		}
+		sumFunction(a, b) {
 			return a + b;
-		},
-		getDayType: function (dataType, idx) {
+		}
+		getDayType(dataType, idx) {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			this.ids = [];
@@ -618,8 +631,8 @@
 				result.push(subResult);
 			}
 			return result[idx];
-		},
-		getWeekType: function (dataType) {
+		}
+		getWeekType(dataType) {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			this.weekNames = [];
@@ -638,8 +651,8 @@
 				result.push(subResult);
 			}
 			return result;
-		},
-		getZoneDayType: function (idx) {
+		}
+		getZoneDayType(idx) {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			for (var i = 0; i <= this.timeRange; i++) {
@@ -670,8 +683,8 @@
 				result.push(subResult);
 			}
 			return result[idx];
-		},
-		getZoneWeekType: function () {
+		}
+		getZoneWeekType() {
 			var movingDay = this.wayBack(this.timeRange);
 			var result = [];
 			for (var i = 0; i <= this.timeRange; i++) {
@@ -692,8 +705,8 @@
 				result.push(subResult);
 			}
 			return result;
-		},
-		getData: function (hash, type) {
+		}
+		getData(hash, type) {
 			if (type === 'zones') {
 				type = 'seconds_in_zones';
 			}
@@ -714,6 +727,7 @@
 			}
 			return result;
 		}
-	});
+	}
+	window.customElements.define(PerformanceManagement.is, PerformanceManagement);
 	</script>
 </dom-module

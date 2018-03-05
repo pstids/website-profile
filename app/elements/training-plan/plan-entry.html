@@ -1,6 +1,25 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="./phase-entry.html">
+<link rel="import" href="./plan-weekview.html">
+<link rel="import" href="./training-entry.html">
+
 <dom-module id="plan-entry">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment">
       :host {
         background: #333333;
         font-family: "Roboto", Helvetica, Arial;
@@ -128,7 +147,7 @@
           <paper-radio-button name="general">General</paper-radio-button>
         </paper-radio-group>
         <paper-dropdown-menu id="goalDistance" label="Goal Distance" no-animations>
-          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}">
+          <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{planDistanceSelected}}" slot="dropdown-content">
             <paper-item name="5k">5k</paper-item>
             <paper-item name="10k">10k</paper-item>
             <paper-item name="half marathon">Half Marathon</paper-item>
@@ -140,11 +159,11 @@
             <paper-item name="half ironman">Half Ironman</paper-item>
             <paper-item name="ironman">Ironman</paper-item>
             <paper-item name="other">Other</paper-item>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
         <paper-input id="durationInput" label="Duration" placeholder="4" allowed-pattern="[0-9]" required
                      value="{{weekNum}}" on-blur="onWeekInput">
-          <div suffix>Weeks</div>
+          <div suffix slot="suffix">Weeks</div>
         </paper-input>
       </div>
       <div class="layout horizontal end justified plan-header-content">
@@ -188,57 +207,61 @@
 
   <script>
 
-    Polymer({
-      is: 'plan-entry',
-      properties: {
-        planId: {
-          type: Number,
-          observer: '_fetchPlan'
-        },
-        selectWeek: {
-          type: Number,
-          value: 0
-        },
-        selectDay: {
-          type: Number,
-          value: 0
-        },
-        planTitle: {
-          type: String,
-          value: ''
-        },
-        planDesc: {
-          type: String,
-          value: ''
-        },
-        planLevel: {
-          type: String,
-          value: 'intermediate'
-        },
-        planDistanceSelected: {
-          type: String,
-          value: '5k'
-        },
-        phaseCount: {
-          type: Number,
-          value: 0
-        },
-        weekViewCnt: {
-          type: Number,
-          value: 0
-        },
-        weekNum: {
-          type: Number,
-          value: 4
-        },
-        copyInfo: {
-          type: Object,
-        },
-        summaryData: {
-          type: Object,
-        }
-      },
-      ready: function () {
+    class PlanEntry extends Polymer.Element {
+      static get is() { return 'plan-entry'; }
+
+      static get properties() {
+        return {
+          planId: {
+            type: Number,
+            observer: '_fetchPlan'
+          },
+          selectWeek: {
+            type: Number,
+            value: 0
+          },
+          selectDay: {
+            type: Number,
+            value: 0
+          },
+          planTitle: {
+            type: String,
+            value: ''
+          },
+          planDesc: {
+            type: String,
+            value: ''
+          },
+          planLevel: {
+            type: String,
+            value: 'intermediate'
+          },
+          planDistanceSelected: {
+            type: String,
+            value: '5k'
+          },
+          phaseCount: {
+            type: Number,
+            value: 0
+          },
+          weekViewCnt: {
+            type: Number,
+            value: 0
+          },
+          weekNum: {
+            type: Number,
+            value: 4
+          },
+          copyInfo: {
+            type: Object,
+          },
+          summaryData: {
+            type: Object,
+          }
+        };
+      }
+      ready() {
+        super.ready();
         this.$.loading.hidden = true;
         this.addEventListener('card-tap', function (e) {
           this.selectWeek = e.detail.week - 1;
@@ -287,9 +310,9 @@
           this.copyInfo.workout_seq = e.detail.seq;
           this.$.weekviews.children[this.selectWeek].addCardData(this.selectDay, this.copyInfo);
         });
-      },
+      }
 
-      _fetchPlan: function () {
+      _fetchPlan() {
         if (this.planId === 'undefined') {
           return;
         }
@@ -323,9 +346,9 @@
               this.$.toast.show();
             }
           }.bind(this));
-      },
+      }
 
-      _fillData: function (data) {
+      _fillData(data) {
         console.log('fill data: ', data);
         this.planTitle = data.name;
         this.planDesc = data.description;
@@ -358,9 +381,9 @@
           }
           this.$.weekviews.children[data.weeks[i].week_seq].setSummary(data.weeks[i].week_summary);
         }
-      },
+      }
 
-      _extractSegmentSummary: function (segData) {
+      _extractSegmentSummary(segData) {
         console.log(segData);
         let msg = 'Run for ';
         switch (segData.duration_type) {
@@ -386,30 +409,31 @@
         msg += '.\n\n';
         msg += segData.description;
         return msg;
-      },
+      }
 
-      _addPhase: function (phaseData) {
+      _addPhase(phaseData) {
         var phaseEntry = document.createElement('phase-entry');
         this.phaseCount += 1;
         phaseEntry.num = this.phaseCount;
         phaseEntry.setData(phaseData);
-        Polymer.dom(this.$.phases).appendChild(phaseEntry);
-      },
+        util.patchClasses(phaseEntry, this);
+        this.$.phases.appendChild(phaseEntry);
+      }
 
-      _addPhaseHandler: function () {
+      _addPhaseHandler() {
         this._addPhase({});
-      },
+      }
 
-      _removePhaseHandler: function () {
-        let phases = Polymer.dom(this.$.phases);
+      _removePhaseHandler() {
+        let phases = this.$.phases;
         if (phases.children.length <= 0) {
           return;
         }
         phases.removeChild(phases.lastChild);
         this.phaseCount -= 1;
-      },
+      }
 
-      clearData: function () {
+      clearData() {
         console.log('clear plan data');
 
         this.planTitle = '';
@@ -420,9 +444,9 @@
         // Re-generate weekviews
         this.updateWeekView(0, this.weekViewCnt);
         this.updateWeekView(this.weekNum, this.weekViewCnt);
-      },
+      }
 
-      updateWeekView: function (num, cnt) {
+      updateWeekView(num, cnt) {
         num = parseInt(num);
         cnt = parseInt(cnt);
         let weekViewContainer = this.$.weekviews;
@@ -437,8 +461,10 @@
           }
           let docFrag = document.createDocumentFragment();
           for(i = 0; i < views.length; i++) {
+            util.patchClasses(views[i], this);
             docFrag.appendChild(views[i]);
           }
+          util.patchClasses(docFrag, this);
           weekViewContainer.appendChild(docFrag);
         } else {
           let gap = cnt - num;
@@ -448,13 +474,13 @@
           }
         }
         this.weekViewCnt = num;
-      },
+      }
 
-      onWeekInput: function() {
+      onWeekInput() {
         this.updateWeekView(this.weekNum, this.weekViewCnt);
-      },
+      }
 
-      saveAll: function() {
+      saveAll() {
         let weekViewContainer = this.$.weekviews;
         let phaseContainer = this.$.phases;
 
@@ -505,7 +531,8 @@
             this.$.toast.show();
           }.bind(this));
       }
-    });
+    }
+    window.customElements.define(PlanEntry.is, PlanEntry);
 
   </script>
 

@@ -1,57 +1,63 @@
-<dom-module id="workout-segment">
-	<style>
-		:host {
-			@apply(--layout-horizontal);
-			border: 1px solid #4D4D4D;
-			border-bottom: 0;
-			border-left: 0;
-			background-color: #262626;
-			padding: 10px;
-			box-sizing: border-box;
-		}
-		.insight {
-			@apply(--layout-horizontal);
-			@apply(--layout-flex);
-			@apply(--layout-center);
-			z-index: 1;
-		}
-		.insight .info {
-			@apply(--layout-vertical);
-		}
-		.insight .title {
-			@apply(--layout-horizontal);
-			font-size: 10px;
-            font-weight: 400;
-		}
-		.insight .field {
-			@apply(--layout-horizontal);
-            font-size: 16px;
-            font-weight: 400;
-		}
-		.number {
-			border-color: #f7a017;
-			border-radius: 50px;
-			height: 50px;
-			width: 50px;
-			line-height: 50px;
-			font-size: 15px;
-			text-align: center;
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-		}
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
-		iron-icon {
-			width: 20px;
-			height: auto;
-			padding-right: 5px;
-			color: var(--primary-icon-color);
-			fill: var(--primary-icon-color);
-		}
-		span {
-			white-space: pre;
-		}
-	</style>
+<dom-module id="workout-segment">
 	<template>
+		<style>
+			:host {
+				@apply --layout-horizontal;
+				border: 1px solid #4D4D4D;
+				border-bottom: 0;
+				border-left: 0;
+				background-color: #262626;
+				padding: 10px;
+				box-sizing: border-box;
+			}
+			.insight {
+				@apply --layout-horizontal;
+				@apply --layout-flex;
+				@apply --layout-center;
+				z-index: 1;
+			}
+			.insight .info {
+				@apply --layout-vertical;
+			}
+			.insight .title {
+				@apply --layout-horizontal;
+				font-size: 10px;
+							font-weight: 400;
+			}
+			.insight .field {
+				@apply --layout-horizontal;
+							font-size: 16px;
+							font-weight: 400;
+			}
+			.number {
+				border-color: #f7a017;
+				border-radius: 50px;
+				height: 50px;
+				width: 50px;
+				line-height: 50px;
+				font-size: 15px;
+				text-align: center;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+			}
+
+			iron-icon {
+				width: 20px;
+				height: auto;
+				padding-right: 5px;
+				color: var(--primary-icon-color);
+				fill: var(--primary-icon-color);
+			}
+			span {
+				white-space: pre;
+			}
+		</style>
 		<div>
 			<div class="number">{{order}}</div>
 		</div>
@@ -75,15 +81,25 @@
 		</div>
 	</template>
 	<script>
-		Polymer({
-			is: 'workout-segment',
-			properties: {
-				data: Object
-			},
-			ready: function () {
+		class WorkoutSegment extends Polymer.Element {
+			static get is() { return 'workout-segment'; }
+
+			static get properties() {
+				return {
+					data: Object,
+					duration_length: String,
+					duration_type: String,
+					duration_unit: String,
+					order: Number,
+					zone: String,
+				};
+			}
+
+			ready() {
+				super.ready();
 				this.display = {};
-			},
-			setData: function (data) {
+			}
+			setData(data) {
 				this.data = data;
 				this.order = data.order;
 				var segment = data.segments[0];
@@ -99,6 +115,7 @@
 				this.zone = segment.zone_selected;
 				//this.notify('display');
 			}
-		});
+		}
+		window.customElements.define(WorkoutSegment.is, WorkoutSegment);
 	</script>
 </dom-module>

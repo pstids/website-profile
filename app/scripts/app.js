@@ -7,7 +7,7 @@ processor is a webworker than handles workout fetching.
 It requests the data from the API and operates on it
 for display.
 */
-var processor = new Worker('/powercenter/scripts/processor.js');
+var processor = new Worker('scripts/processor.js');
 
 var updatedTime = '';
 
@@ -38,6 +38,18 @@ var toastEle = null, toast = function (message) {
 	}
 };
 
+/**
+ * Patches an element's classes to workaround a styling bug in ShadyDOM,
+ * where dynamically added children (via document.create) are not shimmed.
+ */
+window.util = window.util || {};
+window.util.patchClasses = function(el, customElem) {
+	el.classList.add(customElem.constructor.is);
+	Array.from(el.childNodes).forEach(node => node.classList.add(customElem.constructor.is));
+};
+
+window.addEventListener('WebComponentsReady', function() {
+
 var app = document.querySelector('#app');
 
 var bubbleStats,
@@ -65,29 +77,31 @@ var currentID = null;
 
 // Listen for template bound event to know when bindings
 // have resolved and content has been stamped to the page
-app.addEventListener('dom-change', () => {
 	console.log('Stryd is ready to rock!');
 
-	bubbleStats = document.querySelector('bubble-stats');
-	compareCalendar = document.querySelector('compare-calendar');
-	header = document.querySelector('header-element');
-	homeNavigation = document.querySelector('home-navigation');
-	lapOverview = document.querySelector('lap-overview');
-	logCalendar = document.querySelector('log-calendar');
-	app.logOption = document.querySelector('log-options');
-	mapRunEle = document.querySelector('#map-run');
-	performanceManagement = document.querySelector('performance-management');
-	planView = document.querySelector('plan-view');
-	rssPrimary = document.querySelector('#rss-primary');
-	rssSecondary = document.querySelector('#rss-secondary');
-	settingsElement = document.querySelector('stryd-settings');
-	toastEle = document.querySelector('#toast');
-	uploader = document.querySelector('file-upload');
-	workoutElement = document.querySelector('#workout-element');
-	workoutSummary = document.querySelector('workout-summary');
-	heatDuration = document.querySelector('heat-duration');
-	spiderChart = document.querySelector('spider-chart');
-	powerTrend = document.querySelector('power-trend');
+	bubbleStats = app.root.querySelector('bubble-stats');
+	header = app.root.querySelector('header-element');
+	homeNavigation = app.root.querySelector('home-navigation');
+	compareCalendar = homeNavigation.$.calendar;
+	lapOverview = app.root.querySelector('lap-overview');
+	logCalendar = app.root.querySelector('log-calendar');
+	app.logOption = app.root.querySelector('log-options');
+	mapRunEle = app.root.querySelector('#map-run');
+	performanceManagement = app.root.querySelector('performance-management');
+	planView = app.root.querySelector('plan-view');
+	rssPrimary = app.root.querySelector('#rss-primary');
+	rssSecondary = app.root.querySelector('#rss-secondary');
+	settingsElement = app.root.querySelector('stryd-settings');
+	toastEle = app.root.querySelector('#toast');
+	uploader = settingsElement.$.uploader;
+	workoutElement = app.root.querySelector('#workout-element');
+	workoutSummary = app.root.querySelector('workout-summary');
+	heatDuration = app.root.querySelector('heat-duration');
+	spiderChart = app.root.querySelector('spider-chart');
+	powerTrend = app.root.querySelector('power-trend');
+
+	app._heatDuration = heatDuration;
+	app._spiderChart = spiderChart;
 
 	app.home = 'analysis';
 	app.route = 'profile';
@@ -95,9 +109,6 @@ app.addEventListener('dom-change', () => {
 	window.mapReady = function () {
 		mapRunEle.setReady();
 	};
-
-	app.loadMap();
-	app.suuntoProcessing();
 
 	processor.onmessage = (event) => {
 		if ('error' in event.data && event.data.error === true) {
@@ -153,214 +164,12 @@ app.addEventListener('dom-change', () => {
 		}
 	};
 
-	page.base('/powercenter');
-
-	page('/', () => {
-		if (jwt.hasToken) {
-			page('/analysis');
-			calendarManager.loadNew = true;
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/analysis', () => {
-		if (jwt.hasToken) {
-			app.route = 'profile';
-			header.toggleActive('profile');
-			calendarManager.loadFirst();
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/improve', () => {
-		if (jwt.hasToken) {
-			app.route = 'improve';
-			header.toggleActive('improve');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/trends', () => {
-		if (jwt.hasToken) {
-			app.route = 'improve';
-			header.toggleActive('improve');
-			powerTrend.scrollIntoView();
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/run/:idPrimary/run/:idSecondary', (data) => {
-		app.route = 'profile';
-		app.params = data.params;
-		app.home = 'comparison';
-		header.toggleActive('profile');
-		homeNavigation.select('comparison');
-
-		processor.postMessage({
-			token: jwt.token,
-			type: 'workoutComparison',
-			params: data.params,
-			updated_time: updatedTime
-		});
-
-		if (firstLoad) {
-			urlManager.setNavigation(+app.params.idPrimary, 0);
-			urlManager.compareID = +app.params.idSecondary;
-			firstLoad = false;
-		} else {
-			window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
-		}
-		logCalendar.setActive(+app.params.idPrimary);
-		compareCalendar.setActive(+app.params.idPrimary);
-		if (!workoutSummary.hasWorkout) {
-			app.workoutFetching(app.params.idPrimary);
-			currentID = app.params.idPrimary;
-		}
-	});
-
-	page('/run/:id', (data) => {
-		app.route = 'profile';
-		app.params = data.params;
-		app.home = 'analysis';
-		header.toggleActive('profile');
-		homeNavigation.select('analysis');
-
-		logCalendar.setActive(+app.params.id);
-
-		mapRunEle.classList.remove('hidden');
-		mapRunEle.resizeMap();
-		workoutElement.switchMetric('power', 'on');
-		workoutElement.classList.remove('hidden');
-		lapOverview.classList.remove('hidden');
-
-		if (firstLoad) {
-			urlManager.setNavigation(app.params.id, 0);
-			firstLoad = false;
-		} else {
-			window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
-		}
-
-		if (currentID !== app.params.id || forceLoad) {
-			workoutElement.setLoading();
-			currentID = app.params.id;
-			app.workoutFetching(currentID);
-			forceLoad = false;
-		}
-		workoutElement.toggleView();
-	});
-
-	page('/training/:hash', (data) => {
-		app.params = data.params;
-		app.route = 'profile';
-		app.home = 'training';
-		header.toggleActive('profile');
-
-		if (firstLoad) {
-			urlManager.setNavigation(0, app.params.hash);
-			firstLoad = false;
-		} else {
-			window.scrollTo(0, document.querySelector('#workout-holder').offsetTop);
-		}
-
-		planView.chartToggle(true);
-		planView.setStartHash(data.params.hash);
-		planView.classList.add('hasWorkout');
-	});
-
-	page('/settings', () => {
-		if (jwt.hasToken) {
-			app.route = 'settings';
-			header.toggleActive('settings');
-			settingsElement.toggle('profile');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/connect', () => {
-		if (jwt.hasToken) {
-			app.route = 'settings';
-			header.toggleActive('settings');
-			settingsElement.toggle('connect');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/zones', () => {
-		if (jwt.hasToken) {
-			app.route = 'settings';
-			header.toggleActive('settings');
-			settingsElement.toggle('zone');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/leaderboard', () => {
-		if (jwt.hasToken) {
-			app.route = 'leaderboard';
-			header.toggleActive('leaderboard');
-			ga('send', 'event', 'view', 'leaderboard');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/a/:name', (data) => {
-		if (jwt.hasToken) {
-			calendarManager.loadNew = true;
-			calendarManager.setAdmin(data.params.name);
-			page('/analysis');
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/plan', () => {
-		if (jwt.hasToken) {
-			app.route = 'plan';
-		} else {
-			document.location = '/signin';
-		}
-	});
-
-	page('/plan/:id', (data) => {
-		app.route = 'new-plan';
-		app.planID = data.params.id;
-	});
-
-	page('/plan/:id/detail', (data) => {
-		app.route = 'plan-detail';
-		app.planID = data.params.id;
-	});
-
-	page('/efficiency', () => {
-		app.route = 'profile';
-		header.toggleActive('profile');
-		workoutSummary.setEfficiency();
-		page('/run/4951793020698624');
-	});
-
-	page('*', () => {
-		document.location = '/signin';
-	});
-
-	page({
-		hashbang: false
-	});
-
 	if (featureManagement.hasFeatures) {
-		// document.querySelector('[data-route="improve"]').appendChild(
-		// 	document.querySelector('performance-management')
+		// app.root.querySelector('[data-route="improve"]').appendChild(
+		// 	app.root.querySelector('performance-management')
 		// );
 		bubbleStats.giveToggle();
 	}
-});
 
 app.logout = function () {
 	jwt.logout();
@@ -404,19 +213,15 @@ app.calcMetrics = function (start, end, activityID, unit) {
 };
 
 app.setDownload = function (url) {
-	document.querySelector('#dlFrame').src = url;
+	app.root.querySelector('#dlFrame').src = url;
 };
 
 app.giveActivities = function (activities) {
-	if (logCalendar) {
-		logCalendar.processActivities(activities);
-	}
+	logCalendar.processActivities(activities);
 };
 
 app.giveActivities2 = function (activities) {
-	if (compareCalendar) {
-		compareCalendar.processActivities(activities);
-	}
+	compareCalendar.processActivities(activities);
 };
 
 app.setHomeNavigation = function (availables) {
@@ -516,8 +321,224 @@ app.addGuide = function (from, to, zone) {
 	workoutElement.addGuide(from, to, zone);
 };
 
-app.clearChildren = function (parent) {
-	while (Polymer.dom(parent).firstChild) {
-		Polymer.dom(parent).removeChild(Polymer.dom(parent).firstChild);
+let rootPath = Polymer.rootPath;
+if (rootPath.endsWith('/')) {
+	rootPath = rootPath.slice(0, -1);
+}
+page.base(rootPath);
+
+page('/', () => {
+	if (jwt.hasToken) {
+		page('/analysis');
+		calendarManager.loadNew = true;
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/analysis', () => {
+	if (jwt.hasToken) {
+		app.route = 'profile';
+		header.toggleActive('profile');
+		calendarManager.loadFirst();
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/improve', () => {
+	if (jwt.hasToken) {
+		app.route = 'improve';
+		header.toggleActive('improve');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/trends', () => {
+	if (jwt.hasToken) {
+		app.route = 'improve';
+		header.toggleActive('improve');
+		powerTrend.scrollIntoView();
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/run/:idPrimary/run/:idSecondary', (data) => {
+	app.route = 'profile';
+	app.params = data.params;
+	app.home = 'comparison';
+	header.toggleActive('profile');
+	homeNavigation.select('comparison');
+
+	processor.postMessage({
+		token: jwt.token,
+		type: 'workoutComparison',
+		params: data.params,
+		updated_time: updatedTime
+	});
+
+	if (firstLoad) {
+		urlManager.setNavigation(+app.params.idPrimary, 0);
+		urlManager.compareID = +app.params.idSecondary;
+		firstLoad = false;
+	} else {
+		window.scrollTo(0, app.root.querySelector('#workout-holder').offsetTop);
+	}
+	logCalendar.setActive(+app.params.idPrimary);
+	compareCalendar.setActive(+app.params.idPrimary);
+	if (!workoutSummary.hasWorkout) {
+		app.workoutFetching(app.params.idPrimary);
+		currentID = app.params.idPrimary;
+	}
+});
+
+page('/run/:id', (data) => {
+	app.route = 'profile';
+	app.params = data.params;
+	app.home = 'analysis';
+	header.toggleActive('profile');
+	homeNavigation.select('analysis');
+
+	logCalendar.setActive(+app.params.id);
+
+	mapRunEle.classList.remove('hidden');
+	mapRunEle.resizeMap();
+	workoutElement.switchMetric('power', 'on');
+	workoutElement.classList.remove('hidden');
+	lapOverview.classList.remove('hidden');
+
+	if (firstLoad) {
+		urlManager.setNavigation(app.params.id, 0);
+		firstLoad = false;
+	} else {
+		window.scrollTo(0, app.root.querySelector('#workout-holder').offsetTop);
+	}
+
+	if (currentID !== app.params.id || forceLoad) {
+		workoutElement.setLoading();
+		currentID = app.params.id;
+		app.workoutFetching(currentID);
+		forceLoad = false;
+	}
+	workoutElement.toggleView();
+});
+
+page('/training/:hash', (data) => {
+	app.params = data.params;
+	app.route = 'profile';
+	app.home = 'training';
+	header.toggleActive('profile');
+
+	if (firstLoad) {
+		urlManager.setNavigation(0, app.params.hash);
+		firstLoad = false;
+	} else {
+		window.scrollTo(0, app.root.querySelector('#workout-holder').offsetTop);
+	}
+
+	planView.chartToggle(true);
+	planView.setStartHash(data.params.hash);
+	planView.classList.add('hasWorkout');
+});
+
+page('/settings', () => {
+	if (jwt.hasToken) {
+		app.route = 'settings';
+		header.toggleActive('settings');
+		settingsElement.toggle('profile');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/connect', () => {
+	if (jwt.hasToken) {
+		app.route = 'settings';
+		header.toggleActive('settings');
+		settingsElement.toggle('connect');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/zones', () => {
+	if (jwt.hasToken) {
+		app.route = 'settings';
+		header.toggleActive('settings');
+		settingsElement.toggle('zone');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/leaderboard', () => {
+	if (jwt.hasToken) {
+		app.route = 'leaderboard';
+		header.toggleActive('leaderboard');
+		ga('send', 'event', 'view', 'leaderboard');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/a/:name', (data) => {
+	if (jwt.hasToken) {
+		calendarManager.loadNew = true;
+		calendarManager.setAdmin(data.params.name);
+		page('/analysis');
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/plan', () => {
+	if (jwt.hasToken) {
+		app.route = 'plan';
+	} else {
+		document.location = '/signin';
+	}
+});
+
+page('/plan/:id', (data) => {
+	app.route = 'new-plan';
+	app.planID = data.params.id;
+});
+
+page('/plan/:id/detail', (data) => {
+	app.route = 'plan-detail';
+	app.planID = data.params.id;
+});
+
+page('/efficiency', () => {
+	app.route = 'profile';
+	header.toggleActive('profile');
+	workoutSummary.setEfficiency();
+	page('/run/4951793020698624');
+});
+
+page('*', () => {
+	document.location = '/signin';
+});
+
+page({
+	hashbang: false
+});
+
+app.handleAnchorClick = function(e) {
+	const href = e.target && e.target.href || '';
+	let idx = href.lastIndexOf(rootPath);
+	if (idx > -1) {
+		// Abort the default navigation, which would cause a page-reload.
+		// Redirect the request to the client-side router (PageJS).
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		page(href.substring(idx));
 	}
 };
+
+app.loadMap();
+app.suuntoProcessing();
+
+});

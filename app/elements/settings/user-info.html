@@ -1,141 +1,153 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
+
 <dom-module id="user-info">
-	<style>
-		section {
-			@apply(--layout-horizontal);
-			@apply(--layout-justified);
-		}
-		section > div {
-			padding: 2.5vw;
-		}
-		h1.title {
-			@apply(--header);
-		}
-		h2.subtitle {
-			@apply(--subtitle);
-		}
-		iron-icon {
-			width: 1.2vw;
-			height: 1.2vw;
-			padding-right: 0.5vw;
-		}
-		[option="display"] .editable {
-			display: none;
-		}
-		[option="editable"] .display {
-			display: none;
-		}
-		paper-input {
-			display: inline-block;
-		}
-		.justified-row {
-			@apply(--layout-horizontal);
-			@apply(--layout-justified);
-		}
-
-		.image {
-			@apply(--layout-flex-2);
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			text-align: center;
-			color: white;
-		}
-		.image .border {
-			width: 100px;
-			height: 100px;
-			border-radius: 50%;
-			border: 6px solid #484846;
-		}
-		.image img {
-			height: 100px;
-		}
-		.image h1 {
-			font-size: 26px;
-			color: white;
-			text-transform: uppercase;
-			line-height: 48px;
-			margin: 0;
-			padding: 0;
-		}
-		.about-me {
-			width: 100%;
-		}
-		.about-me p {
-			font-weight: 300;
-			font-size: 1vw;
-			color: white;
-			line-height: 1.8;
-		}
-		.about-me paper-textarea {
-			font-weight: 300;
-			font-size: 1vw;
-			color: white;
-			line-height: 1.8;
-			min-height: 100%;
-		}
-
-		.details {
-			@apply(--layout-flex-3);
-			@apply(--layout-vertical);
-			font-size: 1vw;
-		}
-		.information {
-			@apply(--layout-horizontal);
-			@apply(--layout-justified);
-			padding: 0.6vw 0;
-		}
-		.information .info {
-			text-transform: uppercase;
-		}
-		.information .info h1 {
-			font-size: 0.67vw;
-			color: var(--primary-header-color);
-			margin: 0;
-			padding: 0;
-		}
-		.information.height-weight .info {
-			width: 25%;
-		}
-		.information #birthday-input {
-			width: 80%;
-		}
-		.information #birthday-input paper-input {
-			width: 20%;
-		}
-		.information #location-input {
-			width: 100%;
-		}
-		.information #location-input paper-input {
-			width: 40%;
-		}
-		.information #birthday-input .slash {
-			@apply(--layout-self-end);
-			font-size: 1.67vw;
-			color: var(--primary-header-color);
-			position: absolute;
-			bottom: 30%;
-		}
-
-		.prefs {
-			@apply(--layout-flex-2);
-		}
-		.pref {
-			@apply(--layout-vertical);
-			margin-top: 2vw;
-		}
-		.pref paper-radio-button {
-			font-size: 1vw;
-		}
-
-		#save-button {
-			@apply(--layout-vertical);
-			@apply(--layout-center);
-			margin-bottom: 5vh;
-		}
-		button#save-pref {
-			min-width: 20vw;
-		}
-	</style>
 	<template>
+		<style>
+			section {
+				@apply --layout-horizontal;
+				@apply --layout-justified;
+			}
+			section > div {
+				padding: 2.5vw;
+			}
+			h1.title {
+				@apply --header;
+			}
+			h2.subtitle {
+				@apply --subtitle;
+			}
+			iron-icon {
+				width: 1.2vw;
+				height: 1.2vw;
+				padding-right: 0.5vw;
+			}
+			[option="display"] .editable {
+				display: none;
+			}
+			[option="editable"] .display {
+				display: none;
+			}
+			paper-input {
+				display: inline-block;
+			}
+			.justified-row {
+				@apply --layout-horizontal;
+				@apply --layout-justified;
+			}
+
+			.image {
+				@apply --layout-flex-2;
+				@apply --layout-vertical;
+				@apply --layout-center;
+				text-align: center;
+				color: white;
+			}
+			.image .border {
+				width: 100px;
+				height: 100px;
+				border-radius: 50%;
+				border: 6px solid #484846;
+			}
+			.image img {
+				height: 100px;
+			}
+			.image h1 {
+				font-size: 26px;
+				color: white;
+				text-transform: uppercase;
+				line-height: 48px;
+				margin: 0;
+				padding: 0;
+			}
+			.about-me {
+				width: 100%;
+			}
+			.about-me p {
+				font-weight: 300;
+				font-size: 1vw;
+				color: white;
+				line-height: 1.8;
+			}
+			.about-me paper-textarea {
+				font-weight: 300;
+				font-size: 1vw;
+				color: white;
+				line-height: 1.8;
+				min-height: 100%;
+			}
+
+			.details {
+				@apply --layout-flex-3;
+				@apply --layout-vertical;
+				font-size: 1vw;
+			}
+			.information {
+				@apply --layout-horizontal;
+				@apply --layout-justified;
+				padding: 0.6vw 0;
+			}
+			.information .info {
+				text-transform: uppercase;
+			}
+			.information .info h1 {
+				font-size: 0.67vw;
+				color: var(--primary-header-color);
+				margin: 0;
+				padding: 0;
+			}
+			.information.height-weight .info {
+				width: 25%;
+			}
+			.information #birthday-input {
+				width: 80%;
+			}
+			.information #birthday-input paper-input {
+				width: 20%;
+			}
+			.information #location-input {
+				width: 100%;
+			}
+			.information #location-input paper-input {
+				width: 40%;
+			}
+			.information #birthday-input .slash {
+				@apply --layout-self-end;
+				font-size: 1.67vw;
+				color: var(--primary-header-color);
+				position: absolute;
+				bottom: 30%;
+			}
+
+			.prefs {
+				@apply --layout-flex-2;
+			}
+			.pref {
+				@apply --layout-vertical;
+				margin-top: 2vw;
+			}
+			.pref paper-radio-button {
+				font-size: 1vw;
+			}
+
+			#save-button {
+				@apply --layout-vertical;
+				@apply --layout-center;
+				margin-bottom: 5vh;
+			}
+			#save-pref {
+				min-width: 20vw;
+			}
+		</style>
 		<section>
 			<div class="image">
 				<div class="border">
@@ -156,117 +168,119 @@
 			</div>
 
 			<div class="details" option="editable" id="details">
-				<form id="information" is="iron-form">
-					<h1 class="title">Details</h1>
-					<div class="information">
-						<div class="info">
-							<h1>Date of Birth</h1>
-							<div id="birthday-input" class="justified-row">
-								<paper-input
-									type="text"
-									placeholder="Month"
-									label="MM"
-									class="editable"
-									name="birth_month"
-									auto-validate pattern="^([1-9]|[0-1][0-2])$" error-message="01 - 12"
-									value="{{userLocal.birth_month::input}}">
-								</paper-input>
-								<div style="position: relative"><span class="slash">/</span></div>
-								<paper-input
-									type="text"
-									placeholder="Day"
-									label="DD"
-									class="editable"
-									name="birth_day"
-									auto-validate pattern="^([1-9]|[0-3][0-9])" error-message="01 - 31"
-									value="{{userLocal.birth_day::input}}">
-								</paper-input>
-								<div style="position: relative"><span class="slash">/</span></div>
-								<paper-input
-									type="text"
-									placeholder="Year"
-									label="YYYY"
-									class="editable"
-									name="birth_year"
-									auto-validate pattern="^(19[0-9][0-9]|20[0-9][0-9])" error-message="wrong year"
-									value="{{userLocal.birth_year::input}}">
-								</paper-input>
+				<iron-form id="information">
+					<form>
+						<h1 class="title">Details</h1>
+						<div class="information">
+							<div class="info">
+								<h1>Date of Birth</h1>
+								<div id="birthday-input" class="justified-row">
+									<paper-input
+										type="text"
+										placeholder="Month"
+										label="MM"
+										class="editable"
+										name="birth_month"
+										auto-validate pattern="^([1-9]|[0-1][0-2])$" error-message="01 - 12"
+										value="{{userLocal.birth_month::input}}">
+									</paper-input>
+									<div style="position: relative"><span class="slash">/</span></div>
+									<paper-input
+										type="text"
+										placeholder="Day"
+										label="DD"
+										class="editable"
+										name="birth_day"
+										auto-validate pattern="^([1-9]|[0-3][0-9])" error-message="01 - 31"
+										value="{{userLocal.birth_day::input}}">
+									</paper-input>
+									<div style="position: relative"><span class="slash">/</span></div>
+									<paper-input
+										type="text"
+										placeholder="Year"
+										label="YYYY"
+										class="editable"
+										name="birth_year"
+										auto-validate pattern="^(19[0-9][0-9]|20[0-9][0-9])" error-message="wrong year"
+										value="{{userLocal.birth_year::input}}">
+									</paper-input>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="information height-weight">
-						<div class="info">
-							<h1>Height (<span>{{heightUnit(userLocal.units)}}</span>)</h1>
-							<paper-input no-label-float type="text" maxlength="3"
-								placeholder="Height"
-								class="editable"
-								name="height"
-								id="height"
-								value="{{userLocal.height::input}}">
-							</paper-input>
-						</div>
-						<div class="info">
-							<h1>Weight (<span>{{weightUnit(userLocal.units)}}</span>)</h1>
-							<paper-input no-label-float type="text" maxlength="3"
-								placeholder="Weight"
-								class="editable"
-								name="weight"
-								id="weight"
-								value="{{userLocal.weight::input}}">
-							</paper-input>
-						</div>
-						<div class="info"></div>
-					</div>
-					<div class="information">
-						<div class="info">
-							<h1>Location</h1>
-							<div id="location-input" class="justified-row">
-								<paper-input
-									type="text"
-									placeholder="e.g. Boulder"
+						<div class="information height-weight">
+							<div class="info">
+								<h1>Height (<span>{{heightUnit(userLocal.units)}}</span>)</h1>
+								<paper-input no-label-float type="text" maxlength="3"
+									placeholder="Height"
 									class="editable"
-									name="city"
-									value="{{userLocal.city::input}}"
-									label="City">
-								</paper-input>
-								<paper-input
-									type="text"
-									placeholder="e.g. Colorado"
-									class="editable"
-									name="state"
-									value="{{userLocal.state::input}}"
-									label="State">
+									name="height"
+									id="height"
+									value="{{userLocal.height::input}}">
 								</paper-input>
 							</div>
+							<div class="info">
+								<h1>Weight (<span>{{weightUnit(userLocal.units)}}</span>)</h1>
+								<paper-input no-label-float type="text" maxlength="3"
+									placeholder="Weight"
+									class="editable"
+									name="weight"
+									id="weight"
+									value="{{userLocal.weight::input}}">
+								</paper-input>
+							</div>
+							<div class="info"></div>
 						</div>
-					</div>
-					<div class="information">
-						<div class="info">
-							<h1>Gender</h1>
-							<paper-radio-group
-								selected="{{userLocal.gender}}"
-								attr-for-selected="name"
-								class="editable">
-								<paper-radio-button name="male">Male</paper-radio-button>
-								<paper-radio-button name="female">Female</paper-radio-button>
-								<paper-radio-button name="other">Other</paper-radio-button>
-							</paper-radio-group>
+						<div class="information">
+							<div class="info">
+								<h1>Location</h1>
+								<div id="location-input" class="justified-row">
+									<paper-input
+										type="text"
+										placeholder="e.g. Boulder"
+										class="editable"
+										name="city"
+										value="{{userLocal.city::input}}"
+										label="City">
+									</paper-input>
+									<paper-input
+										type="text"
+										placeholder="e.g. Colorado"
+										class="editable"
+										name="state"
+										value="{{userLocal.state::input}}"
+										label="State">
+									</paper-input>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="information">
-						<div class="info">
-							<h1>Target Race Distance</h1>
-							<paper-dropdown-menu label="Target Race Distance">
-								<paper-menu class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType">
-									<paper-item>5 Kilometer</paper-item>
-									<paper-item>10 Kilometer</paper-item>
-									<paper-item>Half Marathon</paper-item>
-									<paper-item>Marathon</paper-item>
-								</paper-menu>
-							</paper-dropdown-menu>
+						<div class="information">
+							<div class="info">
+								<h1>Gender</h1>
+								<paper-radio-group
+									selected="{{userLocal.gender}}"
+									attr-for-selected="name"
+									class="editable">
+									<paper-radio-button name="male">Male</paper-radio-button>
+									<paper-radio-button name="female">Female</paper-radio-button>
+									<paper-radio-button name="other">Other</paper-radio-button>
+								</paper-radio-group>
+							</div>
 						</div>
-					</div>
-				</form>
+						<div class="information">
+							<div class="info">
+								<h1>Target Race Distance</h1>
+								<paper-dropdown-menu label="Target Race Distance">
+									<paper-listbox class="dropdown-content" selected="{{userLocal.targetRaceIdx}}" id="workoutType" slot="dropdown-content">
+										<paper-item>5 Kilometer</paper-item>
+										<paper-item>10 Kilometer</paper-item>
+										<paper-item>Half Marathon</paper-item>
+										<paper-item>Marathon</paper-item>
+									</paper-listbox>
+								</paper-dropdown-menu>
+							</div>
+						</div>
+					</form>
+				</iron-form>
 			</div>
 			<div class="prefs">
 				<h1 class="title">Preferences</h1>
@@ -283,19 +297,23 @@
 			</div>
 		</section>
 		<div id="save-button">
-			<button is="stryd-button" id="save-pref" on-click="saveDetails">Save</button>
+			<stryd-button id="save-pref" on-click="saveDetails">Save</stryd-button>
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'user-info',
-		properties: {
-			userLocal: {
-				type: Object,
-				notify: true
-			}
-		},
-		attached: function () {
+	class UserInfo extends Polymer.Element {
+		static get is() { return 'user-info'; }
+
+		static get properties() {
+			return {
+				userLocal: {
+					type: Object,
+					notify: true
+				}
+			};
+		}
+		connectedCallback() {
+			super.connectedCallback();
 			this.targetRaces = ['5k', '10k', 'half marathon', 'marathon'];
 			if (jwt.hasToken) {
 				if (Object.keys(user.data).length === 0) {
@@ -306,8 +324,8 @@
 				}
 				this.setUserLocal();
 			}
-		},
-		setUserLocal: function () {
+		}
+		setUserLocal() {
 			var aboutStr = user.data.about_me;
 			if (!aboutStr) {
 				aboutStr = 'Running doesn’t require a gym, a playing field, an arena, or a court. It can be done pretty much anywhere in the world at any time.';
@@ -324,17 +342,23 @@
 				}
 			}
 			var age = 0;
+			var birthDay = 0;
+			var birthMonth = 0;
+			var birthYear = 0;
 			if ('birth' in user.data) {
 				age = this.getAge(
 					user.data.birth.year,
 					user.data.birth.month,
 					user.data.birth.day
 				);
+				birthDay = user.data.birth.day;
+				birthMonth = user.data.birth.month;
+				birthYear = user.data.birth.year;
 			}
 			this.userLocal = {
-				birth_day: user.data.birth.day,
-				birth_month: user.data.birth.month,
-				birth_year: user.data.birth.year,
+				birth_day: birthDay,
+				birth_month: birthMonth,
+				birth_year: birthYear,
 				gender: user.data.gender,
 				height: user.data.height,
 				city: user.data.city,
@@ -348,8 +372,8 @@
 				targetRaceIdx: targetRaceIdx,
 				hasTargetRaceIdx: hasTargetRaceIdx
 			};
-		},
-		saveDetails: function () {
+		}
+		saveDetails() {
 			var updateParams = '?fields=gender,weight,height,units,city,state,country,about_me,birth,race';
 			var target_race = this.targetRaces[this.userLocal.targetRaceIdx];
 			superagent
@@ -383,30 +407,30 @@
 					}
 					toast(text);
 				});
-		},
-		weightUnit: function (unit) {
+		}
+		weightUnit(unit) {
 			if (unit === 'feet') {
 				return 'lbs';
 			} else {
 				return 'kg';
 			}
-		},
-		weightValue: function (value, unit) {
+		}
+		weightValue(value, unit) {
 			if (unit === 'feet') {
 				var pounds = this.KGToPound(value);
 				return parseInt(pounds);
 			} else {
 				return parseInt(value);
 			}
-		},
-		heightUnit: function (unit) {
+		}
+		heightUnit(unit) {
 			if (unit === 'feet') {
 				return 'inches';
 			} else {
 				return 'cm';
 			}
-		},
-		heightValue: function (value, unit) {
+		}
+		heightValue(value, unit) {
 			if (unit === 'feet') {
 				var totalInches = this.CMToInch(value);
 				var feet = totalInches / 12;
@@ -416,8 +440,8 @@
 			} else {
 				return parseInt(value);
 			}
-		},
-		getAge: function (year, month, day) {
+		}
+		getAge (year, month, day) {
 			if (year === 0 && month === 0 && day === 0) {
 				return 0;
 			}
@@ -430,19 +454,20 @@
 				parseInt(day)
 			);
 			return today.getFullYear() - birth.getFullYear();
-		},
-		KGToPound: function (kg) {
+		}
+		KGToPound(kg) {
 			return Math.round(kg * 2.20462);
-		},
-		PoundToKG: function (pound) {
+		}
+		PoundToKG(pound) {
 			return Math.round(pound / 2.20462);
-		},
-		CMToInch: function (cm) {
+		}
+		CMToInch(cm) {
 			return Math.round(cm / 2.54);
-		},
-		InchToCM: function (inch) {
+		}
+		InchToCM(inch) {
 			return Math.round(inch * 2.54);
 		}
-	});
+	}
+	window.customElements.define(UserInfo.is, UserInfo);
 	</script>
 </dom-module>

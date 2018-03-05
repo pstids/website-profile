@@ -5,7 +5,7 @@
     'use strict';
 
     let app = document.querySelector('#app');
-    page.base('/powercenter/plan');
+    page.base(`${Polymer.rootPath}plan`);
 
     page('/', () => {
         console.log('here');

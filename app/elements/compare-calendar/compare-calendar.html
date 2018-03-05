@@ -1,65 +1,73 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
+<link rel="import" href="./compare-container.html">
+<link rel="import" href="./compare-day.html">
+
 <dom-module id="compare-calendar">
-    <style>
-        :host {
-            @apply(--layout-vertical);
-            font-family: "Stryd", sans-serif;
-            background-color: var(--dark-background-color);
-            padding: 0;
-            width: 600px;
-        }
-        h1.header {
-            @apply(--header);
-            margin-bottom: 10px;
-        }
-        .title {
-            padding: 0 20px;
-            @apply(--layout-end);
-            border: 1px solid #4d4d4d;
-            border-bottom: 0;
-        }
-
-        .days {
-            border-top: 1px solid #4d4d4d !important;
-        }
-        .day {
-            @apply(--layout-flex);
-            @apply(--layout-center-justified);
-            border-right: 1px solid #4d4d4d;
-            font-size: 17px;
-            height: 50px;
-            color: white;
-            text-transform: uppercase;
-            text-align: center;
-            line-height: 50px;
-        }
-        .day:last-child {
-            border-right: 0;
-        }
-
-        .row {
-            @apply(--layout-horizontal);
-            border: 1px solid #4d4d4d;
-            border-top: 0;
-        }
-
-        button {
-            margin-left: 20px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-        button iron-icon {
-            width: 20px;
-            height: 20px;
-        }
-    </style>
     <template>
+        <style include="iron-flex iron-flex-alignment">
+            :host {
+                @apply --layout-vertical;
+                font-family: "Stryd", sans-serif;
+                background-color: var(--dark-background-color);
+                padding: 0;
+                width: 600px;
+            }
+            h1.header {
+                @apply --header;
+                margin-bottom: 10px;
+            }
+            .title {
+                padding: 0 20px;
+                @apply --layout-end;
+                border: 1px solid #4d4d4d;
+                border-bottom: 0;
+            }
+
+            .days {
+                border-top: 1px solid #4d4d4d !important;
+            }
+            .day {
+                @apply --layout-flex;
+                @apply --layout-center-justified;
+                border-right: 1px solid #4d4d4d;
+                font-size: 17px;
+                height: 50px;
+                color: white;
+                text-transform: uppercase;
+                text-align: center;
+                line-height: 50px;
+            }
+            .day:last-child {
+                border-right: 0;
+            }
+
+            .row {
+                @apply --layout-horizontal;
+                border: 1px solid #4d4d4d;
+                border-top: 0;
+            }
+
+            stryd-button {
+                margin-left: 20px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            stryd-button iron-icon {
+                width: 20px;
+                height: 20px;
+            }
+        </style>
         <div class="layout horizontal title">
             <div class="flex">
                 <h1 class="header">{{month}}</h1>
             </div>
             <div class="flex layout horizontal end-justified">
-                <button on-click="prevMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-back"></iron-icon></button>
-                <button on-click="nextMonth" is="stryd-button" class="self-end"><iron-icon icon="icons:arrow-forward"></iron-icon></button>
+                <stryd-button on-click="prevMonth" class="self-end"><iron-icon icon="icons:arrow-back"></iron-icon></stryd-button>
+                <stryd-button on-click="nextMonth" class="self-end"><iron-icon icon="icons:arrow-forward"></iron-icon></stryd-button>
             </div>
         </div>
         <div id="calendarContainer">
@@ -75,9 +83,17 @@
         </div>
     </template>
     <script>
-    Polymer({
-        is: 'compare-calendar',
-        ready: function () {
+    class CompareCalendar extends Polymer.Element {
+        static get is() { return 'compare-calendar'; }
+
+        static get properties() {
+            return {
+                month: String
+            };
+        }
+
+        ready() {
+            super.ready();
             this.dom = [];
             this.dates = [];
 
@@ -94,8 +110,9 @@
                     this.callMonth();
                 }
             });
-        },
-        attached: function () {
+        }
+        connectedCallback() {
+            super.connectedCallback();
             if (jwt.hasToken) {
                 setTimeout(() => {
                     if (!this.hasLoaded) {
@@ -105,9 +122,9 @@
                     }
                 }, 1000);
             }
-        },
+        }
         // Creates dom structure of 5 rows of 7 columns of log-day elements
-        assembleDOM: function () {
+        assembleDOM() {
             var calendarContainer = this.$.calendarContainer;
             for (var i = 0; i < 5; i++) {
                 var row = document.createElement('div');
@@ -118,20 +135,21 @@
                     row.appendChild(node);
                     rowDom.push(node);
                 }
-                Polymer.dom(calendarContainer).appendChild(row);
+                util.patchClasses(row, this);
+                calendarContainer.appendChild(row);
                 this.dom.push(rowDom);
             }
-        },
+        }
         // // Grabs array of activity data to populate calendar for month (int) and year (int)
-        fetchMonth: function (month, year) {
+        fetchMonth(month, year) {
             this.dRange = this.dateRange(month, year);
             this.switchMonthContext(this.dRange.firstMonday);
             setTimeout(() => {
                 calendarManager.requestActivities2(this.dRange.firstMonday, this.dRange.lastSunday);
             }, 1000);
-        },
+        }
         // dateRange takes the month (int) and year (int) you want to display and returns {firstMonday: (moment), lastSunday: (moment)} where firstMonday is the monday before the first of the month and last is the sunday after the month
-        dateRange: function (monthInt, year) {
+        dateRange(monthInt, year) {
             var month = moment({
                 month: monthInt,
                 year: year
@@ -144,13 +162,13 @@
                 firstMonday: firstMonday,
                 lastSunday: lastSunday
             };
-        },
-        processActivities: function (activities) {
+        }
+        processActivities(activities) {
             for (var activity of activities) {
                 this.addActivity(activity);
             }
-        },
-        switchMonthContext: function (firstMonday) {
+        }
+        switchMonthContext(firstMonday) {
             this.dates = [];
             var movingDay = moment(firstMonday);
             for (var row of this.dom) {
@@ -173,6 +191,7 @@
                     var day = document.createElement('compare-day');
                     // Add day data
                     day.setData(dayObj);
+                    util.patchClasses(day, this);
                     // Append to container
                     container.addChild(day);
                     // Append to day array
@@ -182,8 +201,8 @@
                 }
                 this.dates.push(dateRow);
             }
-        },
-        addActivity: function (activity) {
+        }
+        addActivity(activity) {
             var activityMoment = moment
                 .unix(activity.start_time);
             for (var i = 0; i < this.dates.length; i++) {
@@ -207,8 +226,8 @@
                 }
             }
             }
-        },
-        removeActivity: function (id) {
+        }
+        removeActivity(id) {
             for (var row of this.dom) {
                 for (var container of row) {
                     if (container.hasID(id)) {
@@ -217,8 +236,8 @@
                     }
                 }
             }
-        },
-        nextMonth: function () {
+        }
+        nextMonth() {
             this.displayedTime.add(1, 'months');
             this.fetchMonth(
                 this.displayedTime.month(),
@@ -226,12 +245,12 @@
                 false
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-            var logDayActive = this.querySelector('compare-container.active');
+            var logDayActive = this.root.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
-        },
-        prevMonth: function () {
+        }
+        prevMonth() {
             this.displayedTime.subtract(1, 'months');
             this.fetchMonth(
                 this.displayedTime.month(),
@@ -239,21 +258,21 @@
                 false
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
-            var logDayActive = this.querySelector('compare-container.active');
+            var logDayActive = this.root.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
-        },
-        callMonth: function () {
+        }
+        callMonth() {
             this.fetchMonth(
                 this.displayedTime.month(),
                 this.displayedTime.year()
             );
             this.month = `${this.displayedTime.format('MMMM')} ${this.displayedTime.format('YYYY')}`;
             this.removeActive();
-        },
-        setActive: function (id) {
-            var logDayActive = this.querySelector('compare-container.active');
+        }
+        setActive(id) {
+            var logDayActive = this.root.querySelector('compare-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
@@ -264,13 +283,14 @@
                     }
                 }
             }
-        },
-        removeActive: function () {
-            var logDayActive = this.querySelector('log-container.active');
+        }
+        removeActive() {
+            var logDayActive = this.root.querySelector('log-container.active');
             if (logDayActive) {
                 logDayActive.classList.remove('active');
             }
         }
-    });
+    }
+    window.customElements.define(CompareCalendar.is, CompareCalendar);
     </script>
 </dom-module>

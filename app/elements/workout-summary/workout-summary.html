@@ -1,128 +1,138 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../workout-element/time-in-zone.html">
+
 <dom-module id="workout-summary">
-	<style>
-		:host {
-			@apply(--layout-vertical);
-			border: 1px solid #4D4D4D;
-			flex: 3;
-			margin: 20px;
-		}
-		.rss-container {
-			margin: 0 50px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: row;
-		}
-		.rss {
-			width: 160px;
-			height: 160px;
-			border-radius: 50%;
-			border: 1px solid orange;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: row;
-		}
-		.rss h1 {
-			font-size: 32px;
-			margin-right: 5px;
-		}
-		.rss span {
-			color: white;
-		}
-		.top {
-			background-color: #222222;
-			border-bottom: 1px solid #4D4D4D;
-			height: 70px;
-		}
-		.title {
-			@apply(--layout-horizontal);
-			@apply(--layout-flex);
-		}
-		.accent {
-			font-weight: 100;
-		}
-		.raindrop {
-			flex: 0 1;
-			border-left: 1px solid #4D4D4D;
-			@apply(--layout);
-			@apply(--layout-end-justified);
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-		}
-		.raindrop iron-icon {
-			width: 34px;
-			height: 34px;
-			fill: orange;
-			padding: 0 20px;
-		}
-		.stats {
-			padding: 20px;
-			@apply(--layout-horizontal);
-		}
-		@media (max-width: 800px) {
+	<template>
+		<style include="iron-flex iron-flex-alignment">
+			:host {
+				@apply --layout-vertical;
+				border: 1px solid #4D4D4D;
+				flex: 3;
+				margin: 20px;
+			}
+			.rss-container {
+				margin: 0 50px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: row;
+			}
+			.rss {
+				width: 160px;
+				height: 160px;
+				border-radius: 50%;
+				border: 1px solid orange;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: row;
+			}
+			.rss h1 {
+				font-size: 32px;
+				margin-right: 5px;
+			}
+			.rss span {
+				color: white;
+			}
+			.top {
+				background-color: #222222;
+				border-bottom: 1px solid #4D4D4D;
+				height: 70px;
+			}
+			.title {
+				@apply --layout-horizontal;
+				@apply --layout-flex;
+			}
+			.accent {
+				font-weight: 100;
+			}
+			.raindrop {
+				flex: 0 1;
+				border-left: 1px solid #4D4D4D;
+				@apply --layout;
+				@apply --layout-end-justified;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+			}
+			.raindrop iron-icon {
+				width: 34px;
+				height: 34px;
+				fill: orange;
+				padding: 0 20px;
+			}
 			.stats {
 				padding: 20px;
-				@apply(--layout-vertical);
+				@apply --layout-horizontal;
 			}
-		}
-		.stats h2 {
-			margin: 0;
-			color: white;
-			font-size: 30px;
-		}
-		.stats h2 .unit {
-			margin-top: 10px;
-			font-size: 16px;
-		}
-		.stats .sub {
-			color: #A4A4A4;
-			text-align: center;
-		}
-		.stats .stat {
-			flex: 1 1 200px;
-		}
-		.values {
-			@apply(--layout-flex);
-		}
-		.values .value {
-			@apply(--layout-flex);
-			justify-content: center;
-			align-items: center;
-		}
-		.tiz-container {
-			width: 330px;
-			margin: 0 50px;
-		}
-		#messageContainer {
-			width: 230px;
-		}
-
-		paper-input input {
-			text-align: center !important;
-		}
-
-		paper-dropdown-menu {
-			--paper-input-container-label: {
+			@media (max-width: 800px) {
+				.stats {
+					padding: 20px;
+					@apply --layout-vertical;
+				}
+			}
+			.stats h2 {
+				margin: 0;
 				color: white;
-				font-weight: bold;
-			};
-			--paper-input-container-input: {
-				color: white;
-				font-style: normal;
-			};
-			/* no underline */
-			--paper-input-container-underline: {
-				color: white;
-			};
-		}
+				font-size: 30px;
+			}
+			.stats h2 .unit {
+				margin-top: 10px;
+				font-size: 16px;
+			}
+			.stats .sub {
+				color: #A4A4A4;
+				text-align: center;
+			}
+			.stats .stat {
+				flex: 1 1 200px;
+			}
+			.values {
+				@apply --layout-flex;
+			}
+			.values .value {
+				@apply --layout-flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.tiz-container {
+				width: 330px;
+				margin: 0 50px;
+			}
+			#messageContainer {
+				width: 230px;
+			}
 
-		paper-icon-button {
-			color: white;
-		}
-	</style>
-	<template>
+			paper-input input {
+				text-align: center !important;
+			}
+
+			paper-dropdown-menu {
+				--paper-input-container-label: {
+					color: white;
+					font-weight: bold;
+				};
+				--paper-input-container-input: {
+					color: white;
+					font-style: normal;
+				};
+				/* no underline */
+				--paper-input-container-underline: {
+					color: white;
+				};
+			}
+
+			paper-icon-button {
+				color: white;
+			}
+		</style>
 		<div class="layout horizontal top">
 			<div class="title">
 				<h1 class="bold">{{data.date}}</h1>
@@ -155,7 +165,7 @@
 			<time-in-zone data-property="tiz2" id="tiz" class="tiz-container"></time-in-zone>
 			<div class="flex layout vertical center center-justified">
 				<paper-dropdown-menu label="Workout Type" style="margin-bottom: 50px;">
-					<paper-menu class="dropdown-content" selected="{{selected_type}}" id="workoutType">
+					<paper-listbox class="dropdown-content" selected="{{selected_type}}" id="workoutType" slot="dropdown-content">
 						<paper-item>None</paper-item>
 						<paper-item>Easy Run</paper-item>
 						<paper-item>Long Run</paper-item>
@@ -168,10 +178,10 @@
 						<paper-item>Race Pace Training</paper-item>
 						<paper-item>Race</paper-item>
 						<paper-item>Critical Test Run</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 				<paper-dropdown-menu label="Post Run RPE">
-					<paper-menu class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE">
+					<paper-listbox class="dropdown-content" selected="{{selected_rpe}}" id="workoutRPE" slot="dropdown-content">
 						<paper-item>None</paper-item>
 						<paper-item>RPE 1</paper-item>
 						<paper-item>RPE 2</paper-item>
@@ -183,25 +193,32 @@
 						<paper-item>RPE 8</paper-item>
 						<paper-item>RPE 9</paper-item>
 						<paper-item>RPE 10</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 			</div>
 		</div>
 	</template>
 	<script>
-		Polymer({
-			is: 'workout-summary',
-			properties: {
-				data: Object
-			},
-			ready: function () {
+		class WorkoutSummary extends Polymer.Element {
+			static get is() { return 'workout-summary'; }
+
+			static get properties() {
+				return {
+					data: Object,
+					selected_type: Number,
+					selected_rpe: Number,
+				};
+			}
+			ready() {
+				super.ready();
 				this.selected_rpe = 0;
 				this.selected_type = 0;
 				this.hasWorkout = false;
 				this.rpes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 				this.types = ['', 'easy', 'long', 'fartlek', 'threshold', 'cruise interval', 'interval', 'tempo', 'repetition', 'pace', 'race', 'critical test'];
-			},
-			attached: function () {
+			}
+			connectedCallback() {
+				super.connectedCallback();
 				this.data = {
 					type: 'Interval Run',
 					date: 'Jan 1st, 2017',
@@ -239,8 +256,8 @@
 						);
 					}
 				});
-			},
-			setData: function (activity) {
+			}
+			setData(activity) {
 				this.hasWorkout = true;
 				this.activity = activity;
 				console.log(this.activity);
@@ -275,10 +292,11 @@
 
 				this.selected_rpe = this.rpes.indexOf(activity.rpe);
 				this.selected_type = this.types.indexOf(activity.type);
-			},
-			setEfficiency: function () {
+			}
+			setEfficiency() {
 				this.eState = true;
 			}
-		});
+		}
+		window.customElements.define(WorkoutSummary.is, WorkoutSummary);
 	</script>
 </dom-module>

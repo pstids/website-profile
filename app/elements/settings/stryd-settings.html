@@ -1,109 +1,124 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../platform-connect/platform-connect.html">
+<link rel="import" href="../file-upload/file-upload.html">
+<link rel="import" href="./training-info.html">
+<link rel="import" href="./training-plan-info.html">
+<link rel="import" href="./user-info.html">
+
 <dom-module id="stryd-settings">
-    <style>
-        :host {
-            @apply(--layout-horizontal);
-            background-image: url('../../images/grassy_field_150.jpg');
-            background-size: cover;
-            padding: 0;
-            margin: 0;
-            width: 100%;
-        }
-        .cover {
-            @apply(--layout-horizontal);
-            background-color: rgba(36, 36, 36, 0.7);
-            padding: 3vw 0 0 0;
-            position: relative;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .settings-nav {
-            @apply(--layout-flex-3);
-            @apply(--layout-self-start);
-            background-color: rgba(36, 36, 36, 0.7);
-            border-top-right-radius: 50px;
-            border-bottom-right-radius: 50px;
-            border: 1px solid #2F2F2F;
-            border-left: none;
-        }
-        .settings-nav ul {
-            margin: 0;
-            padding: 0;
-            list-style-type: none;
-        }
-        .settings-nav li {
-            list-style: none;
-            padding: 0;
-        }
-        .setting {
-            @apply(--layout-horizontal);
-            margin: 1.67vw;
-            cursor: pointer;
-        }
-        .setting .icon-border {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-center-justified);
-            width: 5.3vw;
-            height: 5.3vw;
-            border-radius: 50%;
-            background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
-            position: relative;
-        }
-        .setting.active .icon-border {
-            background: linear-gradient(to bottom, #77E15D 0%, #276019 100%);
-        }
-        .setting .icon {
-            @apply(--layout-vertical);
-            @apply(--layout-center);
-            @apply(--layout-center-justified);
-            width: 95%;
-            height: 95%;
-            border-radius: 50%;
-            background-color: var(--secondary-background-color);
-            position: relative;
-            box-shadow: inset 0px 0px 6vw -3.33vw #000000;
-            color: #FFFFFF;
-            fill: #FFFFFF;
-        }
-        .setting.active .icon {
-            color: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
-            fill: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
-        }
-        .setting iron-icon {
-            width: 2.67vw;
-            height: 2.67vw;
-            font-size: 2.67vw;
-        }
-        .setting .text {
-            @apply(--layout-flex-2);
-            @apply(--layout-vertical);
-            @apply(--layout-center-justified);
-            color: white;
-            margin-left: 15px;
-            text-transform: uppercase;
-        }
-        .setting .text .type {
-            font-size: 1vw;
-            line-height: 1.5vw;
-        }
-        .setting .text .settings {
-            font-size: 0.67vw;
-            line-height: 1vw;
-        }
-
-        .profile {
-            @apply(--layout-flex-11);
-            padding-left: 3vw;
-            padding-right: 3vw;
-        }
-        .profile > div {
-            margin-bottom: 10vh;
-        }
-    </style>
     <template>
+        <style>
+            :host {
+                @apply --layout-horizontal;
+                background-image: url('../../images/grassy_field_150.jpg');
+                background-size: cover;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+            .cover {
+                @apply --layout-horizontal;
+                background-color: rgba(36, 36, 36, 0.7);
+                padding: 3vw 0 0 0;
+                position: relative;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .settings-nav {
+                @apply --layout-flex-3;
+                @apply --layout-self-start;
+                background-color: rgba(36, 36, 36, 0.7);
+                border-top-right-radius: 50px;
+                border-bottom-right-radius: 50px;
+                border: 1px solid #2F2F2F;
+                border-left: none;
+            }
+            .settings-nav ul {
+                margin: 0;
+                padding: 0;
+                list-style-type: none;
+            }
+            .settings-nav li {
+                list-style: none;
+                padding: 0;
+            }
+            .setting {
+                @apply --layout-horizontal;
+                margin: 1.67vw;
+                cursor: pointer;
+            }
+            .setting .icon-border {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-center-justified;
+                width: 5.3vw;
+                height: 5.3vw;
+                border-radius: 50%;
+                background: linear-gradient(to bottom, #f8a116 0%, #c55300 100%);
+                position: relative;
+            }
+            .setting.active .icon-border {
+                background: linear-gradient(to bottom, #77E15D 0%, #276019 100%);
+            }
+            .setting .icon {
+                @apply --layout-vertical;
+                @apply --layout-center;
+                @apply --layout-center-justified;
+                width: 95%;
+                height: 95%;
+                border-radius: 50%;
+                background-color: var(--secondary-background-color);
+                position: relative;
+                box-shadow: inset 0px 0px 6vw -3.33vw #000000;
+                color: #FFFFFF;
+                fill: #FFFFFF;
+            }
+            .setting.active .icon {
+                color: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
+                fill: linear-gradient(to bottom, #77E15D 0%, #276019 100%) !important;
+            }
+            .setting iron-icon {
+                width: 2.67vw;
+                height: 2.67vw;
+                font-size: 2.67vw;
+            }
+            .setting .text {
+                @apply --layout-flex-2;
+                @apply --layout-vertical;
+                @apply --layout-center-justified;
+                color: white;
+                margin-left: 15px;
+                text-transform: uppercase;
+            }
+            .setting .text .type {
+                font-size: 1vw;
+                line-height: 1.5vw;
+            }
+            .setting .text .settings {
+                font-size: 0.67vw;
+                line-height: 1vw;
+            }
+
+            .profile {
+                @apply --layout-flex-11;
+                padding-left: 3vw;
+                padding-right: 3vw;
+            }
+            .profile > div {
+                margin-bottom: 10vh;
+            }
+        </style>
         <div class="cover">
             <div class="settings-nav">
                 <ul>
@@ -168,19 +183,25 @@
                         <training-plan-info></training-plan-info>
                     </section>
                 </iron-pages>
-                <file-upload></file-upload>
+                <file-upload id="uploader"></file-upload>
             </div>
         </div>
     </template>
     <script>
-        class StrydSetting {
-            beforeRegister() {
-                this.is = 'stryd-settings';
-                this.properties = {};
+        class StrydSettings extends Polymer.Element {
+            static get is() { return 'stryd-settings'; }
+
+            static get properties() {
+                return {
+                    route: String,
+                };
             }
+
             ready() {
+                super.ready();
                 this.route = 'profile';
             }
+
             router (e) {
                 var target = e.target;
                 while (!target.dataset.view) {
@@ -188,9 +209,10 @@
                 }
                 this.toggle(target.dataset.view);
             }
+
             toggle(active) {
-                var anchor = this.querySelector(`[data-view='${active}']`);
-                var current = this.querySelector('.active');
+                var anchor = this.root.querySelector(`[data-view='${active}']`);
+                var current = this.root.querySelector('.active');
                 if (current) {
                     current.classList.remove('active');
                 }
@@ -198,6 +220,6 @@
                 this.route = active;
             }
         }
-        Polymer(StrydSetting);
+        window.customElements.define(StrydSettings.is, StrydSettings);
     </script>
 </dom-module>

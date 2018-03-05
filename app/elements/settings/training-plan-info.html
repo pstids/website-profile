@@ -1,37 +1,45 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
+
 <dom-module id="training-plan-info">
-	<style>
-		:host {
-			@apply(--layout-vertical);
-			padding-bottom: 15%;
-		}
-		h1.title {
-			color: white;
-			margin-left: 0;
-			font-size: 32px;
-		}
-		p {
-			color: white;
-		}
-		button {
-			margin-right: 15px;
-		}
-	</style>
 	<template>
+		<style include="iron-flex">
+			:host {
+				@apply --layout-vertical;
+				padding-bottom: 15%;
+			}
+			h1.title {
+				color: white;
+				margin-left: 0;
+				font-size: 32px;
+			}
+			p {
+				color: white;
+			}
+			stryd-button {
+				margin-right: 15px;
+			}
+		</style>
 		<template is="dom-if" if="{{plan_available}}">
 			<h1 class="title">{{plan_title}}</h1>
 			<p><b>Starts on:</b> <span>{{plan_start}}</span></p>
 			<p><b>Ends on:</b> <span>{{plan_end}}</span></p>
 			<p>{{plan_description}}</p>
 			<div class="layout horizontal">
-				<button is="stryd-button" on-click="viewPlan">View Plan</button>
-				<button is="stryd-button" on-click="leavePlan">Leave Plan</button>
-				<button is="stryd-button" on-click="viewPlans">Change Plan</button>
+				<stryd-button on-click="viewPlan">View Plan</stryd-button>
+				<stryd-button on-click="leavePlan">Leave Plan</stryd-button>
+				<stryd-button on-click="viewPlans">Change Plan</stryd-button>
 			</div>
 		</template>
 		<template is="dom-if" if="{{!plan_available}}">
 			<h1 class="title">Get a Stryd Training Plan</h1>
 			<div class="layout horizontal">
-				<button is="stryd-button" on-click="viewPlans">View Plans</button>
+				<stryd-button on-click="viewPlans">View Plans</stryd-button>
 			</div>
 		</template>
 		<paper-dialog id="leavePlanDialog">
@@ -43,17 +51,26 @@
 		</paper-dialog>
 	</template>
 	<script>
-	Polymer({
-		is: 'training-plan-info',
-		properties: {
-			plan_available: Boolean
-		},
-		ready: function () {
+	class TrainingPlanInfo extends Polymer.Element {
+		static get is() { return 'training-plan-info'; }
+
+		static get properties() {
+			return {
+				plan_available: Boolean,
+				plan_description: String,
+				plan_end: String,
+				plan_start: String,
+				plan_title: String,
+			};
+		}
+
+		ready() {
+			super.ready();
 			this.plan_available = false;
 			this.getPlan();
 			window.setTimeout(this.getPlan.bind(this), 3000);
-		},
-		getPlan: function () {
+		}
+		getPlan() {
 			if (trainingPlan && trainingPlan.hasPlan) {
 				this.plan_available = true;
 				this.plan_title = trainingPlan.plan.name;
@@ -61,14 +78,14 @@
 				this.plan_end = trainingPlan.targetDate.clone().add(trainingPlan.plan.week_duration, 'weeks').format('MMMM Do YYYY');
 				this.plan_description = trainingPlan.plan.description;
 			}
-		},
-		viewPlan: function () {
+		}
+		viewPlan() {
 			page.redirect('/analysis');
-		},
-		leavePlan: function () {
+		}
+		leavePlan() {
 			this.$.leavePlanDialog.open();
-		},
-		leavePlanConfirm: function () {
+		}
+		leavePlanConfirm() {
 			superagent
 				.del(`/b/api/v1/users/plan`)
 				.set('Accept', 'application/json')
@@ -81,10 +98,11 @@
 						console.log('Error: failure to set training plan', err);
 					}
 				});
-		},
-		viewPlans: function () {
+		}
+		viewPlans() {
 			document.location = 'https://www.stryd.com#section-coaching';
 		}
-	});
+	}
+	window.customElements.define(TrainingPlanInfo.is, TrainingPlanInfo);
 	</script>
 </dom-module>

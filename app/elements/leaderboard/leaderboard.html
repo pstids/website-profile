@@ -1,285 +1,295 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../workout-element/time-in-zone.html">
+
 <dom-module id="social-leaderboard">
-	<style>
-	:host {
-		min-height: 450px;
-		height: 100%;
-		margin: 0;
-		color: #fff;
-	}
-
-	.leaderboard-main {
-		background: -webkit-linear-gradient(top, #262626, #1C1C1C);
-		background: linear-gradient(to bottom, #262626, #1C1C1C);
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-around-justified);
-	}
-
-	iron-icon {
-		width: 12px;
-		height: 12px;
-		padding: 0 10px;
-	}
-
-	.leaderboard {
-		background: #262626;
-		height: 100%;
-		width: 26%;
-	}
-
-	@media (max-width: 1000px) {
-		.leaderboard-main {
-			@apply(--layout-vertical);
-			margin: 0 20px;
-		}
-		.leaderboard {
-			width: 100%;
-		}
-	}
-
-	.leaderboard h1 {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-
-		font-size: 29px;
-		color: #F5A214;
-		font-weight: 800;
-		margin: 15px;
-		line-height: 70px;
-	}
-	.leaderboard h1 img {
-		height: 80px;
-		position: relative;
-		top: 3px;
-		margin-right: 6px;
-		vertical-align: baseline;
-	}
-	.leaderboard ol {
-		counter-reset: leaderboard;
-		list-style: none;
-		-webkit-padding-start: 0;
-		-webkit-margin-after: 0;
-		padding: 0;
-		margin: 0;
-		height: 100%;
-		position: relative;
-	}
-	.leaderboard ol li {
-		/*border-left: solid 1px orange;*/
-		position: relative;
-		z-index: 1;
-		font-size: 14px;
-		counter-increment: leaderboard;
-		padding: 10px 5% 10px 5%;
-		cursor: pointer;
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		-webkit-transform: translateZ(0) scale(1, 1);
-		transform: translateZ(0) scale(1, 1);
-		border: solid 1px #4D4D4D;
-		border-top: 0;
-		height: 57px;
-
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-	}
-	.leaderboard ol li:first-child {
-		border-top: solid 1px #4D4D4D;
-	}
-	.leaderboard ol li:nth-child(odd) {
-		background-color: #1C1C1C;
-	}
-	.leaderboard ol li.active {
-		background: orange;
-	}
-	.leaderboard ol li.active .count {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li.active mark {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li.active small {
-		color: #1F1F1F;
-	}
-	.leaderboard ol li .count {
-		z-index: 2;
-		left: 15px;
-		width: 25px;
-		height: 25px;
-		line-height: 25px;
-		background: white;
-		color: orange;
-		font-weight: 800;
-		border-radius: 20px;
-		text-align: center;
-		margin-right: 13px;
-		margin-left: 12px;
-	}
-	.leaderboard ol li .count.award {
-		background-color: rgba(0, 0, 0, 0);
-		background-size: 50px 50px;
-		width: 50px;
-		height: 50px;
-		margin-right: 0;
-		margin-left: 0;
-		border-radius: 0;
-	}
-	.leaderboard ol li .count.first {
-		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-gold.png);
-	}
-	.leaderboard ol li .count.second {
-		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-silver.png);
-	}
-	.leaderboard ol li .count.third {
-		background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-bronze.png);
-	}
-	.leaderboard ol li img {
-		display: inline;
-		width: 35px;
-		height: 35px;
-		border-radius: 50%;
-		margin-right: 1em;
-		margin-left: 1em;
-		background-color: #1C1C1C;
-		max-width: 100%;
-	}
-	.leaderboard ol li mark {
-		margin: 0;
-		background: none;
-		color: #fff;
-		font-size: 16px;
-		width: 150px;
-	}
-	.leaderboard ol li mark.rank {
-		width: auto;
-	}
-	.leaderboard ol li small {
-		font-size: 16px;
-		flex: 1;
-		text-align: right;
-		margin-right: 1em;
-		opacity: 1;
-		color: #FFFFFF;
-	}
-
-	.space {
-		width: 75px;
-		display: block;
-	}
-
-	#dialog .commit {
-		@apply(--layout);
-		@apply(--layout-horizontal);
-	}
-	#dialog .breakdown {
-		@apply(--layout-flex);
-		@apply(--layout);
-		@apply(--layout-vertical);
-	}
-	#dialog .progression {
-		@apply(--layout-flex-3);
-		@apply(--layout);
-		@apply(--layout-vertical);
-	}
-
-	.tile {
-		width: 18px;
-		height: 18px;
-		margin: 2px;
-		color: white;
-		background: white;
-	}
-	.tile.active {
-		color: orange;
-		background: orange;
-	}
-	.tile-day {
-		font-size: 16px;
-		line-height: 18px;
-		color: white;
-		margin: 2px 5px 2px 2px;
-		text-align: right;
-	}
-
-	.top {
-		background-color: #222222;
-		border-bottom: 1px solid #4D4D4D;
-	}
-	.tops {
-		border: 1px solid #4D4D4D;
-		flex: 1;
-	}
-	.raindrop {
-		flex: 0 1;
-		border-left: 1px solid #4D4D4D;
-		@apply(--layout);
-		@apply(--layout-end-justified);
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-	}
-	.stats {
-		padding: 0 20px;
-	}
-	.stat .sub {
-		color: #A4A4A4;
-	}
-	.stat .values {
-		@apply(--layout-flex);
-	}
-	.stat .values .value {
-		@apply(--layout-flex);
-		justify-content: center;
-		align-items: center;
-	}
-	.stat h2 {
-		margin: 0;
-		color: white;
-		font-size: 30px;
-	}
-	.stat h2 .unit {
-		margin-top: 10px;
-		font-size: 16px;
-	}
-	.buttons {
-		padding-left: 8px;
-	}
-
-	.prompt {
-		margin: 2% 5.5%;
-	}
-	.prompt h1 span {
-		color: orange;
-	}
-	.prompt ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-	.prompt ul li {
-		margin: 20px 0;
-	}
-	.prompt p {
-		font-size: 18px;
-		line-height: 28px;
-	}
-
-	.dialog-container {
-		padding: 0;
-		margin: 0;
-	}
-	.dialog-container .bottom {
-		border: 1px solid #4D4D4D;
-		border-top: 0;
-		padding: 0 20px;
-	}
-	.dialog-container .frequency {
-		padding-top: 20px;
-	}
-	</style>
 	<template>
+		<style include="iron-flex iron-flex-factors iron-flex-alignment">
+		:host {
+			min-height: 450px;
+			height: 100%;
+			margin: 0;
+			color: #fff;
+		}
+
+		.leaderboard-main {
+			background: -webkit-linear-gradient(top, #262626, #1C1C1C);
+			background: linear-gradient(to bottom, #262626, #1C1C1C);
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-around-justified;
+		}
+
+		iron-icon {
+			width: 12px;
+			height: 12px;
+			padding: 0 10px;
+		}
+
+		.leaderboard {
+			background: #262626;
+			height: 100%;
+			width: 26%;
+		}
+
+		@media (max-width: 1000px) {
+			.leaderboard-main {
+				@apply --layout-vertical;
+				margin: 0 20px;
+			}
+			.leaderboard {
+				width: 100%;
+			}
+		}
+
+		.leaderboard h1 {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-center-justified;
+
+			font-size: 29px;
+			color: #F5A214;
+			font-weight: 800;
+			margin: 15px;
+			line-height: 70px;
+		}
+		.leaderboard h1 img {
+			height: 80px;
+			position: relative;
+			top: 3px;
+			margin-right: 6px;
+			vertical-align: baseline;
+		}
+		.leaderboard ol {
+			counter-reset: leaderboard;
+			list-style: none;
+			-webkit-padding-start: 0;
+			-webkit-margin-after: 0;
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			position: relative;
+		}
+		.leaderboard ol li {
+			/*border-left: solid 1px orange;*/
+			position: relative;
+			z-index: 1;
+			font-size: 14px;
+			counter-increment: leaderboard;
+			padding: 10px 5% 10px 5%;
+			cursor: pointer;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+			-webkit-transform: translateZ(0) scale(1, 1);
+			transform: translateZ(0) scale(1, 1);
+			border: solid 1px #4D4D4D;
+			border-top: 0;
+			height: 57px;
+
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-center-justified;
+		}
+		.leaderboard ol li:first-child {
+			border-top: solid 1px #4D4D4D;
+		}
+		.leaderboard ol li:nth-child(odd) {
+			background-color: #1C1C1C;
+		}
+		.leaderboard ol li.active {
+			background: orange;
+		}
+		.leaderboard ol li.active .count {
+			color: #1F1F1F;
+		}
+		.leaderboard ol li.active mark {
+			color: #1F1F1F;
+		}
+		.leaderboard ol li.active small {
+			color: #1F1F1F;
+		}
+		.leaderboard ol li .count {
+			z-index: 2;
+			left: 15px;
+			width: 25px;
+			height: 25px;
+			line-height: 25px;
+			background: white;
+			color: orange;
+			font-weight: 800;
+			border-radius: 20px;
+			text-align: center;
+			margin-right: 13px;
+			margin-left: 12px;
+		}
+		.leaderboard ol li .count.award {
+			background-color: rgba(0, 0, 0, 0);
+			background-size: 50px 50px;
+			width: 50px;
+			height: 50px;
+			margin-right: 0;
+			margin-left: 0;
+			border-radius: 0;
+		}
+		.leaderboard ol li .count.first {
+			background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-gold.png);
+		}
+		.leaderboard ol li .count.second {
+			background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-silver.png);
+		}
+		.leaderboard ol li .count.third {
+			background-image: url(https://storage.googleapis.com/stryd_static_assets/powercenter/badge-bronze.png);
+		}
+		.leaderboard ol li img {
+			display: inline-block;
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			margin-right: 1em;
+			margin-left: 1em;
+			background-color: #1C1C1C;
+			max-width: 100%;
+		}
+		.leaderboard ol li mark {
+			margin: 0;
+			background: none;
+			color: #fff;
+			font-size: 16px;
+			width: 150px;
+		}
+		.leaderboard ol li mark.rank {
+			width: auto;
+		}
+		.leaderboard ol li small {
+			font-size: 16px;
+			flex: 1;
+			text-align: right;
+			margin-right: 1em;
+			opacity: 1;
+			color: #FFFFFF;
+		}
+
+		.space {
+			width: 75px;
+			display: block;
+		}
+
+		#dialog .commit {
+			@apply --layout;
+			@apply --layout-horizontal;
+		}
+		#dialog .breakdown {
+			@apply --layout-flex;
+			@apply --layout;
+			@apply --layout-vertical;
+		}
+		#dialog .progression {
+			@apply --layout-flex-3;
+			@apply --layout;
+			@apply --layout-vertical;
+		}
+
+		.tile {
+			width: 18px;
+			height: 18px;
+			margin: 2px;
+			color: white;
+			background: white;
+		}
+		.tile.active {
+			color: orange;
+			background: orange;
+		}
+		.tile-day {
+			font-size: 16px;
+			line-height: 18px;
+			color: white;
+			margin: 2px 5px 2px 2px;
+			text-align: right;
+		}
+
+		.top {
+			background-color: #222222;
+			border-bottom: 1px solid #4D4D4D;
+		}
+		.tops {
+			border: 1px solid #4D4D4D;
+			flex: 1;
+		}
+		.raindrop {
+			flex: 0 1;
+			border-left: 1px solid #4D4D4D;
+			@apply --layout;
+			@apply --layout-end-justified;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+		.stats {
+			padding: 0 20px;
+		}
+		.stat .sub {
+			color: #A4A4A4;
+		}
+		.stat .values {
+			@apply --layout-flex;
+		}
+		.stat .values .value {
+			@apply --layout-flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.stat h2 {
+			margin: 0;
+			color: white;
+			font-size: 30px;
+		}
+		.stat h2 .unit {
+			margin-top: 10px;
+			font-size: 16px;
+		}
+		.buttons {
+			padding-left: 8px;
+		}
+
+		.prompt {
+			margin: 2% 5.5%;
+		}
+		.prompt h1 span {
+			color: orange;
+		}
+		.prompt ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+		.prompt ul li {
+			margin: 20px 0;
+		}
+		.prompt p {
+			font-size: 18px;
+			line-height: 28px;
+		}
+
+		.dialog-container {
+			padding: 0;
+			margin: 0;
+		}
+		.dialog-container .bottom {
+			border: 1px solid #4D4D4D;
+			border-top: 0;
+			padding: 0 20px;
+		}
+		.dialog-container .frequency {
+			padding-top: 20px;
+		}
+		</style>
 		<div class="layout vertical tops hidden prompt" id="crit">
 			<div class="layout horizontal top">
 				<div class="title flex">
@@ -298,15 +308,15 @@
 			</div>
 		</div>
 		<div class="leaderboard-main">
-			<div class="leaderboard" data-parent="rss">
+			<div class="leaderboard" id="boardRss" data-parent="rss">
 				<h1>I Am Dedicated</h1>
 				<ol data-leaderboard="rss"></ol>
 			</div>
-			<div class="leaderboard" data-parent="cp">
+			<div class="leaderboard" id="boardCp" data-parent="cp">
 				<h1>I Am Powerful</h1>
 				<ol data-leaderboard="cp"></ol>
 			</div>
-			<div class="leaderboard" data-parent="eff">
+			<div class="leaderboard" id="boardEff" data-parent="eff">
 				<h1>I Am Active</h1>
 				<ol data-leaderboard="eff"></ol>
 			</div>
@@ -365,12 +375,38 @@
 		</paper-dialog>
 	</template>
 	<script>
-	Polymer({
-		is: 'social-leaderboard',
-		listeners: {
-			'tap': 'eleTap'
-		},
-		eleTap: function (e) {
+	class SocialLeaderBoard extends Polymer.Element {
+		static get is() { return 'social-leaderboard'; }
+
+		static get properties() {
+			return {
+				statUsername: String,
+				statRSS: String,
+				statTime: String,
+				statPower: String,
+				statDistance: String,
+			};
+		}
+
+		constructor() {
+			super();
+			this._eleTap = this.eleTap.bind(this);
+		}
+		connectedCallback() {
+			super.connectedCallback();
+			Polymer.RenderStatus.afterNextRender(this, board => {
+				[this.$.boardCp, this.$.boardEff, this.$.boardRss].forEach(board => {
+					board.addEventListener('click', this._eleTap);
+				});
+			});
+		}
+		disconnectedCallback() {
+			super.disconnectedCallback();
+			[this.$.boardCp, this.$.boardEff, this.$.boardRss].forEach(board => {
+				board.removeEventListener('click', this._eleTap);
+			});
+		}
+		eleTap(e) {
 			var target = e.target;
 			while (true) {
 				if (target === this) {
@@ -384,15 +420,12 @@
 					return;
 				}
 			}
-		},
-		fetchUserData: function (username) {
+		}
+		fetchUserData(username) {
 			var srtDate = moment().subtract(12, 'weeks').format('MM-DD-YYYY');
 			var endDate = moment().add(2, 'days').format('MM-DD-YYYY');
 			this.statUsername = username;
 			var path = `/b/api/v1/activities/${username}/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-			if (isLocal) {
-				path = `/b/api/v1/activities/calendar?srtDate=${srtDate}&endDate=${endDate}&sortBy=StartDate`;
-			}
 			superagent
 				.get(path)
 				.set('Accept', 'application/json')
@@ -404,8 +437,8 @@
 						console.log(err);
 					}
 				});
-		},
-		processUserData: function (activities) {
+		}
+		processUserData(activities) {
 			var rss = 0, time = 0, max_power = 0, distance = 0;
 			var frequency = {};
 			var weeks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], names = [], tiz = [0, 0, 0, 0, 0];
@@ -441,23 +474,23 @@
 			this.createCommitChart(frequency);
 			this.createRSSProgression(weeks, names);
 			this.$.dialog.open();
-		},
-		checkHasCP: function () {
+		}
+		checkHasCP() {
             superagent
                 .get('/b/api/v1/training')
                 .set('Accept', 'application/json')
                 .set('Authorization', `Bearer: ${jwt.token}`)
                 .end((err, res) => {
                     if (res.ok) {
-                    	if (res.body.critical_power < 1) {
-                    		this.$.crit.classList.remove('hidden');
-                    	}
+                      if (res.body && res.body.critical_power < 1) {
+                        this.$.crit.classList.remove('hidden');
+                      }
                     } else {
-                    	console.log(err);
+                      console.log(err);
                     }
                 });
-		},
-		callPath: function (path, resolve) {
+		}
+		callPath(path, resolve) {
 			superagent
 				.get(path)
 				.set('Accept', 'application/json')
@@ -469,8 +502,9 @@
 						resolve(null);
 					}
 				});
-		},
-		ready: function () {
+		}
+		ready() {
+			super.ready();
 			this.statRSS = 0;
 			this.statDistance = 0;
 			this.statTime = 0;
@@ -483,23 +517,14 @@
 			this.ltitle = 'Training Load';
 			var stress = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/7';
-				if (isLocal) {
-					path = '/powercenter/scripts/local/leaderboard-rss.json';
-				}
 				this.callPath(path, resolve);
 			});
 			var today = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/1';
-				if (isLocal) {
-					path = '/powercenter/scripts/local/leaderboard-rss.json';
-				}
 				this.callPath(path, resolve);
 			});
 			var cp = new Promise(resolve => {
 				var path = '/b/internal/leaderboard/cp';
-				if (isLocal) {
-					path = '/powercenter/scripts/local/leaderboard-cp.json';
-				}
 				this.callPath(path, resolve);
 			});
 			Promise.all([stress, cp, today])
@@ -507,29 +532,29 @@
 					// sets maximum entries to show after user
 					var max = 5;
 					if (values[0] !== null) {
-						this.querySelector('[data-parent="rss"]').classList.remove('hidden');
+						this.$.boardRss.classList.remove('hidden');
 						this.processEntries(max, 'rss', values[0]);
 					} else {
-						this.querySelector('[data-parent="rss"]').classList.add('hidden');
+						this.$.boardRss.classList.add('hidden');
 					}
 					if (values[1] !== null) {
-						this.querySelector('[data-parent="cp"]').classList.remove('hidden');
+						this.$.boardCp.classList.remove('hidden');
 						this.processEntries(max, 'cp', values[1]);
 					} else {
-						this.querySelector('[data-parent="cp"]').classList.add('hidden');
+						this.$.boardCp.classList.add('hidden');
 					}
 					if (values[2] !== null) {
-						this.querySelector('[data-parent="eff"]').classList.remove('hidden');
+						this.$.boardEff.classList.remove('hidden');
 						this.processEntries(max, 'eff', values[2]);
 					} else {
-						this.querySelector('[data-parent="eff"]').classList.add('hidden');
+						this.$.boardEff.classList.add('hidden');
 					}
 				});
-		},
-		processEntries: function (max, highlight, entries) {
-			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			while (Polymer.dom(rssContainer).firstChild) {
-				Polymer.dom(rssContainer).removeChild(Polymer.dom(rssContainer).firstChild);
+		}
+		processEntries(max, highlight, entries) {
+			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+			while (rssContainer.firstChild) {
+				rssContainer.removeChild(rssContainer.firstChild);
 			}
 
 			var i = 0;
@@ -558,7 +583,7 @@
 					highlight
 				);
 			}
-			
+
 			if (entries.user.rank > 29) {
 				// Add ellipsis
 				this.addTitle('mine', highlight);
@@ -601,161 +626,158 @@
 					}
 				}
 			}
-		},
+		}
 		// Add run entry
-		addEntry: function (image, name, entry, order, active, highlight) {
+		addEntry(image, name, entry, order, active, highlight) {
 			if (name.toLowerCase() === 'djfaithful') {
 				return;
 			}
 			var li = document.createElement('li');
 			if (active) {
-				Polymer.dom(li).classList.add('active');
+				li.classList.add('active');
 			}
 			li.dataset.user = name;
 
 			var count = document.createElement('div');
-			Polymer.dom(count).classList.add('count');
+			count.classList.add('count');
 			if (order <= 2) {
-				Polymer.dom(count).classList.add('award');
+				count.classList.add('award');
 				if (order === 0) {
-					Polymer.dom(count).classList.add('first');
+					count.classList.add('first');
 				} else if (order === 1) {
-					Polymer.dom(count).classList.add('second');
+					count.classList.add('second');
 				} else if (order === 2) {
-					Polymer.dom(count).classList.add('third');
+					count.classList.add('third');
 				}
 			} else {
-				Polymer.dom(count).textContent = ++order;
+				count.textContent = ++order;
 			}
 
 			var img = document.createElement('img');
 			if (image === '') {
-				img.src = 'https://www.stryd.com/powercenter/images/favicon.png';
+				img.src = `${this.rootPath}images/favicon.png`;
 			} else {
 				img.src = image;
 			}
 
 			var mark = document.createElement('mark');
-			Polymer.dom(mark).textContent = name;
+			mark.textContent = name;
 
-			Polymer.dom(li).appendChild(count);
-			Polymer.dom(li).appendChild(img);
-			Polymer.dom(li).appendChild(mark);
+			li.appendChild(count);
+			li.appendChild(img);
+			li.appendChild(mark);
 
 			var small = document.createElement('small');
 			if (highlight === 'rss') {
-				Polymer.dom(small).textContent = entry.stress.toFixed(1);
+				small.textContent = entry.stress.toFixed(1);
 			} else if (highlight === 'cp') {
-				Polymer.dom(small).textContent = entry.critical_power.toFixed(1);
+				small.textContent = entry.critical_power.toFixed(1);
 			} else if (highlight === 'eff') {
-				Polymer.dom(small).textContent = entry.stress.toFixed(1);
+				small.textContent = entry.stress.toFixed(1);
 			}
-			Polymer.dom(li).appendChild(small);
+			li.appendChild(small);
+			util.patchClasses(li, this);
 
-			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			Polymer.dom(rssContainer).appendChild(li);
-		},
+			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+			rssContainer.appendChild(li);
+		}
 		// Add title element
-		addTitle: function (title, highlight) {
+		addTitle(title, highlight) {
 			if (title === 'top') {
 				var li = document.createElement('li');
 
 				var count = document.createElement('mark');
 				count.classList.add('rank');
-				Polymer.dom(count).textContent = 'Rank';
+				count.textContent = 'Rank';
 
 				var space = document.createElement('div');
-				Polymer.dom(space).classList.add('space');
+				space.classList.add('space');
 
 				var mark = document.createElement('mark');
-				Polymer.dom(mark).textContent = 'Username';
+				mark.textContent = 'Username';
 
-				Polymer.dom(li).appendChild(count);
-				Polymer.dom(li).appendChild(space);
-				Polymer.dom(li).appendChild(mark);
+				li.appendChild(count);
+				li.appendChild(space);
+				li.appendChild(mark);
 
 				var small = document.createElement('small');
 				if (highlight === 'rss') {
-					Polymer.dom(small).textContent = 'Weekly RSS';
+					small.textContent = 'Weekly RSS';
 				} else if (highlight === 'cp') {
-					Polymer.dom(small).textContent = 'Critical Power (w/kg)';
+					small.textContent = 'Critical Power (w/kg)';
 				} else if (highlight === 'eff') {
-					Polymer.dom(small).textContent = 'Daily RSS';
+					small.textContent = 'Daily RSS';
 				}
-				Polymer.dom(li).appendChild(small);
+				li.appendChild(small);
+				util.patchClasses(li, this);
 
-				var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-				Polymer.dom(rssContainer).appendChild(li);
+				var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+				rssContainer.appendChild(li);
 			} else {
 				this.addBridge(highlight);
 			}
-		},
+		}
 		// Add ellipsis
-		addBridge: function (highlight) {
+		addBridge(highlight) {
 			var li = document.createElement('li');
 			var icon1 = document.createElement('iron-icon');
-			Polymer.dom(icon1).setAttribute('icon', 'image:brightness-1');
+			icon1.setAttribute('icon', 'image:brightness-1');
 			var icon2 = document.createElement('iron-icon');
-			Polymer.dom(icon2).setAttribute('icon', 'image:brightness-1');
+			icon2.setAttribute('icon', 'image:brightness-1');
 			var icon3 = document.createElement('iron-icon');
-			Polymer.dom(icon3).setAttribute('icon', 'image:brightness-1');
+			icon3.setAttribute('icon', 'image:brightness-1');
 
-			Polymer.dom(li).appendChild(icon1);
-			Polymer.dom(li).appendChild(icon2);
-			Polymer.dom(li).appendChild(icon3);
+			li.appendChild(icon1);
+			li.appendChild(icon2);
+			li.appendChild(icon3);
+			util.patchClasses(li, this);
 
-			var rssContainer = this.querySelector(`[data-leaderboard="${highlight}"]`);
-			Polymer.dom(rssContainer).appendChild(li);
-		},
-		createCommitChart: function (data) {
+			var rssContainer = this.root.querySelector(`[data-leaderboard="${highlight}"]`);
+			rssContainer.appendChild(li);
+		}
+		createCommitChart(data) {
 			// clear old
-			while (Polymer.dom(this.$.commit).firstChild) {
-				Polymer.dom(
-					this.$.commit
-				).removeChild(
-					Polymer.dom(
-						this.$.commit
-					).firstChild
-				);
+			while (this.$.commit.firstChild) {
+				this.$.commit.removeChild(this.$.commit.firstChild);
 			}
 			// seperate out activities for simple picking
 			var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 			var daysDiv = document.createElement('div');
-			Polymer.dom(daysDiv).classList.add('layout', 'vertical');
+			daysDiv.classList.add('layout', 'vertical');
 			for (var day of days) {
 				var innerDay = document.createElement('div');
-				Polymer.dom(innerDay).classList.add('tile-day');
-				Polymer.dom(innerDay).textContent = day;
-				Polymer.dom(daysDiv).appendChild(innerDay);
+				innerDay.classList.add('tile-day');
+				innerDay.textContent = day;
+				daysDiv.appendChild(innerDay);
 			}
-			Polymer.dom(this.$.commit).appendChild(daysDiv);
+			this.$.commit.appendChild(daysDiv);
 			// create chart
 			var moving = moment().subtract(12, 'weeks');
 			for (var i = 0; i < 12; i++) {
 				var div = document.createElement('div');
-				Polymer.dom(div).classList.add('layout', 'vertical');
+				div.classList.add('layout', 'vertical');
 				for (var o = 0; o < 7; o++) {
 					var innerDiv = document.createElement('div');
-					Polymer.dom(innerDiv).classList.add('tile');
+					innerDiv.classList.add('tile');
 					if (moving.format('YYYYMMDD') in data) {
-						Polymer.dom(innerDiv).classList.add('active');
+						innerDiv.classList.add('active');
 					}
-					Polymer.dom(div).appendChild(innerDiv);
+					div.appendChild(innerDiv);
 					moving.add(1, 'days');
 				}
-				Polymer.dom(this.$.commit).appendChild(div);
+				this.$.commit.appendChild(div);
 			}
-		},
-		createRSSProgression: function (data, days) {
+		}
+		createRSSProgression(data, days) {
 			var width = 760;
 			var height = 250;
 			var mColor = '#f7a017';
 
-			var graph = d3.select('#stress2')
+			var graph = d3.select(this.$.stress2)
 				.attr('width', width + 100)
 				.attr('height', height + 100);
 
-			graph.append('svg:g')
+			var barChart = graph.append('svg:g')
 				.attr('id', 'barchart2')
 				.attr('transform', 'translate(50, 50)');
 
@@ -791,9 +813,9 @@
 				.innerTickSize(-width)
 				.outerTickSize(0);
 
-			d3.selectAll('.d3-tip')
-				.remove();
-			
+			this.root.querySelectorAll('.d3-tip')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
+
 			var tip = d3.tip()
 				.attr('class', 'd3-tip')
 				.offset([-10, 0])
@@ -801,10 +823,11 @@
 					return `<div class="float-tag">Stress</div><div class="float-value">${+d} RSS</div>`;
 				});
 
-			var vis = d3.select('#barchart2');
+			var vis = barChart;
 			vis.call(tip);
 
-			d3.selectAll('.axis').remove();
+			this.root.querySelectorAll('.axis')
+							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			vis.insert('g', ':first-child')
 				.attr('class', 'x axis')
@@ -887,6 +910,7 @@
 					return `translate(${first}, 0)`;
 				});
 		}
-	});
+	}
+	window.customElements.define(SocialLeaderBoard.is, SocialLeaderBoard);
 	</script>
 </dom-module>

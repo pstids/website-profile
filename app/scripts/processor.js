@@ -6,7 +6,9 @@
 /*global Dexie:true*/
 /*global self*/
 
-importScripts('/powercenter/scripts/processor.min.js');
+importScripts('dexie.js');
+importScripts('superagent.js');
+importScripts('toolbox.js');
 
 var data = {};
 var guestToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imd1ZXN0QHN0cnlkLmNvbSIsImV4cCI6NDYwNDk2MjEwMTk1NiwiZmlyc3RuYW1lIjoiU3RyeWQiLCJpZCI6Ii0xIiwiaW1hZ2UiOiIiLCJsYXN0bmFtZSI6IlJ1bm5lciIsInVzZXJuYW1lIjoiZ3Vlc3QifQ.jlm3nYOYP_L9r8vpOB0SOGnj5t9i8FWwpn5UxOfar1M';
@@ -145,6 +147,10 @@ var createChartData = function (workout) {
 	var chartData = [];
 	var lastEntry = {}, entry = {};
 	var suuntoDrop = true;
+
+	if (!workout || !workout.total_power_list) {
+		return chartData;
+	}
 
 	for (var i = 0; i < workout.total_power_list.length; i += 1) {
 		suuntoDrop = true;
@@ -308,7 +314,7 @@ var add = function (a, b) {
 };
 
 var workoutProcessing = function (workout, id) {
-	if (workout.total_power_list === null) {
+	if (!workout.total_power_list) {
 		data.error = true;
 		postMessage(data);
 		return;
@@ -383,12 +389,12 @@ var workoutProcessing = function (workout, id) {
 		// sum = workout.elevation_device_list.slice(0, 10).reduce(add, 0);
 		// if (sum > 0) {
 		availableMetrics.push('deviceElevation');
-		// }  
+		// }
 	}
 	if ('stress_list' in workout && workout.stress_list !== null) {
 		// sum = workout.stress_list.slice(0, 10).reduce(add, 0);
 		// if (sum > 0) {
-		availableMetrics.push('rss'); 
+		availableMetrics.push('rss');
 		// }
 	}
 
@@ -519,7 +525,7 @@ var workoutFetchingAJAX = function (workoutID) {
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
 		.end((err, res) => {
-			if (res.ok) {
+			if (res.ok && res.body && Object.keys(res.body).length > 0) {
 				workoutSave(res.body, workoutID);
 				workoutProcessing(res.body, workoutID);
 			} else {
@@ -564,7 +570,7 @@ var workoutFetching = function (workoutID, workoutUpdated) {
 };
 
 var workoutProcessingComparison = function (workout) {
-	if (workout.total_power_list === null) {
+	if (!workout.total_power_list) {
 		return [];
 	}
 	var data = [];
@@ -680,7 +686,7 @@ var suuntoProcessing = function () {
 		.set('Accept', 'application/json')
 		.set('Authorization', `Bearer: ${token}`)
 		.end((err, res) => {
-			if (res.ok && res.body.workouts !== null) {
+			if (res.ok && res.body.workouts) {
 				for (let workoutID of res.body.workouts) {
 					addLog(workoutID);
 				}
@@ -1095,14 +1101,14 @@ var calcLaps = function (type, activityID, zones, userUnit) {
 	resetLap();
 	activityID = +activityID;
 
-	var activity = seriesMemory[activityID];
+	var activity = seriesMemory[activityID] || [];
 	var oActivity = activeMemory[activityID];
 
 	var lapTimestamps = [];
 	var lastLapTimestamp = null;
 	var lastLapTimestampIter = 0;
 
-	if (oActivity.lap_timestamp_list === null || oActivity.lap_timestamp_list.length === 0) {
+	if (!oActivity || !oActivity.lap_timestamp_list || oActivity.lap_timestamp_list.length === 0) {
 		lapTimestamps = [];
 		lastLapTimestamp = null;
 	} else {
@@ -1119,7 +1125,7 @@ var calcLaps = function (type, activityID, zones, userUnit) {
 
 	var samples = 0;
 	var lastDistance = 0;
-	var lastTimestamp = activity[0].date;
+	var lastTimestamp = activity.length > 0 && activity[0].date;
 	var lastRSS = 0;
 
 	var lapSwitch = false;

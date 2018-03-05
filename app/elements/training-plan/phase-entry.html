@@ -1,6 +1,12 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+
 <dom-module id="phase-entry">
     <template>
-        <style>
+        <style include="iron-flex">
             :host {
                 width: 100%;
             }
@@ -20,7 +26,7 @@
                     display: none;
                 };
             }
-            input[is="iron-input"] {
+            .iron-input {
                 font: inherit;
                 font-size: 14px;
                 outline: none;
@@ -40,12 +46,16 @@
             <p>Phase {{num}}:</p>
             <paper-input id="phase-name" label="Name" placeholder="e.g. Foundation Phase" value="{{name}}" char-counter maxlength="30"></paper-input>
             <paper-input-container always-float-label>
-                <div class="layout horizontal">
+                <div class="layout horizontal" slot="input">
                     <p>Week</p>
-                    <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekStart}}">
+                    <iron-input allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekStart}}">
+                        <input class="iron-input" maxlength="2" size="2">
+                    </iron-input>
                     <p class="separator"> - </p>
                     <p>Week</p>
-                    <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekEnd}}">
+                    <iron-input allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{weekEnd}}">
+                        <input class="iron-input" maxlength="2" size="2">
+                    </iron-input>
                 </div>
             </paper-input-container>
             <paper-input class="flex" label="Summary" placeholder="e.g. The purpose of this phase is to ..." value="{{summary}}" char-counter maxlength="200"></paper-input>
@@ -53,34 +63,35 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'phase-entry',
-            properties: {
-                num: {
-                    type: Number,
-                    value: 1
-                },
-                weekStart: {
-                    type: Number,
-                    value: 1,
-                },
-                weekEnd: {
-                    type: Number,
-                    value: 4,
-                },
-                name: {
-                    type: String,
-                    value: ''
-                },
-                summary: {
-                    type: String,
-                    value: ''
-                },
-            },
-            ready: function () {
-            },
+        class PhaseEntry extends Polymer.Element {
+            static get is() { return 'phase-entry'; }
+
+            static get properties() {
+                return {
+                    num: {
+                        type: Number,
+                        value: 1
+                    },
+                    weekStart: {
+                        type: Number,
+                        value: 1,
+                    },
+                    weekEnd: {
+                        type: Number,
+                        value: 4,
+                    },
+                    name: {
+                        type: String,
+                        value: ''
+                    },
+                    summary: {
+                        type: String,
+                        value: ''
+                    }
+                };
+            }
             // return data in internal format
-            data: function () {
+            data() {
                 let data = {
                     phase_seq: parseInt(this.num)-1,
                     phase_name: this.name,
@@ -89,8 +100,8 @@
                     phase_summary: this.summary
                 };
                 return data;
-            },
-            setData: function (data) {
+            }
+            setData(data) {
                 if (Object.keys(data).length <= 0) {
                     return;
                 }
@@ -98,9 +109,9 @@
                 this.weekStart = data.phase_start_week;
                 this.weekEnd = data.phase_end_week;
                 this.summary = data.phase_summary;
-            },
-        });
-
+            }
+        }
+        window.customElements.define(PhaseEntry.is, PhaseEntry);
     </script>
 
 </dom-module>

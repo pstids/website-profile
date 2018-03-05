@@ -1,6 +1,15 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="./segment-entry.html">
+
 <dom-module id="block-entry">
     <template>
-        <style>
+        <style include="iron-flex iron-flex-alignment">
             :host {
                 width: 100%;
             }
@@ -54,34 +63,42 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'block-entry',
-            properties: {
-                num: {
-                    type: Number,
-                    value: 0
-                },
-                repeatCount: {
-                    type: Number,
-                    value: 1
-                },
-                segmentCount: {
-                    type: Number,
-                    value: 0
-                },
-                contentSelected: {
-                    type: String,
-                    value: 'unfold'
-                }
-            },
-            ready: function () {
+        class BlockEntry extends Polymer.Element {
+            static get is() { return 'block-entry'; }
+            static get properties() {
+                return {
+                    num: {
+                        type: Number,
+                        value: 0
+                    },
+                    repeatCount: {
+                        type: Number,
+                        value: 1
+                    },
+                    segmentCount: {
+                        type: Number,
+                        value: 0
+                    },
+                    contentSelected: {
+                        type: String,
+                        value: 'unfold'
+                    }
+                };
+            }
+            ready() {
+                super.ready();
                 this.segmentCount = 0;
-                app.clearChildren(this.$.segments);
+                this.clearChildren(this.$.segments);
                 this.$.repeatcount.style.visibility = 'hidden';
-            },
-            data: function () {
+            }
+            clearChildren(node) {
+                while (node.firstChild) {
+                    node.removeChild(node.firstChild);
+                }
+            }
+            data() {
                 let segments = [];
-                let segmentsContainer = Polymer.dom(this.$.segments).children;
+                let segmentsContainer = this.$.segments.children;
                 for (var i = 0; i < segmentsContainer.length; i++) {
                     segments.push(segmentsContainer[i].data());
                 }
@@ -91,10 +108,10 @@
                     segments: segments,
                 };
                 return data;
-            },
-            setData: function (blockData) {
+            }
+            setData(blockData) {
                 console.log('block data: ', blockData);
-                app.clearChildren(this.$.segments);
+                this.clearChildren(this.$.segments);
                 if (Object.keys(blockData).length <= 0) {
                     return;
                 }
@@ -110,33 +127,34 @@
                 for (let segment of blockData.segments) {
                     this._addSegment(segment);
                 }
-            },
-            _repeatCheckHandler: function () {
+            }
+            _repeatCheckHandler() {
                 if (this.$.repeatcheck.checked) {
                     this.$.repeatcount.style.visibility = 'visible';
                 } else {
                     this.$.repeatcount.style.visibility = 'hidden';
                 }
-            },
-            _addSegment: function (segData) {
+            }
+            _addSegment(segData) {
                 var segmentEntry = document.createElement('segment-entry');
                 this.segmentCount += 1;
                 segmentEntry.segmentNum = this.segmentCount;
                 segmentEntry.setData(segData);
-                Polymer.dom(this.$.segments).appendChild(segmentEntry);
-            },
-            _addSegmentHandler: function () {
+                util.patchClasses(segmentEntry, this);
+                this.$.segments.appendChild(segmentEntry);
+            }
+            _addSegmentHandler() {
                 this._addSegment({});
-            },
-            _removeSegmentHandler: function () {
-                let segments = Polymer.dom(this.$.segments);
+            }
+            _removeSegmentHandler() {
+                let segments = this.$.segments;
                 if (segments.children.length <= 0) {
                     return;
                 }
                 segments.removeChild(segments.lastChild);
                 this.segmentCount -= 1;
-            },
-            _blockFoldHandler: function () {
+            }
+            _blockFoldHandler() {
                 switch (this.$.fold.icon) {
                     case 'arrow-drop-up':
                         this.$.fold.icon = 'arrow-drop-down';
@@ -148,8 +166,8 @@
                         break;
                 }
             }
-        });
-
+        }
+        window.customElements.define(BlockEntry.is, BlockEntry);
     </script>
 
 </dom-module>

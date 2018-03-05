@@ -1,45 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
 <dom-module id="plan-view">
-<style>
-	:host {
-		@apply(--layout-flex);
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-		max-width: 100%;
-	}
-	[data-tp="chart"] {
-		color: #ffffff;
-		height: 50vh;
-		padding: 0 0 0 35px;
-		@apply(--layout-flex-3);
-	}
-	[data-tp="plan"] {
-		@apply(--layout-flex);
-		background-color: #262626;
-		color: white;
-		position: relative;
-		overflow: hidden;
-		border: 1px solid #4D4D4D;
-		height: 50vh;
-		max-width: 500px;
-	}
-	[data-tp="plan"] p {
-		font-size: 13px;
-		line-height: 22px;
-		padding: 14px;
-		margin: 0;
-	}
-	[data-tp="description"] {
-		@apply(--layout-wrap);
-		@apply(--layout-vertical);
-	}
-	h1.header {
-		@apply(--header);
-		padding-top: 14px;
-		padding-left: 14px;
-	}
-</style>
 <template>
+	<style>
+		:host {
+			@apply --layout-flex;
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-center-justified;
+			max-width: 100%;
+		}
+		[data-tp="chart"] {
+			color: #ffffff;
+			height: 50vh;
+			padding: 0 0 0 35px;
+			@apply --layout-flex-3;
+		}
+		[data-tp="plan"] {
+			@apply --layout-flex;
+			background-color: #262626;
+			color: white;
+			position: relative;
+			overflow: hidden;
+			border: 1px solid #4D4D4D;
+			height: 50vh;
+			max-width: 500px;
+		}
+		[data-tp="plan"] p {
+			font-size: 13px;
+			line-height: 22px;
+			padding: 14px;
+			margin: 0;
+		}
+		[data-tp="description"] {
+			@apply --layout-wrap;
+			@apply --layout-vertical;
+		}
+		h1.header {
+			@apply --header;
+			padding-top: 14px;
+			padding-left: 14px;
+		}
+	</style>
 	<div data-tp="chart"></div>
 	<div data-tp="plan">
 		<h1 class="header">{{day_title}}</h1>
@@ -49,30 +53,40 @@
 	</div>
 </template>
 <script>
-Polymer({
-	is: 'plan-view',
-	ready: function () {
+class PlanView extends Polymer.Element {
+	static get is() { return 'plan-view'; }
+
+	static get properties() {
+		return {
+			day_description: String,
+			day_rss: String,
+			day_title: String,
+		};
+	}
+
+	ready() {
+		super.ready();
 		this.dateHash = '';
 
 		this.day_rss = '';
 
-		this.planList = this.querySelector('[data-tp="plan"]');
-		this.planChart = this.querySelector('[data-tp="chart"]');
-		this.planDescription = this.querySelector('[data-tp="description"]');
+		this.planList = this.root.querySelector('[data-tp="plan"]');
+		this.planChart = this.root.querySelector('[data-tp="chart"]');
+		this.planDescription = this.root.querySelector('[data-tp="description"]');
 
 		Ps.initialize(this.planList);
-	},
-	setStartTime: function (start_time) {
+	}
+	setStartTime(start_time) {
 		this.dateHash = moment.unix(start_time).format('YYYYMMDD');
 		this.loadTraining();
 		this.processOverview();
-	},
-	setStartHash: function (dateHash) {
+	}
+	setStartHash(dateHash) {
 		this.dateHash = dateHash;
 		this.loadTraining();
 		this.processOverview();
-	},
-	loadTraining: function () {
+	}
+	loadTraining() {
 		this.planList.scrollTop = 0;
 		Ps.update(this.planList);
 
@@ -86,8 +100,8 @@ Polymer({
 		} else {
 			this.classList.add('hidden');
 		}
-	},
-	processOverview: function () {
+	}
+	processOverview() {
 		this.chartData = [];
 
 		var workout = trainingPlan.getDay(this.dateHash);
@@ -161,16 +175,16 @@ Polymer({
 			}
 		}
 		this.loadOverview();
-	},
-	chartToggle: function (toggle) {
+	}
+	chartToggle(toggle) {
 		if (toggle) {
 			this.planChart.classList.remove('hidden');
 		} else {
 			this.planChart.classList.add('hidden');
 		}
-	},
+	}
 	/*global AmCharts*/
-	loadOverview: function () {
+	loadOverview() {
 	   this.chart = AmCharts.makeChart(this.planChart, {
 			type: 'serial',
 			theme: 'stryd',
@@ -212,7 +226,7 @@ Polymer({
 					return '';
 				},
 				fillColors: ['#f4931f', '#f6a84b', '#f8be78', '#fad3a5', '#fce9d2']
-				
+
 			}],
 			autoMargins: false,
 			dataDateFormat: 'YYYY-MM-DD',
@@ -255,8 +269,8 @@ Polymer({
 							if (segment.segment_desc === undefined) {
 								return '';
 							}
-							while (Polymer.dom(this.planDescription).firstChild) {
-								Polymer.dom(this.planDescription).removeChild(Polymer.dom(this.planDescription).firstChild);
+							while (this.planDescription.firstChild) {
+								this.planDescription.removeChild(this.planDescription.firstChild);
 							}
 							this.planDescription.insertAdjacentHTML('beforeend', `${title}<p style='font-size: 13px;line-height: 22px;padding: 0 14px 14px 14px;margin: 0;'>${segment.segment_desc}</p>`);
 							return `${title}`;
@@ -290,7 +304,8 @@ Polymer({
 			dataProvider: this.chartData
 		});
 	}
-});
+}
+window.customElements.define(PlanView.is, PlanView);
 </script>
 </dom-module>
 

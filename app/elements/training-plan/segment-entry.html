@@ -1,6 +1,19 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+
 <dom-module id="segment-entry">
     <template>
-        <style>
+        <style include="iron-flex iron-flex-factors iron-flex-alignment">
             :host {
                 width: 100%;
             }
@@ -40,10 +53,10 @@
                 padding-right: 1vw;
             }
             .colon {
-                @apply(--paper-font-caption);
+                @apply --paper-font-caption;
                 font-weight: 900;
             }
-            input[is="iron-input"] {
+            .iron-input {
                 font: inherit;
                 font-size: 16px;
                 outline: none;
@@ -63,23 +76,29 @@
                 </paper-radio-group>
                 <iron-pages selected="{{durationType}}" attr-for-selected="type">
                     <paper-input-container type="time" always-float-label attr-for-value="value">
-                        <label>Duration (h:m:s)</label>
-                        <div style="display: inline-block;" class="layout horizontal">
-                            <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.hour}}">
+                        <label slot="input">Duration (h:m:s)</label>
+                        <div style="display: inline-block;" class="layout horizontal" slot="input">
+                            <iron-input allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.hour}}">
+                                <input class="iron-input" maxlength="2" size="2">
+                            </iron-input>
                             <span class="colon">:</span>
-                            <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.minute}}">
+                            <iron-input allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.minute}}">
+                                <input class="iron-input" maxlength="2" size="2">
+                            </iron-input>
                             <span class="colon">:</span>
-                            <input is="iron-input" maxlength="2" size="2" allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.second}}">
+                            <iron-input allowed-pattern="[0-9]" prevent-invalid-input bind-value="{{durationTime.second}}">
+                                <input class="iron-input" maxlength="2" size="2">
+                            </iron-input>
                         </div>
                     </paper-input-container>
                     <div type="distance">
                         <paper-input label="Distance" placeholder="e.g. 3" allowed-pattern="[0-9]|." value="{{durationDistance}}" class="with-unit-dropdown">
-                            <paper-dropdown-menu suffix id="unit" label="Unit" no-animations no-label-float>
-                                <paper-menu class="dropdown-content" attr-for-selected="unit" selected="{{distanceUnitSelected}}">
+                            <paper-dropdown-menu suffix id="unit" label="Unit" no-animations no-label-float slot="suffix">
+                                <paper-listbox class="dropdown-content" attr-for-selected="unit" selected="{{distanceUnitSelected}}" slot="dropdown-content">
                                     <paper-item unit="mile">Miles</paper-item>
                                     <paper-item unit="km">KM</paper-item>
                                     <paper-item unit="meter">Meters</paper-item>
-                                </paper-menu>
+                                </paper-listbox>
                             </paper-dropdown-menu>
                         </paper-input>
                     </div>
@@ -93,25 +112,25 @@
                 </paper-radio-group>
                 <iron-pages attr-for-selected="type" selected="{{intensityType}}">
                     <paper-dropdown-menu type="zone" label="" no-animations>
-                        <paper-menu class="dropdown-content" selected="{{zoneSelected}}">
+                        <paper-listbox class="dropdown-content" selected="{{zoneSelected}}" slot="dropdown-content">
                             <paper-item>Zone 1 (Easy/recovery)</paper-item>
                             <paper-item>Zone 2 (Tempo/marathon)</paper-item>
                             <paper-item>Zone 3 (Threshold)</paper-item>
                             <paper-item>Zone 4 (Interval)</paper-item>
                             <paper-item>Zone 5 (Repetition)</paper-item>
-                        </paper-menu>
+                        </paper-listbox>
                     </paper-dropdown-menu>
                     <div class="layout horizontal end" type="percentage">
                         <paper-input label="Low" placeholder="0" class="with-unit" allowed-pattern="[0-9]" value="{{intensityPercent.low}}">
-                            <div suffix>%</div>
+                            <div suffix slot="suffix">%</div>
                         </paper-input>
                         <p class="separator">TO</p>
                         <paper-input label="High" placeholder="0" class="with-unit" allowed-pattern="[0-9]" value="{{intensityPercent.high}}">
-                            <div suffix>%</div>
+                            <div suffix slot="suffix">%</div>
                         </paper-input>
                     </div>
                     <paper-dropdown-menu label="" no-animations type="pace">
-                        <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{paceSelected}}">
+                        <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{paceSelected}}" slot="dropdown-content">
                             <paper-item name="mile">Mile pace</paper-item>
                             <paper-item name="5k">5K pace</paper-item>
                             <paper-item name="10k">10K pace</paper-item>
@@ -119,7 +138,7 @@
                             <paper-item name="recovery">Recovery(Easy) pace</paper-item>
                             <paper-item name="halfmarathon">Half Marathon</paper-item>
                             <paper-item name="marathon">Marathon</paper-item>
-                        </paper-menu>
+                        </paper-listbox>
                     </paper-dropdown-menu>
                 </iron-pages>
             </div>
@@ -131,64 +150,65 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'segment-entry',
-            properties: {
-                durationTime: {
-                    type: Object,
-                    value: () => {
-                        return {hour: 0, minute: 0, second: 0};
+        class SegmentEntry extends Polymer.Element {
+            static get is() { return 'segment-entry'; }
+
+            static get properties() {
+                return {
+                    durationTime: {
+                        type: Object,
+                        value: () => {
+                            return {hour: 0, minute: 0, second: 0};
+                        }
+                    },
+                    intensityPercent: {
+                        type: Object,
+                        value: () => {
+                            return {low: 0, high: 0};
+                        }
+                    },
+                    restTime: {
+                        type: Object,
+                        value: () => {
+                            return {minute: 0, second: 0};
+                        }
+                    },
+                    durationType: {
+                        type: String,
+                        value: 'time'
+                    },
+                    intensityType: {
+                        type: String,
+                        value: 'zone'
+                    },
+                    segmentNum: {
+                        type: Number,
+                        value: 0
+                    },
+                    zoneSelected: {
+                        type: Number,
+                        value: 1
+                    },
+                    paceSelected: {
+                        type: String,
+                        value: 'mile'
+                    },
+                    durationDistance: {
+                        type: Number,
+                        value: 0
+                    },
+                    distanceUnitSelected: {
+                        type: String,
+                        value: 'mile'
+                    },
+                    description: {
+                        type: String,
+                        value: ''
                     }
-                },
-                intensityPercent: {
-                    type: Object,
-                    value: () => {
-                        return {low: 0, high: 0};
-                    }
-                },
-                restTime: {
-                    type: Object,
-                    value: () => {
-                        return {minute: 0, second: 0};
-                    }
-                },
-                durationType: {
-                    type: String,
-                    value: 'time'
-                },
-                intensityType: {
-                    type: String,
-                    value: 'zone'
-                },
-                segmentNum: {
-                    type: Number,
-                    value: 0
-                },
-                zoneSelected: {
-                    type: Number,
-                    value: 1
-                },
-                paceSelected: {
-                    type: String,
-                    value: 'mile'
-                },
-                durationDistance: {
-                    type: Number,
-                    value: 0
-                },
-                distanceUnitSelected: {
-                    type: String,
-                    value: 'mile'
-                },
-                description: {
-                    type: String,
-                    value: ''
-                }
-            },
-            ready: function () {
-            },
+                };
+            }
             // return data in internal format
-            data: function () {
+            data() {
                 this.durationTime = {
                     hour: parseInt(this.durationTime.hour),
                     minute: parseInt(this.durationTime.minute),
@@ -214,8 +234,8 @@
                     pace_selected: this.paceSelected,
                 };
                 return data;
-            },
-            setData: function (data) {
+            }
+            setData(data) {
                 if (Object.keys(data).length <= 0) {
                     return;
                 }
@@ -228,9 +248,9 @@
                 this.paceSelected = data.pace_selected;
                 this.durationDistance = data.duration_distance;
                 this.distanceUnitSelected = data.distance_unit_selected;
-            },
-        });
-
+            }
+        }
+        window.customElements.define(SegmentEntry.is, SegmentEntry);
     </script>
 
 </dom-module>

@@ -1,76 +1,85 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="./time-in-zone.html">
+
 <dom-module id="lap-overview">
-	<style>
-		h1.header {
-			@apply(--header);
-		}
-		h2.subtitle {
-			@apply(--subtitle);
-		}
-		.title {
-			padding: 20px;
-			@apply(--layout-end);
-		}
-		table {
-			color: white;
-			border: 1px solid #4D4D4D;
-			width: 100%;
-		}
-		table thead {
-			background-color: #222222;
-		}
-		table tbody tr, table thead tr {
-			display: flex;
-			flex-direction: row;
-			border-bottom: 1px solid #4D4D4D;
-			cursor: pointer;
-		}
-		table tbody tr:last-child {
-			border-bottom: 0;
-		}
-		table th, table td {
-			flex: 1;
-			padding: 6px 0;
-			text-align: center;
-		}
-
-		paper-input input {
-			text-align: center !important;
-		}
-
-		paper-dropdown-menu.test-selector {
-			--paper-input-container-label: {
-				color: white;
-				font-weight: bold;
-			};
-			--paper-input-container-input: {
-				color: white;
-				font-style: normal;
-			};
-			/* no underline */
-			--paper-input-container-underline: {
-				color: white;
-			};
-		}
-
-		paper-icon-button {
-			color: white;
-		}
-		svg {
-			width: 330px;
-		}
-
-		#container {
-			@apply(--layout);
-			@apply(--layout-horizontal);
-		}
-
-		@media (max-width: 1000px) {
-			#container {
-				@apply(--layout-vertical);
-			}
-		}
-	</style>
 	<template>
+		<style include="iron-flex iron-flex-factors iron-flex-alignment">
+			h1.header {
+				@apply --header;
+			}
+			h2.subtitle {
+				@apply --subtitle;
+			}
+			.title {
+				padding: 20px;
+				@apply --layout-end;
+			}
+			table {
+				color: white;
+				border: 1px solid #4D4D4D;
+				width: 100%;
+			}
+			table thead {
+				background-color: #222222;
+			}
+			table tbody tr, table thead tr {
+				display: flex;
+				flex-direction: row;
+				border-bottom: 1px solid #4D4D4D;
+				cursor: pointer;
+			}
+			table tbody tr:last-child {
+				border-bottom: 0;
+			}
+			table th, table td {
+				flex: 1;
+				padding: 6px 0;
+				text-align: center;
+			}
+
+			paper-input input {
+				text-align: center !important;
+			}
+
+			paper-dropdown-menu.test-selector {
+				--paper-input-container-label: {
+					color: white;
+					font-weight: bold;
+				};
+				--paper-input-container-input: {
+					color: white;
+					font-style: normal;
+				};
+				/* no underline */
+				--paper-input-container-underline: {
+					color: white;
+				};
+			}
+
+			paper-icon-button {
+				color: white;
+			}
+			svg {
+				width: 330px;
+			}
+
+			#container {
+				@apply --layout;
+				@apply --layout-horizontal;
+			}
+
+			@media (max-width: 1000px) {
+				#container {
+					@apply --layout-vertical;
+				}
+			}
+		</style>
 		<div id="container">
 			<div class="layout vertical flex-3">
 				<div class="layout horizontal title">
@@ -79,11 +88,11 @@
 					</div>
 					<div class="flex layout horizontal end-justified">
 						<paper-dropdown-menu class="test-selector" label="Lap Selection">
-							<paper-menu class="dropdown-content" selected="{{selected_lap}}" id="lapType">
+							<paper-listbox class="dropdown-content" selected="{{selected_lap}}" id="lapType" slot="dropdown-content">
 								<paper-item>Miles</paper-item>
 								<paper-item>Kilometers</paper-item>
 								<paper-item>Splits</paper-item>
-							</paper-menu>
+							</paper-listbox>
 						</paper-dropdown-menu>
 					</div>
 				</div>
@@ -114,15 +123,28 @@
 		</div>
 	</template>
 	<script>
-	Polymer({
-		is: 'lap-overview',
-		listeners: {
-			'tap': 'eleTap'
-		},
-		properties: {
-			lap_number: Number
-		},
-		ready: function () {
+	class LapOverview extends Polymer.GestureEventListeners(Polymer.Element) {
+		static get is() { return 'lap-overview'; }
+		static get properties() {
+			return {
+				lap_number: Number,
+				selected_lap: Number,
+			};
+		}
+		constructor() {
+			super();
+			this._eleTap = this.eleTap.bind(this);
+		}
+		connectedCallback() {
+			super.connectedCallback();
+			Polymer.Gestures.addListener(this, 'tap', this._eleTap);
+		}
+		disconnectedCallback() {
+			super.disconnectedCallback();
+			Polymer.Gestures.removeListener(this, 'tap', this._eleTap);
+		}
+		ready() {
+			super.ready();
 			this.first = true;
 			this.lapType = ['mi', 'km', 'split'];
 			this.selected_lap = 0;
@@ -175,8 +197,8 @@
 					header: 'RSS'
 				}
 			];
-		},
-		eleTap: function (e) {
+		}
+		eleTap(e) {
 			var target = e.target;
 			while (true) {
 				if (target === this.$.container) {
@@ -194,7 +216,7 @@
 					// this.tiz(lap.tiz, lap.rss);
 					// app.addGuide(lap.startTimestamp, lap.endTimestamp, lapIdx);
 
-					Polymer.dom(target.classList.add('active'));
+					target.classList.add('active');
 					return;
 				}
 				if ('parentNode' in target && target.parentNode !== null) {
@@ -203,20 +225,29 @@
 					return;
 				}
 			}
-		},
-		getLaps: function (id) {
+		}
+		getLaps(id) {
 			this.id = id;
 			var item = this.lapType[this.selected_lap];
 			app.lapProcessing(this.id, item);
-		},
-		displayLaps: function (laps) {
+		}
+		clearChildren(node) {
+			while (node.firstChild) {
+				node.removeChild(node.firstChild);
+			}
+		}
+		displayLaps(laps) {
 			this.laps = laps;
-			app.clearChildren(this.$.laps);
-			app.clearChildren(this.$.lapf);
+			this.clearChildren(this.$.laps);
+			this.clearChildren(this.$.lapf);
+			if (!laps || !laps.length) {
+				this.$.tizContainer.classList.add('hidden');
+				return;
+			}
 			var availables = this.createHeader(laps[0]);
 			for (var lap of laps) {
 				var row = this.createRow(lap, availables);
-				Polymer.dom(this.$.laps).appendChild(row);
+				this.$.laps.appendChild(row);
 			}
 			var success = this.$.tiz.setData(this.laps[0].tiz, this.laps[0].rss);
 			if (!success) {
@@ -224,8 +255,8 @@
 			} else {
 				this.$.tizContainer.classList.remove('hidden');
 			}
-		},
-		createHeader: function (row) {
+		}
+		createHeader(row) {
 			var availables = [];
 			for (var ele of this.elements) {
 				var value = row[ele.key];
@@ -233,13 +264,13 @@
 					availables.push(ele.key);
 
 					var th = document.createElement('th');
-					Polymer.dom(th).textContent = ele.header;
-					Polymer.dom(this.$.lapf).appendChild(th);
+					th.textContent = ele.header;
+					this.$.lapf.appendChild(th);
 				}
 			}
 			return availables;
-		},
-		createRow: function (row, availables) {
+		}
+		createRow(row, availables) {
 			var tr = document.createElement('tr');
 			tr.dataset.lap = row.lap;
 			for (var ele of this.elements) {
@@ -251,12 +282,13 @@
 					} else if (typeof(value) === 'number') {
 						value = value.toFixed(0);
 					}
-					Polymer.dom(td).textContent = `${value} ${ele.unit}`;
-					Polymer.dom(tr).appendChild(td);
+					td.textContent = `${value} ${ele.unit}`;
+					tr.appendChild(td);
 				}
 			}
 			return tr;
 		}
-	});
+	}
+	window.customElements.define(LapOverview.is, LapOverview);
 	</script>
 </dom-module>

@@ -1,3 +1,10 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
+
 <dom-module id="platform-connect">
     <template>
         <style>
@@ -7,10 +14,10 @@
                 padding: 5vw 15vw;
             }
             h1.title {
-                @apply(--header);
+                @apply --header;
             }
             h2.subtitle {
-                @apply(--subtitle);
+                @apply --subtitle;
             }
 
             .import {
@@ -20,26 +27,28 @@
                 margin-top: 4vw;
             }
             .authenticate {
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
-                @apply(--layout-justified);
-                @apply(--layout-wrap);
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-justified;
+                @apply --layout-wrap;
                 padding: 20px;
             }
-            .authenticate div button, .authenticate div a {
+            .authenticate div stryd-button, .authenticate div a {
                 margin: 2vw auto 0 auto;
                 font-weight: 700;
                 text-transform: uppercase;
                 display: block;
             }
 
-            .authenticate div button[data-toggle="on"] {
-                border-color: var(--warning-color);
-                color: var(--warning-color);
+            .authenticate div stryd-button[data-toggle="on"] {
+                --stryd-button-button: {
+                    border-color: var(--warning-color);
+                    color: var(--warning-color);
+                };
             }
             @media (max-width: 1000px) {
                 .authenticate {
-                    @apply(--layout-vertical);
+                    @apply --layout-vertical;
                 }
                 .authenticate > div {
                     margin-top: 20px;
@@ -57,23 +66,23 @@
             <div class="authenticate">
                 <div>
                     <a href="https://www.garmin.com">
-                        <img class="logo" src="/powercenter/images/logos/logo_garmin.png" width="150px" height="48px"/>
+                        <img class="logo" src="[[rootPath]]images/logos/logo_garmin.png" width="150px" height="48px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="garmin" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="garmin" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div data-suunto="container">
                     <a href="https://www.suunto.com">
-                        <img class="logo" src="/powercenter/images/logos/logo_suunto.png" width="150px" height="48px"/>
+                        <img class="logo" src="[[rootPath]]images/logos/logo_suunto.png" width="150px" height="48px"/>
                     </a>
-                    <button is="stryd-button" data-suunto="connect">Connect</button>
+                    <stryd-button data-suunto="connect">Connect</stryd-button>
                     <div data-suunto="authStep" class="hidden">
                         <paper-input no-label-float type="text" placeholder="Email" name="email" data-suunto="email"></paper-input>
-                        <button is="stryd-button" data-suunto="auth">Connect to Movescount</button>
+                        <stryd-button data-suunto="auth">Connect to Movescount</stryd-button>
                     </div>
-                    <a is="stryd-button" data-suunto="confirm" href="http://www.movescount.com/settings#connections" class="hidden" target="_blank">Visit Movescount to Confirm</a>
-                    <button is="stryd-button" data-suunto="fetch" class="hidden">Fetch New Workouts</button>
-                    <button is="stryd-button" data-suunto="fetching" class="hidden" disabled>Fetching</button>
-                    <button is="stryd-button" data-suunto="disconnect" class="hidden">Disconnect</button>
+                    <stryd-button data-suunto="confirm" data-href="http://www.movescount.com/settings#connections" class="hidden">Visit Movescount to Confirm</stryd-button>
+                    <stryd-button data-suunto="fetch" class="hidden">Fetch New Workouts</stryd-button>
+                    <stryd-button data-suunto="fetching" class="hidden" disabled>Fetching</stryd-button>
+                    <stryd-button data-suunto="disconnect" class="hidden">Disconnect</stryd-button>
                 </div>
                 <div style="width:150px;"></div>
             </div>
@@ -83,27 +92,27 @@
             <div class="authenticate">
                 <div class="aplatform">
                     <a href="https://www.finalsurge.com/">
-                        <img class="logo" src="/powercenter/images/logos/logo_finalsurge.png" width="114px" height="35px"/>
+                        <img class="logo" src="[[rootPath]]images/logos/logo_finalsurge.png" width="114px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="finalsurge" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="finalsurge" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div class="aplatform">
                     <a href="https://www.trainingpeaks.com">
-                        <img class="logo" src="/powercenter/images/logos/logo_tp.png" width="150px" height="35px"/>
+                        <img class="logo" src="[[rootPath]]images/logos/logo_tp.png" width="150px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="trainingpeaks" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div class="aplatform">
                     <a href="https://www.strava.com">
-                        <img class="logo" src="/powercenter/images/logos/logo_strava.png" width="150px" height="35px"/>
+                        <img class="logo" src="[[rootPath]]images/logos/logo_strava.png" width="150px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="strava" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="strava" on-click="oauthConnect">Connect</stryd-button>
                 </div>
                 <div class="aplatform">
                     <a href="https://www.2peak.com">
-                        <img class="logo" src="/powercenter/images/logos/logo_2peak.png" width="150px" height="35px"/>
+                        <img class="logo" src="[[rootPath]]images/logos/logo_2peak.png" width="150px" height="35px"/>
                     </a>
-                    <button is="stryd-button" data-toggle="off" id="2peak" on-click="oauthConnect">Connect</button>
+                    <stryd-button data-toggle="off" id="2peak" on-click="oauthConnect">Connect</stryd-button>
                 </div>
             </div>
         </div>
@@ -111,9 +120,11 @@
     </template>
     <script>
         /*jshint camelcase: false */
-        Polymer({
-            is: 'platform-connect',
-            ready: function() {
+        class PlatformConnect extends Polymer.Element {
+            static get is() { return 'platform-connect'; }
+
+            ready() {
+                super.ready();
                 this.update();
                 this.suuntoAuth();
                 document.addEventListener(
@@ -122,12 +133,12 @@
                     false
                 );
                 this.suuntoCheck();
-            },
-            notify: function (message) {
+            }
+            notify(message) {
                 this.suunto.alert.text = message;
                 this.suunto.alert.show();
-            },
-            suuntoCheck: function () {
+            }
+            suuntoCheck() {
                 if (document.visibilityState === 'visible' &&
                     !this.suunto.confirm.classList.contains('hidden')) {
                     superagent
@@ -145,19 +156,22 @@
                             }
                         });
                 }
-            },
-            suuntoAuth: function () {
+            }
+            suuntoAuth() {
                 this.suunto = {
-                    connect: this.querySelector('[data-suunto="connect"]'),
-                    email: this.querySelector('[data-suunto="email"]'),
-                    auth: this.querySelector('[data-suunto="auth"]'),
-                    authStep: this.querySelector('[data-suunto="authStep"]'),
-                    confirm: this.querySelector('[data-suunto="confirm"]'),
-                    fetch: this.querySelector('[data-suunto="fetch"]'),
-                    fetching: this.querySelector('[data-suunto="fetching"]'),
-                    alert: this.querySelector('[data-suunto="alert"]'),
-                    disconnect: this.querySelector('[data-suunto="disconnect"]')
+                    connect: this.root.querySelector('[data-suunto="connect"]'),
+                    email: this.root.querySelector('[data-suunto="email"]'),
+                    auth: this.root.querySelector('[data-suunto="auth"]'),
+                    authStep: this.root.querySelector('[data-suunto="authStep"]'),
+                    confirm: this.root.querySelector('[data-suunto="confirm"]'),
+                    fetch: this.root.querySelector('[data-suunto="fetch"]'),
+                    fetching: this.root.querySelector('[data-suunto="fetching"]'),
+                    alert: this.root.querySelector('[data-suunto="alert"]'),
+                    disconnect: this.root.querySelector('[data-suunto="disconnect"]')
                 };
+                this.suunto.confirm.addEventListener('click', e => {
+                    window.open(e.target.dataset.href, '_blank');
+                });
                 this.suunto.fetch.addEventListener('click', () => {
                     this.suunto.fetch.classList.add('hidden');
                     this.suunto.fetching.classList.remove('hidden');
@@ -214,8 +228,8 @@
                         this.suunto.connect.classList.remove('hidden');
                     });
                 });
-            },
-            oauthDisconnect: function (platform, cb) {
+            }
+            oauthDisconnect(platform, cb) {
                 superagent
                     .del(`/b/platform/oauth/${platform}`)
                     .send()
@@ -227,8 +241,8 @@
                             this.notify(res.body.message);
                         }
                     });
-            },
-            oauthConnect: function (e) {
+            }
+            oauthConnect(e) {
                 var platform = e.target.getAttribute('id');
                 var ele = this.$[platform];
                 if (this.$[platform].dataset.toggle === 'on') {
@@ -250,8 +264,8 @@
                             }
                         });
                 }
-            },
-            update: function () {
+            }
+            update() {
                 if (jwt.data.id) {
                     superagent
                         .get('/b/internal/platforms')
@@ -264,8 +278,8 @@
                             }
                         });
                 }
-            },
-            updateView: function (platforms) {
+            }
+            updateView(platforms) {
                 var oauthPlatforms = ['trainingpeaks', 'garmin', 'strava', '2peak', 'finalsurge'], verifyPlatforms = ['suunto'];
                 var platform, i;
                 for (i = 0; i < platforms.length; i++) {
@@ -276,8 +290,8 @@
                         this.verifyPlatformsController(platform);
                     }
                 }
-            },
-            oauthPlatformsController: function (platform) {
+            }
+            oauthPlatformsController(platform) {
                 if (platform.connected && platform.platform in this.$) {
                     this.$[platform.platform].dataset.toggle = 'on';
                     this.$[platform.platform].textContent = 'Disconnect';
@@ -285,8 +299,8 @@
                     this.$[platform.platform].dataset.toggle = 'off';
                     this.$[platform.platform].textContent = 'Connect';
                 }
-            },
-            verifyPlatformsController: function (platform) {
+            }
+            verifyPlatformsController(platform) {
                 if (platform.platform === 'suunto') {
                     if (platform.status === 1) {
                         this.suunto.connect.classList.add('hidden');
@@ -299,6 +313,7 @@
                     }
                 }
             }
-        });
+        }
+        window.customElements.define(PlatformConnect.is, PlatformConnect);
     </script>
 </dom-module>

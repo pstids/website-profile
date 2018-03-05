@@ -1,73 +1,82 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
+
 <dom-module id="map-summary">
-    <style>
-        section {
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout);
-        }
-        h2.subheader {
-            text-transform: uppercase;
-            color: #FFFFFF;
-            font-size: 12px;
-            margin: 0;
-        }
-        h1.header {
-            @apply(--header);
-        }
-        .seperator {
-            display: block;
-            margin: 5px 0;
-            height: 1px;
-            border-top: 1px solid #5B5B5B;
-        }
-        .summary {
-            background-color: rgba(41, 41, 39, 0.9); 
-            padding: 30px;
-            border-top-right-radius: 30px;
-            border-bottom-right-radius: 30px;
-            @apply(--layout-vertical);
-            @apply(--layout-end-justified);
-            @apply(--layout-flex-3);
-        }
-        ul.insights {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            @apply(--layout);
-            @apply(--layout-vertical);
-            color: #FFFFFF;
-            height: 460px;
-        }
-        li.insight {
-            @apply(--layout-flex);
-            @apply(--layout-horizontal);
-            margin: 10px 0;
-        }
-        .insight .info {
-            @apply(--layout-flex-9);
-            @apply(--layout-vertical);
-        }
-        .insight .icon {
-            @apply(--layout-flex);
-            @apply(--layout);
-            @apply(--layout-end-justified);
-            padding-right: 30px;
-            color: var(--primary-icon-color);
-            fill: var(--primary-icon-color);
-        }
-        .insight .icon iron-icon {
-            height: 50px;
-            width: 50px;
-        }
-        .insight .info .title {
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-        .insight .info .field {
-            font-size: 24px;
-        }
-    </style>
     <template>
+        <style>
+            section {
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout;
+            }
+            h2.subheader {
+                text-transform: uppercase;
+                color: #FFFFFF;
+                font-size: 12px;
+                margin: 0;
+            }
+            h1.header {
+                @apply --header;
+            }
+            .seperator {
+                display: block;
+                margin: 5px 0;
+                height: 1px;
+                border-top: 1px solid #5B5B5B;
+            }
+            .summary {
+                background-color: rgba(41, 41, 39, 0.9);
+                padding: 30px;
+                border-top-right-radius: 30px;
+                border-bottom-right-radius: 30px;
+                @apply --layout-vertical;
+                @apply --layout-end-justified;
+                @apply --layout-flex-3;
+            }
+            ul.insights {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                @apply --layout;
+                @apply --layout-vertical;
+                color: #FFFFFF;
+                height: 460px;
+            }
+            li.insight {
+                @apply --layout-flex;
+                @apply --layout-horizontal;
+                margin: 10px 0;
+            }
+            .insight .info {
+                @apply --layout-flex-9;
+                @apply --layout-vertical;
+            }
+            .insight .icon {
+                @apply --layout-flex;
+                @apply --layout;
+                @apply --layout-end-justified;
+                padding-right: 30px;
+                color: var(--primary-icon-color);
+                fill: var(--primary-icon-color);
+            }
+            .insight .icon iron-icon {
+                height: 50px;
+                width: 50px;
+            }
+            .insight .info .title {
+                font-size: 12px;
+                text-transform: uppercase;
+            }
+            .insight .info .field {
+                font-size: 24px;
+            }
+        </style>
         <section>
             <div class="summary">
                 <h2 class="subheader">Statistics</h2>
@@ -138,12 +147,16 @@
         </section>
     </template>
     <script>
-        Polymer({
-            is: 'map-summary',
-            ready: function () {
-                
-            },
-            addPoint: function (data) {
+        class MapSummary extends Polymer.Element {
+            static get is() { return 'map-summary'; }
+
+            static get properties() {
+                return {
+                    display: Object,
+                };
+            }
+
+            addPoint(data) {
                 if (data === null || data === {}) {
                     data = {
                         distance: 0,
@@ -159,6 +172,7 @@
                 this.notifyPath('display.heart_rate', data.heartrate);
                 this.notifyPath('display.watts', data.total_p);
             }
-        });
+        }
+        window.customElements.define(MapSummary.is, MapSummary);
     </script>
 </dom-module>

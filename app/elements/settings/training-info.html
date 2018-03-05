@@ -1,183 +1,197 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bubble-stat/bubble-stat.html">
+<link rel="import" href="../stryd-button/stryd-button.html">
+<link rel="import" href="./zone-entry.html">
+
 <dom-module id="training-info">
-<style>
-	.title {
-		@apply(--header);
-	}
-	h3 {
-		font-size: 20px;
-		color: #FFFFFF;
-		font-weight: 700;
-		text-align: center
-	}
-	p {
-		color: white;
-		line-height: 28px;
-	}
-	paper-input input {
-		text-align: center !important;
-	}
-
-	paper-dropdown-menu {
-		min-width: 20vw;
-
-		--paper-input-container-label: {
-			color: white;
-			font-weight: bold;
-		};
-		--paper-input-container-input: {
-			color: white;
-			font-style: normal;
-		};
-		/* no underline */
-		--paper-input-container-underline: {
-			color: white;
-		};
-	}
-
-	paper-icon-button {
-		color: white;
-	}
-
-	.container {
-		-webkit-transition: max-height 0.8s;
-		-moz-transition: max-height 0.8s;
-		transition: max-height 0.8s;
-		@apply(--layout-vertical);
-		@apply(--layout-center);
-	}
-	.test-input {
-		@apply(--layout-horizontal);
-		@apply(--layout-around-justified);
-		@apply(--layout-center);
-	}
-	.subtest-input {
-		padding-left: 5vw;
-		padding-right: 5vw;
-		@apply(--layout-vertical);
-		@apply(--layout-around-justified);
-		@apply(--layout-center);
-	}
-	.subtest-input .label {
-		font-weight: normal;
-		color: white;
-	}
-	.test-desc {
-		color: white;
-		@apply(--layout-vertical);
-		line-height: 200%;
-		padding: 0 8vw;
-		font-weight: lighter;
-	}
-
-	#bubbles {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-around-justified);
-		min-height: 15vw;
-		width: 60%;
-	}
-	bubble-stat {
-		--bubble-stat-wrap: {
-			width: 12vw;
-			height: 12vw;
-			position: relative;
-		};
-		--bubble-stat-border: {
-			width: 10vw;
-			height: 10vw;
-		};
-		--bubble-stat-icon: {
-			width: 1.5vw;
-			height: 1.5vw;
-		};
-	}
-
-	#zone-titles {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-around-justified);
-		width: 85%;
-	}
-	#zone-titles .title {
-		margin: 5px 20px;
-	}
-	.zones {
-		@apply(--layout-vertical);
-		width: 85%;
-	}
-	.zones zone-entry:nth-of-type(odd) {
-		background-color: rgba(20, 20, 20, 0.5);
-	}
-	.zone {
-		@apply(--layout-flex);
-		border-radius: 30px;
-		border: 1px solid white;
-		margin: 20px 0px 20px 20px;
-		padding: 20px;
-	}
-	.zone:first-child {
-		margin-left: 0px;
-	}
-	.zone.titles {
-		@apply(--layout-flex);
-	}
-
-	.entry paper-input[name] {
-		margin-left: 0;
-	}
-
-	.entry {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		margin-top: 20px;
-	}
-	.entry paper-input {
-		@apply(--layout-flex-2);
-		font-size: 20px;
-		font-weight: 700;
-		text-align: center;
-	}
-
-	.save {
-		position: fixed;
-		bottom: 30px;
-		right: 30px;
-		@apply(--layout-horizontal);
-		@apply(--layout-end-justified);
-		@apply(--layout-center);
-		cursor: pointer;
-		background-color: #262626;
-		padding: 0 0 0 30px;
-		border-radius: 40px;
-		border: 2px solid var(--paper-fab-background);
-	}
-	.save p {
-		color: white;
-		font-size: 14px;
-		margin-right: 15px;
-	}
-	.save-line {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: rgba(38, 38, 38, 0.4);
-		width: 100vw;
-		height: 100px;
-	}
-</style>
 <template>
+	<style include="iron-flex iron-flex-factors iron-flex-alignment">
+		.title {
+			@apply --header;
+		}
+		h3 {
+			font-size: 20px;
+			color: #FFFFFF;
+			font-weight: 700;
+			text-align: center
+		}
+		p {
+			color: white;
+			line-height: 28px;
+		}
+		paper-input input {
+			text-align: center !important;
+		}
+
+		paper-dropdown-menu {
+			min-width: 20vw;
+
+			--paper-input-container-label: {
+				color: white;
+				font-weight: bold;
+			};
+			--paper-input-container-input: {
+				color: white;
+				font-style: normal;
+			};
+			/* no underline */
+			--paper-input-container-underline: {
+				color: white;
+			};
+		}
+
+		paper-icon-button {
+			color: white;
+		}
+
+		.container {
+			-webkit-transition: max-height 0.8s;
+			-moz-transition: max-height 0.8s;
+			transition: max-height 0.8s;
+			@apply --layout-vertical;
+			@apply --layout-center;
+		}
+		.test-input {
+			@apply --layout-horizontal;
+			@apply --layout-around-justified;
+			@apply --layout-center;
+		}
+		.subtest-input {
+			padding-left: 5vw;
+			padding-right: 5vw;
+			@apply --layout-vertical;
+			@apply --layout-around-justified;
+			@apply --layout-center;
+		}
+		.subtest-input .label {
+			font-weight: normal;
+			color: white;
+		}
+		.test-desc {
+			color: white;
+			@apply --layout-vertical;
+			line-height: 200%;
+			padding: 0 8vw;
+			font-weight: lighter;
+		}
+
+		#bubbles {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-around-justified;
+			min-height: 15vw;
+			width: 60%;
+		}
+		bubble-stat {
+			--bubble-stat-wrap: {
+				width: 12vw;
+				height: 12vw;
+				position: relative;
+			};
+			--bubble-stat-border: {
+				width: 10vw;
+				height: 10vw;
+			};
+			--bubble-stat-icon: {
+				width: 1.5vw;
+				height: 1.5vw;
+			};
+		}
+
+		#zone-titles {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			@apply --layout-around-justified;
+			width: 85%;
+		}
+		#zone-titles .title {
+			margin: 5px 20px;
+		}
+		.zones {
+			@apply --layout-vertical;
+			width: 85%;
+		}
+		.zones zone-entry:nth-of-type(odd) {
+			background-color: rgba(20, 20, 20, 0.5);
+		}
+		.zone {
+			@apply --layout-flex;
+			border-radius: 30px;
+			border: 1px solid white;
+			margin: 20px 0px 20px 20px;
+			padding: 20px;
+		}
+		.zone:first-child {
+			margin-left: 0px;
+		}
+		.zone.titles {
+			@apply --layout-flex;
+		}
+
+		.entry paper-input[name] {
+			margin-left: 0;
+		}
+
+		.entry {
+			@apply --layout-horizontal;
+			@apply --layout-center;
+			margin-top: 20px;
+		}
+		.entry paper-input {
+			@apply --layout-flex-2;
+			font-size: 20px;
+			font-weight: 700;
+			text-align: center;
+		}
+
+		.save {
+			position: fixed;
+			bottom: 30px;
+			right: 30px;
+			@apply --layout-horizontal;
+			@apply --layout-end-justified;
+			@apply --layout-center;
+			cursor: pointer;
+			background-color: #262626;
+			padding: 0 0 0 30px;
+			border-radius: 40px;
+			border: 2px solid var(--paper-fab-background);
+		}
+		.save p {
+			color: white;
+			font-size: 14px;
+			margin-right: 15px;
+		}
+		.save-line {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: rgba(38, 38, 38, 0.4);
+			width: 100vw;
+			height: 100px;
+		}
+	</style>
 	<div data-zone="container">
 		<div id="calculate" class="container" style="margin: 5vh auto;">
 			<h1 class="title">Critical Power Test</h1>
 			<div class="layout horizontal center" style="padding: 2vw">
 				<paper-dropdown-menu label="Critical Power Test Method" no-animations>
-					<paper-menu class="dropdown-content" selected="{{selected}}">
+					<paper-listbox class="dropdown-content" selected="{{selected}}" slot="dropdown-content">
 						<paper-item>3-6 laps test</paper-item>
 						<paper-item>3-9 minutes test</paper-item>
 						<paper-item>5k estimation</paper-item>
 						<paper-item>10k estimation</paper-item>
-					</paper-menu>
+					</paper-listbox>
 				</paper-dropdown-menu>
 			</div>
 			<div>
@@ -251,7 +265,7 @@
 				</iron-pages>
 			</div>
 
-			<button is="stryd-button" on-click="calculateTrainingInfo" style="min-width: 25vw; margin: 5vh auto;">Calculate</button>
+			<stryd-button on-click="calculateTrainingInfo" style="min-width: 25vw; margin: 5vh auto;">Calculate</stryd-button>
 
 			<div class="test-desc">
 				<h3>Instructions</h3>
@@ -346,7 +360,7 @@
 				</div>
 			</div>
 			<div class="zones" id="zones"></div>
-			<button is="stryd-button" on-click="saveZones" style="min-width: 25vw;">Save</button>
+			<stryd-button on-click="saveZones" style="min-width: 25vw;">Save</stryd-button>
 		</div>
 
 		<paper-dialog id="invalid">
@@ -358,101 +372,106 @@
 	</div>
 </template>
 <script>
-Polymer({
-	is: 'training-info',
-	properties: {
-		trainingInfo: {
-			type: Object,
-			notify: true
-		},
-		paceUnit: {
-			type: String,
-			notify: true
-		},
-		selected: {
-			type: Number,
-			notify: true
-		},
-		errMsgPower: {
-			type: String,
-			readOnly: true,
-			value: 'Invalid power input!'
-		},
-		errMsgPace: {
-			type: String,
-			readOnly: true,
-			value: 'Invalid pace input!'
-		},
-		labelPower: {
-			type: String,
-			readOnly: true,
-			value: 'Power (W)'
-		},
-		labelPace: {
-			type: String,
-			readOnly: true,
-			value: 'Pace (e.g. 5:40)'
-		},
-		labelDuration: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 5:40)'
-		},
-		labelDuration5K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 23:00)'
-		},
-		labelDuration10K: {
-			type: String,
-			readOnly: true,
-			value: 'Duration (e.g. 50:40)'
-		},
-		keyTraining: {
-			type: String,
-			readOnly: true,
-			value: 'training'
-		},
-		keyCPTest: {
-			type: String,
-			readOnly: true,
-			value: 'cpTest'
-		},
-		keyLastTest: {
-			type: String,
-			readOnly: true,
-			value: 'lastTest'
-		},
-		lapTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
+class TrainingInfo extends Polymer.Element {
+	static get is() { return 'training-info'; }
+
+	static get properties() {
+		return {
+			trainingInfo: {
+				type: Object,
+				notify: true
+			},
+			paceUnit: {
+				type: String,
+				notify: true
+			},
+			selected: {
+				type: Number,
+				notify: true
+			},
+			errMsgPower: {
+				type: String,
+				readOnly: true,
+				value: 'Invalid power input!'
+			},
+			errMsgPace: {
+				type: String,
+				readOnly: true,
+				value: 'Invalid pace input!'
+			},
+			labelPower: {
+				type: String,
+				readOnly: true,
+				value: 'Power (W)'
+			},
+			labelPace: {
+				type: String,
+				readOnly: true,
+				value: 'Pace (e.g. 5:40)'
+			},
+			labelDuration: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 5:40)'
+			},
+			labelDuration5K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 23:00)'
+			},
+			labelDuration10K: {
+				type: String,
+				readOnly: true,
+				value: 'Duration (e.g. 50:40)'
+			},
+			keyTraining: {
+				type: String,
+				readOnly: true,
+				value: 'training'
+			},
+			keyCPTest: {
+				type: String,
+				readOnly: true,
+				value: 'cpTest'
+			},
+			keyLastTest: {
+				type: String,
+				readOnly: true,
+				value: 'lastTest'
+			},
+			lapTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			minuteTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			distanceTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
+			},
+			customTestResult: {
+				type: Object,
+				notify: true,
+				value: function () {
+					return {};
+				}
 			}
-		},
-		minuteTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
-			}
-		},
-		distanceTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
-			}
-		},
-		customTestResult: {
-			type: Object,
-			notify: true,
-			value: function () {
-				return {};
-			}
-		},
-	},
-	ready: function () {
+		};
+	}
+	ready() {
+		super.ready();
+
 		if (!jwt.hasToken) {
 			return;
 		}
@@ -485,8 +504,8 @@ Polymer({
 		} else {
 			this.selected = testSelected;
 		}
-	},
-	fetchTraining: function () {
+	}
+	fetchTraining() {
 		var storage = localStorage.getItem(this.keyTraining);
 		if (
 			storage &&
@@ -523,9 +542,9 @@ Polymer({
 				}
 				//toast(text);
 			});
-	},
+	}
 
-	loadTestResult: function () {
+	loadTestResult() {
 		let r = localStorage.getItem(this.keyCPTest);
 		if (
 			!r ||
@@ -539,17 +558,23 @@ Polymer({
 		this.distanceTestResult = result.distance;
 		this.minuteTestResult = result.minute;
 		this.customTestResult = result.custom;
-	},
+	}
 
-	addZone: function (zone) {
+	addZone(zone) {
 		var zoneEntry = document.createElement('zone-entry');
 		zoneEntry.import(zone);
+		util.patchClasses(zoneEntry, this);
 		this.$.zones.appendChild(zoneEntry);
-	},
-	clearZones: function () {
-		app.clearChildren(this.$.zones);
-	},
-	saveZones: function () {
+	}
+	clearChildren(node) {
+		while (node.firstChild) {
+			node.removeChild(node.firstChild);
+		}
+	}
+	clearZones() {
+		this.clearChildren(this.$.zones);
+	}
+	saveZones() {
 		var zones = [];
 		for (var child of this.$.zones.children) {
 			zones.push(child.export(user.data.units));
@@ -577,8 +602,8 @@ Polymer({
 				}
 				toast(text);
 			});
-	},
-	calculateTrainingInfo: function () {
+	}
+	calculateTrainingInfo() {
 		let results = [];
 		let keys = [];
 		let speedCoeff = 1;
@@ -765,8 +790,8 @@ Polymer({
 				}
 				toast(text);
 			});
-	},
-	parseTrainingInfo: function (info) {
+	}
+	parseTrainingInfo(info) {
 		if (
 			!info ||
 			info === 'null' ||
@@ -808,8 +833,8 @@ Polymer({
 				unit: 'Watts'
 			}
 		};
-		this.querySelector('[type="pace"]').setData(pace);
-		this.querySelector('[type="power"]').setData(power);
+		this.root.querySelector('[type="pace"]').setData(pace);
+		this.root.querySelector('[type="power"]').setData(power);
 
 		// For now we only update 3/6 laps test result because it's the only test whose result
 		// could come from outside source
@@ -844,6 +869,7 @@ Polymer({
 			}
 		}
 	}
-});
+}
+window.customElements.define(TrainingInfo.is, TrainingInfo);
 </script>
 </dom-module>

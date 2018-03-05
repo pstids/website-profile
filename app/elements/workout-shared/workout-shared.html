@@ -1,27 +1,34 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+
 <dom-module id="workout-shared">
-    <style>
-        :host {
-            position: absolute;
-            right: 0;
-            background-color: rgba(34, 34, 34, 0.6);
-            height: auto;
-            margin-top: 5%;
-            border-radius: 40px 0 0 40px;
-            padding: 20px;
-            width: 200px;
-        }
-        .text {
-            line-height: 30px;
-            font-size: 18px;
-            color: white;
-        }
-        img {
-            border-radius: 50%;
-            width: auto;
-            height: 60px;
-        }
-    </style>
     <template>
+        <style include="iron-flex">
+            :host {
+                position: absolute;
+                right: 0;
+                background-color: rgba(34, 34, 34, 0.6);
+                height: auto;
+                margin-top: 5%;
+                border-radius: 40px 0 0 40px;
+                padding: 20px;
+                width: 200px;
+            }
+            .text {
+                line-height: 30px;
+                font-size: 18px;
+                color: white;
+            }
+            img {
+                border-radius: 50%;
+                width: auto;
+                height: 60px;
+            }
+        </style>
         <div class="layout vertical shared">
             <div class="layout horizontal">
                 <img src="{{userImage}}">
@@ -33,40 +40,47 @@
         </div>
     </template>
     <script>
-        Polymer({
-            is: 'workout-shared',
-            properties: {
-                activity: Object,
-                runDate: String
-            },
-            ready: function () {
+        class WorkoutShared extends Polymer.Element {
+            static get is() { return 'workout-shared'; }
+
+            static get properties() {
+                return {
+                    activity: Object,
+                    runDate: String,
+                    userImage: String,
+                    userName: String,
+                };
+            }
+            ready() {
+                super.ready();
                 this.user = {};
                 this.activity = {};
                 this.userName = '';
-                this.defaultURL = 'https://www.stryd.com/powercenter/images/favicon.png';
+                this.defaultURL = `${this.rootPath}images/favicon.png`;
                 this.userImage = this.defaultURL;
-            },
-            getImage: function (user) {
+            }
+            getImage(user) {
                 if ('photo' in user && user.photo !== '' && user.photo !== undefined) {
                     return user.photo;
                 } else {
                     return this.defaultURL;
                 }
-            },
-            fetchUser: function (activity) {
+            }
+            fetchUser(activity) {
                 this.user.fullname = activity.name;
                 this.userName = activity.name;
                 this.userImage = this.getImage(activity);
                 this.notifyPath('userName', activity.name);
                 this.notifyPath('userImage', this.getImage(activity));
-            },
-            setData: function (activity) {
+            }
+            setData(activity) {
                 this.activity = activity;
                 this.fetchUser(activity);
                 this.runDate = moment
                     .unix(activity.start_time)
                     .format('LL');
             }
-        });
+        }
+        window.customElements.define(WorkoutShared.is, WorkoutShared);
     </script>
 </dom-module>

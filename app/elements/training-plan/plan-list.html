@@ -1,8 +1,14 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
 <dom-module id="plan-list">
     <template>
-        <style>
-            :host {
-            }
+        <style include="iron-flex iron-flex-alignment">
             paper-button {
                 min-width: 10vw;
                 color: var(--primary-color);
@@ -24,7 +30,7 @@
                 <template is="dom-repeat" items="{{plans}}">
                     <div class="layout horizontal center">
                         <div>{{index}}.</div>
-                        <paper-item class="flex"><a href="/powercenter/plan/{{item.plan_id}}">{{item.name}}</a></paper-item>
+                        <paper-item class="flex"><a href="[[rootPath]]plan/{{item.plan_id}}">{{item.name}}</a></paper-item>
                     </div>
                 </template>
             </paper-listbox>
@@ -33,14 +39,18 @@
     </template>
 
     <script>
-        Polymer({
-            is: 'plan-list',
-            properties: {
-                plans: {
-                    type: Array
-                }
-            },
-            ready: function () {
+        class PlanList extends Polymer.Element {
+            static get is() { return 'plan-list'; }
+
+            static get properties() {
+                return {
+                    plans: {
+                        type: Array
+                    }
+                };
+            }
+            ready() {
+                super.ready();
                 superagent
                     .get('/b/api/v1/training/plan/all')
                     .set('Accept', 'application/json')
@@ -55,12 +65,13 @@
                             toast('Failed to fetch your training plans. Please try again later');
                         }
                     });
-            },
-            onAddPlan: function () {
+            }
+            onAddPlan() {
                 let ID = (new Date()).valueOf() + Math.ceil(Math.random() * 97);
                 page(`/plan/${ID}`);
             }
-        });
+        }
+        window.customElements.define(PlanList.is, PlanList);
 
     </script>
 

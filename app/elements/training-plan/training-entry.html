@@ -1,8 +1,20 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="./block-entry.html">
+
 <dom-module id="training-entry">
   <template>
-    <style>
-      :host {
-      }
+    <style include="iron-flex iron-flex-alignment">
       paper-dialog#entry {
         min-width: 75vw;
         min-height: 50vh;
@@ -41,7 +53,7 @@
                         value="{{planObjective}}" max-rows="3">
         </paper-textarea>
         <paper-dropdown-menu class="" label="Run Type" no-animations>
-          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}">
+          <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{runTypeSelected}}" slot="dropdown-content">
             <paper-item name="easy">Easy</paper-item>
             <paper-item name="long">Long</paper-item>
             <paper-item name="fartlek">Fartlek</paper-item>
@@ -52,15 +64,15 @@
             <paper-item name="pace">Pace</paper-item>
             <paper-item name="race">Race</paper-item>
             <paper-item name="other">Other</paper-item>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu class="" label="Surface Type" no-animations>
-          <paper-menu class="dropdown-content" attr-for-selected="name" selected="{{surfaceSelected}}">
+          <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{surfaceSelected}}" slot="dropdown-content">
             <paper-item name="hill">Hill</paper-item>
             <paper-item name="track">Track</paper-item>
             <paper-item name="road">Road</paper-item>
             <paper-item name="trail">Trail</paper-item>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
       <paper-dialog-scrollable id="scroll">
@@ -84,37 +96,40 @@
   </template>
 
   <script>
+    class TrainingEntry extends Polymer.Element {
+      static get is() { return 'training-entry'; }
 
-    Polymer({
-      is: 'training-entry',
-      properties: {
-        blockCount: {
-          type: Number,
-          value: 0
-        },
-        runTypeSelected: {
-          type: String,
-          value: 'easy'
-        },
-        surfaceSelected: {
-          type: String,
-          value: 'road'
-        },
-        day: {  // Zero-based
-          type: Number,
-          observer: '_dayChangeHandler'
-        },
-        weekday: String,
-        week: Number,
-        seq: Number,
-        planTitle: String,
-        planObjective: String,
-        planDesc: String,
-      },
-      ready: function () {
+      static get properties() {
+        return {
+          blockCount: {
+            type: Number,
+            value: 0
+          },
+          runTypeSelected: {
+            type: String,
+            value: 'easy'
+          },
+          surfaceSelected: {
+            type: String,
+            value: 'road'
+          },
+          day: {  // Zero-based
+            type: Number,
+            observer: '_dayChangeHandler'
+          },
+          weekday: String,
+          week: Number,
+          seq: Number,
+          planTitle: String,
+          planObjective: String,
+          planDesc: String,
+        };
+      }
+      ready() {
+        super.ready();
         this.getWeekDay();
-      },
-      getWeekDay: function () {
+      }
+      getWeekDay() {
         switch (this.day) {
           case 0:
             this.weekday = 'Monday';
@@ -138,15 +153,15 @@
             this.weekday = 'Sunday';
             break;
         }
-      },
-      set: function(internalData, week, day, seq) {
+      }
+      set(internalData, week, day, seq) {
         // Reset all info
         this.runTypeSelected = 'easy';
         this.planTitle = '';
         this.planObjective = '';
         this.planDesc = '';
         this.blockCount = 0;
-        let blockNode = Polymer.dom(this.$.blocks);
+        let blockNode = this.$.blocks;
         while (blockNode.firstChild) {
           blockNode.removeChild(blockNode.firstChild);
         }
@@ -168,21 +183,21 @@
         for (let block of internalData.blocks) {
           this._addBlock(block);
         }
-      },
-      open: function () {
+      }
+      open() {
         this.$.entry.open();
-      },
+      }
 
-      _dayChangeHandler: function () {
+      _dayChangeHandler() {
         this.getWeekDay();
-      },
-      _save: function () {
+      }
+      _save() {
         let blocks = [];
-        let blockContainer = Polymer.dom(this.$.blocks).children;
+        let blockContainer = this.$.blocks.children;
         for (var i = 0; i < blockContainer.length; i++) {
           blocks.push(blockContainer[i].data());
         }
-        this.fire('training-input', {
+        this.dispatchEvent(new CustomEvent('training-input', {detail: {
           workout_title: this.planTitle,
           workout_day: (this.week - 1) * 7 + this.day,
           workout_seq: this.seq,
@@ -192,29 +207,30 @@
           workout_duration: 100,  // TODO
           workout_surface: this.surfaceSelected,
           blocks: blocks
-        });
-      },
-      _addBlock: function (blockData) {
+        }, bubbles: true, composed: true}));
+      }
+      _addBlock(blockData) {
         var blockEntry = document.createElement('block-entry');
         this.blockCount += 1;
         blockEntry.num = this.blockCount;
         blockEntry.setData(blockData);
-        Polymer.dom(this.$.blocks).appendChild(blockEntry);
+        util.patchClasses(blockEntry, this);
+        this.$.blocks.appendChild(blockEntry);
         this._save();
-      },
-      _addBlockHandler: function () {
+      }
+      _addBlockHandler() {
         this._addBlock({});
-      },
-      _removeBlockHandler: function () {
-        let blocks = Polymer.dom(this.$.blocks);
+      }
+      _removeBlockHandler() {
+        let blocks = this.$.blocks;
         if (blocks.children.length <= 0) {
           return;
         }
         blocks.removeChild(blocks.lastChild);
         this.blockCount -= 1;
-      },
-    });
-
+      }
+    }
+    window.customElements.define(TrainingEntry.is, TrainingEntry);
   </script>
 
 </dom-module>

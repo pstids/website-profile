@@ -1,65 +1,72 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+
 <dom-module id="plan-segment">
-	<style>
-		:host {
-			@apply(--layout-vertical);
-			border-bottom: 1px solid #4D4D4D;
-			background-color: #262626;
-			padding: 10px;
-			box-sizing: border-box;
-		}
-		.insight {
-			@apply(--layout-horizontal);
-			@apply(--layout-flex);
-			@apply(--layout-center);
-			z-index: 1;
-		}
-		.insight .info {
-			@apply(--layout-vertical);
-		}
-		.insight .title {
-			@apply(--layout-horizontal);
-			font-size: 10px;
-			font-weight: 400;
-		}
-		.insight .field {
-			@apply(--layout-horizontal);
-			font-size: 25px;
-			font-weight: 400;
-			text-transform: uppercase;
-		}
-		.number {
-			border-color: #f7a017;
-			border-radius: 50px;
-			height: 50px;
-			width: 50px;
-			line-height: 50px;
-			font-size: 15px;
-			text-align: center;
-			@apply(--layout-center);
-			@apply(--layout-center-justified);
-		}
-		iron-icon {
-			width: 40px;
-			height: auto;
-			padding-right: 5px;
-			color: var(--primary-icon-color);
-			fill: var(--primary-icon-color);
-		}
-		span {
-			white-space: pre;
-		}
-		span.unit {
-			@apply(--layout-self-end);
-			font-size: 10px;
-			font-weight: 400;
-		}
-		p {
-			margin: 10px 0 0 0;
-			padding: 6px;
-			line-height: 23px;
-		}
-	</style>
 	<template>
+		<style include="iron-flex">
+			:host {
+				@apply --layout-vertical;
+				border-bottom: 1px solid #4D4D4D;
+				background-color: #262626;
+				padding: 10px;
+				box-sizing: border-box;
+			}
+			.insight {
+				@apply --layout-horizontal;
+				@apply --layout-flex;
+				@apply --layout-center;
+				z-index: 1;
+			}
+			.insight .info {
+				@apply --layout-vertical;
+			}
+			.insight .title {
+				@apply --layout-horizontal;
+				font-size: 10px;
+				font-weight: 400;
+			}
+			.insight .field {
+				@apply --layout-horizontal;
+				font-size: 25px;
+				font-weight: 400;
+				text-transform: uppercase;
+			}
+			.number {
+				border-color: #f7a017;
+				border-radius: 50px;
+				height: 50px;
+				width: 50px;
+				line-height: 50px;
+				font-size: 15px;
+				text-align: center;
+				@apply --layout-center;
+				@apply --layout-center-justified;
+			}
+			iron-icon {
+				width: 40px;
+				height: auto;
+				padding-right: 5px;
+				color: var(--primary-icon-color);
+				fill: var(--primary-icon-color);
+			}
+			span {
+				white-space: pre;
+			}
+			span.unit {
+				@apply --layout-self-end;
+				font-size: 10px;
+				font-weight: 400;
+			}
+			p {
+				margin: 10px 0 0 0;
+				padding: 6px;
+				line-height: 23px;
+			}
+		</style>
 		<div class="layout horizontal">
 			<div class="duration insight">
 				<iron-icon icon="image:timer" id="time" class="hidden"></iron-icon>
@@ -84,15 +91,26 @@
 		<p>{{description}}</p>
 	</template>
 	<script>
-		Polymer({
-			is: 'plan-segment',
-			properties: {
-				data: Object
-			},
-			ready: function () {
+		class PlanSegment extends Polymer.Element {
+			static get is() { return 'plan-segment'; }
+
+			static get properties() {
+				return {
+					data: Object,
+					description: String,
+					duration_length: String,
+					duration_type: String,
+					duration_unit: String,
+					pace_icon: String,
+					pace_name: String,
+					pace_value: String,
+				};
+			}
+			ready() {
+				super.ready();
 				this.display = {};
-			},
-			setData: function (segment) {
+			}
+			setData(segment) {
 				if (segment.duration_type === 'distance') {
 					this.duration_type = 'Distance';
 					this.duration_length = segment.duration_distance;
@@ -125,6 +143,7 @@
 				}
 				this.description = segment.segment_desc;
 			}
-		});
+		}
+		window.customElements.define(PlanSegment.is, PlanSegment);
 	</script>
 </dom-module>

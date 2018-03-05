@@ -1,26 +1,37 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <dom-module id="time-in-zone">
-	<style>
-		svg {
-			width: 350px;
-			height: 240px;
-		}
-	</style>
 	<template>
-		<svg></svg>
+		<style>
+			svg {
+				width: 350px;
+				height: 240px;
+			}
+		</style>
+		<svg id$="[[selector]]"></svg>
 	</template>
 	<script>
-	Polymer({
-		is: 'time-in-zone',
-		ready: function () {
+	class TimeInZone extends Polymer.Element {
+		static get is() { return 'time-in-zone'; }
+
+		static get properties() {
+			return {
+				selector: String,
+			};
+		}
+
+		ready() {
+			super.ready();
 			var property = this.dataset.property;
 			if (property === '' || property === undefined) {
 				property = parseInt(Math.random() * 10000);
 			}
 			this.selector = `svg-${property}`;
 			this.selectorID = `#svg-${property}`;
-			this.querySelector('svg').id = this.selector;
-		},
-		setData: function (tizs, rss) {
+			Polymer.RenderStatus.afterNextRender(this, () => {
+				this.selectorEl = this.root.querySelector(this.selectorID);
+			});
+		}
+		setData(tizs, rss) {
 			if (isNaN(rss)) {
 				rss = null;
 			}
@@ -55,10 +66,10 @@
 				.value((d) => {
 					return d.tiz;
 				});
-			d3.select(this.selectorID)
+			d3.select(this.selectorEl)
 				.selectAll('*')
 				.remove();
-			var svg = d3.select(this.selectorID)
+			var svg = d3.select(this.selectorEl)
 				.attr('width', width)
 				.attr('height', height)
 				.append('g')
@@ -113,6 +124,7 @@
 			}
 			return true;
 		}
-	});
+	}
+	window.customElements.define(TimeInZone.is, TimeInZone);
 	</script>
 </dom-module>

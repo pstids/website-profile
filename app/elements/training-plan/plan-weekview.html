@@ -1,6 +1,15 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="./plan-card.html">
+
 <dom-module id="plan-weekview">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment">
       :host {
         /*background: #102828;*/
         height: 12vw;
@@ -58,33 +67,34 @@
     </div>
   </template>
   <script>
-    Polymer({
-      is: 'plan-weekview',
-      properties: {
-        weekNum: Number,
-        weekSummary: String,
-        selectedSummary: {
-          type: Number,
-          value: 0
-        },
-      },
-      ready: function () {
-      },
-      setReadOnly: function () {
-        let cardDiv = Polymer.dom(this.$.content).children;
+    class PlanWeekView extends Polymer.Element {
+      static get is() { return 'plan-weekview'; }
+
+      static get properties() {
+        return {
+          weekNum: Number,
+          weekSummary: String,
+          selectedSummary: {
+            type: Number,
+            value: 0
+          }
+        };
+      }
+      setReadOnly() {
+        let cardDiv = this.$.content.children;
         for (let i = 0; i < cardDiv.length; i++) {
           cardDiv[i].readOnly = true;
         }
-      },
-      addCardData: function (day, info) {
-        let cardDiv = Polymer.dom(this.$.content).children;
+      }
+      addCardData(day, info) {
+        let cardDiv = this.$.content.children;
         cardDiv[day].addTrainingInfo(info);
-      },
-      setSummary: function (summary) {
+      }
+      setSummary(summary) {
         this.weekSummary = summary;
-      },
-      data: function (planID) {
-        let cardDiv = Polymer.dom(this.$.content).children;
+      }
+      data(planID) {
+        let cardDiv = this.$.content.children;
         let infos = [];
         let days = [];
         for (let i = 0; i < cardDiv.length; i++) {
@@ -108,14 +118,15 @@
             week_summary: this.weekSummary,
           }
         };
-      },
+      }
 
-      _editSummaryHandler: function () {
+      _editSummaryHandler() {
         this.selectedSummary = 1;
-      },
-      _saveSummaryHandler: function () {
+      }
+      _saveSummaryHandler() {
         this.selectedSummary = 0;
-      },
-    });
+      }
+    }
+    window.customElements.define(PlanWeekView.is, PlanWeekView);
   </script>
 </dom-module>
