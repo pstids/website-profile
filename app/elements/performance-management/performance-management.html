@@ -249,7 +249,8 @@
 				.innerTickSize(-this.width)
 				.outerTickSize(0);
 
-			this.root.querySelectorAll('.d3-tip')
+			// The d3-tip lives at the document level.
+			document.querySelectorAll('.d3-tip')
 							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var tip = d3.tip()
@@ -438,7 +439,8 @@
 				.innerTickSize(-this.width)
 				.outerTickSize(0);
 
-			this.root.querySelectorAll('.d3-tip')
+			// The d3-tip lives at the document level.
+			document.querySelectorAll('.d3-tip')
 							 .forEach(x => x.parentNode && x.parentNode.removeChild(x));
 
 			var tip = d3.tip()
