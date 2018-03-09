@@ -120,9 +120,6 @@
 			@apply --layout-vertical;
 			width: 85%;
 		}
-		.zones zone-entry:nth-of-type(odd) {
-			background-color: rgba(20, 20, 20, 0.5);
-		}
 		.zone {
 			@apply --layout-flex;
 			border-radius: 30px;
@@ -362,8 +359,7 @@
 			<div class="zones" id="zones"></div>
 			<stryd-button on-click="saveZones" style="min-width: 25vw;">Save</stryd-button>
 		</div>
-
-		<paper-dialog id="invalid">
+		<paper-dialog id="invalidDialog">
 			<h1>Some of your test result input are wrong. Please double check, correct it and re-calculate.</h1>
 			<div class="buttons">
 				<paper-button dialog-confirm autofocus>Okay</paper-button>
@@ -469,8 +465,19 @@ class TrainingInfo extends Polymer.Element {
 			}
 		};
 	}
+	get invalidDialog() {
+		return document.getElementById('invalidDialog');
+	}
 	ready() {
 		super.ready();
+
+		// This element's stacking context prevents the dialog from
+		// appearing, so move the dialog to the highest context.
+		// https://github.com/PolymerElements/paper-dialog/issues/79
+		Polymer.RenderStatus.afterNextRender(this, () => {
+			this.root.querySelectorAll('paper-dialog')
+					.forEach(dialog => document.body.appendChild(dialog));
+		});
 
 		if (!jwt.hasToken) {
 			return;
@@ -751,7 +758,7 @@ class TrainingInfo extends Polymer.Element {
 				break;
 		}
 		if (results.length === 0) {
-			this.$.invalid.open();
+			this.invalidDialog.open();
 			return;
 		}
 

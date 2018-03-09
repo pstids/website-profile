@@ -63,9 +63,20 @@
 				plan_title: String,
 			};
 		}
-
+		get leavePlanDialog() {
+			return document.getElementById('leavePlanDialog');
+		}
 		ready() {
 			super.ready();
+
+			// This element's stacking context prevents the dialog from
+			// appearing, so move the dialog to the highest context.
+			// https://github.com/PolymerElements/paper-dialog/issues/79
+			Polymer.RenderStatus.afterNextRender(this, () => {
+				this.root.querySelectorAll('paper-dialog')
+						.forEach(dialog => document.body.appendChild(dialog));
+			});
+
 			this.plan_available = false;
 			this.getPlan();
 			window.setTimeout(this.getPlan.bind(this), 3000);
@@ -83,7 +94,7 @@
 			page.redirect('/analysis');
 		}
 		leavePlan() {
-			this.$.leavePlanDialog.open();
+			this.leavePlanDialog.open();
 		}
 		leavePlanConfirm() {
 			superagent

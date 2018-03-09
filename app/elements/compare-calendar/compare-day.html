@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/shadycss/apply-shim.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
@@ -30,8 +29,14 @@
             .workout-display {
                 display: none;
             }
+            .workout-display .other {
+                @apply --layout;
+                @apply --layout-vertical;
+            }
             .has-workout .workout-display {
                 @apply --layout;
+                @apply --layout-vertical;
+                @apply --layout-around-justified;
             }
             .header {
                 @apply --layout-horizontal;
@@ -99,12 +104,12 @@
             <div class="header" id="header">
                 <div class="numday">{{day}}</div>
             </div>
-            <div class="layout vertical around-justified data workout-display">
+            <div class="data workout-display">
                 <div class="wattage">
                     <iron-icon icon="{{power_icon}}"></iron-icon>
                     <div class="value">{{power}}</div>
                 </div>
-                <div class="layout vertical other">
+                <div class="other">
                     <div class="stat">
                         <iron-icon icon="communication:swap-calls"></iron-icon>
                         <div class="value">{{distance}}</div>
